@@ -35,6 +35,7 @@ const config = {
         docs: {
           routeBasePath: '/', // Serve the docs at the site's root
           sidebarPath: require.resolve('./sidebars.js'),
+          remarkPlugins: [require('@docusaurus/remark-plugin-npm2yarn'), {sync: true}],
         },
         blog: false,
         theme: {
@@ -45,7 +46,7 @@ const config = {
   ],
 
   themeConfig:
-    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+  /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       docs: {
         sidebar: {
