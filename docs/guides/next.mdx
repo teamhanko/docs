@@ -41,7 +41,7 @@ Next.js pre-renders pages on the server but the browser `window` is not availabl
 element registration would fail.
 
 A solution for this is to use Next's [dynamic import](https://nextjs.org/docs/advanced-features/dynamic-import) feature
-to dynamically load the component on the client side and disable server-rendering for it:
+to dynamically load the component on the client-side and disable server rendering for it:
 
 ```jsx title="index.js" showLineNumbers
 import dynamic from "next/dynamic";
