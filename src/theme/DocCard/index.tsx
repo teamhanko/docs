@@ -7,6 +7,7 @@ import {
 } from '@docusaurus/theme-common/internal';
 import isInternalUrl from '@docusaurus/isInternalUrl';
 import {translate} from '@docusaurus/Translate';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import type {Props} from '@theme/DocCard';
 
 import styles from './styles.module.css';
@@ -89,7 +90,12 @@ function CardCategory({
 }
 
 function CardLink({item}: {item: PropSidebarItemLink}): JSX.Element {
-  const icon = isInternalUrl(item.href) ? '📄️' : '🔗';
+  let icon: ReactNode = isInternalUrl(item.href) ? '📄️' : '🔗';
+
+  if (item.customProps?.cardIconProps) {
+    icon = <DocCardIcon {...item.customProps.cardIconProps as DocCardIconProps}/>
+  }
+
   const doc = useDocById(item.docId ?? undefined);
   return (
     <CardLayout
@@ -110,4 +116,17 @@ export default function DocCard({item}: Props): JSX.Element {
     default:
       throw new Error(`unknown item type ${JSON.stringify(item)}`);
   }
+}
+
+type DocCardIconProps = {
+  name: string;
+}
+
+function DocCardIcon({ name }: DocCardIconProps): JSX.Element {
+  return (
+    <div className={styles.cardIcon}>
+      <img alt={`${name} icon`}
+           src={useBaseUrl(`/img/icons/${name}.svg`)}/>
+    </div>
+  )
 }

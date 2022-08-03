@@ -20,8 +20,15 @@
 
 .cardTitle {
   font-size: 1.2rem;
+  display: flex;
+  align-items: center;
 }
 
 .cardDescription {
   font-size: 0.8rem;
+}
+
+.cardIcon {
+  padding-right: 1rem;
+  width: 3rem;
 }
