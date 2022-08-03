@@ -71,10 +71,12 @@ function CardCategory({
     return null;
   }
 
+  const icon = <DocCardIcon item={item}/>
+
   return (
     <CardLayout
       href={href}
-      icon="🗃️"
+      icon={icon}
       title={item.label}
       description={translate(
         {
@@ -90,11 +92,7 @@ function CardCategory({
 }
 
 function CardLink({item}: {item: PropSidebarItemLink}): JSX.Element {
-  let icon: ReactNode = isInternalUrl(item.href) ? '📄️' : '🔗';
-
-  if (item.customProps?.cardIconProps) {
-    icon = <DocCardIcon {...item.customProps.cardIconProps as DocCardIconProps}/>
-  }
+  const icon = <DocCardIcon item={item}/>
 
   const doc = useDocById(item.docId ?? undefined);
   return (
@@ -122,11 +120,19 @@ type DocCardIconProps = {
   name: string;
 }
 
-function DocCardIcon({ name }: DocCardIconProps): JSX.Element {
+function DocCardIcon({ item }: {item: PropSidebarItemLink | PropSidebarItemCategory}): JSX.Element {
+  let icon: ReactNode;
+
+  if (item.customProps?.cardIconProps) {
+    const { name } = item.customProps?.cardIconProps as DocCardIconProps;
+    icon = <img alt={`${name} icon`} src={useBaseUrl(`/img/icons/${name}.svg`)}/>
+  } else {
+    icon = item.type === 'category' ? '🗃️' : isInternalUrl(item.href) ? '📄️' : '🔗';
+  }
+
   return (
     <div className={styles.cardIcon}>
-      <img alt={`${name} icon`}
-           src={useBaseUrl(`/img/icons/${name}.svg`)}/>
+      {icon}
     </div>
   )
 }

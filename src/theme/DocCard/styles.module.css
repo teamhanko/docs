@@ -29,6 +29,9 @@
 }
 
 .cardIcon {
-  padding-right: 1rem;
-  width: 3rem;
+  margin-right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
 }
