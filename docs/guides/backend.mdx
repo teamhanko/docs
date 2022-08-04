@@ -12,7 +12,7 @@ requests on your backend. To do so, first retrieve the JSON Web Key Set
 containing the public keys used to verify the JSON Web Token (JWT) from the Hanko API's `.well-known/jwks.json` endpoint.
 Then use the JWKS to verify the JWT using a library for the programming language of your choice.
 
-The following example shows an example of a custom middleware in a Go-based backend using
+The following code shows an example of a custom middleware in a Go-based backend using
 [Echo](https://echo.labstack.com/) and the [lestrrat-go/jwx](https://github.com/lestrrat-go/jwx) package:
 
 ```go
