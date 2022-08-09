@@ -37,18 +37,20 @@ function CardLayout({
   icon,
   title,
   description,
+  showDescription
 }: {
   href: string;
   icon: ReactNode;
   title: string;
   description?: string;
+  showDescription?: boolean;
 }): JSX.Element {
   return (
     <CardContainer href={href}>
       <h2 className={clsx('text--truncate', styles.cardTitle)} title={title}>
         {icon} {title}
       </h2>
-      {description && (
+      {description && showDescription && (
         <p
           className={clsx('text--truncate', styles.cardDescription)}
           title={description}>
@@ -87,6 +89,7 @@ function CardCategory({
         },
         {count: item.items.length},
       )}
+      showDescription={!!item.customProps.docCardShowDescription}
     />
   );
 }
@@ -101,6 +104,7 @@ function CardLink({item}: {item: PropSidebarItemLink}): JSX.Element {
       icon={icon}
       title={item.label}
       description={doc?.description}
+      showDescription={!!item.customProps.docCardShowDescription}
     />
   );
 }
@@ -116,16 +120,12 @@ export default function DocCard({item}: Props): JSX.Element {
   }
 }
 
-type DocCardIconProps = {
-  name: string;
-}
-
 function DocCardIcon({ item }: {item: PropSidebarItemLink | PropSidebarItemCategory}): JSX.Element {
   let icon: ReactNode;
 
-  if (item.customProps?.cardIconProps) {
-    const { name } = item.customProps?.cardIconProps as DocCardIconProps;
-    icon = <img alt={`${name} icon`} src={useBaseUrl(`/img/icons/${name}.svg`)}/>
+  if (item.customProps?.docCardIconName) {
+    const iconName = item.customProps.docCardIconName;
+    icon = <img alt={`${iconName} icon`} src={useBaseUrl(`/img/icons/${iconName}.svg`)}/>
   } else {
     icon = item.type === 'category' ? '🗃️' : isInternalUrl(item.href) ? '📄️' : '🔗';
   }
