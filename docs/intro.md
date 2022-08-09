@@ -2,7 +2,6 @@
 sidebar_position: 1
 slug: /
 title: Introduction
-description: "Welcome to Hanko Docs"
 ---
 # :wave: Welcome to Hanko Docs
 Hanko is a lightweight, open source user authentication solution that takes you on the journey beyond passwords. For better security, increased conversion rates, and happier users.

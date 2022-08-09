@@ -25,7 +25,7 @@ const sidebars = {
       link: {
         type: 'generated-index',
         title: 'Frontend guides',
-        description: 'Learn how to integrate Hanko with your preferred frontend framework!',
+        description: 'Set up authentication for your app in minutes by learning how to integrate Hanko with your preferred frontend framework!',
         slug: '/guides/frontend',
         keywords: ['guides']
       },
