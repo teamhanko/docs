@@ -54,6 +54,7 @@ const config = {
           hideable: true
         }
       },
+      image: 'img/thumbnail.jpg',
       announcementBar: {
         id: 'support_us',
         content:
