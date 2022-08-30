@@ -75,6 +75,11 @@ const config = {
         },
         items: [
           {
+            href: 'https://teamhanko.github.io/hanko',
+            label: "API",
+            position: 'left',
+          },
+          {
             href: 'https://github.com/teamhanko/hanko',
             title: "Visit us on GitHub!",
             position: 'right',
