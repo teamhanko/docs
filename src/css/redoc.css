@@ -92,7 +92,7 @@
     background-color: inherit;
 }
 
-tr:first-of-type > td[kind="field"] {
+.redoc-wrap .api-content tr:first-of-type > td[kind="field"] {
     background-image: linear-gradient( to bottom, transparent 0%, transparent 22px, var(--ifm-color-primary-lighter) 22px, var(--ifm-color-primary-lighter) 100% );
     border-left-width: 0;
     background-position: top left;
@@ -100,7 +100,7 @@ tr:first-of-type > td[kind="field"] {
     background-size: 1px 100%;
 }
 
-html[data-theme='dark'] tr:first-of-type > td[kind="field"] {
+html[data-theme='dark'] .redoc-wrap .api-content tr:first-of-type > td[kind="field"] {
     background-image: linear-gradient( to bottom, transparent 0%, transparent 22px, var(--ifm-color-primary-dark) 22px, var(--ifm-color-primary-dark)  100% );
     border-left-width: 0;
     background-position: top left;
@@ -108,20 +108,20 @@ html[data-theme='dark'] tr:first-of-type > td[kind="field"] {
     background-size: 1px 100%;
 }
 
-tr.last > td[kind="field"] {
+.redoc-wrap .api-content tr.last > td[kind="field"] {
     background-image: linear-gradient( to bottom, var(--ifm-color-primary-lighter) 0%, var(--ifm-color-primary-lighter) 22px, transparent 22px, transparent 100% );
 }
 
-html[data-theme='dark'] tr.last:first-child > td[kind="field"] {
+html[data-theme='dark'] .redoc-wrap .api-content tr.last:first-child > td[kind="field"] {
     background: none;
     border-left-color: transparent;
 }
 
-html[data-theme='dark'] tr.last > td[kind="field"] {
+html[data-theme='dark'] .redoc-wrap .api-content tr.last > td[kind="field"] {
     background-image: linear-gradient( to bottom, var(--ifm-color-primary-dark) 0%, var(--ifm-color-primary-dark) 22px, transparent 22px, transparent 100% );
 }
 
-html[data-theme='dark'] caption {
+html[data-theme='dark'] .redoc-wrap .api-content caption {
     color: var(--ifm-color-white);
 }
 
