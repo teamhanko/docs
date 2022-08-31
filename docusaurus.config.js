@@ -30,6 +30,48 @@ const config = {
 
   presets: [
     [
+      'redocusaurus',
+      {
+        // Plugin Options for loading OpenAPI files
+        specs: [
+          {
+            spec: 'https://raw.githubusercontent.com/teamhanko/hanko/main/docs/spec/api.yaml',
+            route: '/api',
+          },
+        ],
+        // Theme Options for modifying how redoc renders them
+        theme: {
+          primaryColor: '#ff2e4c',
+          primaryColorDark: '#2dacff',
+          options : {
+            nativeScrollbars: true,
+            scrollYOffset: 60,
+            disableSearch: true,
+            noAutoAuth: true,
+            expandResponses: '200',
+            jsonSampleExpandLevel: 3,
+            pathInMiddlePanel: false,
+            requiredPropsFirst: true,
+            hideDownloadButton: true
+          },
+          // Change with your site colors
+          theme: {
+            typography: {
+              fontSize: '16px',
+              fontWeightRegular: '500',
+              code: {
+                fontSize: '13px',
+                fontFamily: 'Courier, monospace',
+              }
+            },
+            sidebar: {
+              width: '300px',
+            },
+          }
+        },
+      },
+    ],
+    [
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
@@ -40,7 +82,7 @@ const config = {
         },
         blog: false,
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: [require.resolve('./src/css/custom.css'), require.resolve('./src/css/redoc.css')]
         },
       }),
     ],
@@ -75,7 +117,7 @@ const config = {
         },
         items: [
           {
-            href: 'https://teamhanko.github.io/hanko',
+            to: '/api',
             label: "API",
             position: 'left',
           },

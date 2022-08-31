@@ -1,0 +1,179 @@
+/* Redoc sidebar menu styles */
+.redoc-wrap > .menu-content ul > li {
+    margin: 0.25rem 0;
+}
+
+.redoc-wrap > .menu-content {
+    padding: 8px;
+}
+
+.redoc-wrap > .menu-content ul > li > label {
+    border-radius: 0.25rem;
+    color: var(--ifm-menu-color);
+    cursor: pointer;
+    display: flex;
+    line-height: 20px;
+    justify-content: space-between;
+    padding: var(--ifm-menu-link-padding-vertical) var(--ifm-menu-link-padding-horizontal);
+}
+
+.redoc-wrap .menu-content {
+    border-right: 1px solid var(--ifm-toc-border-color);
+}
+
+.redoc-wrap .menu-content label[role=menuitem] {
+    font-size: 1rem;
+    align-items: center;
+}
+
+.redoc-wrap .menu-content label[role=menuitem] polygon {
+    transform: scale(1.15);
+    fill: #7f7f7f;
+}
+
+/* Redoc main content table styles */
+.redoc-wrap > .api-content table {
+    display: table;
+    font-size: 13px;
+}
+
+.redoc-wrap .menu-content label[role=menuitem] polygon {
+    transform: scale(1.15);
+    fill: #7f7f7f;
+}
+
+/* Redoc main content table styles */
+.redoc-wrap > .api-content table {
+    display: table;
+    font-size: 13px;
+}
+
+.redoc-wrap .api-content table tr {
+    border-top: none;
+}
+
+.redoc-wrap .api-content table td[kind=field] {
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+}
+
+.redoc-wrap .api-content table td[kind=field] + td {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+@media screen and (max-width: 50rem) {
+    .redoc-wrap .api-content table td[kind=field] + td {
+        border-left: 1px solid var(--ifm-color-primary-lighter);
+    }
+    html[data-theme='dark'] .redoc-wrap .api-content table td[kind=field] + td {
+        border-left: 1px solid var(--ifm-color-primary-dark);
+    }
+}
+
+@media screen and (max-width: 50rem) {
+    .redoc-wrap .api-content table tr.last td~td {
+        border-left: none;
+    }
+    html[data-theme='dark'] .redoc-wrap .api-content table tr.last td~td {
+        border-left: none;
+    }
+}
+
+.redoc-wrap .api-content table tr.expanded + tr > td {
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+}
+
+.redoc-wrap .api-content table table tr:nth-child(n) {
+    background-color: inherit;
+}
+
+tr:first-of-type > td[kind="field"] {
+    background-image: linear-gradient( to bottom, transparent 0%, transparent 22px, var(--ifm-color-primary-lighter) 22px, var(--ifm-color-primary-lighter) 100% );
+    border-left-width: 0;
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: 1px 100%;
+}
+
+html[data-theme='dark'] tr:first-of-type > td[kind="field"] {
+    background-image: linear-gradient( to bottom, transparent 0%, transparent 22px, var(--ifm-color-primary-dark) 22px, var(--ifm-color-primary-dark)  100% );
+    border-left-width: 0;
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: 1px 100%;
+}
+
+tr.last > td[kind="field"] {
+    background-image: linear-gradient( to bottom, var(--ifm-color-primary-lighter) 0%, var(--ifm-color-primary-lighter) 22px, transparent 22px, transparent 100% );
+}
+
+html[data-theme='dark'] tr.last:first-child > td[kind="field"] {
+    background: none;
+    border-left-color: transparent;
+}
+
+html[data-theme='dark'] tr.last > td[kind="field"] {
+    background-image: linear-gradient( to bottom, var(--ifm-color-primary-dark) 0%, var(--ifm-color-primary-dark) 22px, transparent 22px, transparent 100% );
+}
+
+html[data-theme='dark'] caption {
+    color: var(--ifm-color-white);
+}
+
+html[data-theme='dark'] .redocusaurus table tbody tr table {
+    background: none !important;
+}
+
+html[data-theme='dark'] table tbody tr table tbody tr > td[colspan] > div {
+    background: none !important;
+}
+
+/* Redoc main content misc styles */
+.redoc-wrap .api-content h3 {
+    display: block;
+    font-size: 1.17em;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+
+html[data-theme='dark'] .redocusaurus h5 ~ svg {
+    fill: var(--ifm-color-white);
+}
+
+.redoc-wrap .api-content h3 ~ div button:not([aria-label="expand properties"]) {
+    display: flex;
+    align-items: center;
+}
+
+.redoc-wrap .api-content h3 ~ div button:not([aria-label="expand properties"]) span {
+    padding-left: .5em;
+}
+
+.react-tabs__tab-panel--selected button {
+    display: inline-block !important;
+}
+
+/* Code styles */
+.redoc-json code {
+    color: #ffffff;
+    background-color: transparent;
+    padding: 0;
+}
+
+html[data-theme='dark'] .redocusaurus code {
+    color: var(--ifm-color-primary-dark);
+}
+
+.api-content pre {
+    background-color: #272C30;
+}
+
+
