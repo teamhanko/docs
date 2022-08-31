@@ -65,6 +65,10 @@ const config = {
               }
             },
             sidebar: {
+              arrow: {
+                size: '1.7em',
+                color: '#7f7f7f'
+              },
               width: '300px',
             },
           }

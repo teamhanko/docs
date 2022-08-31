@@ -26,20 +26,10 @@
     align-items: center;
 }
 
-.redoc-wrap .menu-content label[role=menuitem] polygon {
-    transform: scale(1.15);
-    fill: #7f7f7f;
-}
-
 /* Redoc main content table styles */
 .redoc-wrap > .api-content table {
     display: table;
     font-size: 13px;
-}
-
-.redoc-wrap .menu-content label[role=menuitem] polygon {
-    transform: scale(1.15);
-    fill: #7f7f7f;
 }
 
 /* Redoc main content table styles */
