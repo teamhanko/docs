@@ -121,8 +121,14 @@ const config = {
         },
         items: [
           {
+            to: '/',
+            label: 'Docs',
+            position: 'left',
+            activeBaseRegex: '^((?!\/api).)*$'
+          },
+          {
             to: '/api',
-            label: "API",
+            label: 'API',
             position: 'left',
           },
           {
