@@ -42,7 +42,7 @@ const config = {
         // Theme Options for modifying how redoc renders them
         theme: {
           primaryColor: '#ff2e4c',
-          primaryColorDark: '#2dacff',
+          primaryColorDark: '#aedfff',
           options : {
             nativeScrollbars: true,
             scrollYOffset: 60,
