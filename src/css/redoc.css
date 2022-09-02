@@ -17,8 +17,12 @@
     padding: var(--ifm-menu-link-padding-vertical) var(--ifm-menu-link-padding-horizontal);
 }
 
-.redoc-wrap .menu-content {
+.main-wrapper .redoc-wrap .menu-content {
     border-right: 1px solid var(--ifm-toc-border-color);
+}
+
+html[data-theme='dark'] .main-wrapper .redoc-wrap .menu-content {
+    background-color: #0b0d0e;
 }
 
 .redoc-wrap .menu-content label[role=menuitem] {
@@ -26,10 +30,30 @@
     align-items: center;
 }
 
-/* Redoc main content table styles */
-.redoc-wrap > .api-content table {
-    display: table;
-    font-size: 13px;
+html[data-theme='dark'] .redoc-wrap .menu-content label[role=menuitem] {
+    background-color: #0b0d0e;
+}
+
+html[data-theme='dark'] .redoc-wrap .menu-content label[role=menuitem] {
+    font-size: 1rem;
+    align-items: center;
+    background-color: #0b0d0e;
+}
+
+.redoc-wrap .menu-content label[role=menuitem]:hover {
+    font-size: 1rem;
+    align-items: center;
+    background-color: var(--ifm-menu-color-background-hover);
+}
+
+html[data-theme='dark'] .redoc-wrap .menu-content label[role=menuitem]:hover {
+    font-size: 1rem;
+    align-items: center;
+    background-color: var(--ifm-menu-color-background-hover);
+}
+
+.redoc-wrap .menu-content .operation-type {
+    margin-top: 0;
 }
 
 /* Redoc main content table styles */
@@ -118,7 +142,7 @@ html[data-theme='dark'] .redoc-wrap .api-content tr.last > td[kind="field"] {
     background-image: linear-gradient( to bottom, var(--ifm-color-primary) 0%, var(--ifm-color-primary) 22px, transparent 22px, transparent 100% );
 }
 
-html[data-theme='dark'] .redoc-wrap .api-content caption {
+html[data-theme='dark'] .redoc-wrap .api-content table caption {
     color: var(--ifm-color-white);
 }
 
@@ -140,12 +164,12 @@ html[data-theme='dark'] .redoc-wrap .api-content table tbody tr table tbody tr >
     font-size: 1.17em;
     margin-block-start: 1em;
     margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
     font-weight: bold;
 }
 
-html[data-theme='dark'] .redocusaurus h5 ~ svg {
+html[data-theme='dark'] .redoc-wrap .api-content h5 ~ svg {
     fill: var(--ifm-color-white);
 }
 
