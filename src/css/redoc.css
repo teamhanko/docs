@@ -40,6 +40,10 @@ html[data-theme='dark'] .redoc-wrap .menu-content label[role=menuitem] {
     background-color: #0b0d0e;
 }
 
+.redoc-wrap .menu-content label[role=menuitem].active {
+    background-color: var(--ifm-menu-color-background-hover) !important;
+}
+
 .redoc-wrap .menu-content label[role=menuitem]:hover {
     font-size: 1rem;
     align-items: center;
@@ -53,6 +57,10 @@ html[data-theme='dark'] .redoc-wrap .menu-content label[role=menuitem]:hover {
 }
 
 .redoc-wrap .menu-content .operation-type {
+    margin-top: 0;
+}
+
+.redoc-wrap .menu-content ul[role='navigation'] > li:first-child {
     margin-top: 0;
 }
 
@@ -159,6 +167,12 @@ html[data-theme='dark'] .redoc-wrap .api-content table tbody tr table tbody tr >
 }
 
 /* Redoc main content misc styles */
+
+.redoc-wrap a:hover {
+    color: var(--ifm-color-primary) !important;
+    text-decoration: underline !important;
+}
+
 .redoc-wrap .api-content h3 {
     display: block;
     font-size: 1.17em;
