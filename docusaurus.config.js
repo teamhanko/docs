@@ -35,7 +35,7 @@ const config = {
         // Plugin Options for loading OpenAPI files
         specs: [
           {
-            spec: 'https://raw.githubusercontent.com/teamhanko/hanko/main/docs/spec/api.yaml',
+            spec: 'https://raw.githubusercontent.com/teamhanko/hanko/main/docs/static/spec/api.yaml',
             route: '/api',
           },
         ],
