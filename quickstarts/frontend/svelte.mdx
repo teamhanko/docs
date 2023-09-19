@@ -1,0 +1,178 @@
+# Integrate Hanko with Svelte
+
+Learn how to quickly add authentication and user profile in your Svelte app using Hanko.
+
+## Install `@teamhanko/hanko-elements`
+
+Once you've initialized your Svelte app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth`, `hanko-profile` and `hanko-events`.
+
+<CodeGroup>
+```bash npm
+npm install @teamhanko/hanko-elements
+```
+
+```bash pnpm
+pnpm add @teamhanko/hanko-elements
+```
+
+```bash yarn
+yarn add @teamhanko/hanko-elements
+```
+</CodeGroup>
+
+## Add the Hanko API URL
+
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+
+```sh .env
+HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+```
+
+<Note>
+  If you are self-hosting you need to provide the URL of your running Hanko
+  backend.
+</Note>
+
+## Add `<hanko-auth>` component
+
+The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the register function from `@teamhanko/hanko-elements` into your Svelte component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Then use the `<hanko-auth>` element in your component.
+
+
+```js HankoAuth.svelte
+<script>
+  import { onMount } from "svelte";
+  import { register } from '@teamhanko/hanko-elements';
+
+  const hankoApi = process.env.HANKO_API_URL;
+
+  onMount(async () => {
+    register(hankoApi)
+      .catch((error) => {
+        // handle error
+    });
+  });
+</script>
+
+<hanko-auth />
+```
+
+## Add `<hanko-events>` component
+
+The `<hanko-events>` component provides a convenient way to subscribe to specific
+[events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events) without displaying any UI elements.
+The other hanko-elements will also dispatch these events.
+
+To utilize this functionality in your Svelte application, you can leverage Svelte's event binding mechanism and define
+callback functions within your component. This allows you to respond to the dispatched events accordingly.
+
+```js HankoAuth.svelte
+<script>
+  import { onMount } from "svelte";
+  import { useNavigate } from "svelte-navigator";
+  import { register } from '@teamhanko/hanko-elements';
+
+  const hankoApi = process.env.HANKO_API_URL;
+  const navigate = useNavigate();
+
+  const redirectAfterLogin = () => {
+    // successfully logged in, redirect to a page in your application
+    navigate('...');
+  };
+
+  onMount(async () => {
+    register(hankoApi)
+      .catch((error) => {
+        // handle error
+    });
+  });
+
+</script>
+<hanko-events on:onAuthFlowCompleted={redirectAfterLogin} />
+<hanko-auth />
+```
+
+Alternatively, you can subscribe directly on the `<hanko-auth>` element:
+
+```js
+<hanko-auth on:onAuthFlowCompleted={redirectAfterLogin} />
+```
+
+By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
+<br />
+<img
+  src="/images/fullstack-guide/next-one.png"
+  alt="sign up"
+  width={500}
+/>
+
+## Add `<hanko-profile>` component
+
+The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+
+```js HankoProfile.svelte
+<script>
+  import { register } from "@teamhanko/hanko-elements";
+
+  const hankoApi = process.env.HANKO_API_URL;
+
+  onMount(async () => {
+    register(hankoApi)
+      .catch((error) => {
+        // handle error
+      });
+  });
+</script>
+
+<hanko-profile />
+```
+
+It should look like this 👇
+<br />
+<img
+  src="/images/fullstack-guide/next-two.png"
+  alt="profile page"
+  width={500}
+/>
+
+## Implement logout
+
+Use the Hanko client provided by `@teamhanko/hanko-elements` to log out users. On logout a custom event is
+dispatched that you can subscribe to:
+
+```js HankoProfile.svelte
+<script>
+  import { useNavigate } from "svelte-navigator";
+  import { register, Hanko } from "@teamhanko/hanko-elements";
+
+  const hankoApi = process.env.HANKO_API_URL;
+  const navigate = useNavigate();
+  const hanko = new Hanko(hankoApi);
+
+  const logout = () => {
+    hanko.user.logout().catch((error) => {
+      // handle error
+    })
+  }
+
+  const redirectAfterLogout = () => {
+    navigate("...");
+  }
+
+  onMount(async () => {
+    register(hankoApi)
+      .catch((error) => {
+        // handle error
+      });
+  });
+</script>
+<button on:click={logout}>Logout</button>
+<hanko-profile on:onUserLoggedOut={redirectAfterLogout} />
+```
+
+## Customize component styles
+
+You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](https://github.com/teamhanko/hanko/tree/main/frontend/elements#ui-customization).
+
+## Authenticate backend requests
+
+To authenticate requests on your backend with Hanko, refer to our [backend guide](/quickstarts/backend).

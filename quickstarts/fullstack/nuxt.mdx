@@ -1,0 +1,229 @@
+# Integrate Hanko with Nuxt
+
+Learn how to quickly add authentication and user profile in your Nuxt app using Hanko.
+
+<Callout>
+  This guide and the `@nuxtjs/hanko` module are only compatible with [Nuxt
+  3](https://nuxt.com).
+</Callout>
+
+## Install `@nuxtjs/hanko`
+
+Once you've initialized your Nuxt app, installing `@nuxtjs/hanko` module provides you with access to prebuilt components: `hanko-auth`, `hanko-events` and `hanko-profile`
+
+<CodeGroup>
+```bash npm
+npm install -D @nuxtjs/hanko
+```
+
+```bash pnpm
+pnpm add -D @nuxtjs/hanko
+```
+
+```bash yarn
+yarn add --dev @nuxtjs/hanko
+```
+
+</CodeGroup>
+
+## Add the Hanko API URL
+
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+
+```sh .env
+NUXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+```
+
+<Note>
+  If you are self-hosting you need to provide the URL of your running Hanko
+  backend.
+</Note>
+
+## Configure Nuxt module
+
+Add the `@nuxtjs/hanko` module to the `modules` section of your `nuxt.config.ts` file.
+
+```jsx nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ["@nuxtjs/hanko"],
+  hanko: {
+    apiURL: process.env.NUXT_PUBLIC_HANKO_API_URL,
+  },
+});
+```
+
+While the module comes pre-configured with the options for most common use cases, you have the flexibility to override them by adding a `hanko` section to your `nuxt.config.ts` file. For all overrides please refer to [module's repository](https://github.com/nuxt-modules/hanko).
+
+<Info>
+**Using Hanko Components**
+
+You can now use the components anywhere in your app (`<hanko-auth>`, `<hanko-events>`, `<hanko-profile>`). These will render only on client-side and all the props you can pass are strongly typed.
+
+If you prefer not to auto-register these components, especially if you plan to use Hanko exclusively on the server side or wish to handle component registration programmatically, you can disable this feature. To do so, set the `registerComponents` option to false in your `nuxt.config.ts` file:
+
+```jsx nuxt.config.ts
+hanko: {
+  registerComponents: false;
+}
+```
+
+</Info>
+
+## Add `<hanko-auth>` component
+
+The `<hanko-auth>` web component adds a login interface to your app.
+
+```jsx login.vue
+<template>
+  <hanko-auth />
+</template>
+```
+
+By default no action is taken after a successful login. When you add the `hanko-logged-out` middleware to the login page it will automatically redirect the user to the page they were on before logging in, or to the optional `redirects.success` value in the module config.
+
+```jsx login.vue
+<script setup lang="ts">
+definePageMeta({
+  middleware: ['hanko-logged-out']
+})
+</script>
+<template>
+  <hanko-auth />
+</template>
+```
+
+Alternatively you can redirect the user to a page of your choice by adding the `<hanko-events>` component to your page and listening for the `onAuthFlowCompleted` event.
+
+```jsx login.vue
+<script setup lang="ts">
+function afterLogin() {
+ navigateTo("/user");
+}
+</script>
+<template>
+  <hanko-auth />
+  <hanko-event @onAuthFlowCompleted="afterLogin()" />
+</template>
+```
+
+## Define event callbacks
+
+To subscribe to [events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events) emited by Hanko, you can add the `<hanko-events>` component to your page and listen for the events you are interested in.
+
+```jsx page.vue
+<script setup lang="ts">
+function updateSession() {
+ // do something
+}
+</script>
+<template>
+  <hanko-event @onSessionCreated="updateSession()" />
+</template>
+```
+
+By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
+
+<br />
+<img src="/images/fullstack-guide/next-one.png" alt="sign-up" width={500} />
+
+## Add `<hanko-profile>`
+
+The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+
+```jsx profile.vue
+<template>
+  <hanko-profile />
+</template>
+```
+
+It should look like this 👇
+
+<br />
+<img
+  src="/images/fullstack-guide/next-two.png"
+  alt="profile-page"
+  width={500}
+/>
+
+## Implement logout functionality
+
+To log users out, use the `@nuxtjs/hanko` module's built-in composable `useHanko` and call the `logout` method.
+
+```jsx logout.vue
+<script setup lang="ts">
+const hanko = useHanko()
+function logout() {
+  hanko!.user.logout()
+}
+</script>
+<template>
+  <button @click="logout">
+      Log me out
+  </button>
+</template>
+```
+
+<Info>
+**useHanko() composable**
+
+The `useHanko` composable provides access to the [Hanko SDK](https://docs.hanko.io/jsdoc/hanko-frontend-sdk/index.html) which in turn allows access to the Hanko API, e.g. for accessing the [current user info](https://docs.hanko.io/jsdoc/hanko-frontend-sdk/UserClient.html#getCurrent).
+The composable is auto-imported across the app and can simply be used with `useHanko()` anywhere in your code.
+
+</Info>
+
+## Customize component styles
+
+You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](https://github.com/teamhanko/hanko/tree/main/frontend/elements#ui-customization).
+The styles can be scoped to the login/profile page to ensure they dont affect other parts to the app.
+
+## Securing routes with Middleware
+
+A global server middleware is added by `@nuxtjs/hanko`. After decoding and validating the JWT for the request, a new `hanko` property to is added to the event context.
+You can check the value of `event.context.hanko` to see if the request was authenticated and the decoded JWT payload. The user's id is accessible though the `sub` claim/property.
+
+```jsx /server/api/endpoint.ts
+export default defineEventHandler(async (event) => {
+  const hanko = event.context.hanko;
+  if (!hanko || !hanko.sub) {
+    return {
+      status: 401,
+      body: {
+        message: "Unauthorized",
+      },
+    };
+  }
+  // Do something with the Hanko user
+  return {
+    hanko: event.context.hanko,
+  };
+});
+```
+
+## Try it yourself
+
+{" "}
+<Card
+  title="Nuxt example"
+  href="https://github.com/Ashutosh-Bhadauriya/hanko-nextjs-starter"
+  icon={
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="icon icon-tabler icon-tabler-external-link"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      stroke-width="2"
+      stroke="currentColor"
+      fill="none"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"></path>
+      <path d="M11 13l9 -9"></path>
+      <path d="M15 4h5v5"></path>
+    </svg>
+  }
+>
+  Full source code availabe on our github
+</Card>

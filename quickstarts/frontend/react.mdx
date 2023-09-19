@@ -1,0 +1,173 @@
+# Integrate Hanko with React
+
+Learn how to quickly add authentication and user profile in your React app using Hanko.
+
+## Install `@teamhanko/hanko-elements`
+
+Once you've initialized your React app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+
+<CodeGroup>
+```bash npm
+npm install @teamhanko/hanko-elements
+```
+
+```bash pnpm
+pnpm add @teamhanko/hanko-elements
+```
+
+```bash yarn
+yarn add @teamhanko/hanko-elements
+```
+</CodeGroup>
+
+## Add the Hanko API URL
+
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+
+```sh .env
+HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+```
+
+<Note>
+  If you are self-hosting you need to provide the URL of your running Hanko
+  backend.
+</Note>
+
+## Add `<hanko-auth>` component
+
+The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the `register` function from `@teamhanko/hanko-elements` into your React component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, include it in your JSX.
+
+```jsx components/HankoAuth.tsx
+import { useEffect } from "react";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+export default function HankoAuth() {
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  }, []);
+
+  return <hanko-auth />;
+}
+```
+
+## Define event callbacks
+
+The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific [events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events). It simplifies the process of subscribing to events, such as user logins.
+
+```jsx components/HankoAuth.tsx
+import { useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { register, Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+export default function HankoAuth() {
+  const navigate = useNavigate();
+  const hanko = useMemo(() => new Hanko(hankoApi), []);
+
+  const redirectAfterLogin = useCallback(() => {
+    navigate("/dashboard");
+  }, [navigate]);
+
+  useEffect(
+    () =>
+      hanko.onAuthFlowCompleted(() => {
+        redirectAfterLogin();
+      }),
+    [hanko, redirectAfterLogin]
+  );
+
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  }, []);
+
+  return <hanko-auth />;
+}
+```
+
+By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
+<br />
+<img
+  src="/images/fullstack-guide/next-one.png"
+  alt="sign up"
+  width={500}
+/>
+
+## Add `<hanko-profile>` component
+
+The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+
+```jsx components/HankoProfile.tsx
+import { useEffect } from "react";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+export default function HankoProfile() {
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  }, []);
+
+  return <hanko-profile />;
+}
+```
+
+It should look like this 👇
+<br />
+<img
+  src="/images/fullstack-guide/next-two.png"
+  alt="profile page"
+  width={500}
+/>
+
+## Implement logout functionality
+
+You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we make a logout button component that you can use anywhere.
+
+```jsx components/LogoutButton.tsx
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+function LogoutBtn() {
+  const navigate = useNavigate();
+  const [hanko, setHanko] = useState<Hanko>();
+
+  useEffect(() => {
+    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+      setHanko(new Hanko(hankoApi ?? ""))
+    );
+  }, []);
+
+  const logout = async () => {
+    try {
+      await hanko?.user.logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+  return <button onClick={logout}>Logout</button>;
+}
+
+export default LogoutBtn;
+```
+
+## Customize component styles
+
+You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](https://github.com/teamhanko/hanko/tree/main/frontend/elements#ui-customization).
+
+## Authenticate backend requests
+
+To authenticate requests on your backend with Hanko, refer to our [backend guide](/quickstarts/backend).

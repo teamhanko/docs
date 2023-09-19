@@ -1,0 +1,126 @@
+# Integrate Hanko with Javascript
+
+Learn how to quickly add authentication and user profile in your vanilla Javascript app using Hanko.
+
+## Add the Hanko API URL
+
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+
+```sh .env
+HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+```
+
+<Note>
+  We recommend saving these keys in environment variables through .env file or any other equivalent. Also, if you are self-hosting you need to provide the URL of your running Hanko
+  backend.
+</Note>
+
+## Add `<hanko-auth>` component
+
+The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the `register` function from `@teamhanko/hanko-elements`. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, use it in your markup.
+
+```html login.html
+<body>
+  <hanko-auth />
+
+  <script type="module">
+    import { register } from "https://esm.run/@teamhanko/hanko-elements";
+
+    await register(process.env.HANKO_API_URL);
+  </script>
+</body>
+```
+
+## Define event callbacks
+
+The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific [events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events). It simplifies the process of subscribing to events, such as user logins.
+
+```html login.html
+<body>
+  <hanko-auth />
+
+  <script type="module">
+    import { register } from "https://esm.run/@teamhanko/hanko-elements";
+
+    const { hanko } = await register(process.env.HANKO_API_URL);
+
+    hanko.onAuthFlowCompleted(() => {
+      // successfully logged in, redirect to a page in your application
+      document.location.href = "...";
+    });
+  </script>
+</body>
+```
+
+By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
+<br />
+<img
+  src="/images/fullstack-guide/next-one.png"
+  alt="sign up"
+  width={500}
+/>
+
+## Add `<hanko-profile>`
+
+The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+
+```html profile.html
+<body>
+  <hanko-profile />
+
+  <script type="module">
+    import { register } from "https://esm.run/@teamhanko/hanko-elements";
+
+    await register(process.env.HANKO_API_URL);
+  </script>
+</body>
+```
+
+It should look like this 👇
+<br />
+<img
+  src="/images/fullstack-guide/next-two.png"
+  alt="profile page"
+  width={500}
+/>
+
+## Implement logout functionality
+
+Use the Hanko client provided by `@teamhanko/hanko-elements` to log out users. On logout a custom event is
+dispatched that you can subscribe to:
+
+```html profile.html
+<body>
+  <nav>
+    <a href="#" id="logout-link">Logout</a>
+  </nav>
+
+  <hanko-profile />
+
+  <script type="module">
+    import { register } from 'https://esm.run/@teamhanko/hanko-elements';
+
+    const { hanko } = await register(process.env.HANKO_API_URL);
+
+    document.getElementById("logout-link")
+      .addEventListener("click", (event) => {
+          event.preventDefault();
+          hanko.user.logout();
+      });
+
+    hanko.onUserLoggedOut(() => {
+        // successfully logged out, redirect to a page in your application
+        document.location.href = "..."
+    }
+  </script>
+</body>
+```
+
+## Customize component styles
+
+The styles of the `hanko-auth` and `hanko-profile` elements can be customized using CSS variables and parts. See our
+guide on customization [here](https://github.com/teamhanko/hanko/tree/main/frontend/elements#ui-customization).
+
+## Authenticate backend requests
+
+To authenticate requests on your backend with Hanko, refer to our [backend guide](/quickstarts/backend).

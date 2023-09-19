@@ -1,0 +1,68 @@
+# Integrate Hanko with Deno backend
+
+## Get the Hanko API URL
+
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
+
+<Note>
+  If you are self-hosting Hanko you need to provide your own URL.
+</Note>
+
+## Hanko Authentication with JWT
+
+Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT](https://datatracker.ietf.org/doc/html/rfc7519)). You can use this JWT to authenticate requests on your backend.
+
+### Steps to Authenticate Requests:
+
+1. **Retrieve the JSON Web Key Set ([JWKS](https://datatracker.ietf.org/doc/html/rfc7517)):** The JWKS has the public keys to verify the JWT. Fetch it from the Hanko API's `.well-known/jwks.json` endpoint.
+
+2. **Verify the JWT:** Use the JWKS to verify the JWT.
+
+### Deno-based Backend Example
+
+In the following example, we demonstrate how to implement a custom middleware in a [Fresh](https://fresh.deno.dev/) app using [jose](https://github.com/panva/jose/) packages.
+
+```javascript
+import { MiddlewareHandlerContext } from "$fresh/server.ts";
+import { getCookies } from "$std/http/cookie.ts";
+import * as jose from "https://deno.land/x/jose@v4.14.4/index.ts";
+
+interface AuthState {
+  auth: jose.JWTPayload;
+}
+
+const JWKS_ENDPOINT = `${Deno.env.get("HANKO_API_URL")}/.well-known/jwks.json`;
+
+const JWKS = jose.createRemoteJWKSet(new URL(JWKS_ENDPOINT), {
+  cooldownDuration: 120000,
+});
+
+function getToken(req: Request): string | undefined {
+  const cookies = getCookies(req.headers);
+  const authorization = req.headers.get("authorization");
+
+  if (authorization && authorization.split(" ")[0] === "Bearer")
+    return authorization.split(" ")[1];
+  else if (cookies.hanko) return cookies.hanko;
+}
+
+export async function handler(
+  req: Request,
+  ctx: MiddlewareHandlerContext<AuthState>
+) {
+  const jwt = getToken(req);
+
+  if (jwt) {
+    try {
+      const { payload } = await jose.jwtVerify(jwt, JWKS);
+      ctx.state.auth = payload;
+
+      return await ctx.next();
+    } catch (error) {
+      return new Response("Invalid token", { status: 403 });
+    }
+  }
+
+  return new Response("Missing token", { status: 403 });
+}
+```

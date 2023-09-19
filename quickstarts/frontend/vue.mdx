@@ -1,0 +1,240 @@
+# Integrate Hanko with Vue
+
+Learn how to quickly add authentication and user profile in your Vue app using Hanko.
+
+## Install `@teamhanko/hanko-elements`
+
+Once you've initialized your Vue app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth`, `hanko-profile` and `hanko-events`.
+
+<CodeGroup>
+```bash npm
+npm install @teamhanko/hanko-elements
+```
+
+```bash pnpm
+pnpm add @teamhanko/hanko-elements
+```
+
+```bash yarn
+yarn add @teamhanko/hanko-elements
+```
+</CodeGroup>
+
+## Add the Hanko API URL
+
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+
+```sh .env
+HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+```
+
+<Note>
+  If you are self-hosting you need to provide the URL of your running Hanko
+  backend.
+</Note>
+
+## Configure component resolution
+
+Vue needs to know which elements to treat as custom elements, otherwise it will issue a warning regarding component
+resolution. To do so, provide a predicate function that determines which elements are to be considered custom elements
+to [`compilerOptions.isCustomElement`](https://vuejs.org/guide/extras/web-components.html#using-custom-elements-in-vue)
+in your configuration:
+
+<Tabs>
+    <Tab title="Vite Config">
+    ```js {7-9} filename="vite.config.js" showLineNumbers
+    import vue from '@vitejs/plugin-vue'
+
+    export default {
+    plugins: [
+        vue({
+        template: {
+            compilerOptions: {
+              isCustomElement: (tag) => tag.startsWith("hanko-")
+            }
+        }
+        })
+     ]
+    }
+    ```
+    </Tab>
+
+    <Tab title="Vue CLI Config">
+    ```js {8-10} filename="vue.config.js" showLineNumbers
+    module.exports = {
+    chainWebpack: config => {
+        config.module
+        .rule('vue')
+        .use('vue-loader')
+        .tap(options => ({
+            ...options,
+            compilerOptions: {
+              isCustomElement: (tag) => tag.startsWith("hanko-")
+            }
+        }))
+     }
+    }
+    ```
+    </Tab>
+
+</Tabs>
+
+## Add `<hanko-auth>` component
+
+The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the register function from `@teamhanko/hanko-elements` into your Vue component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Then use the element in your component template.
+
+```js HankoAuth.vue
+<script setup>
+import { onMounted } from "vue";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+onMounted(() => {
+  register(hankoApi)
+    .catch((error) => {
+      // handle error
+    });
+});
+</script>
+
+<template>
+  <hanko-auth />
+</template>
+```
+
+## Add `<hanko-events>` component
+
+The `<hanko-events>` component provides a convenient way to subscribe to specific
+[events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events) without displaying any UI elements.
+The other hanko-elements will also dispatch these events.
+
+To utilize this functionality in your Vue application, you can leverage Vue's event binding mechanism and define
+callback functions within your component. This allows you to respond to the dispatched events accordingly.
+
+```js HankoAuth.vue
+<script setup>
+import { useRouter } from "vue-router";
+import { onMounted } from "vue";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+const router = useRouter();
+
+const redirectAfterLogin = () => {
+  // successfully logged in, redirect to a page in your application
+  router.push({ path: "..." });
+};
+
+onMounted(() => {
+  register(hankoApi))
+    .catch((error) => {
+      // handle error
+    });
+});
+</script>
+
+<template>
+  <hanko-events @onAuthFlowCompleted="redirectAfterLogin" />
+  <hanko-auth />
+</template>
+```
+
+<br/>
+Alternatively, you can subscribe directly on the `<hanko-auth>` element:
+
+```js
+<hanko-auth @onAuthFlowCompleted="redirectAfterLogin" />
+```
+
+By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
+<br />
+<img
+  src="/images/fullstack-guide/next-one.png"
+  alt="sign up"
+  width={500}
+/>
+
+## Add `<hanko-profile>` component
+
+The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+
+```js HankoProfile.vue
+<script setup>
+import { onMounted } from "vue";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+onMounted(() => {
+  register(hankoApi)
+    .catch((error) => {
+      // handle error
+    });
+});
+</script>
+
+<template>
+  <hanko-profile />
+</template>
+
+```
+
+It should look like this 👇
+<br />
+<img
+  src="/images/fullstack-guide/next-two.png"
+  alt="profile page"
+  width={500}
+/>
+
+
+## Implement logout functionality
+
+Use the Hanko client provided by `@teamhanko/hanko-elements` to log out users. On logout a custom event is
+dispatched that you can subscribe to:
+
+```js HankoProfile.vue
+<script setup>
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { register, Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+const router = useRouter();
+const hanko = new Hanko(hankoApi);
+
+const logout = () => {
+  hanko.user.logout().catch((error) => {
+    // handle error
+  })
+}
+
+const redirectAfterLogout = () => {
+  router.push({ path: "..." });
+}
+
+onMounted(() => {
+  register(hankoApi)
+    .catch((error) => {
+      // handle error
+    });
+});
+</script>
+
+<template>
+  <button @click="logout">Logout</button>
+  <hanko-profile @onUserLoggedOut="redirectAfterLogout" />
+</template>
+```
+
+## Customize component styles
+
+You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](https://github.com/teamhanko/hanko/tree/main/frontend/elements#ui-customization).
+
+## Authenticate backend requests
+
+To authenticate requests on your backend with Hanko, refer to our [backend guide](/quickstarts/backend/).
+
