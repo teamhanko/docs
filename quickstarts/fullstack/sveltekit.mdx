@@ -1,8 +1,10 @@
+---
+sidebarTitle: "SvelteKit"
+title: Integrate Hanko with SvelteKit
+description: Learn how to quickly add authentication and user profile in your SvelteKit app using Hanko.
+---
 
 
-# Integrate Hanko with Sveltekit
-
-Learn how to quickly add authentication and user profile in your Sveltekit app using Hanko.
 
 ## Install `@teamhanko/hanko-elements`
 
@@ -70,7 +72,7 @@ export const ssr = false;
 
 **But why?**
 
-The register function tries to set up the `<hanko-auth>` element for the browser. But, Sveltekit pre-renders pages before displaying them. Since it doesn't have access to the browser's window object during this pre-render phase, the registration of the custom element would fail.
+The register function tries to set up the `<hanko-auth>` element for the browser. But, SvelteKit pre-renders pages before displaying them. Since it doesn't have access to the browser's window object during this pre-render phase, the registration of the custom element would fail.
 </Info>
 
 By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
@@ -183,7 +185,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 <Card
   title="SvelteKit example"
-  href="https://github.com/Ashutosh-Bhadauriya/hanko-nextjs-starter"
+  href="https://github.com/teamhanko/hanko-sveltekit-starter"
   icon={
     <svg
       xmlns="http://www.w3.org/2000/svg"
