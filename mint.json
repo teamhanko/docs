@@ -6,26 +6,31 @@
   },
   "favicon": "/favicon.png",
   "colors": {
-    "primary": "#9563FF",
-    "light": "#AE87FF",
+    "primary": "#Ff6363",
+    "light": "#Ff8787",
     "dark": "#0D001D",
     "background": {
-      "dark": "#090014"
+      "dark": "#000000"
     },
     "anchors": {
       "from": "#FF7F57",
-      "to": "#9563FF"
+      "to": "#Ff6363"
     }
   },
   "topbarLinks": [
     {
-      "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "name": "Community",
+      "url": "https://github.com/teamhanko/hanko.io"
     }
   ],
   "topbarCtaButton": {
     "name": "Start for free",
     "url": "https://cloud.hanko.io"
+  },
+  "feedback": {
+    "suggestEdit": true,
+    "raiseIssue": true,
+    "thumbsRating": true
   },
   "tabs": [
     {
@@ -34,7 +39,7 @@
     },
     {
       "name": "Frontend SDK",
-      "url": "frontend-sdk"
+      "url": "https://docs.hanko.io/jsdoc/hanko-frontend-sdk"
     }
   ],
   "api": {
@@ -248,8 +253,8 @@
     }
   ],
   "footerSocials": {
-    "twitter": "https://twitter.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "twitter": "https://twitter.com/hanko_io",
+    "github": "https://github.com/teamhanko",
+    "linkedin": "https://www.linkedin.com/company/teamhanko/"
   }
 }
