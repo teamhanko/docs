@@ -20,7 +20,7 @@
   "topbarLinks": [
     {
       "name": "Community",
-      "url": "https://github.com/teamhanko/hanko.io"
+      "url": "https://discord.gg/tAG6RrRqJD"
     }
   ],
   "topbarCtaButton": {
@@ -43,7 +43,7 @@
     }
   ],
   "api": {
-    "baseUrl": "http://localhost:8000/",
+    "baseUrl": "http://localhost:8000",
     "playground": {
       "mode": "hide"
     }
@@ -93,7 +93,6 @@
     {
       "group": "Guides",
       "pages": [
-        { "group": "Users", "pages": ["guides/users/lorem-ipsum"] },
         {
           "group": "Authentication Methods",
           "pages": [
@@ -114,7 +113,6 @@
         {
           "group": "Hanko Elements",
           "pages": [
-            "guides/hanko-elements/introduction",
             "guides/hanko-elements/auth-component",
             "guides/hanko-elements/profile-component"
           ]
@@ -129,9 +127,7 @@
     {
       "group": "Community & Support",
       "pages": [
-        "community-support/get-help",
-        "community-support/troubleshoot",
-        "community-support/faq"
+        "community-support/get-help"
       ]
     },
     {
