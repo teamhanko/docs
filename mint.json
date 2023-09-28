@@ -58,7 +58,7 @@
           "group": "Quickstarts",
           "pages": [
             {
-              "group": "Fullstack",
+              "group": "Full Stack",
               "pages": [
                 "quickstarts/fullstack/next",
                 "quickstarts/fullstack/nuxt",
@@ -114,10 +114,10 @@
           "group": "Hanko Elements",
           "pages": [
             "guides/hanko-elements/auth-component",
-            "guides/hanko-elements/profile-component"
+            "guides/hanko-elements/profile-component",
+            "guides/hanko-elements/customize-appearance"
           ]
-        },
-        "guides/customize-appearance"
+        }
       ]
     },
     {
@@ -126,9 +126,7 @@
     },
     {
       "group": "Community & Support",
-      "pages": [
-        "community-support/get-help"
-      ]
+      "pages": ["community-support/get-help"]
     },
     {
       "group": "API Documentation",

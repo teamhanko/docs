@@ -6,7 +6,7 @@ sidebarTitle: GitHub
 <Steps>
 <Step title="Obtain GitHub OAuth Credentials">
 
-1.  Let's get the redirect url first from [Hanko console](https://cloud.hanko.io/), as you'll need it in a moment. To do so, sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
+- Let's get the redirect url first from [Hanko console](https://cloud.hanko.io/), as you'll need it in a moment. To do so, sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
   
     <img
       src="/images/oauth-providers/hanko-callback-url.png"
@@ -14,8 +14,8 @@ sidebarTitle: GitHub
       width={500}
     />
 
-2.  Navigate to GitHub and click on your profile photo at the top right corner.
-3.  Select 'Settings' at the bottom of the sidebar menu.
+- Navigate to GitHub and click on your profile photo at the top right corner.
+- Select 'Settings' at the bottom of the sidebar menu.
  
     <img
       src="/images/oauth-providers/github-settings.png"
@@ -24,7 +24,7 @@ sidebarTitle: GitHub
     />
 
 
-4.  Scroll down and select 'Developer Settings' in the left sidebar.
+- Scroll down and select 'Developer Settings' in the left sidebar.
 
         <img
           src="/images/oauth-providers/developer-settings.png"
@@ -32,7 +32,7 @@ sidebarTitle: GitHub
           width={500}
          />
 
-5.  Choose 'OAuth Apps' followed by 'New OAuth App'. This action opens the registration form. But before it, you need to retrieve the 'Redirect URL' from the Hanko cloud.
+- Choose 'OAuth Apps' followed by 'New OAuth App'. This action opens the registration form. But before it, you need to retrieve the 'Redirect URL' from the Hanko cloud.
 
     <img
       src="/images/oauth-providers/github-new-auth.png"
@@ -48,7 +48,7 @@ sidebarTitle: GitHub
       or have a self-hosted Hanko API.
     </Note>
 
-6.  Get back to OAuth app registration form, fill in the required details, and paste the copied redirect URL into the 'Application Callback URL' field. Finish by clicking 'Register application'.
+- Get back to OAuth app registration form, fill in the required details, and paste the copied redirect URL into the 'Application Callback URL' field. Finish by clicking 'Register application'.
 
     <img
       src="/images/oauth-providers/github-oauth-form.png"
@@ -56,7 +56,7 @@ sidebarTitle: GitHub
       width={500}
     />
 
-7.  You'll now see an overview of OAuth app, note down the provided 'Client ID'. Also, generate a 'Client Secret' by selecting 'Generate a new client secret'. Copy these, as you'll need them in next step.
+- You'll now see an overview of OAuth app, note down the provided 'Client ID'. Also, generate a 'Client Secret' by selecting 'Generate a new client secret'. Copy these, as you'll need them in next step.
     <img
       src="/images/oauth-providers/github-client-id.png"
       alt="GitHub OAuth Registration Form"
@@ -65,7 +65,7 @@ sidebarTitle: GitHub
 </Step>
 <Step title="Configure GitHub Credentials with Hanko">
 
-1.  Head back to Identity providers in Hanko and under 'Identity provider settings' configure the following:
+- Head back to Identity providers in Hanko and under 'Identity provider settings' configure the following:
     <img
       src="/images/oauth-providers/hanko-callback-url.png"
       alt="Hanko Callback URL"
@@ -82,8 +82,8 @@ sidebarTitle: GitHub
                -  Use ** to act as a super-wildcard/match-all.
               </Note>
 
-2.  In the 'Providers' section, select GitHub and enable its toggle switch.
-3.  Input the earlier noted 'Client ID' and 'Client Secret', then click 'Save'.
+- In the 'Providers' section, select GitHub and enable its toggle switch.
+- Input the earlier noted 'Client ID' and 'Client Secret', then click 'Save'.
 
     <img
       src="/images/oauth-providers/hanko-github-pro.png"
@@ -99,7 +99,7 @@ Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-element
 <Tabs>
 
 <Tab title='Hanko Elements'>
-1. Integrate the `<hanko-auth>` component from `hanko-elements` based on our frontend guides. If everthing is good, the component will display a button for signing in with 'Github' in login view.
+- Integrate the `<hanko-auth>` component from `hanko-elements` based on our frontend guides. If everthing is good, the component will display a button for signing in with 'Github' in login view.
 
     <Note>
     Make sure to configure the page the web component is embedded on as your error redirect URL as well as an allowed redirect URL.
@@ -110,8 +110,8 @@ Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-element
 </Tab>
 
 <Tab title="Hanko Frontend SDK">
-1. For a custom UI, initialize third party sign-in using `@teamhanko/hanko-frontend-sdk`.
-2. Create Hanko client instance and call `thirdParty.auth` with github as the provider.
+- For a custom UI, initialize third party sign-in using `@teamhanko/hanko-frontend-sdk`.
+- Create Hanko client instance and call `thirdParty.auth` with github as the provider.
 
         ```js
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";
@@ -127,7 +127,7 @@ Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-element
         }
         ```
 
-3.  On successful authentication, the API redirects you to the given redirect URL. The URL query includes a one time token that must be exchanged for a JWT. Use the `token.validate` method on your client to validate the token:
+- On successful authentication, the API redirects you to the given redirect URL. The URL query includes a one time token that must be exchanged for a JWT. Use the `token.validate` method on your client to validate the token:
 
         ```js
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";

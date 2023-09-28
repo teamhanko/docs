@@ -24,7 +24,7 @@ yarn add @teamhanko/hanko-elements
 
 ## Add the Hanko API URL
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your `.env` file.
 
 ```sh .env.local
 NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
@@ -137,46 +137,45 @@ The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific
 <Tab title="App directory">
 ```jsx components/HankoAuth.tsx
 "use client";
-
+ 
 import { useEffect, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { register, Hanko } from "@teamhanko/hanko-elements";
-
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
-
+ 
+const hankoApi = process.env.HANKO_API_URL;
+ 
 export default function HankoAuth() {
   const router = useRouter();
-
-const [hanko, setHanko] = useState<Hanko>();
-
-useEffect(() => {
-import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-setHanko(new Hanko(hankoApi))
-);
-}, []);
-
-const redirectAfterLogin = useCallback(() => {
-// successfully logged in, redirect to a page in your application
-router.replace("/dashboard");
-}, [router]);
-
-useEffect(
-() =>
-hanko?.onAuthFlowCompleted(() => {
-redirectAfterLogin();
-}),
-[hanko, redirectAfterLogin]
-);
-
-useEffect(() => {
-register(hankoApi).catch((error) => {
-// handle error
-});
-}, []);
-
-return <hanko-auth />;
+ 
+  const [hanko, setHanko] = useState<Hanko>();
+ 
+  useEffect(() => {
+    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+      setHanko(new Hanko(hankoApi))
+    );
+  }, []);
+ 
+  const redirectAfterLogin = useCallback(() => {
+    // successfully logged in, redirect to a page in your application
+    router.replace("/dashboard");
+  }, [router]);
+ 
+  useEffect(
+    () =>
+      hanko?.onAuthFlowCompleted(() => {
+        redirectAfterLogin();
+      }),
+    [hanko, redirectAfterLogin]
+  );
+ 
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  }, []);
+ 
+  return <hanko-auth />;
 }
-
 ```
 </Tab>
 <Tab title="Pages directory">
@@ -292,35 +291,35 @@ You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we
 <Tab title="App directory">
 ```jsx components/LogoutButton.tsx
 "use client";
-
+ 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Hanko } from "@teamhanko/hanko-elements";
-
+ 
 const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
-
+ 
 export function LogoutBtn() {
   const router = useRouter();
   const [hanko, setHanko] = useState<Hanko>();
-
-useEffect(() => {
-import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-setHanko(new Hanko(hankoApi ?? ""))
-);
-}, []);
-
-const logout = async () => {
-try {
-await hanko?.user.logout();
-router.push("/login");
-router.refresh();
-return;
-} catch (error) {
-console.error("Error during logout:", error);
-}
-};
-
-return <button onClick={logout}>Logout</button>;
+ 
+  useEffect(() => {
+    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+      setHanko(new Hanko(hankoApi ?? ""))
+    );
+  }, []);
+ 
+  const logout = async () => {
+    try {
+      await hanko?.user.logout();
+      router.push("/login");
+      router.refresh();
+      return;
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+ 
+  return <button onClick={logout}>Logout</button>;
 }
 ```
 </Tab>

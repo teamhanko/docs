@@ -7,7 +7,7 @@ sidebarTitle: Google
 
 <Step title="Obtain Google OAuth Credentials">
 
-1.  Let's get the redirect url first from [Hanko console](https://cloud.hanko.io/), as you'll need it in a moment. To do so, sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
+- Let's get the redirect url first from [Hanko console](https://cloud.hanko.io/), as you'll need it in a moment. To do so, sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
 
     <img
       src="/images/oauth-providers/hanko-callback-url.png"
@@ -15,7 +15,7 @@ sidebarTitle: Google
       width={500}
     />
 
-2.  Navigate to [Google cloud console](https://console.cloud.google.com/) and click on 'Select a project' at the top left.
+- Navigate to [Google cloud console](https://console.cloud.google.com/) and click on 'Select a project' at the top left.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -24,7 +24,7 @@ sidebarTitle: Google
       width={500}
     />
 
-3.  Select 'New Project' from the top right of modal.
+- Select 'New Project' from the top right of modal.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -33,7 +33,7 @@ sidebarTitle: Google
       width={500}
     />
 
-4.  Provide a 'Project name', if you want the project to be part of an organization, assign it using the 'Location' input and hit 'Create'
+- Provide a 'Project name', if you want the project to be part of an organization, assign it using the 'Location' input and hit 'Create'
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -42,7 +42,7 @@ sidebarTitle: Google
       width={500}
     />
 
-5.  Now type 'OAuth' in the searchbar and choose 'OAuth consent screen' from results.
+- Now type 'OAuth' in the searchbar and choose 'OAuth consent screen' from results.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -51,7 +51,7 @@ sidebarTitle: Google
       width={500}
     />
 
-6.  Select 'User Type' depending on your requirements and click 'Create'
+- Select 'User Type' depending on your requirements and click 'Create'
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -60,7 +60,7 @@ sidebarTitle: Google
       width={500}
     />
 
-7.  Next provide 'App Information', 'App logo (optional)', and 'App Domain'. You do not need to add an Authorised domain at this point. An entry will be added automatically once you set up your credentials. Scroll down and click 'Save and continue'.
+- Next provide 'App Information', 'App logo (optional)', and 'App Domain'. You do not need to add an Authorised domain at this point. An entry will be added automatically once you set up your credentials. Scroll down and click 'Save and continue'.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -69,7 +69,7 @@ sidebarTitle: Google
       width={500}
     />
 
-8.  On the 'Scopes' view, click 'Add or remove scopes' and select the `./auth/userinfo.email` scope. Click 'Update', then 'Save and continue'.
+- On the 'Scopes' view, click 'Add or remove scopes' and select the `./auth/userinfo.email` scope. Click 'Update', then 'Save and continue'.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -78,7 +78,7 @@ sidebarTitle: Google
       width={600}
     />
 
-9.  (Optional, only available for an External project user type): On the 'Test users' view, click 'Add users' to set up test users as long as your project is unpublished. Click 'Save and continue'. Now, review your data in the 'Summary view', then click 'Back to dashboard'.
+- (Optional, only available for an External project user type): On the 'Test users' view, click 'Add users' to set up test users as long as your project is unpublished. Click 'Save and continue'. Now, review your data in the 'Summary view', then click 'Back to dashboard'.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -87,7 +87,7 @@ sidebarTitle: Google
       width={600}
     />
 
-10. Click 'Credentials' in the right sidebar, then click 'Create credentials' and select 'OAuth client ID'
+- Click 'Credentials' in the right sidebar, then click 'Create credentials' and select 'OAuth client ID'
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -96,7 +96,7 @@ sidebarTitle: Google
       width={500}
     />
 
-11. On the 'Create OAuth client' ID view, select 'Web application' as application type.
+- On the 'Create OAuth client' ID view, select 'Web application' as application type.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -105,7 +105,7 @@ sidebarTitle: Google
       width={500}
     />
 
-12. Now add your 'App name' and under 'Authorized redirect URIs' click Add URI and add your the Hanko redirect URL that you obtained in the start. Then click 'Create'.
+- Now add your 'App name' and under 'Authorized redirect URIs' click Add URI and add your the Hanko redirect URL that you obtained in the start. Then click 'Create'.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -114,7 +114,7 @@ sidebarTitle: Google
       width={500}
     />
 
-13. The Google console will display information about the OAuth client, copy and save both 'Client ID' and the 'Client secret', you will need these in the next step.
+- The Google console will display information about the OAuth client, copy and save both 'Client ID' and the 'Client secret', you will need these in the next step.
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/twelve.png"
@@ -124,7 +124,7 @@ sidebarTitle: Google
 </Step>
 <Step title="Configure Google OAuth Credentials with Hanko">
 
-1.  Head back to Identity providers in Hanko and under 'Identity provider settings' configure the following:
+- Head back to Identity providers in Hanko and under 'Identity provider settings' configure the following:
 
     <img
       src="/images/oauth-providers/hanko-callback-url.png"
@@ -142,8 +142,8 @@ sidebarTitle: Google
                -  Use ** to act as a super-wildcard/match-all.
               </Note>
 
-2.  In the 'Providers' section, select Google and enable its toggle switch.
-3.  Input the earlier noted 'Client ID' and 'Client Secret', then click 'Save'.
+- In the 'Providers' section, select Google and enable its toggle switch.
+- Input the earlier noted 'Client ID' and 'Client Secret', then click 'Save'.
 
     <img
       src="/images/oauth-providers/google/thirteen.png"
@@ -159,7 +159,7 @@ Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-element
 <Tabs>
 
 <Tab title="Hanko Elements">
-1. Integrate the `<hanko-auth>` component from `hanko-elements` based on our frontend guides. If everthing is good, the component will display a button for signing in with 'Github' in login view.
+- Integrate the `<hanko-auth>` component from `hanko-elements` based on our frontend guides. If everthing is good, the component will display a button for signing in with 'Github' in login view.
 
     <Note>
     Make sure to configure the page the web component is embedded on as your error redirect URL as well as an allowed redirect URL.
@@ -170,8 +170,8 @@ Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-element
 </Tab>
 
 <Tab title="Hanko Frontend SDK">
-1. For a custom UI, initialize third party sign-in using `@teamhanko/hanko-frontend-sdk`.
-2. Create Hanko client instance and call `thirdParty.auth` with github as the provider.
+- For a custom UI, initialize third party sign-in using `@teamhanko/hanko-frontend-sdk`.
+- Create Hanko client instance and call `thirdParty.auth` with github as the provider.
 
         ```js 
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";
@@ -187,7 +187,7 @@ Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-element
         }
         ```
 
-3.  On successful authentication, the API redirects you to the given redirect URL. The URL query includes a one time token that must be exchanged for a JWT. Use the `token.validate` method on your client to validate the token:
+- On successful authentication, the API redirects you to the given redirect URL. The URL query includes a one time token that must be exchanged for a JWT. Use the `token.validate` method on your client to validate the token:
 
         ```js 
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";

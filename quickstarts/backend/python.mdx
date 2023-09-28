@@ -15,7 +15,7 @@ Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
 
 Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT](https://datatracker.ietf.org/doc/html/rfc7519)). You can use this JWT to authenticate requests on your backend.
 
-### Steps to Authenticate Requests:
+### Steps to Authenticate Requests
 
 1. **Retrieve the JSON Web Key Set ([JWKS](https://datatracker.ietf.org/doc/html/rfc7517)):** The JWKS has the public keys to verify the JWT. Fetch it from the Hanko API's `.well-known/jwks.json` endpoint.
 
@@ -65,9 +65,6 @@ async def auth(request: Request, call_next: Any):
         ssl_context.check_hostname = False
         ssl_context.verify_mode = ssl.CERT_NONE
 
-        jwks_client = jwt.PyJWKClient(
-            HANKO_API_URL + "/.well-known/jwks.json", ssl_context=ssl_context
-        )
         jwks_client = jwt.PyJWKClient(
             HANKO_API_URL + "/.well-known/jwks.json", ssl_context=ssl_context
         )
