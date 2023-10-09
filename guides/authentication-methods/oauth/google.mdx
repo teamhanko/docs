@@ -20,7 +20,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/one.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 
@@ -29,7 +29,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/two.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 
@@ -38,7 +38,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/three.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 
@@ -47,7 +47,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/four.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 
@@ -56,7 +56,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/five.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 
@@ -65,7 +65,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/six.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 
@@ -74,7 +74,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/seven.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={600}
     />
 
@@ -83,7 +83,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/eight.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={600}
     />
 
@@ -92,7 +92,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/nine.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 
@@ -101,7 +101,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/ten.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 
@@ -110,7 +110,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/eleven.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 
@@ -118,7 +118,7 @@ sidebarTitle: Google
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/twelve.png"
-      alt="GitHub settings option"
+      alt="Google settings option"
       width={500}
     />
 </Step>
@@ -159,28 +159,28 @@ Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-element
 <Tabs>
 
 <Tab title="Hanko Elements">
-- Integrate the `<hanko-auth>` component from `hanko-elements` based on our frontend guides. If everthing is good, the component will display a button for signing in with 'Github' in login view.
+- Integrate the `<hanko-auth>` component from `hanko-elements` based on our frontend guides. If everthing is good, the component will display a button for signing in with 'Google' in login view.
 
     <Note>
     Make sure to configure the page the web component is embedded on as your error redirect URL as well as an allowed redirect URL.
     </Note>
 
-    Post successful GitHub authentication, the backend sets a session cookie and errors during authentication are displayed within the component accordingly.
+    Post successful Google authentication, the backend sets a session cookie and errors during authentication are displayed within the component accordingly.
 
 </Tab>
 
 <Tab title="Hanko Frontend SDK">
 - For a custom UI, initialize third party sign-in using `@teamhanko/hanko-frontend-sdk`.
-- Create Hanko client instance and call `thirdParty.auth` with github as the provider.
+- Create Hanko client instance and call `thirdParty.auth` with google as the provider.
 
         ```js 
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";
 
         const hanko = new Hanko("<your_hanko_api_url>");
 
-        async function signInWithGitHub() {
+        async function signInWithGoogle() {
         try {
-            await hanko.thirdParty.auth("github", "<your_redirect_url>");
+            await hanko.thirdParty.auth("google", "<your_redirect_url>");
         } catch (error) {
             // handle error
         }
