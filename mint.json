@@ -39,7 +39,7 @@
     },
     {
       "name": "Frontend SDK",
-      "url": "https://docs.hanko.io/jsdoc/hanko-frontend-sdk"
+      "url": "https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/"
     }
   ],
   "api": {
