@@ -34,6 +34,10 @@
   },
   "tabs": [
     {
+      "name": "Tutorials",
+      "url": "tutorials"
+    },
+    {
       "name": "API Reference",
       "url": "api-reference"
     },
@@ -127,6 +131,10 @@
     {
       "group": "Community & Support",
       "pages": ["community-support/get-help"]
+    },
+    {
+      "group": "Tutorials",
+      "pages": ["tutorials/introduction", "tutorials/nextjs-todo"]
     },
     {
       "group": "API Documentation",
