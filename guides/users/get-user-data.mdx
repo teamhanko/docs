@@ -6,17 +6,17 @@ description: Each project presents unique requirements for user onboarding. In t
 <Info>
 **It's good to remember that the user ID is the immmutable identifier**
 
-<Accordion title="But what is immutable identifier? 🤔">
+<Accordion title="But what is an immutable identifier? 🤔">
     In the context of user data, an "immutable identifier" refers to a piece of information that remains constant and cannot be changed once it's assigned to a user. In this case, the `user id` is the immutable identifier. It's a unique value assigned to each user and it doesn't change even if other user details (like email, username, etc.) are modified.
 </Accordion>
 
 The primary email address can be changed, therefore when handling user registration, the user `id` should be used to
-dermine if it's a known user.
+determine if it's a known user.
 </Info>
 
 ## Getting user data on the Frontend
 
-If you only need the user data for a frontend usage, you can use `Hanko.user.getCurrent()` function from the
+If you only need the user data for a frontend usage, you can use the `Hanko.user.getCurrent()` function from the
 [hanko-frontend-sdk](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk) (it is also re-exported from
 [hanko-elements](https://www.npmjs.com/package/@teamhanko/hanko-elements)):
 
@@ -50,8 +50,8 @@ is only called once for every user authentication.
 ### Getting user ID from the JWT
 
 The Hanko API sends back a cookie upon successful authentication, which is then sent to the RP backend for each subsequent
-request. The cookie contains a JWT, one of the things we can get from this JWT is the user ID, we can use [jose library](https://www.npmjs.com/package/jose)
-to decode the value of such JWT:
+request. The cookie contains a JWT. One of the things we can get from this JWT is the user ID. We can use the [jose](https://www.npmjs.com/package/jose) library
+to decode the value of such a JWT:
 
 <Tabs>
 <Tab title="Nextjs (App directory)">
@@ -75,7 +75,7 @@ export async function userId() {
 
 The [Hanko Admin API](https://docs.hanko.io/api/admin) provides detailed information about the status, user management, metrics and more. In this example we will focus on
 getting the data from a specific user.
-To get a specific user data, call the `/users/{id}` endpoint of the Hanko Admin API, where `id` is the user id previously obtained from the JWT.
+To get data for a specific user, call the `/users/{id}` endpoint of the Hanko Admin API, where `id` is the user id previously obtained from the JWT.
 
 <Info>
 On Hanko Cloud the Hanko Admin API is a paid feature and must be enabled separately.
