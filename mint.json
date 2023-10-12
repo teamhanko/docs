@@ -47,7 +47,6 @@
     }
   ],
   "api": {
-    "baseUrl": "http://localhost:8000",
     "playground": {
       "mode": "hide"
     }
@@ -97,6 +96,12 @@
     {
       "group": "Guides",
       "pages": [
+        {
+          "group": "Users",
+          "pages": [
+            "guides/users/get-user-data"
+          ]
+        },
         {
           "group": "Authentication Methods",
           "pages": [
