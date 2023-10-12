@@ -22,7 +22,7 @@ externalDocs:
   description: More about Hanko
   url: https://github.com/teamhanko/hanko
 servers:
-  - url: "localhost:8001"
+  - url: "http://localhost:8001"
 paths:
   /:
     get:

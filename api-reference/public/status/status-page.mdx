@@ -1,3 +1,89 @@
 ---
 openapi: get /
 ---
+
+<RequestExample>
+```bash cURL
+curl --request GET \
+  --url http://localhost:8000/
+```
+
+```python Python
+import requests
+
+url = "http://localhost:8000/"
+
+response = requests.request("GET", url)
+
+print(response.text)
+```
+
+```js JavaScript
+const options = {method: 'GET'};
+
+fetch('http://localhost:8000/', options)
+  .then(response => response.json())
+  .then(response => console.log(response))
+  .catch(err => console.error(err));
+```
+
+```php PHP
+<?php
+
+$curl = curl_init();
+
+curl_setopt_array($curl, [
+  CURLOPT_PORT => "8000",
+  CURLOPT_URL => "http://localhost:8000/",
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => "",
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 30,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "GET",
+]);
+
+$response = curl_exec($curl);
+$err = curl_error($curl);
+
+curl_close($curl);
+
+if ($err) {
+  echo "cURL Error #:" . $err;
+} else {
+  echo $response;
+}
+```
+
+```go Go
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"io/ioutil"
+)
+
+func main() {
+
+	url := "http://localhost:8000/"
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	res, _ := http.DefaultClient.Do(req)
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	fmt.Println(res)
+	fmt.Println(string(body))
+
+}
+```
+
+```java Java
+HttpResponse<String> response = Unirest.get("http://localhost:8000/")
+  .asString();
+```
+
+</RequestExample> 
