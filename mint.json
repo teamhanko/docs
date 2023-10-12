@@ -97,6 +97,12 @@
       "group": "Guides",
       "pages": [
         {
+          "group": "Users",
+          "pages": [
+            "guides/users/get-user-data"
+          ]
+        },
+        {
           "group": "Authentication Methods",
           "pages": [
             {
