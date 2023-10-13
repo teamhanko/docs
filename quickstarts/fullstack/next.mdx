@@ -346,7 +346,7 @@ export function LogoutBtn() {
     try {
       await hanko?.user.logout();
       router.push("/login");
-      router.refresh();
+      router.reload();
       return;
     } catch (error) {
       console.error("Error during logout:", error);
