@@ -29,7 +29,7 @@ yarn add @teamhanko/hanko-elements
 Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
 
 ```sh .env
-HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+REACT_APP_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 ```
 
 <Note>
@@ -45,7 +45,7 @@ The `<hanko-auth>` web component adds a login interface to your app. Begin by im
 import { useEffect } from "react";
 import { register } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.HANKO_API_URL;
+const hankoApi = process.env.REACT_APP_HANKO_API_URL;
 
 export default function HankoAuth() {
   useEffect(() => {
@@ -67,7 +67,7 @@ import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { register, Hanko } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.HANKO_API_URL;
+const hankoApi = process.env.REACT_APP_HANKO_API_URL;
 
 export default function HankoAuth() {
   const navigate = useNavigate();
@@ -111,7 +111,7 @@ The `<hanko-profile>` component provides an interface, where users can manage th
 import { useEffect } from "react";
 import { register } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.HANKO_API_URL;
+const hankoApi = process.env.REACT_APP_HANKO_API_URL;
 
 export default function HankoProfile() {
   useEffect(() => {
@@ -141,7 +141,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Hanko } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.HANKO_API_URL;
+const hankoApi = process.env.REACT_APP_HANKO_API_URL;
 
 function LogoutBtn() {
   const navigate = useNavigate();
