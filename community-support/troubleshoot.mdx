@@ -1,4 +1,73 @@
 ---
 title: Troubleshoot
-description: A guide to help you with common issues faced when working with Hanko
+description: A guide to help you with common issues faced when working with Hanko Cloud
 ---
+
+<AccordionGroup>
+  <Accordion title="CORS error">
+
+Console
+
+<Frame>
+  <img src="/images/troubleshoot/cors.png" style={{ borderRadius: "0.5rem" }} />
+</Frame>
+
+Hanko Auth Component
+
+<Frame>
+  <img src="/images/troubleshoot/technical-error.png" style={{ borderRadius: "0.5rem" }} />
+</Frame>
+    CORS errors usually occur when the application URL hasn't been correctly configured in Hanko Cloud. If you're developing your project on `localhost`, you'll need to add a URL like `http://localhost:3000`. For production, you'll need to add the production URL. Please follow this [guide](/setup-hanko-cloud) for a seamless setup of Hanko Cloud.
+      Hanko Auth Component:
+ 
+  </Accordion>
+
+<Accordion title="ReferenceError: CustomEvent is not defined in Nextjs 13 (App directory)">
+Console
+  <Frame>
+    <img
+      src="/images/troubleshoot/custom-event.png"
+      style={{ borderRadius: "0.5rem" }}
+    />
+  </Frame>
+  This error is very common when integrating Hanko with Next.js 13 (App directory). While we're still working on a permanent fix, a temporary workaround is to add `force-dynamic` [Route Segment Config](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config) to the page.
+
+```js
+// layout.tsx | page.tsx | route.ts
+export const dynamic = "force-dynamic";
+```
+
+</Accordion>
+
+  <Accordion title="404 (Not Found)">
+  Console
+  <Frame>
+    <img src="/images/troubleshoot/404-error.png" style={{ borderRadius: "0.5rem" }} />
+  </Frame>
+
+  Hanko Auth Component:
+  <Frame>
+    <img src="/images/troubleshoot/technical-error.png" style={{ borderRadius: "0.5rem" }} />
+  </Frame>
+    This error typically arises when the `API URL` has been incorrectly configured. Depending on your framework, you may need to prefix your URLs with PUBLIC, NEXT_PUBLIC, or another specific prefix. This prefixing ensures that these environment variables are exposed to the browser and can be accessed by your frontend.
+   
+   Here are some of the examples 
+
+    ```sh env
+    In Next.js
+    NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+
+    In Nuxt
+    NUXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+    
+    In SvelteKit
+    PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+    
+    In React
+    REACT_APP_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+  ```
+  </Accordion>
+  <Accordion title="My issue is not listed here">
+   Feel free to open a [GitHub Issue](https://github.com/teamhanko/hanko/issues) or join our [Discord Community](https://discord.gg/tAG6RrRqJD). We're here to help! 
+  </Accordion>
+</AccordionGroup>

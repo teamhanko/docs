@@ -135,7 +135,7 @@
     },
     {
       "group": "Community & Support",
-      "pages": ["community-support/get-help"]
+      "pages": ["community-support/get-help", "community-support/troubleshoot"]
     },
     {
       "group": "Tutorials",
