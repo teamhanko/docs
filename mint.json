@@ -39,7 +39,7 @@
     },
     {
       "name": "API Reference",
-      "url": "api-reference"
+      "url": "api"
     },
     {
       "name": "Frontend SDK",
@@ -143,79 +143,79 @@
     },
     {
       "group": "API Documentation",
-      "pages": ["api-reference/introduction"]
+      "pages": ["api/introduction"]
     },
     {
       "group": "Public",
       "pages": [
         {
           "group": "Status",
-          "pages": ["api-reference/public/status/status-page"]
+          "pages": ["api/public/status/status-page"]
         },
         {
           "group": "Passcode",
           "pages": [
-            "api-reference/public/passcode/initialize-passcode-login",
-            "api-reference/public/passcode/finalize-passcode-login"
+            "api/public/passcode/initialize-passcode-login",
+            "api/public/passcode/finalize-passcode-login"
           ]
         },
         {
           "group": "Password",
           "pages": [
-            "api-reference/public/password/do-password-login",
-            "api-reference/public/password/createset-a-password"
+            "api/public/password/do-password-login",
+            "api/public/password/createset-a-password"
           ]
         },
         {
           "group": "WebAuthn",
           "pages": [
-            "api-reference/public/webauthn/initialize-webauthn-login",
-            "api-reference/public/webauthn/finalize-webauthn-login",
-            "api-reference/public/webauthn/initialize-webauthn-registration",
-            "api-reference/public/webauthn/finalize-webauthn-registration",
-            "api-reference/public/webauthn/get-a-list-of-webauthn-credentials",
-            "api-reference/public/webauthn/deletes-a-webauthn-credential",
-            "api-reference/public/webauthn/updates-a-webauthn-credential"
+            "api/public/webauthn/initialize-webauthn-login",
+            "api/public/webauthn/finalize-webauthn-login",
+            "api/public/webauthn/initialize-webauthn-registration",
+            "api/public/webauthn/finalize-webauthn-registration",
+            "api/public/webauthn/get-a-list-of-webauthn-credentials",
+            "api/public/webauthn/deletes-a-webauthn-credential",
+            "api/public/webauthn/updates-a-webauthn-credential"
           ]
         },
         {
           "group": ".well-known",
           "pages": [
-            "api-reference/public/well-known/get-json-web-key-set",
-            "api-reference/public/well-known/get-public-hanko-configuration"
+            "api/public/well-known/get-json-web-key-set",
+            "api/public/well-known/get-public-hanko-configuration"
           ]
         },
         {
           "group": "Third Party",
           "pages": [
-            "api-reference/public/third-party/initialize-third-party-login",
-            "api-reference/public/third-party/third-party-provider-callback"
+            "api/public/third-party/initialize-third-party-login",
+            "api/public/third-party/third-party-provider-callback"
           ]
         },
         {
           "group": "Token",
           "pages": [
-            "api-reference/public/token/exchange-one-time-token-for-session"
+            "api/public/token/exchange-one-time-token-for-session"
           ]
         },
         {
           "group": "User Management",
           "pages": [
-            "api-reference/public/user-management/get-user-details-by-email",
-            "api-reference/public/user-management/deletes-the-current-user",
-            "api-reference/public/user-management/get-the-current-user-id",
-            "api-reference/public/user-management/log-out-the-current-user",
-            "api-reference/public/user-management/create-a-user",
-            "api-reference/public/user-management/get-a-user-by-id"
+            "api/public/user-management/get-user-details-by-email",
+            "api/public/user-management/deletes-the-current-user",
+            "api/public/user-management/get-the-current-user-id",
+            "api/public/user-management/log-out-the-current-user",
+            "api/public/user-management/create-a-user",
+            "api/public/user-management/get-a-user-by-id"
           ]
         },
         {
           "group": "Email Management",
           "pages": [
-            "api-reference/public/email-management/get-a-list-of-emails-of-the-current-user",
-            "api-reference/public/email-management/add-a-new-email-address-to-the-current-user",
-            "api-reference/public/email-management/marks-the-email-address-as-primary-email",
-            "api-reference/public/email-management/delete-an-email-address"
+            "api/public/email-management/get-a-list-of-emails-of-the-current-user",
+            "api/public/email-management/add-a-new-email-address-to-the-current-user",
+            "api/public/email-management/marks-the-email-address-as-primary-email",
+            "api/public/email-management/delete-an-email-address"
           ]
         }
       ]
@@ -225,24 +225,24 @@
       "pages": [
         {
           "group": "Status",
-          "pages": ["api-reference/admin/status/status-page"]
+          "pages": ["api/admin/status/status-page"]
         },
         {
           "group": "User Management",
           "pages": [
-            "api-reference/admin/user-management/get-a-list-of-users",
-            "api-reference/admin/user-management/create-a-new-user",
-            "api-reference/admin/user-management/get-a-user-by-id",
-            "api-reference/admin/user-management/delete-a-user-by-id"
+            "api/admin/user-management/get-a-list-of-users",
+            "api/admin/user-management/create-a-new-user",
+            "api/admin/user-management/get-a-user-by-id",
+            "api/admin/user-management/delete-a-user-by-id"
           ]
         },
         {
           "group": "Audit Logs",
-          "pages": ["api-reference/admin/audit-logs/get-a-list-of-audit-logs"]
+          "pages": ["api/admin/audit-logs/get-a-list-of-audit-logs"]
         },
         {
           "group": "Metrics",
-          "pages": ["api-reference/admin/metrics/get-prometheus-metrics"]
+          "pages": ["api/admin/metrics/get-prometheus-metrics"]
         }
       ]
     }
