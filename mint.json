@@ -122,9 +122,12 @@
         {
           "group": "Hanko Elements",
           "pages": [
+            "guides/hanko-elements/introduction",
             "guides/hanko-elements/auth-component",
             "guides/hanko-elements/profile-component",
-            "guides/hanko-elements/customize-appearance"
+            "guides/hanko-elements/events-component",
+            "guides/hanko-elements/customize-appearance",
+            "guides/hanko-elements/translations"
           ]
         }
       ]

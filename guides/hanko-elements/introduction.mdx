@@ -1,0 +1,238 @@
+---
+title: Hanko Elements
+sidebarTitle: Introduction
+description: Hanko Elements provide web components that add a modern login and registration experience for your users.
+---
+
+## Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Web Components"
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-components"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12l3 3l3 -3l-3 -3z"></path>
+        <path d="M15 12l3 3l3 -3l-3 -3z"></path>
+        <path d="M9 6l3 3l3 -3l-3 -3z"></path>
+        <path d="M9 18l3 3l3 -3l-3 -3z"></path>
+      </svg>
+    }
+    href="/quickstarts/fullstack/next"
+  >
+    Pre-built components to give you a fully-functional auth and user management in minutes.
+  </Card>
+  <Card
+    title="Customization"
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-brush"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 21v-4a4 4 0 1 1 4 4h-4"></path>
+        <path d="M21 3a16 16 0 0 0 -12.8 10.2"></path>
+        <path d="M21 3a16 16 0 0 1 -10.2 12.8"></path>
+        <path d="M10.6 9a9 9 0 0 1 4.4 4.4"></path>
+      </svg>
+    }
+    href="/quickstarts/frontend/react"
+  >
+    Fully customize web components to match your style preferences.
+  </Card>
+  <Card
+    title="Internationalization"
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-language"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M4 5h7"></path>
+        <path d="M9 3v2c0 4.418 -2.239 8 -5 8"></path>
+        <path d="M5 9c0 2.144 2.952 3.908 6.7 4"></path>
+        <path d="M12 20l4 -9l4 9"></path>
+        <path d="M19.1 18h-6.2"></path>
+      </svg>
+    }
+    href="/quickstarts/fullstack/nuxt"
+  >
+
+    Supports multiple languages and provides translation options for a global user base.
+
+  </Card>
+  <Card
+    title="Integration Flexibility"
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-brand-nextjs"
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M9 15v-6l7.745 10.65a9 9 0 1 1 2.255 -1.993"></path>
+        <path d="M15 12v-3"></path>
+      </svg>
+    }
+    href="/quickstarts/frontend/svelte"
+  >
+    Offers versatile choices for integration, including CDN or npm.
+  </Card>
+</CardGroup>
+
+## Installation
+
+To use the Hanko Elements module in your project, you can install it via `npm`, `pnpm`, or `yarn`. Alternatively, you can also import the module directly via a CDN.
+
+<CodeGroup>
+```bash npm
+npm install @teamhanko/hanko-elements
+```
+
+```bash pnpm
+pnpm add @teamhanko/hanko-elements
+```
+
+```bash yarn
+yarn add @teamhanko/hanko-elements
+```
+
+</CodeGroup>
+
+## Usage
+
+To integrate Hanko, you need to import and call the `register()` function from the `hanko-elements` module. Once this is done, you can use the web 
+components in your code. 
+
+<Info>
+For a functioning page, at least the `<hanko-auth>` element should be placed, so the users can sign-in, and also, 
+a handler for the "onAuthFlowCompleted" event should be added, to customize the behaviour after the authentication flow has been completed 
+(e.g. redirect to another page). These steps will be described in the below sections.
+</Info>
+
+
+### Importing the module
+
+If you're using a module bundler like webpack or Parcel, you can import the `register()` function from the `@teamhanko/hanko-elements` package in your TypeScript or JavaScript file
+
+```js
+import { register } from "@teamhanko/hanko-elements";
+```
+
+If you prefer using a CDN, you can include a `script` tag with the import statement pointing to the CDN URL where the `hanko-elements` package is hosted.
+
+```html
+<script type="module">
+  import { register } from "https://cdn.jsdelivr.net/npm/@teamhanko/hanko-elements/dist/elements.js";
+</script>
+```
+
+### Registering the Web Components
+
+After importing the `register()` function, call it with your Hanko API URL as an argument to register the Hanko elements with the browser's `CustomElementRegistry`.
+
+```js
+const { hanko } = await register("YOUR_HANKO_API_URL");
+```
+
+You can also pass certain default options.
+
+```js
+const defaultOptions = {
+  shadow: true,                    // Set to false if you do not want the web component to be attached to the shadow DOM.
+  injectStyles: true,              // Set to false if you do not want to inject any default styles.
+  enablePasskeys: true,            // Set to false if you do not want to display passkey-related content.
+  hidePasskeyButtonOnLogin: false, // Hides the button to sign in with a passkey on the login page.
+  translations: null,              // Additional translations can be added here. English is used when the option is not
+                                   // present or set to `null`, whereas setting an empty object `{}` prevents the elements
+                                   // from displaying any translations.
+  translationsLocation: "/i18n",   // The URL or path where the translation files are located.
+  fallbackLanguage: "en",          // The fallback language to be used if a translation is not available.
+  storageKey: "hanko",             // The name of the cookie the session token is stored in and the prefix / name of local storage keys
+};
+
+const { hanko } = await register(
+  "YOUR_HANKO_API_URL",
+  defaultOptions
+);
+```
+
+### Embedding the Web Components
+
+If you have followed the steps mentioned above, you should now be able to place the web components anywhere in the body of your code. A minimal example would look like this
+
+```html
+<hanko-auth id="authComponent"></hanko-auth>
+
+<script type="module">
+  import { register } from "https://cdn.jsdelivr.net/npm/@teamhanko/hanko-elements/dist/elements.js";
+
+  await register("YOUR_HANKO_API_URL");
+
+  const authComponent = document.getElementById("authComponent");
+  authComponent.addEventListener("onAuthFlowCompleted", () => {
+    // redirect to a different page
+  });
+</script>
+```
+
+To know more about individual components, refer to these.
+
+<CardGroup cols={3}>
+  <Card
+    title="Auth Component"
+    href="/quickstarts/fullstack/next"
+  >
+    Handles user login and user registration.
+  </Card>
+  <Card
+    title="Profile Component"
+    href="/quickstarts/frontend/react"
+  >
+    Allows to manage emails, passwords and passkeys.
+  </Card>
+  <Card
+    title="Events Component"
+    href="/quickstarts/frontend/react"
+  >
+     Binds event handler to certain events, without displaying UI elements.
+  </Card>
+</CardGroup>
+
+### Using the Frontend-SDK
+
+The following examples will cover some common use-cases for the `hanko-frontend-sdk` instance returned by the `register()` function, but please take a look into the [frontend-sdk docs](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/) for details.
