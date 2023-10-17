@@ -51,16 +51,6 @@
       "mode": "hide"
     }
   },
-  "redirects": [
-    {
-      "source": "/api/public",
-      "destination": "/api-reference/public"
-    },
-    {
-      "source": "/api/admin",
-      "destination": "/api-reference/admin"
-    }
-  ],
   "navigation": [
     {
       "group": "Getting Started",
@@ -181,7 +171,7 @@
           "pages": [
             "api-reference/public/webauthn/initialize-webauthn-login",
             "api-reference/public/webauthn/finalize-webauthn-login",
-            "api-reference-reference/public/webauthn/initialize-webauthn-registration",
+            "api-reference/public/webauthn/initialize-webauthn-registration",
             "api-reference/public/webauthn/finalize-webauthn-registration",
             "api-reference/public/webauthn/get-a-list-of-webauthn-credentials",
             "api-reference/public/webauthn/deletes-a-webauthn-credential",
