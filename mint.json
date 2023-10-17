@@ -51,6 +51,16 @@
       "mode": "hide"
     }
   },
+  "redirects": [
+    {
+      "source": "/api/public",
+      "destination": "/api-reference/public"
+    },
+    {
+      "source": "/api/admin",
+      "destination": "/api-reference/admin"
+    }
+  ],
   "navigation": [
     {
       "group": "Getting Started",
