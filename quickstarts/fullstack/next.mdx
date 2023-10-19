@@ -92,7 +92,8 @@ return (
 <Tabs>
 <Tab title="App directory">
 ```jsx app/login/page.tsx
-import HankoAuth from "@/components/HankoAuth";
+import dynamic from 'next/dynamic';
+const HankoAuth = dynamic(() => import('@/components/HankoAuth'), { ssr: false })
 
 export default function LoginPage() {
  return (
@@ -104,30 +105,27 @@ export default function LoginPage() {
 
 <Tab title="Pages directory">
 ```jsx pages/login.tsx
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
+const HankoAuth = dynamic(() => import('@/components/HankoAuth'), { ssr: false })
 
 export default function LoginPage() {
-  const HankoAuth = dynamic(
-    () => import('@/components/HankoAuth'),
-    { ssr: false },
-  )
   return (
-    <Suspense fallback={"Loading ..."}>
       <HankoAuth/>
-    </Suspense>
-  )
+  );
 }
 ```
+</Tab>
+</Tabs>
+
 <Info>
-**Why we use dynamic import in Nextjs pages directory?** 🤔
+**Why we use dynamic import in Nextjs?** 🤔
 
 The register function tries to set up the `<hanko-auth>` element for the browser. However, Next.js creates pages before they're shown, and it can't access the browser's tools during this process. This means our setup might not work.
 
 To fix this, we can use Next.js's [dynamic import](<(https://nextjs.org/docs/advanced-features/dynamic-import)>) to load our component only when it's displayed on the client-side and skip the pre-creation step.
 
+You'll need to do this for `<hanko-profile>` component too.
 </Info>
-</Tab>
-</Tabs>
 
 ## Define event callbacks
 
@@ -224,8 +222,10 @@ export default function HankoAuth() {
 
 By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
 
-<br />
-<img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500" />
+<Frame>
+<img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500" style={{ borderRadius: '0.5rem' }}/>
+</Frame>
+
 
 ## Add `<hanko-profile>` component
 
@@ -275,12 +275,15 @@ export default function HankoProfile() {
 
 It should look like this 👇
 
-<br />
+<Frame>
 <img
   src="/images/fullstack-guide/next-two.png"
   alt="profile page"
   width="500"
+  style={{ borderRadius: '0.5rem' }}
 />
+</Frame>
+
 
 ## Implement logout functionality
 
