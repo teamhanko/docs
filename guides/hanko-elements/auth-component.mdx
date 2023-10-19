@@ -1,4 +1,393 @@
 ---
 title: Auth Component
-url: https://www.hanko.io/features/auth-component
+description: A web component that handles user login and user registration.
 ---
+
+## Features
+
+<CardGroup cols={2}>
+  <Card
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-circle-key"
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M14 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+        <path d="M21 12a9 9 0 1 1 -18 0a9 9 0 0 1 18 0z"></path>
+        <path d="M12.5 11.5l-4 4l1.5 1.5"></path>
+        <path d="M12 15l-1.5 -1.5"></path>
+      </svg>
+    }
+  >
+    **Passkeys** make a passwordless login possible.
+  </Card>
+  <Card
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-mail"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"></path>
+        <path d="M3 7l9 6l9 -6"></path>
+      </svg>
+    }
+  >
+    **Passcodes** - perfect for authentication and email verification.
+  </Card>
+  <Card
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-login"
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"></path>
+        <path d="M20 12h-13l3 -3m0 6l-3 -3"></path>
+      </svg>
+    }
+  >
+    **Mobile biometrics** bring passkeys to your native mobile apps.
+  </Card>
+  <Card
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-lock-code"
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M11.5 21h-4.5a2 2 0 0 1 -2 -2v-6a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2"></path>
+        <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"></path>
+        <path d="M8 11v-4a4 4 0 1 1 8 0v4"></path>
+        <path d="M20 21l2 -2l-2 -2"></path>
+        <path d="M17 17l-2 2l2 2"></path>
+      </svg>
+    }
+  >
+    **FIDO Security Keys** for the best possible security.
+  </Card>
+  <Card
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-brand-google"
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M17.788 5.108a9 9 0 1 0 3.212 6.892h-8"></path>
+      </svg>
+    }
+  >
+    **OAuth SSO** to quickly add 3rd-party identity providers to your login.
+  </Card>
+  <Card
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-password"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M12 10v4"></path>
+        <path d="M10 13l4 -2"></path>
+        <path d="M10 11l4 2"></path>
+        <path d="M5 10v4"></path>
+        <path d="M3 13l4 -2"></path>
+        <path d="M3 11l4 2"></path>
+        <path d="M19 10v4"></path>
+        <path d="M17 13l4 -2"></path>
+        <path d="M17 11l4 2"></path>
+      </svg>
+    }
+  >
+    **Passwords** to include users who can't go passwordless yet.
+  </Card>
+</CardGroup>
+
+## Usage
+
+### Markup
+
+```html 
+<hanko-auth></hanko-auth>
+```
+
+### Attributes
+
+| Name | Description |
+| --- | --- |
+| `prefilled-email` | Used to prefill the email input field |
+| `lang` | Used to specify the language of the content within the element |
+| `experimental` | A space-separated list of experimental features to be enabled |
+
+
+### Adding `<hanko-auth>` component
+
+Examples showcasing how to add `<hanko-auth>` component in different full stack and frontend frameworks.
+
+#### Full Stack
+
+<Tabs>
+<Tab title="Nextjs (App directory)">
+```jsx components/HankoAuth.tsx
+"use client"
+
+import { useEffect } from "react";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+
+export default function HankoAuth() {
+  useEffect(() => {
+   register(hankoApi)
+      .catch((error) => {
+        // handle error
+      });
+  }, []);
+
+return (
+<hanko-auth />
+);
+}
+```
+</Tab>
+
+<Tab title="Nextjs (Pages directory)">
+```jsx components/HankoAuth.tsx
+import { useEffect } from "react";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+
+export default function HankoAuth() {
+  useEffect(() => {
+   register(hankoApi)
+      .catch((error) => {
+        // handle error
+      });
+}, []);
+
+return (
+  <hanko-auth />
+  );
+}
+```
+</Tab>
+
+<Tab title="Nuxt">
+```html login.vue
+<template>
+  <hanko-auth />
+</template>
+```
+</Tab>
+
+
+<Tab title="SvelteKit">
+```html HankoAuth.svelte
+<script>
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
+  import { register } from "@teamhanko/hanko-elements";
+  import { env } from "$env/dynamic/public";
+  const hankoApi = env.PUBLIC_HANKO_API_URL;
+
+  const redirectAfterLogin = () => {
+    goto("/dashboard");
+  };
+
+  onMount(async () => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  });
+</script>
+
+<hanko-auth on:onAuthFlowCompleted={redirectAfterLogin} />
+```
+</Tab>
+
+<Tab title="Fresh">
+```js Login.tsx
+const endpoint = "HANKO_API_URL";
+
+const code = `
+  import { register } from 'https://esm.sh/@teamhanko/hanko-elements@0.5.5-beta';
+
+  register('${endpoint}', { shadow: true });
+  document.addEventListener('hankoAuthSuccess', (event) => {
+    document.location.href = '/protected';
+  });
+`;
+
+export default function Login() {
+  return (
+    <div class="auth-container">
+      <hanko-auth api={endpoint}></hanko-auth>
+      <script type="module">
+        {code}
+      </script>
+    </div>
+  );
+}
+```
+</Tab>
+</Tabs>
+
+#### Frontend 
+
+
+<Tabs>
+<Tab title="Create React App">
+```jsx components/HankoAuth.tsx
+import { useEffect } from "react";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.REACT_APP_HANKO_API_URL;
+
+export default function HankoAuth() {
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  }, []);
+
+  return <hanko-auth />;
+}
+```
+</Tab>
+<Tab title="React with Vite">
+    ```jsx components/HankoAuth.tsx
+    import { useEffect } from "react";
+    import { register } from "@teamhanko/hanko-elements";
+
+    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+    export default function HankoAuth() {
+      useEffect(() => {
+        register(hankoApi).catch((error) => {
+          // handle error
+        });
+      }, []);
+
+      return <hanko-auth />;
+    }
+    ```
+  </Tab>
+
+<Tab title="Vue">
+```js HankoAuth.vue
+<script setup>
+import { onMounted } from "vue";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+onMounted(() => {
+  register(hankoApi)
+    .catch((error) => {
+      // handle error
+    });
+});
+</script>
+
+<template>
+  <hanko-auth />
+</template>
+```
+</Tab>
+
+<Tab title="Svelte">
+```js HankoProfile.svelte
+<script>
+  import { register } from "@teamhanko/hanko-elements";
+  import { onMount } from "svelte";
+  import { env } from "$env/dynamic/public";
+
+  const hankoApi = env.PUBLIC_HANKO_API_URL;
+
+  onMount(async () => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  });
+</script>
+
+<hanko-profile />
+```
+</Tab>
+
+<Tab title="JavaScript">
+```html login.html
+<body>
+  <hanko-auth />
+
+  <script type="module">
+    import { register } from "https://esm.run/@teamhanko/hanko-elements";
+
+    await register(process.env.HANKO_API_URL);
+  </script>
+</body>
+```
+</Tab>
+</Tabs>
+
+You should see an interface similar to this 👇
+<Frame>
+<img src="/images/fullstack-guide/next-one.png" alt="sign-up" width={500} />
+</Frame>
+
+
+For more detailed instructions on integrating `<hanko-auth>` component with your favorite frameworks, navigate to [quickstart guides](/quickstarts/fullstack). 
+
+
+
+
+

@@ -1,0 +1,22 @@
+---
+title: Events Component
+description: A web component that allows to bind event handler to certain events, without displaying UI elements. 
+---
+
+<Info>
+Events can be subscribed to with the `<hanko-auth>` and `<hanko-profile>` components in the same manner. Also, you can bind event handler via the `frontend-sdk`(see next section).
+</Info>
+
+## Usage 
+
+### Markup
+
+```html
+<hanko-events id="events"></hanko-events>
+<script>
+  document
+    .getElementById("events")
+    .addEventListener("onAuthFlowCompleted", console.log);
+  // more events are available (see "frontend-sdk" docs)...
+</script>
+```

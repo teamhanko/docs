@@ -1,4 +1,306 @@
 ---
 title: Profile Component
-url: https://www.hanko.io/features/profile-component
+description: A web component that allows to manage emails, passwords and passkeys.
 ---
+
+## Features
+
+<CardGroup cols={2}>
+  <Card
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-mail"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"></path>
+        <path d="M3 7l9 6l9 -6"></path>
+      </svg>
+    }
+  >
+    **Email settings.** Add more email adresses, change and delete them.
+  </Card>
+  <Card
+    icon={
+       <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-password"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M12 10v4"></path>
+        <path d="M10 13l4 -2"></path>
+        <path d="M10 11l4 2"></path>
+        <path d="M5 10v4"></path>
+        <path d="M3 13l4 -2"></path>
+        <path d="M3 11l4 2"></path>
+        <path d="M19 10v4"></path>
+        <path d="M17 13l4 -2"></path>
+        <path d="M17 11l4 2"></path>
+      </svg>
+    }
+  >
+    **Password settings.** Change or delete your password (if enabled).
+  </Card>
+  <Card
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-circle-key"
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M14 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+        <path d="M21 12a9 9 0 1 1 -18 0a9 9 0 0 1 18 0z"></path>
+        <path d="M12.5 11.5l-4 4l1.5 1.5"></path>
+        <path d="M12 15l-1.5 -1.5"></path>
+      </svg>
+    }
+  >
+    **Passkey settings.** Add a new passkey, rename or delete them.
+  </Card>
+</CardGroup>
+
+## Usage
+
+### Markup
+
+```html
+<hanko-profile></hanko-profile>
+```
+
+### Attributes
+
+| Name              | Description                                                    |
+| ----------------- | -------------------------------------------------------------- |
+| `lang`            | Used to specify the language of the content within the element |
+
+### Adding `<hanko-auth>` component
+
+Examples showcasing how to add `<hanko-profile>` component in different full stack and frontend frameworks.
+
+#### Full Stack
+
+<Tabs>
+<Tab title="Nextjs (App directory)">
+```jsx components/HankoProfile.jsx
+"use client"
+
+import { useEffect } from "react";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+
+export default function HankoProfile() {
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  }, []);
+
+return <hanko-profile />;
+}
+```
+</Tab>
+<Tab title="Nextjs (Pages directory)">
+```jsx components/HankoProfile.jsx
+import { useEffect } from "react";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+
+export default function HankoProfile() {
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  }, []);
+
+  return <hanko-profile />;
+}
+```
+</Tab>
+
+<Tab title="Nuxt">
+  ```html profile.vue
+  <template>
+    <hanko-profile />
+  </template>
+  ```
+</Tab>
+
+<Tab title="SvelteKit">
+```html HankoProfile.svelte
+<script>
+  import { register } from "@teamhanko/hanko-elements";
+  import { onMount } from "svelte";
+  import { env } from "$env/dynamic/public";
+
+  const hankoApi = env.PUBLIC_HANKO_API_URL;
+
+  onMount(async () => {
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  });
+</script>
+
+<hanko-profile />
+```
+</Tab>
+
+<Tab title="Fresh">
+```js HankoProfile.tsx
+const endpoint = "HANKO_API_URL";
+
+const code = `
+  import { register } from 'https://esm.sh/@teamhanko/hanko-elements@0.5.5-beta';
+
+  register('${endpoint}', { shadow: true });
+`;
+
+export default function Profile() {
+  return (
+    <div class="profile">
+      <hanko-profile api={endpoint}></hanko-profile>
+      <script type="module">
+        {code}
+      </script>
+    </div>
+  );
+}
+```
+</Tab>
+</Tabs>
+
+#### Frontend
+
+<Tabs>
+<Tab title="Create React App">
+    ```jsx components/HankoProfile.tsx
+    import { useEffect } from "react";
+    import { register } from "@teamhanko/hanko-elements";
+
+    const hankoApi = process.env.REACT_APP_HANKO_API_URL;
+
+    export default function HankoProfile() {
+      useEffect(() => {
+        register(hankoApi).catch((error) => {
+          // handle error
+        });
+      }, []);
+
+      return <hanko-profile />;
+    }
+    ```
+  </Tab>
+  <Tab title="React with Vite">
+    ```jsx components/HankoProfile.tsx
+    import { useEffect } from "react";
+    import { register } from "@teamhanko/hanko-elements";
+
+    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+    export default function HankoProfile() {
+      useEffect(() => {
+        register(hankoApi).catch((error) => {
+          // handle error
+        });
+      }, []);
+
+      return <hanko-profile />;
+    }
+    ```
+  </Tab>
+
+
+<Tab title="Vue">
+```html HankoProfile.vue
+<script setup>
+import { onMounted } from "vue";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.HANKO_API_URL;
+
+onMounted(() => {
+  register(hankoApi)
+    .catch((error) => {
+      // handle error
+    });
+});
+</script>
+
+<template>
+  <hanko-profile />
+</template>
+```
+</Tab>
+
+<Tab title="Svelte">
+```html HankoProfile.svelte
+<script>
+  import { register } from "@teamhanko/hanko-elements";
+
+  const hankoApi = process.env.HANKO_API_URL;
+
+  onMount(async () => {
+    register(hankoApi)
+      .catch((error) => {
+        // handle error
+      });
+  });
+</script>
+
+<hanko-profile />
+```
+</Tab>
+
+<Tab title="JavaScript">
+```html profile.html
+<body>
+  <hanko-profile />
+
+  <script type="module">
+    import { register } from "https://esm.run/@teamhanko/hanko-elements";
+
+    await register(process.env.HANKO_API_URL);
+  </script>
+</body>
+```
+</Tab>
+</Tabs>
+
+You should see an interface similar to this 👇
+
+<Frame>
+<img
+  src="/images/fullstack-guide/next-two.png"
+  alt="profile-page"
+  width={500}
+/>
+</Frame>
+
+
+For more detailed instructions on integrating `<hanko-profile>` component with your favorite frameworks, navigate to [quickstart guides](/quickstarts/fullstack).
