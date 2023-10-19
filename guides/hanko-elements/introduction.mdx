@@ -135,15 +135,14 @@ yarn add @teamhanko/hanko-elements
 
 ## Usage
 
-To integrate Hanko, you need to import and call the `register()` function from the `hanko-elements` module. Once this is done, you can use the web 
-components in your code. 
+To integrate Hanko, you need to import and call the `register()` function from the `hanko-elements` module. Once this is done, you can use the web
+components in your code.
 
 <Info>
 For a functioning page, at least the `<hanko-auth>` element should be placed, so the users can sign-in, and also, 
 a handler for the "onAuthFlowCompleted" event should be added, to customize the behaviour after the authentication flow has been completed 
 (e.g. redirect to another page). These steps will be described in the below sections.
 </Info>
-
 
 ### Importing the module
 
@@ -173,22 +172,19 @@ You can also pass certain default options.
 
 ```js
 const defaultOptions = {
-  shadow: true,                    // Set to false if you do not want the web component to be attached to the shadow DOM.
-  injectStyles: true,              // Set to false if you do not want to inject any default styles.
-  enablePasskeys: true,            // Set to false if you do not want to display passkey-related content.
+  shadow: true, // Set to false if you do not want the web component to be attached to the shadow DOM.
+  injectStyles: true, // Set to false if you do not want to inject any default styles.
+  enablePasskeys: true, // Set to false if you do not want to display passkey-related content.
   hidePasskeyButtonOnLogin: false, // Hides the button to sign in with a passkey on the login page.
-  translations: null,              // Additional translations can be added here. English is used when the option is not
-                                   // present or set to `null`, whereas setting an empty object `{}` prevents the elements
-                                   // from displaying any translations.
-  translationsLocation: "/i18n",   // The URL or path where the translation files are located.
-  fallbackLanguage: "en",          // The fallback language to be used if a translation is not available.
-  storageKey: "hanko",             // The name of the cookie the session token is stored in and the prefix / name of local storage keys
+  translations: null, // Additional translations can be added here. English is used when the option is not
+  // present or set to `null`, whereas setting an empty object `{}` prevents the elements
+  // from displaying any translations.
+  translationsLocation: "/i18n", // The URL or path where the translation files are located.
+  fallbackLanguage: "en", // The fallback language to be used if a translation is not available.
+  storageKey: "hanko", // The name of the cookie the session token is stored in and the prefix / name of local storage keys
 };
 
-const { hanko } = await register(
-  "YOUR_HANKO_API_URL",
-  defaultOptions
-);
+const { hanko } = await register("YOUR_HANKO_API_URL", defaultOptions);
 ```
 
 ### Embedding the Web Components
@@ -213,26 +209,21 @@ If you have followed the steps mentioned above, you should now be able to place 
 To know more about individual components, refer to these.
 
 <CardGroup cols={3}>
-  <Card
-    title="Auth Component"
-    href="/quickstarts/fullstack/next"
-  >
+  <Card title="Auth Component" href="/quickstarts/fullstack/next">
     Handles user login and user registration.
   </Card>
-  <Card
-    title="Profile Component"
-    href="/quickstarts/frontend/react"
-  >
+  <Card title="Profile Component" href="/quickstarts/frontend/react">
     Allows to manage emails, passwords and passkeys.
   </Card>
-  <Card
-    title="Events Component"
-    href="/quickstarts/frontend/react"
-  >
-     Binds event handler to certain events, without displaying UI elements.
+  <Card title="Events Component" href="/quickstarts/frontend/react">
+    Binds event handler to certain events, without displaying UI elements.
   </Card>
 </CardGroup>
 
-### Using the Frontend-SDK
 
-The following examples will cover some common use-cases for the `hanko-frontend-sdk` instance returned by the `register()` function, but please take a look into the [frontend-sdk docs](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/) for details.
+
+
+
+
+
+

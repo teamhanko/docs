@@ -1,3 +1,151 @@
 ---
 title: Customize Appearance
+description: This guide will walk you through the UI customization of Hanko Auth and Profile components.
 ---
+
+## CSS Variables
+
+CSS variables can be used to style the `hanko-auth` and `hanko-profile` elements to your needs. A list of all CSS variables including default values can be found below
+
+```css 
+hanko-auth,
+hanko-profile {
+  /* Color Scheme */
+  --color: #333333;
+  --color-shade-1: #8f9095;
+  --color-shade-2: #e5e6ef;
+
+  --brand-color: #506cf0;
+  --brand-color-shade-1: #6b84fb;
+  --brand-contrast-color: white;
+
+  --background-color: white;
+  --error-color: #e82020;
+  --link-color: #506cf0;
+
+  /* Font Styles */
+  --font-weight: 400;
+  --font-size: 16px;
+  --font-family: sans-serif;
+
+  /* Border Styles */
+  --border-radius: 8px;
+  --border-style: solid;
+  --border-width: 1px;
+
+  /* Item Styles */
+  --item-height: 34px;
+  --item-margin: 0.5rem 0;
+
+  /* Container Styles */
+  --container-padding: 30px;
+  --container-max-width: 410px;
+
+  /* Headline Styles */
+  --headline1-font-size: 24px;
+  --headline1-font-weight: 600;
+  --headline1-margin: 0 0 1rem;
+
+  --headline2-font-size: 16px;
+  --headline2-font-weight: 600;
+  --headline2-margin: 1rem 0 0.5rem;
+
+  /* Divider Styles */
+  --divider-padding: 0 42px;
+  --divider-visibility: visible;
+
+  /* Link Styles */
+  --link-text-decoration: none;
+  --link-text-decoration-hover: underline;
+
+  /* Input Styles */
+  --input-min-width: 14em;
+
+  /* Button Styles */
+  --button-min-width: max-content;
+}
+```
+
+## CSS Shadow Parts
+
+In addition to CSS variables, you can utilize the `::part` selector to customize the styles of various elements.
+
+Please note that shadow parts only function when the web components are attached to the shadow DOM, which is the default behavior. You can enable the shadow DOM for the components using the following code snippet
+
+```js
+register("https://hanko.yourdomain.com", { shadow: true });
+
+// equals
+register("https://hanko.yourdomain.com");
+```
+
+| Name | Description |
+| --- | --- |
+| `container` | the UI container |
+| `headline1` | the "h1" headlines |
+| `headline2` | the "h2" headlines |
+| `paragraph` | the paragraph elements |
+| `button` | every button element |
+| `primary-button` | the primary button |
+| `secondary-button` | the secondary button on the email login page |
+| `input` | every input field |
+| `text-input` | every input field not used for passcodes |
+| `passcode-input` | the passcode input fields |
+| `link` | the links in the footer section |
+| `error` | the error message container |
+| `error-text` | the error message |
+| `divider` | the horizontal divider on the login page |
+| `divider-text` | the divider text |
+| `divider-line` | the line before and after the `divider-text` |
+| `form-item` | the container of a form item, e.g. an input field or a button |
+
+### Examples 
+The following examples demonstrate how to apply styles to specific shadow parts
+
+#### Example 1
+
+This example demonstrates how to force the input fields and buttons within the `hanko-auth` component to stack vertically. The `::part(form-item)` selector targets the `form-item` shadow part within the `hanko-auth` component, which is applied using the tag name.
+
+```html
+<style>
+  hanko-auth::part(form-item) {
+    /* Force the input fields and buttons are on top of each other */
+    min-width: 100%;
+  }
+</style>
+<hanko-auth></hanko-auth>
+```
+
+#### Example 2
+
+This example shows how to adjust the main headlines for all hanko components by targeting the `headline1` shadow part. The `.hankoComponent::part(headline1)` selector applies the styles to the `headline1` shadow part within elements that have the `hankoComponent` class.
+
+```html
+<style>
+  .hankoComponent::part(headline1) {
+    /* Adjust the main headlines for all hanko components */
+    font-size: 1.3em;
+    font-weight: 400;
+  }
+</style>
+
+<hanko-auth class="hankoComponent"></hanko-auth>
+<hanko-profile class="hankoComponent"></hanko-profile>
+```
+
+#### Example 3
+
+In this example, a box shadow is applied to the `button` shadow part of the `hanko-auth` component when hovering over it. The `#hankoAuth::part(button):hover` selector targets the button shadow part within the `hanko-auth` component using the ID selector `#hankoAuth` and applies the styles when the `:hover` pseudo-class is active.
+
+```html
+<style>
+  #hankoAuth::part(button):hover {
+    box-shadow: 3px 3px 2px #888;
+  }
+</style>
+
+<hanko-auth id="hankoAuth"></hanko-auth>
+```
+
+
+

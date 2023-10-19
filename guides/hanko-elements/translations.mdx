@@ -1,0 +1,137 @@
+---
+title: Translations
+---
+
+## Default behaviour
+The `hanko-elements` package includes English translations by default and the `lang` attribute can be omitted.
+
+Script
+```js
+register("YOUR_HANKO_API_URL");
+```
+
+Markup
+```html
+<hanko-auth></hanko-auth>
+```
+
+## Installing Additional Translations
+
+Translations are currently available for the following languages
+
+- "de" - German
+- "en" - English
+- "fr" - French
+
+You can import them individually
+
+```js 
+// Replace the paths below with
+// "https://cdn.jsdelivr.net/npm/@teamhanko/hanko-elements/dist/i18n/{en|de|all|...}.js"
+// if you're using CDN.
+
+import { de } from "@teamhanko/hanko-elements/i18n/de";
+import { en } from "@teamhanko/hanko-elements/i18n/en";
+import { fr } from "@teamhanko/hanko-elements/i18n/fr";
+import { zh } from "@teamhanko/hanko-elements/i18n/zh";
+```
+
+Or import all translations at once
+
+```js 
+import { all } from "@teamhanko/hanko-elements/i18n/all";
+```
+
+After importing, provide the translations through the `register()` function
+
+```js 
+register("https://hanko.yourdomain.com", { translations: { de, en, fr, zh } });
+// or
+register("https://hanko.yourdomain.com", { translations: all });
+```
+
+You can now set the `lang` attribute of the element to the desired language
+
+```html 
+<hanko-auth lang="de"></hanko-auth>
+```
+
+## Modifying Translations
+
+You can modify existing translations as follows
+
+```js 
+import { en } from "@teamhanko/hanko-elements/i18n/en";
+
+en.errors.somethingWentWrong = "Aww, snap!";
+
+register("YOUR_HANKO_API_URL", { translations: { en } });
+```
+
+## Adding New Translations
+
+If you need to create a new translation, pass an object that implements (or partially implements) the `Translation` interface.
+
+Script 
+
+```js 
+import { all } from "@teamhanko/hanko-elements/i18n/all";
+import { Translation } from "@teamhanko/hanko-elements"; // if you're using typescript
+
+const myLang: Translation = {...}
+
+register("YOUR_HANKO_API_URL", {translations: {...all, myLang}});
+```
+
+Markup 
+
+```html
+<hanko-auth lang="myLang"></hanko-auth>
+```
+
+## Using External Files
+
+For languages provided via the element's lang attribute, or via the fallback language option, that are not included in the object passed to the `translations` option, the component will fetch a JSON file from the location specified by the `translationsLocation` option. For example, if "en" is missing due to an empty object being passed, as shown in the example below, the component will fetch a file named `/i18n/en.json`.
+
+Script
+
+```js 
+register("https://hanko.yourdomain.com", {
+  translations: {}, // An empty object, so even the default "en" translation won't be available.
+  translationsLocation: "/i18n", // A public folder containing language files, e.g., "en.json".
+});
+```
+
+Markup
+
+```html
+<!-- Will fetch "/i18n/en.json" -->
+<hanko-auth lang="en"></hanko-auth>
+```
+
+## Fallback Language
+
+The `fallbackLanguage` option is used to specify a fallback language for the web components when translations are missing or incomplete for a particular language. By setting the `fallbackLanguage` option to a valid language string like "en" or "de", the missing translation strings will be automatically retrieved from the specified fallback language. When the translation for the specified `fallbackLanguage` is not available in the `translations` option, the web components will attempt to fetch it from an external file.
+
+Script
+
+```js
+import { en } from "@teamhanko/hanko-elements/i18n/en";
+import { Translation } from "@teamhanko/hanko-elements";
+
+const symbols: Partial<Translation> = {
+  labels: { continue: "➔" },
+};
+
+register("https://hanko.yourdomain.com", {
+  fallbackLanguage: "en",
+  translations: { en, symbols },
+});
+```
+
+Markup
+
+```html
+<!-- Will appear in English, but the "continue" button label will be "➔"  -->
+<hanko-auth lang="symbols"></hanko-auth>
+```
