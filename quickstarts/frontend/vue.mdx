@@ -85,7 +85,7 @@ in your configuration:
 
 The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the register function from `@teamhanko/hanko-elements` into your Vue component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Then use the element in your component template.
 
-```js HankoAuth.vue
+```html HankoAuth.vue
 <script setup>
 import { onMounted } from "vue";
 import { register } from "@teamhanko/hanko-elements";
@@ -114,7 +114,7 @@ The other hanko-elements will also dispatch these events.
 To utilize this functionality in your Vue application, you can leverage Vue's event binding mechanism and define
 callback functions within your component. This allows you to respond to the dispatched events accordingly.
 
-```js HankoAuth.vue
+```html HankoAuth.vue
 <script setup>
 import { useRouter } from "vue-router";
 import { onMounted } from "vue";
@@ -146,7 +146,7 @@ onMounted(() => {
 <br/>
 Alternatively, you can subscribe directly on the `<hanko-auth>` element:
 
-```js
+```html
 <hanko-auth @onAuthFlowCompleted="redirectAfterLogin" />
 ```
 
@@ -162,7 +162,7 @@ By now, your sign-up and sign-in features should be working. You should see an i
 
 The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
 
-```js HankoProfile.vue
+```html HankoProfile.vue
 <script setup>
 import { onMounted } from "vue";
 import { register } from "@teamhanko/hanko-elements";
@@ -180,7 +180,6 @@ onMounted(() => {
 <template>
   <hanko-profile />
 </template>
-
 ```
 
 It should look like this 👇

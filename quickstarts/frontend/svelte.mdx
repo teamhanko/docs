@@ -40,7 +40,7 @@ HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the register function from `@teamhanko/hanko-elements` into your Svelte component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Then use the `<hanko-auth>` element in your component.
 
 
-```js HankoAuth.svelte
+```html HankoAuth.svelte
 <script>
   import { onMount } from "svelte";
   import { register } from '@teamhanko/hanko-elements';
@@ -67,7 +67,7 @@ The other hanko-elements will also dispatch these events.
 To utilize this functionality in your Svelte application, you can leverage Svelte's event binding mechanism and define
 callback functions within your component. This allows you to respond to the dispatched events accordingly.
 
-```js HankoAuth.svelte
+```html HankoAuth.svelte
 <script>
   import { onMount } from "svelte";
   import { useNavigate } from "svelte-navigator";
@@ -111,7 +111,7 @@ By now, your sign-up and sign-in features should be working. You should see an i
 
 The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
 
-```js HankoProfile.svelte
+```html HankoProfile.svelte
 <script>
   import { register } from "@teamhanko/hanko-elements";
 

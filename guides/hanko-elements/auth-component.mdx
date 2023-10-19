@@ -170,7 +170,9 @@ description: A web component that handles user login and user registration.
 
 ### Adding `<hanko-auth>` component
 
-#### Fullstack
+Examples showcasing how to add `<hanko-auth>` component in different full stack and frontend frameworks.
+
+#### Full Stack
 
 <Tabs>
 <Tab title="Nextjs (App directory)">
@@ -220,7 +222,7 @@ return (
 </Tab>
 
 <Tab title="Nuxt">
-```jsx login.vue
+```html login.vue
 <template>
   <hanko-auth />
 </template>
@@ -283,7 +285,7 @@ export default function Login() {
 
 
 <Tabs>
-<Tab title="React">
+<Tab title="Create React App">
 ```jsx components/HankoAuth.tsx
 import { useEffect } from "react";
 import { register } from "@teamhanko/hanko-elements";
@@ -301,50 +303,55 @@ export default function HankoAuth() {
 }
 ```
 </Tab>
+<Tab title="React with Vite">
+    ```jsx components/HankoAuth.tsx
+    import { useEffect } from "react";
+    import { register } from "@teamhanko/hanko-elements";
 
-<Tab title="Nextjs (Pages directory)">
-```jsx components/HankoAuth.tsx
-import { useEffect } from "react";
+    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+    export default function HankoAuth() {
+      useEffect(() => {
+        register(hankoApi).catch((error) => {
+          // handle error
+        });
+      }, []);
+
+      return <hanko-auth />;
+    }
+    ```
+  </Tab>
+
+<Tab title="Vue">
+```js HankoAuth.vue
+<script setup>
+import { onMounted } from "vue";
 import { register } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+const hankoApi = process.env.HANKO_API_URL;
 
-export default function HankoAuth() {
-  useEffect(() => {
-   register(hankoApi)
-      .catch((error) => {
-        // handle error
-      });
-}, []);
+onMounted(() => {
+  register(hankoApi)
+    .catch((error) => {
+      // handle error
+    });
+});
+</script>
 
-return (
-  <hanko-auth />
-  );
-}
-```
-</Tab>
-
-<Tab title="Nuxt">
-```jsx login.vue
 <template>
   <hanko-auth />
 </template>
 ```
 </Tab>
 
-
-<Tab title="SvelteKit">
-```html HankoAuth.svelte
+<Tab title="Svelte">
+```js HankoProfile.svelte
 <script>
-  import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
   import { register } from "@teamhanko/hanko-elements";
+  import { onMount } from "svelte";
   import { env } from "$env/dynamic/public";
-  const hankoApi = env.PUBLIC_HANKO_API_URL;
 
-  const redirectAfterLogin = () => {
-    goto("/dashboard");
-  };
+  const hankoApi = env.PUBLIC_HANKO_API_URL;
 
   onMount(async () => {
     register(hankoApi).catch((error) => {
@@ -353,37 +360,32 @@ return (
   });
 </script>
 
-<hanko-auth on:onAuthFlowCompleted={redirectAfterLogin} />
+<hanko-profile />
 ```
 </Tab>
 
-<Tab title="Fresh">
-```js Login.tsx
-const endpoint = "HANKO_API_URL";
+<Tab title="JavaScript">
+```html login.html
+<body>
+  <hanko-auth />
 
-const code = `
-  import { register } from 'https://esm.sh/@teamhanko/hanko-elements@0.5.5-beta';
+  <script type="module">
+    import { register } from "https://esm.run/@teamhanko/hanko-elements";
 
-  register('${endpoint}', { shadow: true });
-  document.addEventListener('hankoAuthSuccess', (event) => {
-    document.location.href = '/protected';
-  });
-`;
-
-export default function Login() {
-  return (
-    <div class="auth-container">
-      <hanko-auth api={endpoint}></hanko-auth>
-      <script type="module">
-        {code}
-      </script>
-    </div>
-  );
-}
+    await register(process.env.HANKO_API_URL);
+  </script>
+</body>
 ```
 </Tab>
 </Tabs>
 
+You should see an interface similar to this 👇
+<Frame>
+<img src="/images/fullstack-guide/next-one.png" alt="sign-up" width={500} />
+</Frame>
+
+
+For more detailed instructions on integrating `<hanko-auth>` component with your favorite frameworks, navigate to [quickstart guides](/quickstarts/fullstack). 
 
 
 
