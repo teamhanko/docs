@@ -98,9 +98,7 @@
       "pages": [
         {
           "group": "Users",
-          "pages": [
-            "guides/users/get-user-data"
-          ]
+          "pages": ["guides/users/get-user-data"]
         },
         {
           "group": "Authentication Methods",
@@ -255,5 +253,10 @@
     "twitter": "https://twitter.com/hanko_io",
     "github": "https://github.com/teamhanko",
     "linkedin": "https://www.linkedin.com/company/teamhanko/"
+  },
+  "analytics": {
+    "plausible": {
+      "domain": "docs.hanko.io"
+    }
   }
 }
