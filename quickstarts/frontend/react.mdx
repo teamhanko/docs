@@ -97,7 +97,7 @@ The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific
 <Tabs>
   <Tab title="Create React App">
     ```jsx components/HankoAuth.tsx
-    import { useEffect, useCallback } from "react";
+    import { useEffect, useCallback, useMemo } from "react";
     import { useNavigate } from "react-router-dom";
     import { register, Hanko } from "@teamhanko/hanko-elements";
 
@@ -131,7 +131,7 @@ The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific
   </Tab>
   <Tab title="React with Vite">
   ```jsx components/HankoAuth.tsx
-  import { useEffect, useCallback } from "react";
+  import { useEffect, useCallback, useMemo } from "react";
   import { useNavigate } from "react-router-dom";
   import { register, Hanko } from "@teamhanko/hanko-elements";
 
