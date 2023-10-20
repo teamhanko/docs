@@ -120,6 +120,8 @@ export default function LoginPage() {
 <Info>
 **Why we use dynamic import in Nextjs?** 🤔
 
+We use `customEvents` and WebAuthn API for passkeys, which are only available on the Client side.
+
 The register function tries to set up the `<hanko-auth>` element for the browser. However, Next.js creates pages before they're shown, and it can't access the browser's tools during this process. This means our setup might not work.
 
 To fix this, we can use Next.js's [dynamic import](<(https://nextjs.org/docs/advanced-features/dynamic-import)>) to load our component only when it's displayed on the client-side and skip the pre-creation step.
