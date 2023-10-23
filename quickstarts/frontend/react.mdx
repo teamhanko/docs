@@ -288,6 +288,7 @@ You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we
         try {
           await hanko?.user.logout();
           navigate("/login");
+          window.location.reload();
         } catch (error) {
           console.error("Error during logout:", error);
         }
@@ -305,7 +306,7 @@ You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we
 
 ## Customize component styles
 
-You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](https://github.com/teamhanko/hanko/tree/main/frontend/elements#ui-customization).
+You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](/guides/hanko-elements/customize-appearance).
 
 ## Authenticate backend requests
 
