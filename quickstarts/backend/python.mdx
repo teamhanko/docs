@@ -104,9 +104,12 @@ async def root():
 async def protected():
     return {"message": "Hello World"}
 ```
+<Note>
 
 You may need to add padding prior to decoding.
 ```python
 token = token + "=="
 ```
 this is because other JWTs may not decode outright using PyJWT due to `binascii.Error: Incorrect padding` and `jwt.exceptions.DecodeError: Invalid crypto padding`. This is due to lack of base64 padding at the end of the token. Read it in as a string, then add the padding prior to decoding.[Learn more](https://gist.github.com/perrygeo/ee7c65bb1541ff6ac770)
+
+</Note>
