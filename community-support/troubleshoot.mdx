@@ -21,23 +21,6 @@ Hanko Auth Component
 
   </Accordion>
 
-<Accordion title="ReferenceError: CustomEvent is not defined in Nextjs 13 (App directory)">
-Console
-  <Frame>
-    <img
-      src="/images/troubleshoot/custom-event.png"
-      style={{ borderRadius: "0.5rem" }}
-    />
-  </Frame>
-  This error is very common when integrating Hanko with Next.js 13 (App directory). While we're still working on a permanent fix, a temporary workaround is to add `force-dynamic` [Route Segment Config](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config) to the page.
-
-```js
-// layout.tsx | page.tsx | route.ts
-export const dynamic = "force-dynamic";
-```
-
-</Accordion>
-
   <Accordion title="404 (Not Found)">
   Console
   <Frame>
