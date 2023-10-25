@@ -24,6 +24,14 @@ Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT]
 ### Python-based Backend Example
 This is an example of using a custom middleware in a [FastAPI](https://fastapi.tiangolo.com/), based backend (a python framework) using the [PyJWT](https://pyjwt.readthedocs.io/en/stable/) package:
 
+since you will be decoding the token using the RSA digital signature algorithm, you will need to install the [cryptography](https://cryptography.io) library. This can be installed explicitly or as a required extra in the pyjwt requirement:
+
+```bash
+pip install pyjwt[crypto]
+```
+
+The `pyjwt[crypto]` format is recommended in requirements files in projects using PyJWT, as a separate cryptography requirement line may later be mistaken for an unused requirement and removed.
+
 ```python 
 from typing import Any
 import os
@@ -96,3 +104,12 @@ async def root():
 async def protected():
     return {"message": "Hello World"}
 ```
+<Note>
+
+You may need to add padding prior to decoding.
+```python
+token = token + "=="
+```
+this is because other JWTs may not decode outright using PyJWT due to `binascii.Error: Incorrect padding` and `jwt.exceptions.DecodeError: Invalid crypto padding`. This is due to lack of base64 padding at the end of the token. Read it in as a string, then add the padding prior to decoding.[Learn more](https://gist.github.com/perrygeo/ee7c65bb1541ff6ac770)
+
+</Note>
