@@ -70,7 +70,8 @@ async def auth(request: Request, call_next: Any):
         return deny()
 
     try:
-         # Disable SSL certificate verification while in development. Don't forget to remove this when in prod
+         # Disable SSL certificate verification while in development. 
+         # Don't forget to remove this when in prod.
 
         ssl_context = ssl.create_default_context()
         ssl_context.check_hostname = False
@@ -106,8 +107,6 @@ async def root():
 async def protected():
     return {"message": "Hello World"}
 ```
-</Tab>
-<Tab title="Django">
 </Tab>
 </Tabs>
 
