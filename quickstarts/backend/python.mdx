@@ -21,10 +21,10 @@ Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT]
 
 2. **Verify the JWT:** Use the JWKS to verify the JWT.
 
-### Python-based Backend Example
-This is an example of using a custom middleware in a [FastAPI](https://fastapi.tiangolo.com/), based backend (a python framework) using the [PyJWT](https://pyjwt.readthedocs.io/en/stable/) package:
+### Python-based Backend Examples
+Below we show examples of using a custom middleware in [FastAPI](https://fastapi.tiangolo.com/) and [Django](https://www.djangoproject.com/), based backend using the [PyJWT](https://pyjwt.readthedocs.io/en/stable/) package.
 
-since you will be decoding the token using the RSA digital signature algorithm, you will need to install the [cryptography](https://cryptography.io) library. This can be installed explicitly or as a required extra in the pyjwt requirement:
+Since you will be decoding the token using the RSA digital signature algorithm, you will need to install the [cryptography](https://cryptography.io) library. You can install this library either directly or as an additional requirement within the PyJWT package.
 
 ```bash
 pip install pyjwt[crypto]
@@ -32,6 +32,8 @@ pip install pyjwt[crypto]
 
 The `pyjwt[crypto]` format is recommended in requirements files in projects using PyJWT, as a separate cryptography requirement line may later be mistaken for an unused requirement and removed.
 
+<Tabs>
+<Tab title="FastAPI">
 ```python 
 from typing import Any
 import os
@@ -104,12 +106,34 @@ async def root():
 async def protected():
     return {"message": "Hello World"}
 ```
-<Note>
+</Tab>
+<Tab title="Django">
+</Tab>
+</Tabs>
 
-You may need to add padding prior to decoding.
+<Warning>
+
+While using PyJWT to decode JWTs, you might encounter errors such as `binascii.Error: Incorrect padding` and `jwt.exceptions.DecodeError: Invalid crypto padding`. These errors often occur due to insufficient `base64` padding at the end of the token.
+
+To resolve this, you might need to manually add the necessary padding to the token before attempting to decode it. You can read the token as a string and append the required padding characters to ensure successful decoding.
+
 ```python
-token = token + "=="
+token = token + "===="
 ```
-this is because other JWTs may not decode outright using PyJWT due to `binascii.Error: Incorrect padding` and `jwt.exceptions.DecodeError: Invalid crypto padding`. This is due to lack of base64 padding at the end of the token. Read it in as a string, then add the padding prior to decoding.[Learn more](https://gist.github.com/perrygeo/ee7c65bb1541ff6ac770)
 
-</Note>
+<AccordionGroup>
+<Accordion title="Tip for adding padding dynamically">
+While a fixed padding like "====" can work, it might be more efficient to dynamically adjust the padding based on the actual needs of the token. Here’s how you can do it.
+
+```python
+def add_padding(token):
+    padding_needed = len(token) % 4
+    if padding_needed:
+        padding_needed = 4 - padding_needed
+    return token + ('=' * padding_needed)
+```
+This method calculates the exact amount of padding needed and adds it, ensuring that the token is correctly formatted for decoding.
+</Accordion>
+</AccordionGroup>
+
+</Warning>
