@@ -109,9 +109,8 @@ async def protected():
 ```
 </Tab>
 <Tab title="Django">
-`yourApp/middleware.py`
 
-```python
+```python yourApp/middleware.py
 import ssl
 import jwt
 from django.conf import settings
@@ -178,9 +177,7 @@ class AuthenticationMiddleware:
         return response
 ```
 
-`yourProject/settings.py`
-
-```python
+```python yourProject/settings.py
 #other settings
 ...
 
