@@ -61,8 +61,8 @@ for jwk in jwks_data["keys"]:
 def index():
     return render_template("login.html", API_URL=API_URL)
 
-@app.route("/auth") 
-def auth():
+@app.route("/protected") 
+def protected():
     # Retrieve the JWT from the cookie
     jwt_cookie = request.cookies.get("hanko")
     # print(jwt_cookie)
@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
         hanko.onAuthFlowCompleted(() => {
             // successfully logged in, redirect to a page in your application
-            document.location.href = "/auth";
+            document.location.href = "/protected";
         });
     </script>
 </body>
