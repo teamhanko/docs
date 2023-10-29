@@ -33,6 +33,85 @@ pip install pyjwt[crypto]
 The `pyjwt[crypto]` format is recommended in requirements files in projects using PyJWT, as a separate cryptography requirement line may later be mistaken for an unused requirement and removed.
 
 <Tabs>
+<Tab title="Flask">
+```python example.py
+from flask import Flask, render_template, request, jsonify, redirect
+import jwt #upm package(pyjwt)
+import requests
+
+from pprint import pprint
+
+app = Flask(__name__)
+
+#constants 
+API_URL = "https://b50e27f9-962a-40bb-89e0-26431366b224.hanko.io" #change this to your url fro cloud.hanko.io
+AUDIENCE = "localhost" # change this to the url you're hosting on, and make sure it matches the URL on cloud.hanko.io
+
+# Retrieve the JWKS from the Hanko API
+jwks_url = f"{API_URL}/.well-known/jwks.json"
+jwks_response = requests.get(jwks_url)
+jwks_data = jwks_response.json()
+public_keys = {}
+for jwk in jwks_data["keys"]:
+    kid = jwk["kid"]
+    public_keys[kid] = jwt.algorithms.RSAAlgorithm.from_jwk(jwk)
+
+
+@app.route("/")
+def index():
+    return render_template("login.html", API_URL=API_URL)
+
+@app.route("/auth") 
+def auth():
+    # Retrieve the JWT from the cookie
+    jwt_cookie = request.cookies.get("hanko")
+    # print(jwt_cookie)
+    if not jwt_cookie: #check that the cookie exists
+        return redirect("/")
+    try:
+        kid = jwt.get_unverified_header(jwt_cookie)["kid"]
+        payload = jwt.decode(
+            str(jwt_cookie), 
+            public_keys[kid],
+            algorithms=["RS256"],
+            audience=AUDIENCE,
+        )
+        pprint(payload)
+    except Exception as e:
+        # The JWT is invalid
+        print(e)
+        return jsonify({"message": "unauthorised"})
+    return jsonify({"message": "authorised"})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=80) 
+    #80 is the default port for http, so you won't need to specify the port in the browser
+    #open http://localhost in a browser to see it in action
+```
+```html templates/login.html
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <hanko-auth />
+    <script type="module">
+        import { register } from "https://esm.run/@teamhanko/hanko-elements";
+
+        const { hanko } = await register("{{ API_URL }}"); //this is be changed to the API_URL provided in example.py
+
+        hanko.onAuthFlowCompleted(() => {
+            // successfully logged in, redirect to a page in your application
+            document.location.href = "/auth";
+        });
+    </script>
+</body>
+
+</html>
+```
+</Tab>
 <Tab title="FastAPI">
 ```python 
 from typing import Any
