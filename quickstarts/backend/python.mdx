@@ -194,6 +194,57 @@ HANKO_API_URL = 'Your Hanko API URL'
 
 ```
 </Tab>
+<Tab title="Flask">
+```python example.py
+from flask import Flask, render_template, request, jsonify, redirect
+import jwt #upm package(pyjwt)
+import requests
+
+from pprint import pprint
+
+app = Flask(__name__)
+
+#constants 
+API_URL = "HANKO_URL_HERE" #change this to your url from cloud.hanko.io
+AUDIENCE = "localhost" # change this to the domain you're hosting on, and make sure it matches the URL on cloud.hanko.io
+
+# Retrieve the JWKS from the Hanko API
+jwks_url = f"{API_URL}/.well-known/jwks.json"
+jwks_response = requests.get(jwks_url)
+jwks_data = jwks_response.json()
+public_keys = {}
+for jwk in jwks_data["keys"]:
+    kid = jwk["kid"]
+    public_keys[kid] = jwt.algorithms.RSAAlgorithm.from_jwk(jwk)
+
+@app.route("/protected") 
+def protected():
+    # Retrieve the JWT from the cookie
+    jwt_cookie = request.cookies.get("hanko")
+    # print(jwt_cookie)
+    if not jwt_cookie: #check that the cookie exists
+        return redirect("/")
+    try:
+        kid = jwt.get_unverified_header(jwt_cookie)["kid"]
+        payload = jwt.decode(
+            str(jwt_cookie), 
+            public_keys[kid],
+            algorithms=["RS256"],
+            audience=AUDIENCE,
+        )
+        pprint(payload)
+    except Exception as e:
+        # The JWT is invalid
+        print(e)
+        return jsonify({"message": "unauthorised"})
+    return jsonify({"message": "authorised"})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=80) 
+    #80 is the default port for http, so you won't need to specify the port in the browser
+    #open http://localhost in a browser to see it in action
+```
+</Tab>
 </Tabs>
 
 <Warning>
