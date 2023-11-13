@@ -102,7 +102,7 @@ register("https://hanko.yourdomain.com");
 ### Examples 
 The following examples demonstrate how to apply styles to specific shadow parts
 
-#### Example 1
+#### Stacking `hanko-auth` component fields vertically
 
 This example demonstrates how to force the input fields and buttons within the `hanko-auth` component to stack vertically. The `::part(form-item)` selector targets the `form-item` shadow part within the `hanko-auth` component, which is applied using the tag name.
 
@@ -116,7 +116,7 @@ This example demonstrates how to force the input fields and buttons within the `
 <hanko-auth></hanko-auth>
 ```
 
-#### Example 2
+#### Modifying the main headlines for hanko components
 
 This example shows how to adjust the main headlines for all hanko components by targeting the `headline1` shadow part. The `.hankoComponent::part(headline1)` selector applies the styles to the `headline1` shadow part within elements that have the `hankoComponent` class.
 
@@ -133,7 +133,7 @@ This example shows how to adjust the main headlines for all hanko components by 
 <hanko-profile class="hankoComponent"></hanko-profile>
 ```
 
-#### Example 3
+#### Applying box shadow on button of `hanko-auth` component
 
 In this example, a box shadow is applied to the `button` shadow part of the `hanko-auth` component when hovering over it. The `#hankoAuth::part(button):hover` selector targets the button shadow part within the `hanko-auth` component using the ID selector `#hankoAuth` and applies the styles when the `:hover` pseudo-class is active.
 
@@ -147,5 +147,6 @@ In this example, a box shadow is applied to the `button` shadow part of the `han
 <hanko-auth id="hankoAuth"></hanko-auth>
 ```
 
+For more examples and design inspiration, check out our blog post, [Make Hanko Components Shine](https://dev.to/hanko/make-hanko-components-shine-1d61).
 
 
