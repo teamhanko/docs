@@ -1,0 +1,27 @@
+---
+title: Client-First Login Flow
+description: Starting the login flow from your frontend
+---
+
+While you can't skip hitting your backend completely, you can change up the flow a little.
+
+When logging in, instead of going frontend → backend → Passkey API, you can let the frontend talk to the Passkey API directly.
+
+The `/login/initialize` and `/login/finalize` endpoints **do not require you to send the secret API key.**
+
+When using the Passkey API, after calling the `/login/finalize` endpoint as shown above, you will receive a JSON Web Token (JWT) in the response. This JWT contains the `user_id` and `username` that your backend sent back when the passkey was registered.
+
+To verify that the JWT was issued by the Passkey API, you can use the JWKS\* located at `/{tenant_id}/.well-known/jwks.json`. The JWKS contains the public keys used for signing the JWTs.
+
+<Tip>
+**\*** JWKS are a set of keys (random strings) that are intended to let you verify where a JWT comes from.
+
+For example, with the JWKS at `/AcmeCorp/.well-known/jwks.json`, you can check whether a JWT was issued by AcmeCorp or not.
+
+(There are libraries in most languages that help you do this!)
+
+</Tip>
+
+Once you have verified the JWT on your backend, you can exchange it for a session.
+
+This way, your backend doesn't come into play until the user has successfully authenticated with a passkey.
