@@ -1,268 +1,278 @@
 {
-	"name": "Hanko",
-	"logo": {
-		"dark": "/logo/dark.svg",
-		"light": "/logo/light.svg"
-	},
-	"favicon": "/favicon.png",
-	"colors": {
-		"primary": "#Ff6363",
-		"light": "#Ff8787",
-		"dark": "#0D001D",
-		"background": {
-			"dark": "#000000"
-		},
-		"anchors": {
-			"from": "#FF7F57",
-			"to": "#Ff6363"
-		}
-	},
-	"topbarLinks": [
-		{
-			"name": "Community",
-			"url": "https://discord.gg/tAG6RrRqJD"
-		}
-	],
-	"topbarCtaButton": {
-		"name": "Start for free",
-		"url": "https://cloud.hanko.io"
-	},
-	"feedback": {
-		"suggestEdit": true,
-		"raiseIssue": true,
-		"thumbsRating": true
-	},
-	"tabs": [
-		{
-			"name": "Tutorials",
-			"url": "tutorials"
-		},
-		{
-			"name": "API Reference",
-			"url": "api-reference"
-		},
-		{
-			"name": "Frontend SDK",
-			"url": "https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/"
-		},
-		{
-			"name": "Standalone Passkey API",
-			"url": "passkey-api"
-		}
-	],
-	"api": {
-		"playground": {
-			"mode": "hide"
-		}
-	},
-	"navigation": [
-		{
-			"group": "Getting Started",
-			"pages": [
-				"introduction",
-				"setup-hanko-cloud",
-				{
-					"group": "Quickstarts",
-					"pages": [
-						{
-							"group": "Full Stack",
-							"pages": [
-								"quickstarts/fullstack/next",
-								"quickstarts/fullstack/nuxt",
-								"quickstarts/fullstack/sveltekit",
-								"quickstarts/fullstack/fresh"
-							]
-						},
-						{
-							"group": "Frontend",
-							"pages": [
-								"quickstarts/frontend/react",
-								"quickstarts/frontend/vue",
-								"quickstarts/frontend/svelte",
-								"quickstarts/frontend/javascript",
-								"quickstarts/frontend/angular"
-							]
-						},
-						{
-							"group": "Backend",
-							"pages": [
-								"quickstarts/backend/go",
-								"quickstarts/backend/node",
-								"quickstarts/backend/python",
-								"quickstarts/backend/deno"
-							]
-						},
-						"quickstarts/mobile"
-					]
-				}
-			]
-		},
-		{
-			"group": "Guides",
-			"pages": [
-				{
-					"group": "Users",
-					"pages": ["guides/users/get-user-data"]
-				},
-				{
-					"group": "Authentication Methods",
-					"pages": [
-						{
-							"group": "OAuth Providers",
-							"pages": [
-								"guides/authentication-methods/oauth/apple",
-								"guides/authentication-methods/oauth/google",
-								"guides/authentication-methods/oauth/github"
-							]
-						},
-						"guides/authentication-methods/passkeys",
-						"guides/authentication-methods/passcodes",
-						"guides/authentication-methods/fido",
-						"guides/authentication-methods/mobile-app"
-					]
-				},
-				{
-					"group": "Hanko Elements",
-					"pages": [
-						"guides/hanko-elements/introduction",
-						"guides/hanko-elements/auth-component",
-						"guides/hanko-elements/profile-component",
-						"guides/hanko-elements/events-component",
-						"guides/hanko-elements/using-frontend-sdk",
-						"guides/hanko-elements/customize-appearance",
-						"guides/hanko-elements/translations"
-					]
-				}
-			]
-		},
-		{
-			"group": "Resources",
-			"pages": ["resources/examples", "resources/sdks"]
-		},
-		{
-			"group": "Community & Support",
-			"pages": ["community-support/get-help", "community-support/troubleshoot", "community-support/faq"]
-		},
-		{
-			"group": "Tutorials",
-			"pages": ["tutorials/introduction", "tutorials/nextjs-todo"]
-		},
-		{
-			"group": "API Documentation",
-			"pages": ["api-reference/introduction"]
-		},
-		{
-			"group": "Standalone Passkey API",
-			"pages": ["passkey-api/introduction", "passkey-api/client-first-login-flow", "passkey-api/faq"]
-		},
-		{
-			"group": "Public",
-			"pages": [
-				{
-					"group": "Status",
-					"pages": ["api-reference/public/status/status-page"]
-				},
-				{
-					"group": "Passcode",
-					"pages": [
-						"api-reference/public/passcode/initialize-passcode-login",
-						"api-reference/public/passcode/finalize-passcode-login"
-					]
-				},
-				{
-					"group": "Password",
-					"pages": [
-						"api-reference/public/password/do-password-login",
-						"api-reference/public/password/createset-a-password"
-					]
-				},
-				{
-					"group": "WebAuthn",
-					"pages": [
-						"api-reference/public/webauthn/initialize-webauthn-login",
-						"api-reference/public/webauthn/finalize-webauthn-login",
-						"api-reference/public/webauthn/initialize-webauthn-registration",
-						"api-reference/public/webauthn/finalize-webauthn-registration",
-						"api-reference/public/webauthn/get-a-list-of-webauthn-credentials",
-						"api-reference/public/webauthn/deletes-a-webauthn-credential",
-						"api-reference/public/webauthn/updates-a-webauthn-credential"
-					]
-				},
-				{
-					"group": ".well-known",
-					"pages": [
-						"api-reference/public/well-known/get-json-web-key-set",
-						"api-reference/public/well-known/get-public-hanko-configuration"
-					]
-				},
-				{
-					"group": "Third Party",
-					"pages": [
-						"api-reference/public/third-party/initialize-third-party-login",
-						"api-reference/public/third-party/third-party-provider-callback"
-					]
-				},
-				{
-					"group": "Token",
-					"pages": ["api-reference/public/token/exchange-one-time-token-for-session"]
-				},
-				{
-					"group": "User Management",
-					"pages": [
-						"api-reference/public/user-management/get-user-details-by-email",
-						"api-reference/public/user-management/deletes-the-current-user",
-						"api-reference/public/user-management/get-the-current-user-id",
-						"api-reference/public/user-management/log-out-the-current-user",
-						"api-reference/public/user-management/create-a-user",
-						"api-reference/public/user-management/get-a-user-by-id"
-					]
-				},
-				{
-					"group": "Email Management",
-					"pages": [
-						"api-reference/public/email-management/get-a-list-of-emails-of-the-current-user",
-						"api-reference/public/email-management/add-a-new-email-address-to-the-current-user",
-						"api-reference/public/email-management/marks-the-email-address-as-primary-email",
-						"api-reference/public/email-management/delete-an-email-address"
-					]
-				}
-			]
-		},
-		{
-			"group": "Admin",
-			"pages": [
-				{
-					"group": "Status",
-					"pages": ["api-reference/admin/status/status-page"]
-				},
-				{
-					"group": "User Management",
-					"pages": [
-						"api-reference/admin/user-management/get-a-list-of-users",
-						"api-reference/admin/user-management/create-a-new-user",
-						"api-reference/admin/user-management/get-a-user-by-id",
-						"api-reference/admin/user-management/delete-a-user-by-id"
-					]
-				},
-				{
-					"group": "Audit Logs",
-					"pages": ["api-reference/admin/audit-logs/get-a-list-of-audit-logs"]
-				},
-				{
-					"group": "Metrics",
-					"pages": ["api-reference/admin/metrics/get-prometheus-metrics"]
-				}
-			]
-		}
-	],
-	"footerSocials": {
-		"twitter": "https://twitter.com/hanko_io",
-		"github": "https://github.com/teamhanko",
-		"linkedin": "https://www.linkedin.com/company/teamhanko/"
-	},
-	"analytics": {
-		"plausible": {
-			"domain": "docs.hanko.io"
-		}
-	}
+  "name": "Hanko",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#Ff6363",
+    "light": "#Ff8787",
+    "dark": "#0D001D",
+    "background": {
+      "dark": "#000000"
+    },
+    "anchors": {
+      "from": "#FF7F57",
+      "to": "#Ff6363"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Community",
+      "url": "https://discord.gg/tAG6RrRqJD"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Start for free",
+    "url": "https://cloud.hanko.io"
+  },
+  "feedback": {
+    "suggestEdit": true,
+    "raiseIssue": true,
+    "thumbsRating": true
+  },
+  "tabs": [
+    {
+      "name": "Tutorials",
+      "url": "tutorials"
+    },
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "Frontend SDK",
+      "url": "https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/"
+    },
+    {
+      "name": "Standalone Passkey API",
+      "url": "passkey-api"
+    }
+  ],
+  "api": {
+    "playground": {
+      "mode": "hide"
+    }
+  },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction",
+        "setup-hanko-cloud",
+        {
+          "group": "Quickstarts",
+          "pages": [
+            {
+              "group": "Full Stack",
+              "pages": [
+                "quickstarts/fullstack/next",
+                "quickstarts/fullstack/nuxt",
+                "quickstarts/fullstack/sveltekit",
+                "quickstarts/fullstack/fresh"
+              ]
+            },
+            {
+              "group": "Frontend",
+              "pages": [
+                "quickstarts/frontend/react",
+                "quickstarts/frontend/vue",
+                "quickstarts/frontend/svelte",
+                "quickstarts/frontend/javascript",
+                "quickstarts/frontend/angular"
+              ]
+            },
+            {
+              "group": "Backend",
+              "pages": [
+                "quickstarts/backend/go",
+                "quickstarts/backend/node",
+                "quickstarts/backend/python",
+                "quickstarts/backend/deno"
+              ]
+            },
+            "quickstarts/mobile"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        {
+          "group": "Users",
+          "pages": ["guides/users/get-user-data"]
+        },
+        {
+          "group": "Authentication Methods",
+          "pages": [
+            {
+              "group": "OAuth Providers",
+              "pages": [
+                "guides/authentication-methods/oauth/apple",
+                "guides/authentication-methods/oauth/google",
+                "guides/authentication-methods/oauth/github"
+              ]
+            },
+            "guides/authentication-methods/passkeys",
+            "guides/authentication-methods/passcodes",
+            "guides/authentication-methods/fido",
+            "guides/authentication-methods/mobile-app"
+          ]
+        },
+        {
+          "group": "Hanko Elements",
+          "pages": [
+            "guides/hanko-elements/introduction",
+            "guides/hanko-elements/auth-component",
+            "guides/hanko-elements/profile-component",
+            "guides/hanko-elements/events-component",
+            "guides/hanko-elements/using-frontend-sdk",
+            "guides/hanko-elements/customize-appearance",
+            "guides/hanko-elements/translations"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Resources",
+      "pages": ["resources/examples", "resources/sdks"]
+    },
+    {
+      "group": "Community & Support",
+      "pages": [
+        "community-support/get-help",
+        "community-support/troubleshoot",
+        "community-support/faq"
+      ]
+    },
+    {
+      "group": "Tutorials",
+      "pages": ["tutorials/introduction", "tutorials/nextjs-todo"]
+    },
+    {
+      "group": "API Documentation",
+      "pages": ["api-reference/introduction"]
+    },
+    {
+      "group": "Standalone Passkey API",
+      "pages": [
+        "passkey-api/introduction",
+        "passkey-api/client-first-login-flow",
+        "passkey-api/faq"
+      ]
+    },
+    {
+      "group": "Public",
+      "pages": [
+        {
+          "group": "Status",
+          "pages": ["api-reference/public/status/status-page"]
+        },
+        {
+          "group": "Passcode",
+          "pages": [
+            "api-reference/public/passcode/initialize-passcode-login",
+            "api-reference/public/passcode/finalize-passcode-login"
+          ]
+        },
+        {
+          "group": "Password",
+          "pages": [
+            "api-reference/public/password/do-password-login",
+            "api-reference/public/password/createset-a-password"
+          ]
+        },
+        {
+          "group": "WebAuthn",
+          "pages": [
+            "api-reference/public/webauthn/initialize-webauthn-login",
+            "api-reference/public/webauthn/finalize-webauthn-login",
+            "api-reference/public/webauthn/initialize-webauthn-registration",
+            "api-reference/public/webauthn/finalize-webauthn-registration",
+            "api-reference/public/webauthn/get-a-list-of-webauthn-credentials",
+            "api-reference/public/webauthn/deletes-a-webauthn-credential",
+            "api-reference/public/webauthn/updates-a-webauthn-credential"
+          ]
+        },
+        {
+          "group": ".well-known",
+          "pages": [
+            "api-reference/public/well-known/get-json-web-key-set",
+            "api-reference/public/well-known/get-public-hanko-configuration"
+          ]
+        },
+        {
+          "group": "Third Party",
+          "pages": [
+            "api-reference/public/third-party/initialize-third-party-login",
+            "api-reference/public/third-party/third-party-provider-callback"
+          ]
+        },
+        {
+          "group": "Token",
+          "pages": [
+            "api-reference/public/token/exchange-one-time-token-for-session"
+          ]
+        },
+        {
+          "group": "User Management",
+          "pages": [
+            "api-reference/public/user-management/get-user-details-by-email",
+            "api-reference/public/user-management/deletes-the-current-user",
+            "api-reference/public/user-management/get-the-current-user-id",
+            "api-reference/public/user-management/log-out-the-current-user",
+            "api-reference/public/user-management/create-a-user",
+            "api-reference/public/user-management/get-a-user-by-id"
+          ]
+        },
+        {
+          "group": "Email Management",
+          "pages": [
+            "api-reference/public/email-management/get-a-list-of-emails-of-the-current-user",
+            "api-reference/public/email-management/add-a-new-email-address-to-the-current-user",
+            "api-reference/public/email-management/marks-the-email-address-as-primary-email",
+            "api-reference/public/email-management/delete-an-email-address"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Admin",
+      "pages": [
+        {
+          "group": "Status",
+          "pages": ["api-reference/admin/status/status-page"]
+        },
+        {
+          "group": "User Management",
+          "pages": [
+            "api-reference/admin/user-management/get-a-list-of-users",
+            "api-reference/admin/user-management/create-a-new-user",
+            "api-reference/admin/user-management/get-a-user-by-id",
+            "api-reference/admin/user-management/delete-a-user-by-id"
+          ]
+        },
+        {
+          "group": "Audit Logs",
+          "pages": ["api-reference/admin/audit-logs/get-a-list-of-audit-logs"]
+        },
+        {
+          "group": "Metrics",
+          "pages": ["api-reference/admin/metrics/get-prometheus-metrics"]
+        }
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/hanko_io",
+    "github": "https://github.com/teamhanko",
+    "linkedin": "https://www.linkedin.com/company/teamhanko/"
+  },
+  "analytics": {
+    "plausible": {
+      "domain": "docs.hanko.io"
+    }
+  }
 }
