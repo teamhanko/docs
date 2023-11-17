@@ -44,6 +44,10 @@
     {
       "name": "Frontend SDK",
       "url": "https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/"
+    },
+    {
+      "name": "Standalone Passkey API",
+      "url": "passkey-api"
     }
   ],
   "api": {
@@ -137,7 +141,11 @@
     },
     {
       "group": "Community & Support",
-      "pages": ["community-support/get-help", "community-support/troubleshoot", "community-support/faq" ]
+      "pages": [
+        "community-support/get-help",
+        "community-support/troubleshoot",
+        "community-support/faq"
+      ]
     },
     {
       "group": "Tutorials",
@@ -146,6 +154,14 @@
     {
       "group": "API Documentation",
       "pages": ["api-reference/introduction"]
+    },
+    {
+      "group": "Standalone Passkey API",
+      "pages": [
+        "passkey-api/introduction",
+        "passkey-api/client-first-login-flow",
+        "passkey-api/faq"
+      ]
     },
     {
       "group": "Public",

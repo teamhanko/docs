@@ -1,0 +1,229 @@
+---
+title: Introduction
+description: The Passkey API adds passkey support to your existing auth system.
+---
+
+The Hanko Passkey API adds support for passkeys for **existing users** of your platform. It's designed to be used **together with your own auth system**, and can be used without any other Hanko product.
+
+Users cannot create an account through the Passkey API. Instead, the Passkey API enables your users to add passkeys to their existing account (they have to be logged in first).
+
+<Tip>
+Note that the Passkey API is not designed to be a full authentication solution — it's only intended to be used together with another auth system.
+
+If you need a full, **open-source** auth solution, check out [Hanko Auth](/introduction)
+
+</Tip>
+
+## What it looks like
+
+Most setups look something like the following:
+
+- your frontend/client the user is using with a device that  
+  [supports the Web Authentication API](https://caniuse.com/webauthn)
+- your backend that communicates with the Passkey API
+- the Passkey API, either [self-hosted](https://github.com/teamhanko/passkey-server) or on [Hanko Cloud](https://www.hanko.io/features/hanko-passkey-api)
+
+The Passkey API is designed to be used both from your backend and frontend:
+
+Some requests (e.g. logging in) can be made to the Passkey API directly from the frontend.
+These do not require a secret API key.
+
+All other requests that require a secret API key (e.g. registering a new passkey) should only be made from your backend. You should **never** leak that secret API key to the client.
+
+## Example implementation
+
+This is an example implementation showing how to use the Passkey API with Node.js. (You can use any language you want to, of course!)
+
+However, if you're already using JavaScript/TypeScript for your backend, you can use [\@teamhanko/passkey-backend-sdk](https://www.npmjs.com/package/@teamhanko/passkey-backend-sdk), which do all of the below for you.
+
+Otherwise, please make sure to always send JSON with `Content-Type: application/json`.
+
+As of writing, for the frontend, the Web Authentication API expects you to pass `ArrayBuffer` (instead of plain old objects) in a lot of places, which can be inconvenient.
+
+In the examples below we're using [@github/webauthn-json](https://github.com/github/webauthn-json#githubwebauthn-json) which is a wrapper around the Web Authentication API to make things easier
+
+---
+
+1. **Get your tenant ID**
+
+   The base URL for the Passkey API depends on your `tenant_id`.
+
+   You can [find your tenant ID in your Hanko Cloud account.](https://cloud.hanko.io/organizations)
+
+   [👉 Explanation for tenant ID](/passkey-api/faq#tenant-id-and-multitenancy)
+
+   If you self-host the Passkey API, there are endpoints that let you create, list, and manage tenants programmatically. [See the API reference](https://github.com/teamhanko/passkey-server/tree/main/spec)
+
+   &nbsp;
+
+2. **Add endpoints to start and finish passkey registration**
+
+   Registering passkeys is a two-step process. First, let's add an endpoint to our backend. This example uses Express.js, but you can use whatever language and framework you prefer.
+
+   **Backend:**
+
+   ```jsx
+   const tenantId = process.env.PASSKEY_TENANT_ID;
+   if (!tenantId) throw new Error("Missing PASSKEY_TENANT_ID");
+
+   const apiKey = process.env.PASSKEY_SECRET_API_KEY;
+   if (!apiKey) throw new Error("Missing PASSKEY_SECRET_API_KEY");
+
+   const baseUrl = `https://passkeys.hanko.io/${tenantId}`;
+   const headers = { apiKey, "Content-Type": "application/json" };
+
+   app.post("/passkey/start-registration", async (req, res) => {
+     // Remember: to register a passkey, the user needs to be logged in first.
+     //           Once the passkey is added to the user's account, they can
+     //           use it to log in.
+
+     // This is the currently logged in user:
+     const user = req.session.user;
+
+     // Send the id and name of the user stored in our DB.
+     // (both fields are required)
+     const creationOptions = await fetch(baseUrl + "/registration/initialize", {
+       method: "POST",
+       headers,
+       body: JSON.stringify({
+         user_id: user.id.toString(), // Must be a string!
+         username: user.username,
+       }),
+     }).then((res) => res.json());
+
+     // creationOptions is an object that can directly be passed to create()
+     // (the function that opens the "create passkey" dialog)
+     // in the frontend.
+     res.json(creationOptions);
+   });
+
+   app.post("/passkey/finalize-registration", async (req, res) => {
+     const data = await fetch(baseUrl + "/registration/finalize", {
+       method: "POST",
+       headers,
+       body: JSON.stringify(req.body), // Forward newly created credential
+     }).then((res) => res.json());
+
+     // The response from the Passkey API contains a JWT (`data.token`).
+     // What you do with this JWT is up to you.
+     //
+     //
+     // The JWT contains 4 claims:
+     // "sub": the user_id we used for "/registration/initialize".
+     //        you can use this to issue a session for the user, for example
+     //
+     // "cred": the credential_id (ID of the passkey the user chose)
+     //
+     // "aud": an array with a single string.
+     //        the string is the ID of the relying party (your app).
+     //        e.g. ["example.com"]
+     //
+     // "iat": the expiration date (very short)
+     //
+     //
+     // Here, we don't need to do anything with it, since the user already
+     // is logged in. In the login endpoints, later in this guide, we'll
+     // use the data contained in the JWT to create a session for our user.
+
+     res.redirect("/success");
+   });
+   ```
+
+   **Frontend:**
+
+   ```jsx
+   import { create, get } from "@github/webauthn-json";
+
+   async function registerPasskey() {
+     // Let's send a request to our backend to start the registration process.
+     // The response JSON can directly be passed to create(...) below.
+     const creationOptions = await fetch("/passkey/start-registration", {
+       method: "POST",
+     }).then((res) => res.json());
+
+     // Open "create passkey" dialog
+     const credential = await create(creationOptions);
+
+     // User successfully created a passkey on their device.
+     //
+     // The resulting `credential` object needs to be sent back to the
+     // Passkey API as-is, through our backend:
+     //
+     // frontend → backend → passkey API
+     return fetch("/passkey/finalize-registration", {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify(credential),
+     });
+   }
+   ```
+
+   Here's what the whole flow looks like:
+
+   <Frame>
+     <img src="/images/passkey-api/register-flow.png" />
+   </Frame>
+
+   As you can see, there's two steps here ("start" and "finalize"), which pass through the frontend, backend, and Passkey API.
+
+   The process looks very similar for logging in &mdash; it's also a two-step process where your frontend, backend, and the Passkey API are involved.
+
+   &nbsp;
+
+3. **Add endpoints to start and finish logging in**
+
+   Similar to how registering a passkey is a two-step process, so is logging in.
+
+   **Backend:**
+
+   ```jsx
+   app.post("/passkey/start-login", async (req, res) => {
+     const loginOptions = await fetch(baseUrl + "/login/initialize", {
+       method: "POST",
+       headers,
+     }).then((res) => res.json());
+
+     // loginOptions is an object that can directly be passed to get()
+     // (the function that opens the "select passkey" dialog)
+     // in the frontend.
+     res.json(loginOptions);
+   });
+
+   app.post("/passkey/finalize-login", async (req, res) => {
+     const data = await fetch(baseUrl + "/login/finalize", {
+       method: "POST",
+       headers,
+       body: JSON.stringify(req.body), // Credential the user selected
+     }).then((res) => res.json());
+
+     // Like when registering, data.token is a JWT that contains claims
+     // about the user (see above)
+
+     res.redirect("/success");
+   });
+   ```
+
+   **Frontend:**
+
+   ```jsx
+   async function loginWithPasskey() {
+     const loginOptions = await fetch("/passkey/start-login", {
+       method: "POST",
+     }).then((res) => res.json());
+
+     // Open "select passkey" dialog
+     const credential = await get(loginOptions);
+
+     // User selected a passkey to use.
+     //
+     // The returned `credential` object needs to be sent back to the
+     // Passkey API as-is.
+     return fetch("/passkey/finalize-login", {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify(credential),
+     });
+   }
+   ```
+
+   Note that for logging in, the server can also talk to the Passkey API directly, instead of going through your backend first. Whether you go with the server-first or client-first approach is up to preference. See [Client-First Login Flow](/passkey-api/client-first-login-flow)
