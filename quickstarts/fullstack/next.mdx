@@ -594,6 +594,11 @@ On the server side, you can extract the `userID` from the JWT. However, if you n
 
 The Hanko Admin API provides detailed information about the status, user management, metrics and more. To get data for a specific user, you'll need to call the `/users/{id}` endpoint, where id is the user id previously obtained from the JWT.
 
+<Info>
+Hanko Admin API is a paid feature and must be enabled separately. You also need an API key `secret` to access the Hanko Admin API. You can generate one under the `Settings/API Keys` section of your project.
+Keep in mind, that the API key `secret` is only showed once, so make sure to store it in a safe place, like an environmental variable as shown in the following example.
+</Info>
+
 <Tabs>
 <Tab title="Using JWT">
 ```tsx
