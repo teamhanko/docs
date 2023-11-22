@@ -15,7 +15,6 @@ description: Learn how to quickly add authentication and user profile in your Ne
 ></iframe>
 </Frame>
 
-
 ## Install `@teamhanko/hanko-elements`
 
 Once you've initialized your Next app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
@@ -410,9 +409,230 @@ export const config = {
 };
 ```
 
+## Getting User and Session Data
+
+### Client Side
+
+We will create two custom hooks to fetch the current user's data and session data using `@teamhanko/hanko-elements`. The `useUserData` hook leverages the `hanko.user.getCurrent()` method to retrieve the currently logged-in user's data. 
+
+On the other hand, the `useSessionData` hook uses the `hanko.session.isValid()` and `hanko.session.get()` methods to validate and fetch the current session data.
+
+<Tabs>
+<Tab title="useUserData">
+```tsx hooks/useUserData.ts
+import { useState, useEffect } from "react";
+import { Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || "";
+
+interface HankoUser {
+  id: string;
+  email: string;
+  loading: boolean;
+  error: string | null;
+}
+
+export function useUserData(): HankoUser {
+  const [hanko, setHanko] = useState<Hanko>();
+  const [userState, setUserState] = useState<HankoUser>({
+    id: "",
+    email: "",
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+      setHanko(new Hanko(hankoApi))
+    );
+  }, []);
+
+  useEffect(() => {
+    hanko?.user
+      .getCurrent()
+      .then(({ id, email }) => {
+        setUserState({ id, email, loading: false, error: null });
+      })
+      .catch((error) => {
+        setUserState((prevState) => ({ ...prevState, loading: false, error }));
+      });
+  }, [hanko]);
+
+  return userState;
+}
+```
+</Tab>
+
+<Tab title="useSessionData">
+```tsx hooks/useSessionData.ts
+import { useState, useEffect } from "react";
+import { Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || "";
+
+interface HankoSession {
+  userID: string;
+  jwt: string;
+  isValid: boolean;
+  loading: boolean;
+  error: string | null;
+}
+
+export function useSessionData(): HankoSession {
+  const [hanko, setHanko] = useState<Hanko>();
+  const [sessionState, setSessionState] = useState<HankoSession>({
+    userID: "",
+    jwt: "",
+    isValid: false,
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+      setHanko(new Hanko(hankoApi))
+    );
+  }, []);
+
+  useEffect(() => {
+    if (hanko) {
+      const isValid = hanko.session.isValid();
+      const session = hanko.session.get();
+
+      if (isValid && session) {
+        const { userID, jwt = "" } = session;
+        setSessionState({
+          userID,
+          jwt,
+          isValid,
+          loading: false,
+          error: null,
+        });
+      } else {
+        setSessionState((prevState) => ({
+          ...prevState,
+          isValid: false,
+          loading: false,
+          error: "Invalid session",
+        }));
+      }
+    }
+  }, [hanko]);
+
+  return sessionState;
+}
+```
+</Tab>
+</Tabs>
+
+This is how you can use them according to your needs.
+
+
+<Tabs>
+<Tab title="App directory">
+```tsx components/userData.tsx
+"use client"
+
+import { useUserData } from "@/hooks/useUserData";
+import { useSessionData } from "@/hooks/useSessionData";
+
+const UserData = () => {
+  const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
+  const { userID, jwt, isValid, loading: sessionDataLoading, error: sessionDataError } = useSessionData();
+
+  if (userDataLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <div>User id: {id}</div>
+      <div>User email: {email}</div>
+    </div>
+  );
+};
+
+export default UserData;
+```
+
+</Tab>
+<Tab title="Pages directory">
+```tsx components/userData.tsx
+import { useUserData } from "@/hooks/useUserData";
+import { useSessionData } from "@/hooks/useSessionData";
+
+const UserData = () => {
+  const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
+  const { userID, jwt, isValid, loading: sessionDataLoading, error: sessionDataError } = useSessionData();
+
+  if (userDataLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <div>User id: {id}</div>
+      <div>User email: {email}</div>
+    </div>
+  );
+};
+
+export default UserData;
+```
+</Tab>
+</Tabs>
+
+### Server Side
+
+On the server side, you can extract the `userID` from the JWT. However, if you need to retrieve the complete user details, you'll have to utilize the [Hanko Admin API](https://docs.hanko.io/api-reference/admin/user-management/get-a-user-by-id).
+
+The Hanko Admin API provides detailed information about the status, user management, metrics and more. To get data for a specific user, you'll need to call the `/users/{id}` endpoint, where id is the user id previously obtained from the JWT.
+
+<Info>
+The Hanko Admin API is a paid feature and must be enabled explicitly. You also need an API key `secret` to access the Hanko Admin API. You can generate one under the `Settings/API Keys` section of your project.
+Keep in mind, that the API key `secret` is only shown once, so make sure to store it in a safe place, like an environmental variable as shown in the following example.
+</Info>
+
+<Tabs>
+<Tab title="Using JWT">
+```tsx
+import { cookies } from "next/headers";
+import * as jose from "jose";
+
+export async function userId() {
+  const token = cookies().get("hanko")?.value;
+  const payload = jose.decodeJwt(token ?? "");
+
+  const userID = payload.sub;
+  return userID;
+}
+```
+
+</Tab>
+<Tab title="Using Admin API">
+```ts
+const getUserData = async () => {
+  const adminAPI = process.env.ADMIN_API;
+  const adminSecret = process.env.ADMIN_SECRET;
+  const options = {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${adminSecret}`,
+    },
+  };
+
+  const response = await fetch(`${adminAPI}/users/${userID}`, options);
+
+  return response.json();
+};
+
+const userData = await getUserData();
+console.log("user data:", userData);
+```
+</Tab>
+</Tabs>
+
 ## Try it yourself
-
-
   <Card
     title="Next.js example (App router)"
     href="https://github.com/teamhanko/hanko-nextjs-starter"
