@@ -413,9 +413,9 @@ export const config = {
 
 ### Client Side
 
-We will create two custom hooks to fetch the current user's data and session data from `@teamhanko/hanko-elements`. The `useUserData` hook leverages the `hanko.user.getCurrent()` method to retrieve the currently logged-in user's data. 
+We will create two custom hooks to fetch the current user's data and session data using `@teamhanko/hanko-elements`. The `useUserData` hook leverages the `hanko.user.getCurrent()` method to retrieve the currently logged-in user's data. 
 
-On the other hand, the `useSessionData` hook uses `hanko.session.isValid()` and `hanko.session.get()` methods from Hanko to validate and fetch the current session data.
+On the other hand, the `useSessionData` hook uses the `hanko.session.isValid()` and `hanko.session.get()` methods to validate and fetch the current session data.
 
 <Tabs>
 <Tab title="useUserData">
@@ -533,11 +533,8 @@ This is how you can use them according to your needs.
 ```tsx components/userData.tsx
 "use client"
 
-import dynamic from 'next/dynamic';
 import { useUserData } from "@/hooks/useUserData";
 import { useSessionData } from "@/hooks/useSessionData";
-
-const HankoProfile = dynamic(() => import('@/components/hanko/HankoProfile'), { ssr: false })
 
 const UserData = () => {
   const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
@@ -561,11 +558,8 @@ export default UserData;
 </Tab>
 <Tab title="Pages directory">
 ```tsx components/userData.tsx
-import dynamic from 'next/dynamic';
 import { useUserData } from "@/hooks/useUserData";
 import { useSessionData } from "@/hooks/useSessionData";
-
-const HankoProfile = dynamic(() => import('@/components/hanko/HankoProfile'), { ssr: false })
 
 const UserData = () => {
   const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
@@ -590,13 +584,13 @@ export default UserData;
 
 ### Server Side
 
-On the server side, you can extract the `userID` from the JWT. However, if you need to retrieve the complete user details, you'll have to utilize the [Hanko Admin API](https://docs.hanko.io/api-reference/admin/status/status-page).
+On the server side, you can extract the `userID` from the JWT. However, if you need to retrieve the complete user details, you'll have to utilize the [Hanko Admin API](https://docs.hanko.io/api-reference/admin/user-management/get-a-user-by-id).
 
 The Hanko Admin API provides detailed information about the status, user management, metrics and more. To get data for a specific user, you'll need to call the `/users/{id}` endpoint, where id is the user id previously obtained from the JWT.
 
 <Info>
-Hanko Admin API is a paid feature and must be enabled separately. You also need an API key `secret` to access the Hanko Admin API. You can generate one under the `Settings/API Keys` section of your project.
-Keep in mind, that the API key `secret` is only showed once, so make sure to store it in a safe place, like an environmental variable as shown in the following example.
+The Hanko Admin API is a paid feature and must be enabled explicitly. You also need an API key `secret` to access the Hanko Admin API. You can generate one under the `Settings/API Keys` section of your project.
+Keep in mind, that the API key `secret` is only shown once, so make sure to store it in a safe place, like an environmental variable as shown in the following example.
 </Info>
 
 <Tabs>

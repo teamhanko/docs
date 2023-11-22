@@ -309,14 +309,14 @@ You can customize the appearance of `hanko-auth` and `hanko-profile` components 
 
 ### Client Side
 
-We will create two custom hooks to fetch the current user's data and session data from `@teamhanko/hanko-elements`. The `useUserData` hook leverages the `hanko.user.getCurrent()` method to retrieve the currently logged-in user's data. 
+We will create two custom hooks to fetch the current user's data and session data using `@teamhanko/hanko-elements`. The `useUserData` hook leverages the `hanko.user.getCurrent()` method to retrieve the currently logged-in user's data. 
 
-On the other hand, the `useSessionData` hook uses `hanko.session.isValid()` and `hanko.session.get()` methods from Hanko to validate and fetch the current session data.
+On the other hand, the `useSessionData` hook uses the `hanko.session.isValid()` and `hanko.session.get()` methods to validate and fetch the current session data.
 
 <Tabs>
 <Tab title="useUserData">
 ```tsx hooks/useUserData.ts
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Hanko } from "@teamhanko/hanko-elements";
 
 const hankoApi = process.env.REACT_APP_HANKO_API_URL;
@@ -330,19 +330,13 @@ interface HankoUser {
 }
 
 export function useUserData(): HankoUser {
-  const [hanko, setHanko] = useState<Hanko>();
+  const hanko = useMemo(() => new Hanko(hankoApi), []);
   const [userState, setUserState] = useState<HankoUser>({
     id: "",
     email: "",
     loading: true,
     error: null,
   });
-
-  useEffect(() => {
-    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-      setHanko(new Hanko(hankoApi))
-    );
-  }, []);
 
   useEffect(() => {
     hanko?.user
@@ -362,7 +356,7 @@ export function useUserData(): HankoUser {
 
 <Tab title="useSessionData">
 ```tsx hooks/useSessionData.ts
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Hanko } from "@teamhanko/hanko-elements";
 
 const hankoApi = process.env.REACT_APP_HANKO_API_URL;
@@ -377,7 +371,7 @@ interface HankoSession {
 }
 
 export function useSessionData(): HankoSession {
-  const [hanko, setHanko] = useState<Hanko>();
+  const hanko = useMemo(() => new Hanko(hankoApi), []);
   const [sessionState, setSessionState] = useState<HankoSession>({
     userID: "",
     jwt: "",
@@ -385,12 +379,6 @@ export function useSessionData(): HankoSession {
     loading: true,
     error: null,
   });
-
-  useEffect(() => {
-    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-      setHanko(new Hanko(hankoApi))
-    );
-  }, []);
 
   useEffect(() => {
     if (hanko) {
@@ -426,11 +414,8 @@ export function useSessionData(): HankoSession {
 This is how you can use them according to your needs.
 
 ```tsx components/userData.tsx
-import dynamic from 'next/dynamic';
 import { useUserData } from "@/hooks/useUserData";
 import { useSessionData } from "@/hooks/useSessionData";
-
-const HankoProfile = dynamic(() => import('@/components/hanko/HankoProfile'), { ssr: false })
 
 const UserData = () => {
   const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
