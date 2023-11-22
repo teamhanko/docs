@@ -166,7 +166,7 @@
     },
     {
       "group": "Integrations",
-      "pages": ["passkey-api/next-auth"]
+      "pages": ["passkey-api/js-sdk", "passkey-api/next-auth"]
     },
     {
       "group": "Public",
