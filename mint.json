@@ -159,9 +159,14 @@
       "group": "Standalone Passkey API",
       "pages": [
         "passkey-api/introduction",
+        "passkey-api/example-implementation",
         "passkey-api/client-first-login-flow",
         "passkey-api/faq"
       ]
+    },
+    {
+      "group": "Integrations",
+      "pages": ["passkey-api/js-sdk", "passkey-api/next-auth"]
     },
     {
       "group": "Public",
