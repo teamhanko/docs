@@ -169,6 +169,41 @@
       "pages": ["passkey-api/js-sdk", "passkey-api/next-auth"]
     },
     {
+      "group": "API Reference",
+      "pages": [
+        {
+          "group": "Signup",
+          "pages": [
+            "passkey-api/reference/credentials/start-passkey-registration",
+            "passkey-api/reference/credentials/finish-passkey-registration"
+          ]
+        },
+        {
+          "group": "Login",
+          "pages": [
+            "passkey-api/reference/start-login",
+            "passkey-api/reference/finish-login"
+          ]
+        },
+        {
+          "group": "Credentials",
+          "pages": [
+            "passkey-api/reference/credentials/list-credentials",
+            "passkey-api/reference/credentials/update-credential",
+            "passkey-api/reference/remove-credential"
+          ]
+        },
+        {
+          "group": "Transactions",
+          "pages": [
+            "passkey-api/reference/initialize-a-transaction",
+            "passkey-api/reference/finalize-transaction"
+          ]
+        },
+        "passkey-api/reference/credentials/well-known-jwks"
+      ]
+    },
+    {
       "group": "Public",
       "pages": [
         {
