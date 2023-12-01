@@ -1,0 +1,232 @@
+---
+sidebarTitle: Supabase
+title: Using Hanko with Supabase
+description: This guide showcases how to add new user info, like user ID and email to the Supabase database, when users sign up with Hanko. Jump to [Nextjs guide](/quickstarts/fullstack/next) to learn how to add Hanko Auth in your Next App.
+---
+
+We're using Next.js in this guide, but don't worry, you can apply the same concepts to other frameworks or languages. We're working on adding examples with different frameworks, so stay tuned!
+
+<Steps>
+  <Step title="Create an account on Supabase">
+    Create an account on [Supabase](https://supabase.com/) if you haven't yet.
+  </Step>
+  <Step title="Create a new project">
+    Once you've created an account, you'll be redirected to the dashboard. Click
+    on 'New Project' to create a new project.
+    <Frame>
+      <img
+        src="/images/supabase/create-new-project.png"
+        alt="create new project"
+        width="500"
+        style={{ borderRadius: "0.5rem" }}
+      />
+    </Frame>
+  </Step>
+  <Step title="Create users table">
+    Now, on the project dashboard, choose 'Database' and create a new 'users' table.
+    We'll be using this table to add new user info on signup. In addition to the
+    default 'id' column, add 'user_id' and 'email' columns.
+    <Frame>
+      <img
+        src="/images/supabase/create-new-table.png"
+        alt="create new project"
+        width="500"
+        style={{ borderRadius: "0.5rem" }}
+      />
+    </Frame>
+  </Step>
+  <Step title="Get URL and service_role key from Supabase and add it to your project">
+    Now in the project dashboard, select 'Project Settings' from the left sidebar and then click on 'API'. Copy the 'URL' and 'service_role' key and paste them in your `.env.local` file.
+    ```sh .env.local
+    NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+
+    SUPABASE_PROJECT_URL=YOUR_SUPABASE_PROJECT_URL
+    SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
+    ```
+
+  </Step>
+  <Step title="Install Supabase JavaScript Client">
+    Assuming you've already set up Hanko Auth, you'll need to install supabase to your app.
+
+    <CodeGroup>
+    ```bash npm
+    npm install @supabase/supabase-js
+    ```
+
+    ```bash pnpm
+    pnpm add @supabase/supabase-js
+    ```
+
+    ```bash yarn
+    yarn add @supabase/supabase-js
+    ```
+    </CodeGroup>
+
+  </Step>
+
+  <Step title="Set up Supabase Client">
+
+    ```ts lib/supabase.ts
+    import { createClient } from "@supabase/supabase-js";
+
+    export const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!
+    );
+    ```
+
+  </Step>
+  <Step title="Create an API">
+    Next up, you'll create an api to add new user info to the users table.
+
+  ```ts app/api/create-user/route.ts
+  import { NextResponse } from "next/server";
+  import { supabase } from "@/lib/supabase";
+
+  export async function POST(req: Request, res: Response) {
+    try {
+      const user = await req.json();
+
+      if (!user) {
+        return new NextResponse("Unauthorized", { status: 401 });
+      }
+
+      let supauser;
+
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("user_id", user.id)
+          .single();
+
+        if (error) {
+          console.error(error);
+        }
+
+        supauser = data;
+
+        if (!supauser) {
+          const { data, error } = await supabase
+            .from("users")
+            .insert([{ user_id: user.id, email: user.email }]);
+
+          if (error) {
+            console.error(error);
+          }
+
+          supauser = data;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      const user_data = {
+        ...user,
+        id: supauser?.id,
+      };
+
+      return new NextResponse(JSON.stringify(user_data), { status: 200 });
+    } catch (error) {
+      console.error("[CREATEUSER_ERROR]", error);
+      return new NextResponse("Internal Error", { status: 500 });
+    }
+  }
+  ```
+
+  </Step>
+  <Step title="Use the API in HankoAuth component">
+    Use the API to add a new user to the 'users' table, as soon as user is authenticated and `onAuthFlowCompleted` is triggered.
+
+    ```tsx components/hanko/HankoAuth.tsx
+    "use client";
+
+    import { useEffect, useCallback, useState } from "react";
+    import { useRouter } from "next/navigation";
+    import { register, Hanko } from "@teamhanko/hanko-elements";
+
+    const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
+
+    export default function HankoAuth() {
+      const router = useRouter();
+
+      const [hanko, setHanko] = useState<Hanko>();
+
+      useEffect(() => {
+        import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+          setHanko(new Hanko(hankoApi))
+        );
+      }, []);
+
+      const redirectAfterLogin = useCallback(() => {
+        // successfully logged in, redirect to a page in your application
+        router.replace("/dashboard");
+      }, [router]);
+
+      useEffect(
+        () =>
+          hanko?.onAuthFlowCompleted(async () => {
+            const user = await hanko.user.getCurrent()
+
+            const fetchData = async () => {
+              if (!user) {
+                console.error('No user data')
+                return
+              }
+              try {
+                const response = await fetch('/api/create-user', {
+                  method: 'POST',
+                  body: JSON.stringify(user),
+                })
+
+                if (!response.ok)
+                  throw new Error(`HTTP error! status: ${response.status}`)
+              } catch (error) {
+                console.error('Fetch Error: ', error)
+              }
+            }
+            await fetchData()
+            redirectAfterLogin();
+          }),
+        [hanko, redirectAfterLogin]
+      );
+
+      useEffect(() => {
+        register(hankoApi).catch((error) => {
+          console.error(error);
+        });
+      }, []);
+
+      return <hanko-auth />;
+    }
+    ```
+
+  </Step>
+  <Step title="Try it yourself">
+  <Card
+    title="Supabase example with Nextjs"
+    href="https://github.com/teamhanko/hanko-supabase"
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-external-link"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"></path>
+        <path d="M11 13l9 -9"></path>
+        <path d="M15 4h5v5"></path>
+      </svg>
+    }
+  >
+    Full source code available on our GitHub
+  </Card>
+  </Step>
+</Steps>

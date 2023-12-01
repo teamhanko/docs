@@ -132,6 +132,10 @@
             "guides/hanko-elements/customize-appearance",
             "guides/hanko-elements/translations"
           ]
+        },
+        {
+          "group": "Databases",
+          "pages": ["guides/databases/supabase"]
         }
       ]
     },
