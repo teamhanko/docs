@@ -68,6 +68,7 @@
               "group": "Full Stack",
               "pages": [
                 "quickstarts/fullstack/next",
+                "quickstarts/fullstack/remix",
                 "quickstarts/fullstack/nuxt",
                 "quickstarts/fullstack/sveltekit",
                 "quickstarts/fullstack/fresh"
