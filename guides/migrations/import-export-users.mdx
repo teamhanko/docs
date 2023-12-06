@@ -1,0 +1,43 @@
+---
+title: Import and export users
+description: Learn how to import users from other platforms to Hanko, as well as how to export users from Hanko.
+---
+
+## Import users
+
+If you're migrating from other auth providers to Hanko, you can import your existing users directly to Hanko Cloud Console.
+
+<Note>User IDs should be in UUID format.</Note>
+
+<Steps>
+  <Step title="Head over to Hanko Cloud">
+    Navigate over to [Hanko Cloud](https://cloud.hanko.io), choose the project
+    and click on 'Users' on the left sidebar.
+  </Step>
+  <Step title="Click on import">
+    <Frame>
+      <img
+        src="/images/import-export-users/click-import.png"
+        alt="click import"
+        width="500"
+        style={{ borderRadius: "0.5rem" }}
+      />
+    </Frame>
+  </Step>
+  <Step title="Upload the file and import">
+    <Frame>
+      <img
+        src="/images/import-export-users/upload-file.png"
+        alt="click import"
+        width="500"
+        style={{ borderRadius: "0.5rem" }}
+      />
+    </Frame>
+  </Step>
+</Steps>
+
+## Export users
+
+You can use the [Hanko Admin API](https://docs.hanko.io/api-reference/admin/user-management/get-a-list-of-users) to retrieve a list of users with all their details, for export purposes.
+
+<Note>Hanko Admin API is a paid feature.</Note>
