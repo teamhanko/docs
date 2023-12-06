@@ -136,6 +136,10 @@
         {
           "group": "Databases",
           "pages": ["guides/databases/supabase"]
+        },
+        {
+          "group": "Migrations",
+          "pages": ["guides/migrations/import-export-users"]
         }
       ]
     },
