@@ -36,6 +36,41 @@ If you're migrating from other auth providers to Hanko, you can import your exis
   </Step>
 </Steps>
 
+<Note>
+
+The file you're importing should be structured as a JSON array of objects. Each object within this array represents a user with their respective details. For a better understanding of how to structure your user data, refer to this [schema](https://raw.githubusercontent.com/teamhanko/hanko/backend/v0.9.1/backend/json_schema/hanko.user_import.json).
+
+```json users.json
+[
+  {
+    "user_id": "d0f8fe0f-9fd0-4974-a927-63aaa54be787",
+    "emails": [
+      {
+        "address": "arvidwalsh@schumm.biz",
+        "is_primary": true,
+        "is_verified": true
+      }
+    ],
+    "created_at": "2023-07-11T13:41:50.290862Z",
+    "updated_at": "2023-07-11T13:41:50.290862Z"
+  },
+  {
+    "user_id": "c8d1628d-9258-4686-9063-1334fc7b0a7a",
+    "emails": [
+      {
+        "address": "horaciosteuber@emmerich.io",
+        "is_primary": true,
+        "is_verified": true
+      }
+    ],
+    "created_at": "2023-07-11T13:41:50.290872Z",
+    "updated_at": "2023-07-11T13:41:50.290872Z"
+  }
+]
+```
+
+</Note>
+
 ## Export users
 
 You can use the [Hanko Admin API](https://docs.hanko.io/api-reference/admin/user-management/get-a-list-of-users) to retrieve a list of users with all their details, for export purposes.
