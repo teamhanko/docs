@@ -86,8 +86,9 @@
             {
               "group": "Backend",
               "pages": [
-                "quickstarts/backend/go",
                 "quickstarts/backend/node",
+                "quickstarts/backend/bun",
+                "quickstarts/backend/go",
                 "quickstarts/backend/python",
                 "quickstarts/backend/deno"
               ]
