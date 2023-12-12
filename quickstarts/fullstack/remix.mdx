@@ -48,9 +48,9 @@ export { register, Hanko };
 
 ## Add `<hanko-auth>` component
 
-The `<hanko-auth>` web component adds a login interface to your app. This code defines a `HankoAuth` component in the `login` route. 
+The `<hanko-auth>` web component adds a login interface to your app. The following code example defines a `HankoAuth` component in the `login` route. 
 
-It uses the register function from `hanko.client.ts` to register Hanko with the provided URL. On successful registration, it sets the hanko state. When hanko is set, it sets up a callback for when the authentication flow is completed, redirecting the user to the dashboard.
+It uses the register function from `hanko.client.ts` to register `<hanko-auth>` component with the brower's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). When the authentication flow is completed, a callback is set up to redirect the user to the dashboard.
 
 ```tsx routes/login.tsx
 import { useNavigate, useLoaderData } from "@remix-run/react";
@@ -266,7 +266,7 @@ You can customize the appearance of `hanko-auth` and `hanko-profile` components 
 
 ## Securing routes
 
-To add JWT verification with Hanko in your Remix application, we're using [jose library](https://www.npmjs.com/package/jose). However, you're free to choose any other suitable library. 
+To add JWT verification with Hanko in your Remix application, we're using the [jose](https://www.npmjs.com/package/jose) library. However, you're free to choose any other suitable library. 
 
 Below we define a `validateJwtAndFetchUserId` function which validates the JWT and fetches the user ID. This will also be used to protect routes and ensure only authenticated users can access certain parts of the application.
 
@@ -306,7 +306,7 @@ export async function validateJwtAndFetchUserId(request: Request) {
 }
 ```
 
-This is how you can use it in your routes
+This is how you can use it in your routes:
 
 ```tsx app/routes/protected.tsx
 import { type LoaderFunction, json, redirect } from '@remix-run/node';
