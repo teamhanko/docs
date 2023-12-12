@@ -4,7 +4,11 @@ title: Next.js with Auth.js
 
 If you already have a Next.js app set up with Auth.js, you can easily add passkeys to your app using `@teamhanko/passkeys-next-auth-provider`.
 
-In your `pages/api/auth/[...nextauth].ts`:
+Note that there's an [example repo](https://github.com/teamhanko/passkeys-example-next-auth) that showcases a Next.js app with all of the steps in this guide already implemented.
+
+## Step one
+
+Add `PasskeyProvider` to your `pages/api/auth/[...nextauth].ts`:
 
 ```ts
 import {
@@ -34,26 +38,136 @@ export default NextAuth({
 });
 ```
 
-In one of your components:
+## Step two: allow your users to register passkeys as a login method for their account
+
+Your users will have to add passkeys to their account somehow. It's up to you how and where you let them do this, but typically this would be a button on an "Account Settings" page.
+
+On your backend, you'll have to call `tenant({ ... }).registration.initialize()` and `.registration.finalize()` to create and store a passkey for your user.
+
+On your frontend, you'll have to call `create()` from `@github/webauthn-json` with the object `.registration.initialize()` returned.
+
+`create()` will return a `PublicKeyCredential` object, which you'll have to pass to `.registration.finalize()`.
+
+**Backend:**
+
+```ts
+"use server";
+
+// This is *your* server-side code; you need to implement this yourself.
+// NextAuth takes care of logging in the user after they have registered their passkey.
+
+import { authOptions } from "./pages/api/auth/[...nextauth]"; // Only required because of a NextAuth limitation
+import { getServerSession } from "next-auth";
+
+const passkeyApi = tenant({
+  apiKey: process.env.PASSKEYS_API_KEY,
+  tenantId: process.env.PASSKEYS_TENANT_ID,
+});
+
+export async function startServerPasskeyRegistration() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Not logged in");
+
+  const createOptions = await passkeyApi.registration.initialize({
+    userId: session.user.id,
+    username: session.user.name,
+  });
+
+  return createOptions;
+}
+
+export async function finishServerPasskeyRegistration(credential: any) {
+  const session = await getServerSession(authOptions);
+  if (!session) throw new Error("Not logged in");
+
+  await passkeyApi.registration.finalize(credential);
+
+  // Now the user has registered their passkey and can use it to log in.
+  // You don't have to do anything else here.
+}
+```
+
+**Frontend:**
+
+```ts
+// This is *your* client-side code. Auth.js takes care of logging in the user after they have registered their passkey using this function:
+
+export async function registerPasskey() {
+  const createOptions = await startServerPasskeyRegistration();
+
+  // Open "register passkey" dialog
+  const credential = await create(createOptions as any);
+
+  await finishServerPasskeyRegistration(credential);
+
+  // Now the user has registered their passkey and can use it to log in.
+}
+```
+
+## Step three: Allow your users to log in with passkeys
+
+Let's add a button that triggers the "Sign in with passkey" dialog:
 
 ```jsx
-import { signInWithPasskey } from "@teamhanko/passkeys-next-auth-provider";
+import { signInWithPasskey } from "@teamhanko/passkeys-next-auth-provider/client";
 
 export default LoginButton() {
 	return (
-		<button onClick={() => signInWithPasskey({ tenantId: "<your tenant id>" })} />
+		<button onClick={() => signInWithPasskey({ tenantId: "<your tenant id>" })}>
+			Sign in with passkey
+		</button>
 	);
 }
 ```
 
 {/* TODO update link to directly go to settings once available */}
-**If you're using Hanko Cloud,** you can <a href="https://cloud.hanko.io/" target="_blank">get your tenant ID from your dashboard</a>.
+{/* **If you're using Hanko Cloud,** you can <a href="https://cloud.hanko.io/" target="_blank">get your tenant ID from your dashboard</a>. */}
 
-If you're not using Hanko Cloud:
-
-{/* TODO link to admin API */}
+If you're self-hosting:
 
 1. make sure to pass the `baseUrl` to both  
    `tenant` (in `[...nextauth].ts`) and  
    `signInWithPasskey()` (in your component).
-2. get your tenant ID via the admin API
+2. get your tenant ID via the admin API {/* TODO link to admin API */}
+
+---
+
+**That's it!** Your users can now log in with passkeys.
+
+## Optional: Autofill support
+
+If you don't want to add a button just for passkeys, you can add autofill support to your username (or email) fields:
+
+<Frame>
+  <img src="/images/passkey-api/autofill.png" />
+</Frame>
+
+Clicking on any passkey in the autofill popup will immediately log the user in, going through the same flow as if they had clicked the "Sign in with passkey" button earlier in this guide.
+
+To add autofill support:
+
+- add `autoComplete="username webauthn"` to your username field
+- call `signInWithPasskey.conditional()` when the login form loads
+
+**Example:**
+
+```jsx
+export default function LoginForm() {
+  // Call signInWithPasskey.conditional() once, when LoginForm mounts.
+  //
+  // .conditional() returns a cleanup function.
+  // Please make sure to return it from useEffect:
+  useEffect(() => {
+    return signInWithPasskey.conditional({ tenantId: "<your tenant id>" });
+  }, []);
+
+  return (
+    <form>
+      {/* Add "webauthn" to input autoComplete: */}
+      <input autoComplete="username webauthn" />
+      <input type="password" placeholder="Password" />
+      <button type="submit">Log in</button>
+    </form>
+  );
+}
+```

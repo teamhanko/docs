@@ -1,0 +1,99 @@
+---
+title: Example Payment Transaction
+description: How to use passkeys to secure a payment transaction
+---
+
+In the last section you learned how to use the Passkey API in a vanilla js way without any SDK. This example shows you
+how to use the Passkey API to secure payment transactions. If you skipped the last section, we recommend you to read it
+as we will referring to settings and variables.
+
+<Warning>
+  Be aware that all transaction API endpoints are secured with your API key.
+</Warning>
+
+---
+
+1. **Add endpoints to start a transaction**
+
+Every transaction requires a user ID, a transaction ID and the transaction data to be performed.
+
+**Backend:**
+
+```jsx
+app.post("/passkey/start-transaction", async (req, res) => {
+  // Remember: to start a transaction, the user needs to be logged in first AND have a registered passkey.
+
+  // This is the currently logged-in user:
+  const user = req.session.user
+
+  /*
+    The transaction body can look like this:
+    {
+      transactionId: "your-transaction-identifier",
+      transactionData: {
+        amount: 123.45,
+        usedFor: "Buying a Hanko Cloud membership"
+        ...
+      }
+    }
+   */
+  const transactionBody = req.body
+
+  const transactionOptions = await fetch(baseUrl + "/transaction/initialize", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      user_id: user.id.toString(), // must be a string!
+      transaction_id: transactionBody.transactionId,
+      transaction_data: transactionBody.transactionData,
+    })
+  }).then((res) => res.json());
+
+  // transactionOptions is an object that can directly be passed to get()
+  // (the function that opens the "select passkey" dialog)
+  // in the frontend.
+  res.json(transactionOptions);
+});
+
+app.post("/passkey/finalize-transaction", async (req, res) => {
+  const data = await fetch(baseUrl + "/transaction/finalize", {
+    method: "POST",
+    headers,
+    body: JSON.stringify(req.body), // Credential the user selected
+  }).then((res) => res.json());
+
+  // Additional to the user claims the JWT contains a trans-claim which contains the transaction_id
+
+  res.redirect("/success");
+});
+   ```
+
+**Frontend:**
+
+```jsx
+async function transactionWithPasskey(amount, usedFor) {
+  const transactionOptions = await fetch("/passkey/start-transaction", {
+    method: "POST",
+    body: JSON.stringify({
+      transactionId: "unique-transaction-identifier",
+      transactionData: {
+        amount,
+        usedFor
+      }
+    })
+  }).then((res) => res.json());
+
+  // Open "select passkey" dialog
+  const credential = await get(transactionOptions);
+
+  // User selected a passkey to use.
+  //
+  // The returned `credential` object needs to be sent back to the
+  // Passkey API as-is.
+  return fetch("/passkey/finalize-transaction", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credential),
+  });
+}
+```

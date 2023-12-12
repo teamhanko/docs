@@ -87,8 +87,9 @@
             {
               "group": "Backend",
               "pages": [
-                "quickstarts/backend/go",
                 "quickstarts/backend/node",
+                "quickstarts/backend/bun",
+                "quickstarts/backend/go",
                 "quickstarts/backend/python",
                 "quickstarts/backend/deno"
               ]
@@ -137,6 +138,10 @@
         {
           "group": "Databases",
           "pages": ["guides/databases/supabase"]
+        },
+        {
+          "group": "Migrations",
+          "pages": ["guides/migrations/import-export-users"]
         }
       ]
     },
@@ -165,6 +170,7 @@
       "pages": [
         "passkey-api/introduction",
         "passkey-api/example-implementation",
+        "passkey-api/example-transaction",
         "passkey-api/client-first-login-flow",
         "passkey-api/faq"
       ]
