@@ -34,10 +34,6 @@
   },
   "tabs": [
     {
-      "name": "Tutorials",
-      "url": "tutorials"
-    },
-    {
       "name": "API Reference",
       "url": "api-reference"
     },
@@ -48,6 +44,10 @@
     {
       "name": "Standalone Passkey API",
       "url": "passkey-api"
+    },
+    {
+      "name": "Tutorials",
+      "url": "tutorials"
     }
   ],
   "api": {
@@ -158,10 +158,6 @@
       ]
     },
     {
-      "group": "Tutorials",
-      "pages": ["tutorials/introduction", "tutorials/nextjs-todo"]
-    },
-    {
       "group": "API Documentation",
       "pages": ["api-reference/introduction"]
     },
@@ -174,6 +170,10 @@
         "passkey-api/client-first-login-flow",
         "passkey-api/faq"
       ]
+    },
+     {
+      "group": "Tutorials",
+      "pages": ["tutorials/introduction", "tutorials/nextjs-todo"]
     },
     {
       "group": "Integrations",
