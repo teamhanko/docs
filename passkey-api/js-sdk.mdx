@@ -31,7 +31,19 @@ pnpm add @teamhanko/passkeys-sdk
 
 A `tenant` is an API client instance for one tenant of the Hanko Passkey API.
 
-[👉 See multitenancy](/passkey-api/faq#tenant-id-and-multitenancy)
+<Accordion title="See multitenancy">
+
+If the app you’re building supports organizations, teams, or anything similar, you will likely have heard of multitenancy.
+
+The Passkey API supports multitenancy as well — you can create tenants (a.k.a. organizations, teams, …) and add the passkeys of users exclusively to those tenants. Then your users will only be able to log in with passkeys specifically for that tenant.
+
+For example: In your app, a user is part of two teams: the “ACME Corp.” and the “A-Team.”
+
+They create a passkey to log into “ACME Corp.”
+
+That passkey will only work for the “ACME Corp.”, not the “A-Team”.
+
+</Accordion>
 
 {/* TODO "if you use Hanko Cloud, [copy your config object from the dashboard](link to dashboard)" */}
 

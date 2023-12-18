@@ -1,16 +1,56 @@
 ---
 title: Next.js with Auth.js
+description: Learn how to add passkeys to your Next.js app which already uses Auth.js for authentication.
 ---
 
-If you already have a Next.js app set up with Auth.js, you can easily add passkeys to your app using `@teamhanko/passkeys-next-auth-provider`.
+<Steps>
 
-Note that there's an [example repo](https://github.com/teamhanko/passkeys-example-next-auth) that showcases a Next.js app with all of the steps in this guide already implemented.
+<Step title="Install passkey provider">
 
-## Step one
+Once you’ve initialized your Next app with [Auth.js](https://authjs.dev/), install our passkey provider.
 
-Add `PasskeyProvider` to your `pages/api/auth/[...nextauth].ts`:
+<CodeGroup>
+```bash npm
+npm i @teamhanko/passkeys-next-auth-provider
+```
 
-```ts
+```bash yarn
+yarn add @teamhanko/passkeys-next-auth-provider
+```
+
+```bash bun
+bun add @teamhanko/passkeys-next-auth-provider
+```
+
+```bash pnpm
+pnpm add @teamhanko/passkeys-next-auth-provider
+```
+
+</CodeGroup>
+</Step>
+
+<Step title="Get your tenant ID and API key">
+  Get your tenant ID and API key from [Hanko Cloud](https://cloud.hanko.io/organizations) and add them to your `.env.local` file.
+
+```sh .env.local
+PASSKEYS_API_KEY=your-api-key
+PASSKEYS_TENANT_ID=your-tenant-id
+```
+
+  <Note>
+    If you're self-hosting:
+
+    1. make sure to pass the `baseUrl` to both
+      `tenant` (in `[...nextauth].ts`) and
+      `signInWithPasskey()` (in your component).
+    2. get your tenant ID via the admin API {/* TODO link to admin API */}
+
+  </Note>
+</Step>
+
+<Step title="Add `PasskeyProvider`">
+
+```ts pages/api/auth/[...nextauth].ts
 import {
   tenant,
   PasskeyProvider,
@@ -38,7 +78,8 @@ export default NextAuth({
 });
 ```
 
-## Step two: allow your users to register passkeys as a login method for their account
+</Step>
+<Step title="Allow your users to register passkeys as a login method for their account">
 
 Your users will have to add passkeys to their account somehow. It's up to you how and where you let them do this, but typically this would be a button on an "Account Settings" page.
 
@@ -104,7 +145,8 @@ export async function registerPasskey() {
 }
 ```
 
-## Step three: Allow your users to log in with passkeys
+</Step>
+<Step title="Allow your users to log in with passkeys">
 
 Let's add a button that triggers the "Sign in with passkey" dialog:
 
@@ -120,26 +162,21 @@ export default LoginButton() {
 }
 ```
 
+</Step>
+</Steps>
+
 {/* TODO update link to directly go to settings once available */}
 {/* **If you're using Hanko Cloud,** you can <a href="https://cloud.hanko.io/" target="_blank">get your tenant ID from your dashboard</a>. */}
-
-If you're self-hosting:
-
-1. make sure to pass the `baseUrl` to both  
-   `tenant` (in `[...nextauth].ts`) and  
-   `signInWithPasskey()` (in your component).
-2. get your tenant ID via the admin API {/* TODO link to admin API */}
-
----
-
-**That's it!** Your users can now log in with passkeys.
 
 ## Optional: Autofill support
 
 If you don't want to add a button just for passkeys, you can add autofill support to your username (or email) fields:
 
 <Frame>
-  <img src="/images/passkey-api/autofill.png" />
+  <img
+    src="/images/passkey-api/autofill.png"
+    style={{ borderRadius: "0.5rem" }}
+  />
 </Frame>
 
 Clicking on any passkey in the autofill popup will immediately log the user in, going through the same flow as if they had clicked the "Sign in with passkey" button earlier in this guide.
@@ -171,3 +208,32 @@ export default function LoginForm() {
   );
 }
 ```
+
+## Try it yourself
+
+{" "}
+<Card
+  title="Next.js with Auth.js example"
+  href="https://github.com/teamhanko/passkeys-example-next-auth"
+  icon={
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="icon icon-tabler icon-tabler-external-link"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      strokeWidth="2"
+      stroke="currentColor"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"></path>
+      <path d="M11 13l9 -9"></path>
+      <path d="M15 4h5v5"></path>
+    </svg>
+  }
+>
+  Full source code available on our GitHub
+</Card>
