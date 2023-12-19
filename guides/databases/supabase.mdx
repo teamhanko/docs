@@ -40,7 +40,7 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
     ```sh .env.local
     NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 
-    SUPABASE_PROJECT_URL=YOUR_SUPABASE_PROJECT_URL
+    NEXT_PUBLIC_SUPABASE_PROJECT_URL=YOUR_SUPABASE_PROJECT_URL
     SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY
     ```
 
@@ -70,7 +70,7 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
     import { createClient } from "@supabase/supabase-js";
 
     export const supabase = createClient(
-      process.env.SUPABASE_PROJECT_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
     ```
