@@ -3,23 +3,23 @@ title: Example Implementation
 description: Learn how to utilize the Passkey API using raw HTTP requests without any SDK.
 ---
 
-This is an example implementation showing how to use the Passkey API with Node.js. (You can use any language you want to, of course!)
+This is an example implementation showing how to use the Passkey API with Node.js. (You can of course use any language you like!)
 
-However, if you're already using JavaScript/TypeScript for your backend, you can use [\@teamhanko/passkeys-sdk](https://www.npmjs.com/package/@teamhanko/passkeys-sdk), which do all of the below for you.
+However, if you're already using JavaScript/TypeScript for your backend, you can use [\@teamhanko/passkeys-sdk](https://www.npmjs.com/package/@teamhanko/passkeys-sdk), which handles all of the below for you.
 
 Otherwise, please make sure to always send JSON with `Content-Type: application/json`.
 
 <Note>
 As of writing, for the frontend, the Web Authentication API expects you to pass `ArrayBuffer` (instead of plain old objects) in a lot of places, which can be inconvenient.
 
-In the examples below we're using [@github/webauthn-json](https://github.com/github/webauthn-json#githubwebauthn-json) which is a wrapper around the Web Authentication API to make things easier.
+In the examples below, we use [@github/webauthn-json](https://github.com/github/webauthn-json#githubwebauthn-json), which is a wrapper for the Web Authentication API to make things easier.
 </Note>
 ---
 
 <Steps>
 <Step title="Get your tenant ID and API key">
 
-Get your tenant ID and API key from your [Hanko Cloud](https://cloud.hanko.io/organizations).
+Get your tenant ID and API key from your [Hanko Cloud](https://cloud.hanko.io) project dashboard.
 
 The base URL for the Passkey API depends on your `tenant_id`.
 
@@ -160,7 +160,7 @@ Here's what the whole flow looks like:
   <img src="/images/passkey-api/register-flow.png" />
 </Frame>
 
-As you can see, there's two steps here ("start" and "finalize"), which pass through the frontend, backend, and Passkey API.
+As you can see, there are two steps here ("start" and "finalize"), which pass through the frontend, backend, and Passkey API.
 
 The process looks very similar for logging in &mdash; it's also a two-step process where your frontend, backend, and the Passkey API are involved.
 
