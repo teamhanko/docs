@@ -23,9 +23,9 @@ Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT]
 
 2. **Verify the JWT:** Use the JWKS obtained to verify the JWT.
 
-### Bun-based Backend Example
+### Bun-based Backend Examples
 
-In the following example, we demonstrate how to implement a custom middleware in a [Hono.js](https://hono.dev/) backend using [jose](https://www.npmjs.com/package/jose) library.
+In the following examples, we demonstrate how to implement a custom middleware in [Hono.js](https://hono.dev/) and [Elysia.js](https://elysiajs.com/) backend using [jose](https://www.npmjs.com/package/jose) library.
 
 <Tabs>
 <Tab title="Hono.js">
@@ -89,13 +89,12 @@ export default {
   fetch: app.fetch,
 };
 ```
-</Tab>
-</Tabs>
+
 
 ## Try it yourself
 
 <Card
-  title="Bun with Hono.js example (React frontend)"
+  title="Hono.js example (React frontend)"
   href="https://github.com/teamhanko/hanko-hono-react-starter"
   icon={
     <svg
@@ -119,4 +118,91 @@ export default {
 >
   Full source code available on our GitHub.
 </Card>
+</Tab>
+<Tab title="Elysia.js">
+```ts
+import { Elysia } from "elysia";
+import { createRemoteJWKSet, jwtVerify } from "jose";
+import { cors } from "@elysiajs/cors";
+
+const app = new Elysia();
+
+app.use(
+  cors({
+    origin: ({ headers }) => headers.get("Origin") === "http://localhost:3000", // your frontend URL
+    credentials: true,
+  })
+);
+
+const JWKS = createRemoteJWKSet(
+  new URL(`${process.env.HANKO_API_URL}/.well-known/jwks.json`)
+);
+
+const validateJWT = async (cookie: string) => {
+  let token = "";
+  if (cookie) {
+    token = cookie;
+  }
+  if (token === null || token.length === 0) {
+    console.log("no token");
+    return false;
+  }
+  let authError = false;
+  await jwtVerify(token, JWKS).catch((err) => {
+    console.log("jwt verify error");
+    authError = true;
+    console.log(err);
+  });
+  if (authError) {
+    console.log("auth error");
+    return false;
+  }
+  console.log("token valid");
+  return true;
+};
+
+app.get("/", () => "Elysia x Hanko");
+
+app.get("/protected", () => "Hello Protected", {
+  beforeHandle: async ({ set, headers, cookie: { hanko } }) => {
+    if (!(await validateJWT(hanko.value))) return (set.status = "Unauthorized");
+  },
+});
+
+app.listen(8000);
+
+console.log(
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+);
+```
+
+## Try it yourself
+
+<Card
+  title="Elysia.js example (React frontend)"
+  href="https://github.com/teamhanko/hanko-elysia-react-starter"
+  icon={
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="icon icon-tabler icon-tabler-external-link"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      strokeWidth="2"
+      stroke="currentColor"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"></path>
+      <path d="M11 13l9 -9"></path>
+      <path d="M15 4h5v5"></path>
+    </svg>
+  }
+>
+  Full source code available on our GitHub.
+</Card>
+</Tab>
+</Tabs>
 

@@ -22,7 +22,7 @@ Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT]
 2. **Verify the JWT:** Use the JWKS to verify the JWT.
 
 ### Python-based Backend Examples
-Below we show examples of using a custom middleware in [FastAPI](https://fastapi.tiangolo.com/) and [Django](https://www.djangoproject.com/), based backend using the [PyJWT](https://pyjwt.readthedocs.io/en/stable/) package.
+Below we show examples of using a custom middleware in [FastAPI](https://fastapi.tiangolo.com/), [Django](https://www.djangoproject.com/) and [Flask](https://flask.palletsprojects.com/en/3.0.x/), based backend using the [PyJWT](https://pyjwt.readthedocs.io/en/stable/) package.
 
 Since you will be decoding the token using the RSA digital signature algorithm, you will need to install the [cryptography](https://cryptography.io) library. You can install this library either directly or as an additional requirement within the PyJWT package.
 
