@@ -1,6 +1,6 @@
 ---
 title: Example Payment Transaction
-description: How to use passkeys to secure a payment transaction
+description: Learn how to use passkeys to secure a payment transaction.
 ---
 
 In the last section you learned how to use the Passkey API in a vanilla js way without any SDK. This example shows you
@@ -13,7 +13,7 @@ as we will referring to settings and variables.
 
 ---
 
-1. **Add endpoints to start a transaction**
+## Add endpoints to start a transaction
 
 Every transaction requires a user ID, a transaction ID and the transaction data to be performed.
 
@@ -24,7 +24,7 @@ app.post("/passkey/start-transaction", async (req, res) => {
   // Remember: to start a transaction, the user needs to be logged in first AND have a registered passkey.
 
   // This is the currently logged-in user:
-  const user = req.session.user
+  const user = req.session.user;
 
   /*
     The transaction body can look like this:
@@ -37,7 +37,7 @@ app.post("/passkey/start-transaction", async (req, res) => {
       }
     }
    */
-  const transactionBody = req.body
+  const transactionBody = req.body;
 
   const transactionOptions = await fetch(baseUrl + "/transaction/initialize", {
     method: "POST",
@@ -46,7 +46,7 @@ app.post("/passkey/start-transaction", async (req, res) => {
       user_id: user.id.toString(), // must be a string!
       transaction_id: transactionBody.transactionId,
       transaction_data: transactionBody.transactionData,
-    })
+    }),
   }).then((res) => res.json());
 
   // transactionOptions is an object that can directly be passed to get()
@@ -66,7 +66,7 @@ app.post("/passkey/finalize-transaction", async (req, res) => {
 
   res.redirect("/success");
 });
-   ```
+```
 
 **Frontend:**
 
@@ -78,9 +78,9 @@ async function transactionWithPasskey(amount, usedFor) {
       transactionId: "unique-transaction-identifier",
       transactionData: {
         amount,
-        usedFor
-      }
-    })
+        usedFor,
+      },
+    }),
   }).then((res) => res.json());
 
   // Open "select passkey" dialog

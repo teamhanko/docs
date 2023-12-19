@@ -162,13 +162,12 @@
       "pages": ["api-reference/introduction"]
     },
     {
-      "group": "Standalone Passkey API",
+      "group": "Getting Started",
       "pages": [
         "passkey-api/introduction",
         "passkey-api/example-implementation",
         "passkey-api/example-transaction",
-        "passkey-api/client-first-login-flow",
-        "passkey-api/faq"
+        "passkey-api/client-first-login-flow"
       ]
     },
      {
