@@ -1,5 +1,6 @@
 ---
 title: Introduction to Passkey API
+sidebarTitle: Introduction
 description: Add passkey support to your existing auth system with Hanko Passkey API.
 ---
 
@@ -25,6 +26,20 @@ The Passkey API is designed to be used both from your backend and frontend:
 
 <CardGroup cols={2}>
   <Card
+    title="Set up passkey project"
+    icon={
+      <svg width="20" height="20" viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M36.0611 12.8774V41.9346H32.0922V26.037H16.4355V29.9695H28.1247V31.9991C28.1245 37.076 28.1162 42.1529 28.1294 47.2296C28.1302 47.5458 28.147 47.7976 28.1834 47.9964C32.6231 47.2725 36.6568 45.3468 39.9439 42.5638V22.1278C39.9439 19.047 39.2607 15.6673 36.0611 12.8774Z"/>
+        <path d="M28.1934 14.0905H32.1592V5.37542C34.5455 5.89249 43.5968 11.8123 43.9658 21.0866V38.3127C46.8954 34.2961 48.6284 29.3509 48.6284 23.9988C48.6284 11.9094 39.8063 1.88475 28.2498 0C28.2157 0.203994 28.2006 0.463484 28.1989 0.790525L28.1934 14.0905Z"/>
+        <path d="M12.4336 35.119V6.06185H16.4025V21.9594H32.0591V18.0269H20.37V15.9973C20.3702 10.9204 20.3784 5.8435 20.3652 0.766797C20.3645 0.450663 20.3476 0.198827 20.3113 0C15.8716 0.723931 11.8378 2.64963 8.55078 5.43264V25.8686C8.55078 28.9494 9.23395 32.3291 12.4336 35.119Z"/>
+        <path d="M20.435 33.9095H16.4692V42.6246C14.0829 42.1075 5.03154 36.1877 4.66259 26.9134V9.68738C1.733 13.7039 0 18.6492 0 24.0012C0 36.0907 8.82209 46.1153 20.3786 48C20.4126 47.796 20.4278 47.5365 20.4295 47.2095L20.435 33.9095Z"/>
+      </svg>
+    }
+    href="/passkey-api/setup-passkey-project"
+  >
+    Set up a passkey project on Hanko Cloud.
+  </Card>
+  <Card
     title="Example implementation"
     icon={
       <svg
@@ -46,7 +61,8 @@ The Passkey API is designed to be used both from your backend and frontend:
     }
     href="/passkey-api/next-auth"
   >
-    A Node.js example showcasing implementation of the Passkey API without any SDK.
+    A Node.js example showcasing implementation of the Passkey API without any
+    SDK.
   </Card>
   <Card
     title="JavaScript/TypeScript SDK"
@@ -72,10 +88,11 @@ The Passkey API is designed to be used both from your backend and frontend:
     }
     href="/passkey-api/next-auth"
   >
-  If you’re already using JS/TS for your backend, you can use our SDK to easily integrate the Passkey API.
+    If you’re already using JS/TS for your backend, you can use our SDK to
+    easily integrate the Passkey API.
   </Card>
   <Card
-    title="Next.js with Auth.js"
+    title="Next.js with NextAuth"
     icon={
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +113,7 @@ The Passkey API is designed to be used both from your backend and frontend:
     }
     href="/passkey-api/next-auth"
   >
-    If you're using Auth.js for handling auth in your Next.js app, you can use
+    If you're using NextAuth for handling auth in your Next.js app, you can use
     our provider to easily add passkey support.
   </Card>
 </CardGroup>

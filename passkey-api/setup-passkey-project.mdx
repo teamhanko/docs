@@ -1,0 +1,55 @@
+---
+sidebarTitle: Set up Passkey Project
+title: Setting up Passkey Project on Hanko Cloud
+description: This guide will walk you through the initial set up process of a Passkey project on Hanko Cloud.
+---
+
+### You need to just follow these 5 quick steps.
+
+<Steps>
+<Step title="Sign Up">
+    To begin, head over to [Hanko](https://cloud.hanko.io/) and sign up. 
+    <img width="500" src="/images/get-started/create-acc.png" />
+</Step>
+<Step title="Create an Organization">
+    Once you've signed up, you'll be directed to create an organization.
+    <img width="500" src="/images/get-started/create-org.png" />
+</Step>
+<Step title="Initiate a new Passkey Project">
+    With your organization set, it's time to kick off a new Passkey project.
+    <img width="500" src="/images/passkey-api/get-started/create-project.png" style={{ borderRadius: '0.5rem' }}/>
+
+    Input your project name and provide your app's URL. For the app URL, make sure to enter the full URL including `http://` or `https://` and the port in case it's localhost, e.g. `http://localhost:3000`.
+    <img width="500" src="/images/passkey-api/get-started/create-proj-modal.png" style={{ borderRadius: '0.5rem' }}/>
+
+</Step>
+<Step title="Get Tenant ID and API key">
+    Upon entering the dashboard, copy the Tenant ID and create an API key. You'll need these for future integrations.
+    <img width="500" src="/images/passkey-api/get-started/tenant-api-key.png" style={{ borderRadius: '0.5rem' }}/>
+</Step>
+<Step title="Dive into Integrations">
+    You're all set! Visit the next sections to kick off your integration journey.
+<CardGroup cols={2}>
+<Card
+    title="Next.js with NextAuth"
+    href="/passkey-api/next-auth"
+>
+</Card>
+<Card
+    title="Our JS/TS SDK"
+    href="/passkey-api/js-sdk"
+>
+</Card>
+<Card
+    title="Node.js example wihtout using SDK"
+    href="/passkey-api/example-implementation"
+>
+</Card>
+<Card
+    title="Example payment transaction"
+    href="/passkey-api/example-transaction"
+>
+</Card>
+</CardGroup>
+</Step>
+</Steps>

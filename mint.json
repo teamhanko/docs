@@ -165,6 +165,7 @@
       "group": "Getting Started",
       "pages": [
         "passkey-api/introduction",
+        "passkey-api/setup-passkey-project",
         "passkey-api/example-implementation",
         "passkey-api/example-transaction",
         "passkey-api/client-first-login-flow"
