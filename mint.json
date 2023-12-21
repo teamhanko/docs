@@ -6,8 +6,8 @@
   },
   "favicon": "/favicon.png",
   "colors": {
-    "primary": "#Ff6363",
-    "light": "#Ff8787",
+    "primary": "#5465FF",
+    "light": "#5465FF",
     "dark": "#0D001D",
     "background": {
       "dark": "#000000"
@@ -17,6 +17,7 @@
       "to": "#Ff6363"
     }
   },
+  "backgroundImage": "/images/background.png",
   "topbarLinks": [
     {
       "name": "Community",
