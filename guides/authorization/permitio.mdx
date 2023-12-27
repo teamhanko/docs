@@ -1,17 +1,17 @@
 ---
 sidebarTitle: Permit.io
 title: Using Hanko with Permit.io
-description: This guide will show you how to add an easily managable **authoization layer** on top of your Hanko implementation, providing you with a simple way to determine what users can access within the application after logging in.
+description: This guide will show you how to add an easily manageable **authoization layer** on top of your Hanko implementation, providing you with a simple way to determine what users can access within the application after logging in.
 ---
 
 Although this application code is built with Next.js, Permit.io provides SDKs for any common language,
-so this example can give you a good figure for how it should look in your language.
+So this example can give you a good idea of how it should look in your language.
 
-Note that this tutorial is meant to be used on an application with Hanko authentication already setup.
+Note that this tutorial is meant to be used on an application with Hanko authentication already set up.
 
 We highly recommend cloning our [demo application](https://www.github.com/permitio/permit-hanko/) so you can follow the steps more easily.
 
-If you prefer to read the article without cloning the application, you can skip this section and continue to [Setup Basic Role Based Authorization](/guides/authorization/permitio#setup-basic-role-based-authorization).
+If you prefer to read the article without cloning the application, skip this section and continue to [Setup Basic Role Based Authorization](/guides/authorization/permitio#setup-basic-role-based-authorization).
 
 ## To clone the demo application, run the following commands:
 
@@ -64,7 +64,7 @@ If you prefer to read the article without cloning the application, you can skip 
 
   </Step>
 
-  <Step title="Rederaction Logic">
+  <Step title="Redirection Logic">
     We added the following middleware logic to the `middleware.ts` file that redirects the user to the login page if they are not authenticated:
     ```
     const authenticateUser = async (req: NextRequest): Promise<string> => {
@@ -306,7 +306,7 @@ We can configure this policy in Permit and see it take effect immediately in the
   </Step>
   <Step title="Create a New Policy">
     Return to the Policy tab and establish a policy allowing `put` and
-    `delete`actions exclusively for the note's owner. Ensure the admin role
+    `delete` actions exclusively for the note's owner. Ensure the admin role
     retains all-action privileges.
     <Frame>
       <img
@@ -334,8 +334,7 @@ We can configure this policy in Permit and see it take effect immediately in the
     created note.
   </Step>
   <Step title="Cross-User Deletion Test">
-    Log in with a different user after creating the note and attempt to delete
-    the note. This should fail, as the logged-in user is not the creator.
+    Log in with a different user after creating the note and attempt to delete it. This should fail, as the logged-in user is not the creator.
   </Step>
 </Steps>
 
