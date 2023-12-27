@@ -142,6 +142,10 @@
         {
           "group": "Migrations",
           "pages": ["guides/migrations/import-export-users"]
+        },
+        {
+          "group": "Authorization",
+          "pages": ["guides/authorization/permitio"]
         }
       ]
     },
