@@ -17,17 +17,17 @@ If you prefer to read the article without cloning the application, skip this sec
 
 <Steps>
   <Step title="Clone the application">
-    ```
+    ```sh
     git clone <git@github.com>:permitio/permit-hanko.git
     ```
   </Step>
   <Step title="Install the dependencies:">
-    ``` 
+    ```sh
     npm install 
     ```
   </Step>
   <Step title="Run the application:">
-    ```
+    ```sh
     npm run dev
     ```
     At this point, the application will fail to run as we need to set up the Hanko and Permit services.
@@ -56,9 +56,9 @@ If you prefer to read the article without cloning the application, skip this sec
 
   <Step title="Add the authentication window">
     To add this authentication window, use the Hanko SDK for JavaScript. You can see the element that implemented the login flow in the `app/auth/login/page.tsx` file.
-    ```
+    ```jsx
     <Paper sx={{ p: 2 }}>
-    <HankoAuth />
+      <HankoAuth />
     </Paper>
     ```
 
@@ -66,7 +66,7 @@ If you prefer to read the article without cloning the application, skip this sec
 
   <Step title="Redirection Logic">
     We added the following middleware logic to the `middleware.ts` file that redirects the user to the login page if they are not authenticated:
-    ```
+    ```ts
     const authenticateUser = async (req: NextRequest): Promise<string> => {
     if (!hankoApiUrl) {
     return "";
@@ -103,7 +103,7 @@ If you look at the `route.ts` file, you will see that we are going to use a gene
 [`permit.check`](https://docs.permit.io/how-to/enforce-permissions/check/) [middleware.ts](https://github.com/permitio/permit-hanko/blob/main/src/middleware.ts)
 file.
 
-```
+```ts
 const response = await fetch(`${pdpUrl}/allowed`, {
     method: "POST",
     headers: {
@@ -178,13 +178,13 @@ Note that we can adapt them to our needs without having to change any of the app
   <Step title="Setup API Credentials">
     To copy your API key, click your user profile in the top right of the screen, and click `Copy SDK API Key`.
     Add the key in your in the env.local file:
-    ```
+    ```sh
     PERMIT_API_KEY=<YOUR_COPIED_API_KEY>
     ```
   </Step>
   <Step title="Configure the API endpoint">
   We will also need to configure the Permit.io API endpoint to check the permissions. For this purpose, we will use the Permit cloud service.
-  ```
+  ```sh
   PERMIT_PDP_URL=[https://cloudpdp.api.permit.io](https://cloudpdp.api.permit.io)
   ```
   </Step>
@@ -202,7 +202,7 @@ We will want to automatically assign a user role to every new user, so they will
 
 In the demo application, you can find the following code in the `src/app/api/permit/route.ts` file:
 
-```
+```ts
 const response = await permit.api.syncUser({
 
 key,
@@ -285,7 +285,7 @@ We can configure this policy in Permit and see it take effect immediately in the
     option.
     <Frame>
       <img
-        src="images/permitio/6.jpg"
+        src="/images/permitio/6.jpg"
         alt="Enable ABAC"
         width="500"
         style={{ borderRadius: "0.5rem" }}
@@ -297,7 +297,7 @@ We can configure this policy in Permit and see it take effect immediately in the
     validate if the user is the note's owner.
     <Frame>
       <img
-        src="images/permitio/7.jpg"
+        src="/images/permitio/7.jpg"
         alt="Resource Set"
         width="500"
         style={{ borderRadius: "0.5rem" }}
@@ -310,7 +310,7 @@ We can configure this policy in Permit and see it take effect immediately in the
     retains all-action privileges.
     <Frame>
       <img
-        src="images/permitio/8.jpg"
+        src="/images/permitio/8.jpg"
         alt="ABAC Policy"
         width="500"
         style={{ borderRadius: "0.5rem" }}
@@ -322,7 +322,7 @@ We can configure this policy in Permit and see it take effect immediately in the
     user cannot delete tasks.
     <Frame>
       <img
-        src="images/permitio/9.jpg"
+        src="/images/permitio/9.jpg"
         alt="ABAC Audit Logs"
         width="500"
         style={{ borderRadius: "0.5rem" }}
