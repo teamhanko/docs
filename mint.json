@@ -81,6 +81,7 @@
                 "quickstarts/frontend/react",
                 "quickstarts/frontend/vue",
                 "quickstarts/frontend/svelte",
+                "quickstarts/frontend/solid",
                 "quickstarts/frontend/javascript",
                 "quickstarts/frontend/angular"
               ]

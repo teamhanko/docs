@@ -1,0 +1,206 @@
+---
+sidebarTitle: "Solid"
+title: Integrate Hanko with Solid
+description: Learn how to quickly add authentication and user profile in your React app using Hanko.
+---
+
+## Install `@teamhanko/hanko-elements`
+
+Once you've initialized your Solid app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+
+<CodeGroup>
+```bash npm
+npm install @teamhanko/hanko-elements
+```
+
+```bash pnpm
+pnpm add @teamhanko/hanko-elements
+```
+
+```bash yarn
+yarn add @teamhanko/hanko-elements
+```
+
+</CodeGroup>
+
+## Add the Hanko API URL
+
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+
+```sh .env
+ VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+```
+
+<Note>
+  If you are self-hosting you need to provide the URL of your running Hanko
+  backend.
+</Note>
+
+## Add `<hanko-auth>` component
+
+The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the `register` function from `@teamhanko/hanko-elements` into your Solid component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, include it in your JSX.
+
+```tsx components/HankoAuth.tsx
+import { onMount, createSignal, onCleanup } from "solid-js";
+import { register, Hanko } from "@teamhanko/hanko-elements";
+import { useNavigate } from "@solidjs/router";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+export default function HankoAuth() {
+  const navigate = useNavigate();
+  const [hanko] = createSignal(new Hanko(hankoApi));
+
+  const redirectAfterLogin = () => {
+    navigate("/dashboard");
+  };
+
+  onMount(() => {
+    hanko().onAuthFlowCompleted(() => {
+      redirectAfterLogin();
+    });
+
+    register(hankoApi).catch((error) => {
+      // handle error
+    });
+  });
+
+  onCleanup(() => {
+    // cleanup logic if needed
+  });
+
+  return <hanko-auth />;
+}
+
+type GlobalJsx = JSX.IntrinsicElements;
+
+declare module "solid-js" {
+  namespace JSX {
+    interface IntrinsicElements {
+      "hanko-auth": GlobalJsx["hanko-auth"];
+    }
+  }
+}
+```
+
+By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
+
+<Frame>
+<img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500" style={{ borderRadius: '0.5rem' }}/>
+</Frame>
+
+## Add `<hanko-profile>` component
+
+The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+
+```tsx components/HankoProfile.tsx
+import { onMount } from "solid-js";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+export default function HankoProfile() {
+    onMount(() => {
+        register(hankoApi).catch((error) => {
+            // handle error
+        });
+    });
+
+    return <hanko-profile />;
+}
+
+type GlobalJsx = JSX.IntrinsicElements;
+
+declare module "solid-js" {
+    namespace JSX {
+        interface IntrinsicElements {
+            "hanko-profile": GlobalJsx["hanko-profile"];
+        }
+    }
+}
+```
+
+It should look like this 👇
+
+<Frame>
+<img
+src="/images/fullstack-guide/next-two.png"
+alt="profile page"
+width="500"
+style={{ borderRadius: '0.5rem' }}
+/>
+</Frame>
+
+## Implement logout functionality
+
+You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we make a logout button component that you can use anywhere.
+
+```tsx components/LogoutButton.tsx
+import { createSignal, onMount } from "solid-js";
+import { useNavigate } from "@solidjs/router";
+import { Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+function LogoutBtn() {
+    const navigate = useNavigate();
+    const [hanko, setHanko] = createSignal<Hanko>();
+
+    onMount(() => {
+        import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+            setHanko(new Hanko(hankoApi ?? ""))
+        );
+    });
+
+    const logout = async () => {
+        try {
+            await hanko()?.user.logout();
+            navigate("/auth");
+        } catch (error) {
+            console.error("Error during logout:", error);
+        }
+    };
+
+    return <button onClick={logout}>Logout</button>;
+}
+
+export default LogoutBtn;
+```
+
+## Customize component styles
+
+You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](/guides/hanko-elements/customize-appearance).
+
+
+## Authenticate backend requests
+
+To authenticate requests on your backend with Hanko, refer to our [backend guide](/quickstarts/backend).
+
+## Try it yourself
+
+
+<Card
+  title="Solid.js example"
+  href="https://github.com/teamhanko/hanko-solid-express-starter"
+  icon={
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="icon icon-tabler icon-tabler-external-link"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      strokeWidth="2"
+      stroke="#5465FF"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"></path>
+      <path d="M11 13l9 -9"></path>
+      <path d="M15 4h5v5"></path>
+    </svg>
+  }
+>
+  It uses Express.js for the backend, full source code available on our GitHub.
+</Card>
