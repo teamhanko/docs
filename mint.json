@@ -143,10 +143,6 @@
         {
           "group": "Migrations",
           "pages": ["guides/migrations/import-export-users"]
-        },
-        {
-          "group": "Authorization",
-          "pages": ["guides/authorization/permitio"]
         }
       ]
     },
@@ -178,7 +174,7 @@
     },
      {
       "group": "Tutorials",
-      "pages": ["tutorials/introduction", "tutorials/nextjs-todo"]
+      "pages": ["tutorials/introduction", "tutorials/nextjs-todo", "tutorials/authorization-with-permit"]
     },
     {
       "group": "Integrations",
