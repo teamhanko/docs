@@ -588,53 +588,35 @@ export default UserData;
 
 ### Server Side
 
-On the server side, you can extract the `userID` from the JWT. However, if you need to retrieve the complete user details, you'll have to utilize the [Hanko Admin API](https://docs.hanko.io/api-reference/admin/user-management/get-a-user-by-id).
+On the server side, you can extract the `userID` from the JWT, which you can use to fetch the user's data from the [Hanko Public API](/api-reference/public/user-management/get-a-user-by-id).
 
-The Hanko Admin API provides detailed information about the status, user management, metrics and more. To get data for a specific user, you'll need to call the `/users/{id}` endpoint, where id is the user id previously obtained from the JWT.
-
-<Info>
-The Hanko Admin API is a paid feature and must be enabled explicitly. You also need an API key `secret` to access the Hanko Admin API. You can generate one under the `Settings/API Keys` section of your project.
-Keep in mind, that the API key `secret` is only shown once, so make sure to store it in a safe place, like an environmental variable as shown in the following example.
-</Info>
-
-<Tabs>
-<Tab title="Using JWT">
-```tsx
+```ts
 import { cookies } from "next/headers";
 import * as jose from "jose";
 
-export async function userId() {
+const hankoApiUrl = process.env.NEXT_PUBLIC_HANKO_API_URL;
+
+export async function getUserData() {
   const token = cookies().get("hanko")?.value;
   const payload = jose.decodeJwt(token ?? "");
 
   const userID = payload.sub;
-  return userID;
+
+  const response = await fetch(`${hankoApiUrl}/users/${userID}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const userData = await response.json();
+  return userData;
 }
 ```
 
-</Tab>
-<Tab title="Using Admin API">
-```ts
-const getUserData = async () => {
-  const adminAPI = process.env.ADMIN_API;
-  const adminSecret = process.env.ADMIN_SECRET;
-  const options = {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${adminSecret}`,
-    },
-  };
-
-  const response = await fetch(`${adminAPI}/users/${userID}`, options);
-
-  return response.json();
-};
-
-const userData = await getUserData();
-console.log("user data:", userData);
-```
-</Tab>
-</Tabs>
 
 ## Try it yourself
 <CardGroup cols={2}>
