@@ -1,0 +1,33 @@
+---
+sidebarTitle: "Introduction"
+title: Learn how to use the Hanko Admin API
+description: Hanko Admin API provides helps with user management, audit logs and metrics.
+---
+
+<Note>
+  The Hanko Admin API is a paid feature and must be enabled explicitly. You also
+  need an API key secret to access the Hanko Admin API. You can generate one
+  under the `Settings/API Keys` section of your project.
+</Note>
+
+This minimal example showcases how you can get user data using Admin API from the userID obtained from the JWT.
+
+```js
+const getUserData = async () => {
+  const adminAPIURL = process.env.ADMIN_API_URL;
+  const adminAPIKey = process.env.ADMIN_API_KEY;
+  const options = {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${adminAPIKey}`,
+    },
+  };
+
+  const response = await fetch(`${adminAPIURL}/users/${userID}`, options);
+
+  return response.json();
+};
+
+const userData = await getUserData();
+console.log("user data:", userData);
+```

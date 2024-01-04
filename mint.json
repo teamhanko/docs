@@ -173,9 +173,13 @@
         "passkey-api/client-first-login-flow"
       ]
     },
-     {
+    {
       "group": "Tutorials",
-      "pages": ["tutorials/introduction", "tutorials/nextjs-todo", "tutorials/authorization-with-permit"]
+      "pages": [
+        "tutorials/introduction",
+        "tutorials/nextjs-todo",
+        "tutorials/authorization-with-permit"
+      ]
     },
     {
       "group": "Integrations",
@@ -219,6 +223,7 @@
     {
       "group": "Public",
       "pages": [
+        "api-reference/public/introduction",
         {
           "group": "Status",
           "pages": ["api-reference/public/status/status-page"]
@@ -294,6 +299,7 @@
     {
       "group": "Admin",
       "pages": [
+        "api-reference/admin/introduction",
         {
           "group": "Status",
           "pages": ["api-reference/admin/status/status-page"]
