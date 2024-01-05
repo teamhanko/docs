@@ -27,45 +27,48 @@ Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT]
 
 In the following example, we demonstrate how to implement a custom middleware in an Express.js backend using [express-jwt](https://www.npmjs.com/package/express-jwt) and [jwks-rsa](https://www.npmjs.com/package/jwks-rsa) packages.
 
-```javascript
+```js
 const express = require("express");
-const { expressjwt: jwt } = require("express-jwt");
-const jwksRsa = require("jwks-rsa");
 const cookieParser = require("cookie-parser");
-
-const jwksHost = process.env.HANKO_API_URL;
+const jose = require("jose");
+const dotenv = require("dotenv").config();
 
 const app = new Express();
 app.use(cookieParser());
-app.use(
-  jwt({
-    secret: jwksRsa.expressJwtSecret({
-      cache: true,
-      rateLimit: true,
-      jwksRequestsPerMinute: 2,
-      jwksUri: `${jwksHost}/.well-known/jwks.json`,
-    }),
-    algorithms: ["RS256"],
-    getToken: function fromCookieOrHeader(req) {
-      if (
-        req.headers.authorization &&
-        req.headers.authorization.split(" ")[0] === "Bearer"
-      ) {
-        return req.headers.authorization.split(" ")[1];
-      } else if (req.cookies && req.cookies.hanko) {
-        return req.cookies.hanko;
-      }
-      return null;
-    },
-  })
+
+const JWKS = jose.createRemoteJWKSet(
+  new URL(`${process.env.HANKO_API_URL}/.well-known/jwks.json`)
 );
 
-// The decoded JWT is available through the `req.auth` property (the exact property
-// making it available can be customized through the `requestProperty` option on
-// middleware creation).
-// see: https://github.com/auth0/express-jwt#api
+async function validateToken(req, res, next) {
+  let token = null;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.split(" ")[0] === "Bearer"
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookies && req.cookies.hanko) {
+    token = req.cookies.hanko;
+  }
+  if (token === null || token.length === 0) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  let authError = false;
+  await jose.jwtVerify(token, JWKS).catch((err) => {
+    authError = true;
+    console.log(err);
+  });
+  if (authError) {
+    res.status(401).send("Authentication Token not valid");
+    return;
+  }
+  next();
+}
+
+app.use(validateToken);
+
 app.get("/protected", function (req, res) {
-  if (!req.auth.sub) return res.sendStatus(401);
   res.sendStatus(200);
 });
 ```
