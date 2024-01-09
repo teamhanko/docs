@@ -51,7 +51,7 @@ NEXT_PUBLIC_PASSKEYS_TENANT_ID=your-tenant-id
 
 <Step title="Add `PasskeyProvider`">
 
-```ts pages/api/auth/[...nextauth].ts
+```ts app/api/auth/[...nextauth]/route.ts
 import {
   tenant,
   PasskeyProvider,
@@ -61,8 +61,8 @@ export default NextAuth({
   providers: [
     PasskeyProvider({
       tenant: tenant({
-        tenantId: "<your tenant id>",
-        apiKey: "<your secret api key>",
+        apiKey: process.env.PASSKEYS_API_KEY,
+        tenantId: process.env.NEXT_PUBLIC_PASSKEYS_TENANT_ID,
       }),
       async authorize({ userId }) {
         const user = db.users.find(userId);
@@ -103,7 +103,7 @@ import { getServerSession } from "next-auth";
 
 const passkeyApi = tenant({
   apiKey: process.env.PASSKEYS_API_KEY,
-  tenantId: process.env.PASSKEYS_TENANT_ID,
+  tenantId: process.env.NEXT_PUBLIC_PASSKEYS_TENANT_ID,
 });
 
 export async function startServerPasskeyRegistration() {
@@ -156,7 +156,7 @@ import { signInWithPasskey } from "@teamhanko/passkeys-next-auth-provider/client
 
 export default LoginButton() {
 	return (
-		<button onClick={() => signInWithPasskey({ tenantId: "<your tenant id>" })}>
+		<button onClick={() => signInWithPasskey({ tenantId: process.env.NEXT_PUBLIC_PASSKEYS_TENANT_ID })}>
 			Sign in with passkey
 		</button>
 	);
@@ -192,7 +192,7 @@ export default function LoginForm() {
   // .conditional() returns a cleanup function.
   // Please make sure to return it from useEffect:
   useEffect(() => {
-    return signInWithPasskey.conditional({ tenantId: "<your tenant id>" });
+    return signInWithPasskey.conditional({ tenantId: process.env.NEXT_PUBLIC_PASSKEYS_TENANT_ID });
   }, []);
 
   return (
