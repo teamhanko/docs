@@ -1,5 +1,5 @@
 ---
-sidebarTitle: Next.js with NextAuth 
+sidebarTitle: Next.js with NextAuth
 title: Next.js with NextAuth (now known as Auth.js)
 description: Learn how to add passkeys to your Next.js app which already uses Auth.js for authentication.
 ---
@@ -8,23 +8,23 @@ description: Learn how to add passkeys to your Next.js app which already uses Au
 
 <Step title="Install passkey provider">
 
-Once you’ve initialized your Next app with [NextAuth](https://authjs.dev/reference/nextjs), install our passkey provider.
+Once you’ve initialized your Next app with [NextAuth](https://authjs.dev/reference/nextjs), install passkey provider and the [webauthn-json](https://github.com/github/webauthn-json) package.
 
 <CodeGroup>
 ```bash npm
-npm i @teamhanko/passkeys-next-auth-provider
+npm i @teamhanko/passkeys-next-auth-provider @github/webauthn-json
 ```
 
 ```bash yarn
-yarn add @teamhanko/passkeys-next-auth-provider
+yarn add @teamhanko/passkeys-next-auth-provider @github/webauthn-json
 ```
 
 ```bash bun
-bun add @teamhanko/passkeys-next-auth-provider
+bun add @teamhanko/passkeys-next-auth-provider @github/webauthn-json
 ```
 
 ```bash pnpm
-pnpm add @teamhanko/passkeys-next-auth-provider
+pnpm add @teamhanko/passkeys-next-auth-provider @github/webauthn-json
 ```
 
 </CodeGroup>
@@ -45,7 +45,6 @@ NEXT_PUBLIC_PASSKEYS_TENANT_ID=your-tenant-id
       `tenant` (in `[...nextauth].ts`) and
       `signInWithPasskey()` (in your component).
     2. get your tenant ID via the admin API {/* TODO link to admin API */}
-
   </Note>
 </Step>
 
@@ -92,7 +91,7 @@ On your frontend, you'll have to call `create()` from `@github/webauthn-json` wi
 
 **Backend:**
 
-```ts
+```ts lib/passkey-registration.ts
 "use server";
 
 // This is *your* server-side code; you need to implement this yourself.
@@ -131,18 +130,32 @@ export async function finishServerPasskeyRegistration(credential: any) {
 
 **Frontend:**
 
-```ts
-// This is *your* client-side code. Auth.js takes care of logging in the user after they have registered their passkey using this function:
+```jsx components/PasskeyRegistrationButton.tsx
+// This is your client-side code. NextAuth takes care of logging in the user after they have registered their passkey using registerPasskey function.
 
-export async function registerPasskey() {
-  const createOptions = await startServerPasskeyRegistration();
+"use client"
 
-  // Open "register passkey" dialog
-  const credential = await create(createOptions as any);
+import {
+  finishServerPasskeyRegistration,
+  startServerPasskeyRegistration,
+} from "@/lib/passkey-registration";
+import { create } from "@github/webauthn-json";
 
-  await finishServerPasskeyRegistration(credential);
+export default function RegisterNewPasskey() {
+  async function registerPasskey() {
+    const createOptions = await startServerPasskeyRegistration();
 
-  // Now the user has registered their passkey and can use it to log in.
+    // Open "register passkey" dialog
+    const credential = await create(createOptions as any);
+
+    await finishServerPasskeyRegistration(credential);
+
+    // Now the user has registered their passkey and can use it to log in.
+  }
+
+  return (
+    <button onClick={() => registerPasskey()}>Register a new passkey</button>
+  );
 }
 ```
 
@@ -151,7 +164,9 @@ export async function registerPasskey() {
 
 Let's add a button that triggers the "Sign in with passkey" dialog:
 
-```jsx
+```jsx components/PasskeyLoginButton.tsx
+"use client";
+
 import { signInWithPasskey } from "@teamhanko/passkeys-next-auth-provider/client";
 
 export default LoginButton() {
@@ -186,13 +201,19 @@ To add autofill support:
 **Example:**
 
 ```jsx
+"use client";
+
+import { signInWithPasskey } from "@teamhanko/passkeys-next-auth-provider/client";
+
 export default function LoginForm() {
   // Call signInWithPasskey.conditional() once, when LoginForm mounts.
   //
   // .conditional() returns a cleanup function.
   // Please make sure to return it from useEffect:
   useEffect(() => {
-    return signInWithPasskey.conditional({ tenantId: process.env.NEXT_PUBLIC_PASSKEYS_TENANT_ID });
+    return signInWithPasskey.conditional({
+      tenantId: process.env.NEXT_PUBLIC_PASSKEYS_TENANT_ID,
+    });
   }, []);
 
   return (
@@ -205,6 +226,7 @@ export default function LoginForm() {
   );
 }
 ```
+
 </Step>
 
 <Step title ="Try it yourself">
