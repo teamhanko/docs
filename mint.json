@@ -177,8 +177,9 @@
       "group": "Tutorials",
       "pages": [
         "tutorials/introduction",
-        "tutorials/nextjs-todo",
-        "tutorials/authorization-with-permit"
+        "tutorials/add-passkey-to-nextjs",
+        "tutorials/authorization-with-permit",
+        "tutorials/nextjs-todo"
       ]
     },
     {
