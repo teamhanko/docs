@@ -177,7 +177,6 @@
       "group": "Tutorials",
       "pages": [
         "tutorials/introduction",
-        "tutorials/add-passkey-to-nextjs",
         "tutorials/authorization-with-permit",
         "tutorials/nextjs-todo"
       ]
