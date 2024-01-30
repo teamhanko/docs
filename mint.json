@@ -53,7 +53,7 @@
   ],
   "api": {
     "playground": {
-      "mode": "hide"
+      "mode": "show"
     }
   },
   "navigation": [
