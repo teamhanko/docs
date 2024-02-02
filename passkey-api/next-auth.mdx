@@ -96,8 +96,9 @@ On your frontend, you'll have to call `create()` from `@github/webauthn-json` wi
 // This is *your* server-side code; you need to implement this yourself.
 // NextAuth takes care of logging in the user after they have registered their passkey.
 
-import { authOptions } from "./pages/api/auth/[...nextauth]"; // Only required because of a NextAuth limitation
+import { authOptions } from "./app/api/auth/[...nextauth]/route.ts"; // Only required because of a NextAuth limitation
 import { getServerSession } from "next-auth";
+import { tenant } from "@teamhanko/passkeys-next-auth-provider";
 
 const passkeyApi = tenant({
   apiKey: process.env.PASSKEYS_API_KEY,
