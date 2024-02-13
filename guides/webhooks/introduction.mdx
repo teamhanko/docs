@@ -27,6 +27,8 @@ a parent event when you want to receive all subevents or selecting specific sube
 Due to security concerns there are some usage restrictions for webhooks in place:
 
 * A webhook will be disabled after 30 days without usage. In this scenario usage describes the successful triggering of events
+<Note>This mechanism can be disabled by setting `webhooks.allow_time_expiration` to `false`</Note>
+
 * A webhook will also be disabled when our trigger mechanism is not successful. The mechanism will try 5 attempts of sending events before disabling a webhook. A trigger is unsuccessful when:
   * your callback URL is not reachable due to network errors or a wrong url
   * your webhook endpoint returns HTTP Status codes >= 400
