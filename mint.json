@@ -145,17 +145,7 @@
           "group": "Migrations",
           "pages": ["guides/migrations/import-export-users"]
         },
-        {
-          "group": "Webhooks",
-          "pages": [
-            "guides/webhooks/introduction",
-            "guides/webhooks/get-a-list-of-webhooks",
-            "guides/webhooks/create-a-webhook",
-            "guides/webhooks/get-a-webhook-by-id",
-            "guides/webhooks/update-a-webhook",
-            "guides/webhooks/delete-a-webhook"
-          ]
-        }
+        "guides/webhooks/introduction"
       ]
     },
     {
@@ -333,6 +323,17 @@
             "api-reference/admin/email-management/get-a-email-by-id",
             "api-reference/admin/email-management/remove-a-email-by-id",
             "api-reference/admin/email-management/set-an-email-as-primary"
+          ]
+        },
+
+        {
+          "group": "Webhooks",
+          "pages": [
+            "api-reference/admin/webhooks/get-a-list-of-webhooks",
+            "api-reference/admin/webhooks/create-a-webhook",
+            "api-reference/admin/webhooks/get-a-webhook-by-id",
+            "api-reference/admin/webhooks/update-a-webhook",
+            "api-reference/admin/webhooks/delete-a-webhook"
           ]
         },
         {
