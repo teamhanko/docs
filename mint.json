@@ -144,7 +144,8 @@
         {
           "group": "Migrations",
           "pages": ["guides/migrations/import-export-users"]
-        }
+        },
+        "guides/webhooks/introduction"
       ]
     },
     {
@@ -311,6 +312,27 @@
             "api-reference/admin/user-management/create-a-new-user",
             "api-reference/admin/user-management/get-a-user-by-id",
             "api-reference/admin/user-management/delete-a-user-by-id"
+          ]
+        },
+        {
+          "group": "Email Management",
+          "pages": [
+            "api-reference/admin/email-management/get-a-list-of-emails",
+            "api-reference/admin/email-management/create-an-email-for-a-user",
+            "api-reference/admin/email-management/get-a-email-by-id",
+            "api-reference/admin/email-management/remove-a-email-by-id",
+            "api-reference/admin/email-management/set-an-email-as-primary"
+          ]
+        },
+
+        {
+          "group": "Webhooks",
+          "pages": [
+            "api-reference/admin/webhooks/get-a-list-of-webhooks",
+            "api-reference/admin/webhooks/create-a-webhook",
+            "api-reference/admin/webhooks/get-a-webhook-by-id",
+            "api-reference/admin/webhooks/update-a-webhook",
+            "api-reference/admin/webhooks/delete-a-webhook"
           ]
         },
         {

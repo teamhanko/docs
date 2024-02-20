@@ -1,0 +1,63 @@
+---
+sidebarTitle: "Webhooks"
+title: Learn more about Webhooks
+description: Webhooks allow you to get notified on changes
+---
+
+Webhooks are an easy way to get informed about changes in your Hanko instance (e.g. user or email updates).
+To use webhooks you have to provide an endpoint on your application which can process the events. Please be aware that your
+endpoint need to respond with an HTTP status code 200. Else-wise the delivery of the event will not be counted as successful.
+
+## Events
+When a webhook is triggered it will send you a **JSON** body which contains the event and a jwt.
+The JWT contains 2 custom claims:
+
+* **data**: contains the whole object for which the change was made. (e.g.: the whole user object when an email or user is changed/created/deleted)
+* **evt**: the event for which the webhook was triggered
+
+A typical webhook event looks like:
+
+```json
+{
+  "token": "the-jwt-token-which-contains-the-data",
+  "event": "name of the event"
+}
+```
+
+## Event Types
+
+Hanko sends webhooks for the following event types:
+
+| Event                     | Triggers on                                                                                        |
+|---------------------------|----------------------------------------------------------------------------------------------------|
+| user                      | user creation, user deletion, user update, email creation, email deletion, change of primary email |
+| user.create               | user creation                                                                                      |
+| user.delete               | user deletion                                                                                      |
+| user.update               | user update, email creation, email deletion, change of primary email                               |
+| user.update.email         | email creation, email deletion, change of primary email                                            |
+| user.update.email.create  | email creation                                                                                     |
+| user.update.email.delete  | email deletion                                                                                     |
+| user.update.email.primary | change of primary email                                                                            |
+
+As you can see, events can have subevents. You are able to filter which events you want to receive by either selecting
+a parent event when you want to receive all subevents or selecting specific subevents.
+
+## Restrictions
+
+Due to security concerns there are some usage restrictions for webhooks in place:
+
+* A webhook will be disabled after 30 days without usage. In this scenario usage describes the successful triggering of events
+<Note>This mechanism can be disabled by setting `webhooks.allow_time_expiration` to `false`</Note>
+
+* A webhook will also be disabled when our trigger mechanism is not successful. The mechanism will try 5 attempts of sending events before disabling a webhook. A trigger is unsuccessful when:
+  * your callback URL is not reachable due to network errors or a wrong url
+  * your webhook endpoint returns HTTP Status codes >= 400
+
+The restrictions are not available for webhooks defined in the config file.
+
+## Data
+
+When a webhook is triggered it will send you a **JSON** body which contains the event and a jwt.
+The JWT contains 2 custom claims:
+* **data**: contains the whole object for which the change was made. (e.g.: the whole user object when an email or user is changed/created/deleted)
+* **evt**: the event for which the webhook was triggered
