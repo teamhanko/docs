@@ -175,16 +175,20 @@
       ]
     },
     {
+      "group": "Integrations",
+      "pages": ["passkey-api/js-sdk", "passkey-api/next-auth"]
+    },
+    {
+      "group": "Resources",
+      "pages": ["passkey-api/resources/examples"]
+    },
+    {
       "group": "Tutorials",
       "pages": [
         "tutorials/introduction",
         "tutorials/authorization-with-permit",
         "tutorials/nextjs-todo"
       ]
-    },
-    {
-      "group": "Integrations",
-      "pages": ["passkey-api/js-sdk", "passkey-api/next-auth"]
     },
     {
       "group": "API Reference",
