@@ -440,6 +440,27 @@ const UserData = () => {
 export default UserData;
 ```
 
+<Note>
+    You might get `"r" is read-only` error after you deploy a CRA (Create React App). To fix it you'll need to add `@babel/core`  as a dependency in your project. You can do this by running the following command:
+  <CodeGroup>
+```bash npm
+npm install @babel/core
+```
+
+```bash pnpm
+pnpm add @babel/core
+```
+
+```bash bun
+bun add @babel/core
+```
+
+```bash yarn
+yarn add @babel/core
+```
+
+</CodeGroup>
+</Note>
 
 ## Authenticate backend requests
 

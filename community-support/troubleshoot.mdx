@@ -49,6 +49,15 @@ Hanko Auth Component
     REACT_APP_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
   ```
   </Accordion>
+  <Accordion title="'r' is read-only error when deploying a CRA">
+   <Frame>
+    <img src="/images/troubleshoot/r-readonly.png" style={{ borderRadius: "0.5rem" }} />
+  </Frame>
+  You might get `"r" is read-only` error after you deploy a CRA (Create React App). To fix it you'll need to add `@babel/core`  as a dependency in your project. You can do this by running the following command:
+  ```sh
+  npm install @babel/core
+  ```
+  </Accordion>
   <Accordion title="My issue is not listed here">
    Feel free to open a [GitHub Issue](https://github.com/teamhanko/hanko/issues) or join our [Discord Community](https://www.hanko.io/community). We're here to help! 
   </Accordion>
