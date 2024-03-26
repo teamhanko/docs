@@ -70,6 +70,33 @@ export async function userId() {
 </Tab>
 </Tabs>
 
+### Getting email from the JWT
+
+In addition to the user ID, you can also fetch the current email address, including its verification status and whether it is set as the primary email.
+
+<Tabs>
+  <Tab title="Nextjs (App directory)">
+    ```js
+    import { cookies } from "next/headers";
+    import * as jose from "jose";
+
+    export async function emailData() {
+      const token = cookies().get("hanko")?.value;
+      const payload = jose.decodeJwt(token ?? "");
+
+      /* email object looks like:
+      {
+        address: 'team@hanko.io
+        is_primary: true
+        is_verified: true
+      }
+       */
+      const emailData = payload.email;
+      return emailData;
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ### Get user data using the Hanko Admin API
 
