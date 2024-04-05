@@ -106,7 +106,7 @@
       "pages": [
         {
           "group": "Users",
-          "pages": ["guides/users/get-user-data"]
+          "pages": ["guides/users/get-user-data", "guides/users/jwt-content"]
         },
         {
           "group": "Authentication Methods",
