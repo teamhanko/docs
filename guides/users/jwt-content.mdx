@@ -7,45 +7,29 @@ description: Let's take a quick look at the JWT payload and see what info it hol
 
 ```json
 {
-  "sub": "user-1234",
-  "iat": 1648994400,
-  "exp": 1649080800,
-  "aud": "example-app",
-  "iss": "auth-service",
+  "aud": [ "https://www.example.com" ],
   "email": {
     "address": "user@example.com",
     "is_primary": true,
     "is_verified": true
-  }
+  },
+  "exp": "17123108000",
+  "iat": "1712307200",
+  "sub": "9930ac89-1584-488c-bd63-1607f03ab1e8"
 }
 ```
 
 <Note>
-  The actual values of the fields will depend on the specific user and the
-  application.
+  The actual values of the fields in the JWT payload will depend on the specific user and the application. 
+  
+  It's important to note that the aud (Audience) field is set by the Hanko backend based on the configured values defined when creating a project on the Hanko Cloud.
 </Note>
 
 It contains the following fields:
 
-`sub` (Subject):
-    * **Description**: The user ID.
-    * **Type**: String
-
-`iat` (Issued At):
-    * **Description**: The timestamp indicating when the JWT was created.
-    * **Type**: Number (UNIX timestamp)
-
-`exp` (Expiration Time):
-    * **Description**: The timestamp indicating when the JWT will expire.
-    * **Type**: Number (UNIX timestamp)
-
 `aud` (Audience):
     * **Description**: The audience for which the JWT was created. It specifies the intended recipient or system that should accept this JWT.
-    * **Type**: String
-
-`iss` (Issuer):
-    * **Description**: The name or identifier of the entity that created and issued the JWT.
-    * **Type**: String
+    * **Type**: Array of Strings
 
 `email`:
     * **Description**: An object containing information about the user's email address.
@@ -63,3 +47,16 @@ It contains the following fields:
 
             `is_verified`:
                 * **Description**: A boolean field indicating whether the email address has been verified.
+
+`exp` (Expiration Time):
+    * **Description**: The timestamp indicating when the JWT will expire.
+    * **Type**: Number (UNIX timestamp)
+
+`iat` (Issued At):
+    * **Description**: The timestamp indicating when the JWT was created.
+    * **Type**: Number (UNIX timestamp)
+
+`sub` (Subject):
+    * **Description**: The user ID.
+    * **Type**: String
+
