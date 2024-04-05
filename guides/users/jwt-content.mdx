@@ -28,38 +28,38 @@ description: Let's take a quick look at the JWT payload and see what info it hol
 It contains the following fields:
 
 `sub` (Subject):
-    * Description: The user ID.
-    * Type: String
+    * **Description**: The user ID.
+    * **Type**: String
 
 `iat` (Issued At):
-    * Description: The timestamp indicating when the JWT was created.
-    * Type: Number (UNIX timestamp)
+    * **Description**: The timestamp indicating when the JWT was created.
+    * **Type**: Number (UNIX timestamp)
 
 `exp` (Expiration Time):
-    * Description: The timestamp indicating when the JWT will expire.
-    * Type: Number (UNIX timestamp)
+    * **Description**: The timestamp indicating when the JWT will expire.
+    * **Type**: Number (UNIX timestamp)
 
 `aud` (Audience):
-    * Description: The audience for which the JWT was created. It specifies the intended recipient or system that should accept this JWT.
-    * Type: String
+    * **Description**: The audience for which the JWT was created. It specifies the intended recipient or system that should accept this JWT.
+    * **Type**: String
 
 `iss` (Issuer):
-    * Description: The name or identifier of the entity that created and issued the JWT.
-    * Type: String
+    * **Description**: The name or identifier of the entity that created and issued the JWT.
+    * **Type**: String
 
 `email`:
-    * Description: An object containing information about the user's email address.
-    * Type: Object
+    * **Description**: An object containing information about the user's email address.
+    * **Type**: Object
 
         * Properties:
 
             `address`:
-                * Description: The current primary email address of the user.
-                * Type: String
+                * **Description**: The current primary email address of the user.
+                * **Type**: String
 
             `is_primary`:
-                * Description: A boolean field indicating whether the email address is the primary email. Currently, this field is redundant because only the primary email is included in the JWT.
-                * Type: Boolean
+                * **Description**: A boolean field indicating whether the email address is the primary email. Currently, this field is redundant because only the primary email is included in the JWT.
+                * **Type**: Boolean
 
             `is_verified`:
-                * Description: A boolean field indicating whether the email address has been verified.
+                * **Description**: A boolean field indicating whether the email address has been verified.
