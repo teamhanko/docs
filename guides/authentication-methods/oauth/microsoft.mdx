@@ -37,17 +37,28 @@ configuration options visible in the above screen in this step).
 ## Create a new Azure application
 
 1. Navigate to and log in to the [Azure portal](portal.azure.com).
-2. On the main dashboard select `App registrations` under `Azure services`.
+2. Click the hamburger menu in the navbar in the top left.
+3. Select `Microsoft Entra ID`.
 
 <Frame>
     <img
         src="/images/oauth-providers/microsoft/dashboard.png"
-        alt="Select app registrations on dashboard screen"
+        alt="Access Microsoft Entra ID"
         width={500}
     />
 </Frame>
 
-3. On the top left, click on `New registration`.
+4. Select `App registrations` in the left sidebar.
+
+<Frame>
+    <img
+        src="/images/oauth-providers/microsoft/entra-app-registrations.png"
+        alt="Access app registrations"
+        width={150}
+    />
+</Frame>
+
+5. On the top left, click on `New registration`.
 
 <Frame>
     <img
@@ -57,15 +68,15 @@ configuration options visible in the above screen in this step).
     />
 </Frame>
 
-4. Enter your Application name.
-5. Under `Supported account types` choose the 3rd option i.e `Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)`.
+6. Enter your Application name.
+7. Under `Supported account types` choose the 3rd option i.e `Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)`.
     <Warning>
         The above option allows any user to login to your application. Other account types (single-tenant only,
         multi-tenant or public only) are currently not supported.
     </Warning>
-6. Under the `Redirect URI` section select `Web` as the platform.
-7. Enter the `Redirect URL` you obtained in the [first step](#get-your-provider-redirect-url) as the value.
-8. Click on `Register`.
+8. Under the `Redirect URI` section select `Web` as the platform.
+9. Enter the `Redirect URL` you obtained in the [first step](#get-your-provider-redirect-url) as the value.
+10. Click on `Register`.
 
 <Frame>
     <img
@@ -82,6 +93,15 @@ Next, you need to obtain your client ID and client secret.
 1. You can view the client ID of your app in the `Essentials` section on the `Overview` page (`Application (client) ID`)
 of your application/app registration.
 You will need this when [configuring your credentials with Hanko](#configure-credentials-with-hanko)
+
+<Frame>
+    <img
+        src="/images/oauth-providers/microsoft/view-client-id.png"
+        alt="View client ID"
+        width={500}
+    />
+</Frame>
+
 2. To create a client secret, select `Certificates & Secrets` in the sidebar.
 
 <Frame>
@@ -219,17 +239,11 @@ your applications `Manifest`.
     />
 </Frame>
 
-3. Find the `optionalClaims` key and set its value to  the following (make a backup of the manifest file, just in case):
+3. Find the `optionalClaims` key and set its value to the following (make a backup of the manifest file, just in case):
 
 ```json
 "optionalClaims": {
 		"idToken": [
-			{
-				"name": "email",
-				"source": null,
-				"essential": false,
-				"additionalProperties": []
-			},
 			{
 				"name": "xms_edov",
 				"source": null,
@@ -240,8 +254,12 @@ your applications `Manifest`.
 	}
 ```
 
-4. Add another optional claim, only this time add the `email` claim. Proceed just as described in
-the [previous section](#add-upn-claim) when you added the `upn` claim.
+<Info>
+    You may notice that after adding the `xms_edov` claim, it is listed in the `Token configuration` section but it is
+    marked with a warning icon claiming that _"[t]his claim is not supported and will not be returned in the token"_.
+    At the time of writing this does not appear to be correct and the claim is in fact returned in the ID token.
+</Info>
+
 
 Hanko per default requires email verification and - with the `xms_edov` claim configured - will reject any attempt at
 connecting third party providers that do not provide a verified email address.
