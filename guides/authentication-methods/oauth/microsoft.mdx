@@ -252,11 +252,19 @@ your applications `Manifest`.
     />
 </Frame>
 
-3. Find the `optionalClaims` key and set its value to the following (make a backup of the manifest file, just in case):
+3. Find the `optionalClaims.idToken` key in the manifest. It should already contain an entry for the `upn` claim you
+configured in the [previous step](#add-upn-claim). Add an entry for the `xms_edov` claim to the array (make a backup of
+the manifest file, just in case):
 
 ```json
 "optionalClaims": {
 		"idToken": [
+			{
+				"name": "upn",
+				"source": null,
+				"essential": false,
+				"additionalProperties": []
+			},
 			{
 				"name": "xms_edov",
 				"source": null,
@@ -273,6 +281,8 @@ your applications `Manifest`.
     At the time of writing this does not appear to be correct and the claim is in fact returned in the ID token.
 </Info>
 
+4. Add another optional claim, only this time add the `email` claim. Proceed just as described in
+the [previous section](#add-upn-claim) when you added the `upn` claim.
 
 Hanko per default requires email verification and - with the `xms_edov` claim configured - will reject any attempt at
 connecting third party providers that do not provide a verified email address.
