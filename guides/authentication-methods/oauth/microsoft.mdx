@@ -284,8 +284,8 @@ the manifest file, just in case):
 4. Add another optional claim, only this time add the `email` claim. Proceed just as described in
 the [previous section](#add-upn-claim) when you added the `upn` claim.
 
-Hanko per default requires email verification and - with the `xms_edov` claim configured - will reject any attempt at
-connecting third party providers that do not provide a verified email address.
+Hanko per default requires email verification. When you configure the `xms_edov` claim, Hanko will reject any attempt at
+connecting a Microsoft account if no verified email address is provided.
 
 ## Configure credentials with Hanko
 
