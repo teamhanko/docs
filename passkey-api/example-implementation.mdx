@@ -56,6 +56,8 @@ Registering passkeys is a two-step process. First, let's add an endpoint to our 
 
 **Backend:**
 
+<Tabs>
+<Tab title="Node.js (Express)">
 ```jsx
 const tenantId = process.env.PASSKEY_TENANT_ID;
 if (!tenantId) throw new Error("Missing PASSKEY_TENANT_ID");
@@ -122,8 +124,51 @@ app.post("/passkey/finalize-registration", async (req, res) => {
   res.redirect("/success");
 });
 ```
+</Tab>
+<Tab title="Python (Flask)">
+```python
+tenant_id = os.getenv("PASSKEY_TENANT_ID")
+api_key = os.getenv("PASSKEY_API_KEY")
+
+baseUrl = f"https://passkeys.hanko.io/{tenant_id}"
+headers = {
+    "apikey": api_key,
+    "Content-Type": "application/json", 
+}
+
+@app.route('/passkey/start-registration', methods=["POST"])
+def start_registration():
+    print("registering passkey")
+    if 'user_id' not in session:
+        return jsonify({"error": "User must be logged in to register a passkey"}), 401
+
+    user_id = session['user_id']
+    user_email = session['email']
+
+    payload = {
+        "user_id": user_id,
+        "username": user_email,
+    }
+
+    response = requests.post(f"{baseUrl}/registration/initialize", headers=headers, json=payload)
+    creationOptions = response.json()
+    return jsonify(creationOptions)
+
+@app.route("/passkey/finalize-registration", methods=["POST"])
+def finalize_registration():
+    data = request.json
+
+    response = requests.post(f"{baseUrl}/registration/finalize", headers=headers, json=data)
+    data = response.json()
+
+    return jsonify({"message": "Passkey registered successfully"}), 200
+```
+</Tab>
+</Tabs>
+
 
 **Frontend:**
+
 
 ```jsx
 import { create, get } from "@github/webauthn-json";
@@ -172,6 +217,8 @@ Similar to how registering a passkey is a two-step process, so is logging in.
 
 **Backend:**
 
+<Tabs>
+<Tab title="Node.js (Express)">
 ```jsx
 app.post("/passkey/start-login", async (req, res) => {
   const loginOptions = await fetch(baseUrl + "/login/initialize", {
@@ -198,6 +245,39 @@ app.post("/passkey/finalize-login", async (req, res) => {
   res.redirect("/success");
 });
 ```
+</Tab>
+<Tab title="Python (Flask)">
+```python
+@app.route("/passkey/start-login", methods=["POST"])
+def start_login():
+    response = requests.post(f"{baseUrl}/login/initialize", headers=headers)
+    login_options = response.json()
+
+    return jsonify(login_options)
+
+@app.route("/passkey/finalize-login", methods=["POST"])
+def finalize_login():
+    client_data = request.json
+
+    response = requests.post(f"{baseUrl}/login/finalize", headers=headers, json=client_data)
+    data = response.json()
+
+   # Now you can use the data from the JWT to create a session for the user
+    token = data.get('token')
+    decoded_payload = jwt.decode(token, options={"verify_signature": False})
+    
+    user_id = decoded_payload.get('sub') 
+    user = next((user for user in users if user['id'] == user_id), None)
+    if user:
+        session["user_id"] = user["id"]
+        session["email"] = user["email"]
+        user_info = {"id": user["id"], "email": user["email"]}
+        return jsonify({"message": "Login successful", "user": user_info}), 200
+    else:
+        return jsonify({"message": "Invalid credentials"}), 401
+```
+</Tab>
+</Tabs>
 
 **Frontend:**
 
