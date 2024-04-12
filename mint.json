@@ -181,7 +181,7 @@
     },
     {
       "group": "Resources",
-      "pages": ["passkey-api/resources/examples"]
+      "pages": ["passkey-api/resources/examples", "passkey-api/resources/tutorials"]
     },
     {
       "group": "Tutorials",
