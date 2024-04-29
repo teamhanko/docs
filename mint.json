@@ -117,7 +117,8 @@
                 "guides/authentication-methods/oauth/apple",
                 "guides/authentication-methods/oauth/discord",
                 "guides/authentication-methods/oauth/google",
-                "guides/authentication-methods/oauth/github"
+                "guides/authentication-methods/oauth/github",
+                "guides/authentication-methods/oauth/microsoft"
               ]
             },
             "guides/authentication-methods/passkeys",
