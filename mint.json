@@ -182,7 +182,7 @@
     },
     {
       "group": "Resources",
-      "pages": ["passkey-api/resources/examples", "passkey-api/resources/tutorials"]
+      "pages": ["passkey-api/resources/examples"]
     },
     {
       "group": "Tutorials",
