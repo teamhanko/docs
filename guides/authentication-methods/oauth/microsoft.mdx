@@ -4,10 +4,6 @@ sidebarTitle: Microsoft
 description: In this guide you will learn how to add a login with Microsoft to your application.
 ---
 
-<Warning>
-    This feature is not yet available on Hanko Cloud.
-</Warning>
-
 ## Prerequisites
 
 1. You need a Hanko Cloud account and a project. Learn more on how to set them up [here](https://docs.hanko.io/setup-hanko-cloud).
@@ -230,7 +226,7 @@ the claim:
 
 In 2023 Descope [discovered](https://www.descope.com/blog/post/noauth) a vulnerability resulting
 from misconfigurations of multi-tenant apps that could potentially lead to account takeovers when linking
-accounts with the provider (account linking is activated by default in Hanko). To mitigate this
+accounts with the provider (automatic account linking is not activated by default in Hanko, but may be preferable in many situations). To mitigate this
 vulnerability Microsoft provides the following guidance:
 
 1. Configure the `authenticationBehaviors` setting of your application to disallow unverified email domains. This should
