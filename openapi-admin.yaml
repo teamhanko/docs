@@ -22,7 +22,12 @@ externalDocs:
   description: More about Hanko
   url: https://github.com/teamhanko/hanko
 servers:
-  - url: "http://localhost:8001"
+  # - url: "http://localhost:8001"
+  - url: "https://{tenant_id}.hanko.io"
+    variables:
+      tenant_id:
+        default: "default"
+        description: "Tenant ID to be provided by the user"
 paths:
   /:
     get:
@@ -302,10 +307,10 @@ paths:
   /webhooks:
     get:
       summary: Get a list of webhooks
-      description: 'Returns a list of all configured webhooks. '
+      description: "Returns a list of all configured webhooks. "
       operationId: list-webhooks
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -315,77 +320,77 @@ paths:
                   database:
                     type: array
                     items:
-                      $ref: '#/components/schemas/DatabaseWebhook'
+                      $ref: "#/components/schemas/DatabaseWebhook"
                   config:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Webhook'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                      $ref: "#/components/schemas/Webhook"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: Create a new database webhook
-      description: ''
+      description: ""
       operationId: create-db-webhooks
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Webhook'
+              $ref: "#/components/schemas/Webhook"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DatabaseWebhook'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  '/webhooks/{id}':
+                $ref: "#/components/schemas/DatabaseWebhook"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/webhooks/{id}":
     get:
       summary: Get a webhook by ID
       operationId: get-webhooks-id
       parameters:
-        - $ref: '#/components/parameters/Id'
+        - $ref: "#/components/parameters/Id"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DatabaseWebhook'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/DatabaseWebhook"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     delete:
       summary: Delete a webhook by ID
       operationId: delete-webhooks-id
       parameters:
-        - $ref: '#/components/parameters/Id'
+        - $ref: "#/components/parameters/Id"
       responses:
-        '204':
+        "204":
           description: No Content
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
           description: Internal Server Error
     put:
       summary: Update a webhook by ID
       operationId: put-webhooks-id
       parameters:
-        - $ref: '#/components/parameters/Id'
+        - $ref: "#/components/parameters/Id"
       requestBody:
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/Webhook'
+                - $ref: "#/components/schemas/Webhook"
                 - type: object
                   properties:
                     enabled:
@@ -393,65 +398,65 @@ paths:
                   required:
                     - enabled
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DatabaseWebhook'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  '/users/{id}/emails':
+                $ref: "#/components/schemas/DatabaseWebhook"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/users/{id}/emails":
     get:
       summary: Get a list of emails for a user
       operationId: get-users-id-emails
       parameters:
-        - $ref: '#/components/parameters/Id'
+        - $ref: "#/components/parameters/Id"
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Email'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                  $ref: "#/components/schemas/Email"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       summary: Create an email for a user
       operationId: post-users-id-emails
       parameters:
-        - $ref: '#/components/parameters/Id'
+        - $ref: "#/components/parameters/Id"
       requestBody:
-        $ref: '#/components/requestBodies/CreateEmail'
+        $ref: "#/components/requestBodies/CreateEmail"
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Email'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  '/users/{id}/emails/{email_id}':
+                $ref: "#/components/schemas/Email"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/users/{id}/emails/{email_id}":
     get:
       summary: Get an email of a user
       operationId: get-users-id-emails-email_id
       parameters:
-        - $ref: '#/components/parameters/Id'
+        - $ref: "#/components/parameters/Id"
         - name: email_id
           in: path
           description: UUID of the requested email
@@ -459,23 +464,23 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Email'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/Email"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     delete:
       summary: Remove an email from a user
       operationId: delete-users-emails-email_id
       parameters:
-        - $ref: '#/components/parameters/Id'
+        - $ref: "#/components/parameters/Id"
         - name: email_id
           in: path
           description: UUID of the requested email
@@ -483,36 +488,36 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: No Content
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  '/users/{id}/emails/{email_id}/set_primary':
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/users/{id}/emails/{email_id}/set_primary":
     post:
       summary: Set email as primary
       operationId: post-users-emails-email_id-set_primary
       parameters:
-        - $ref: '#/components/parameters/Id'
+        - $ref: "#/components/parameters/Id"
         - name: email_id
           in: path
           required: true
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: No Content
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   parameters:
     Id:
@@ -610,7 +615,7 @@ components:
           description: List of emails associated to the user
           type: array
           items:
-            $ref: '#/components/schemas/Email'
+            $ref: "#/components/schemas/Email"
     WebAuthnCredential:
       type: object
       required:
@@ -762,7 +767,7 @@ components:
         events:
           type: array
           items:
-            $ref: '#/components/schemas/DatabaseWebhookEvent'
+            $ref: "#/components/schemas/DatabaseWebhookEvent"
         created_at:
           type: string
           format: date-time
