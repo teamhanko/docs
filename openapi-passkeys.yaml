@@ -14,11 +14,11 @@ info:
     name: GPLv3
 servers:
   - url: "https://passkeys.hanko.io"
-    variables:
-      host:
-        default: localhost
-      path_prefix:
-        default: ""
+    # variables:
+    #   host:
+    #     default: localhost
+    #   path_prefix:
+    #     default: ""
 paths:
   "/{tenant_id}/credentials":
     get:
