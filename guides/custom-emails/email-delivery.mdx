@@ -1,0 +1,62 @@
+---
+title: Custom Emails
+description: Send emails with your own text and style.
+---
+
+Emails are an important way to communicate with your users. This guide shows how to make the emails Hanko sends fit your brand.
+
+To customize the emails you have to send them your self.
+
+## Webhook
+First you need to create a webhook with the event `email.send`. [Learn more](/guides/webhooks/introduction).
+
+## Disable Email delivery by Hanko
+
+Go to the [Hanko Cloud Console](https://cloud.hanko.io) and select your project. Under `Settings > Email` you can disable email delivery by Hanko.
+Now Hanko does not send any email anymore.
+
+## Send the email your self
+
+The webhook event sends all data you need to send your own email. Following you see the data structure from the webhook when an email was sent. When an email was sent by Hanko, the `delivered_by_hanko` property is set to `true` if "Email delivery by Hanko" is disabled the property is set to `false`.
+
+```json
+{
+  "subject": "",
+  "body_plain": "",
+  "body": "",
+  "to_email_address": "",
+  "delivered_by_hanko": true,
+  "accept_language": "",
+  "type": "passcode",
+  "data": {
+    "service_name": "",
+    "otp_code": "",
+    "ttl": 1000,
+    "valid_until": 1000
+  }
+}
+```
+
+The webhook data includes the email that Hanko would have sent (`subject`, `body_plain`, `body`). The `data` property contains data specific for the `type` of the email.
+
+Possible email types and its data:
+
+<Tabs>
+    <Tab title="passcode">
+        ```json
+        "service_name": "",
+        "otp_code": "",
+        "ttl": 1000,
+        "valid_until": 1000
+        ```
+
+        |property|description|
+        |----|----|
+        |`service_name`|The name of the service set in the console as project name|
+        |`otp_code`|The passcode the user can use to login|
+        |`ttl`|How long the passcode is valid in seconds|
+        |`valid_until`|The unix timestamp when the passcode gets invalid|
+    </Tab>
+</Tabs>
+
+With this information you can send the email to the user yourself.
