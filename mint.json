@@ -118,7 +118,8 @@
                 "guides/authentication-methods/oauth/discord",
                 "guides/authentication-methods/oauth/google",
                 "guides/authentication-methods/oauth/github",
-                "guides/authentication-methods/oauth/microsoft"
+                "guides/authentication-methods/oauth/microsoft",
+                "guides/authentication-methods/oauth/linkedin"
               ]
             },
             "guides/authentication-methods/passkeys",
