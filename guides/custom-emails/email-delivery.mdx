@@ -1,23 +1,31 @@
 ---
-title: Custom Emails
+sidebarTitle: Custom Emails
+title: Send Custom Emails
 description: Send emails with your own text and style.
 ---
 
-Emails are an important way to communicate with your users. This guide shows how to make the emails Hanko sends fit your brand.
+This guide will walk you through the process of sending your own emails instead of relying on Hanko's default email delivery.
 
-To customize the emails you have to send them your self.
+## Create a Webhook
 
-## Webhook
-First you need to create a webhook with the event `email.send`. [Learn more](/guides/webhooks/introduction).
+Create a webhook with the event `email.send`. This webhook will be triggered whenever an email needs to be sent.
+
+<Note>
+  If you have not created a webhook yet, please refer to the
+  [Webhooks](/guides/webhooks) guide.
+</Note>
 
 ## Disable Email delivery by Hanko
 
-Go to the [Hanko Cloud Console](https://cloud.hanko.io) and select your project. Under `Settings > Email` you can disable email delivery by Hanko.
-Now Hanko does not send any email anymore.
+1. Log in to the [Hanko Cloud Console](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Email`.
+3. Disable the Email delivery by Hanko.
 
-## Send the email your self
+Once disabled, Hanko will no longer send any emails on your behalf.
 
-The webhook event sends all data you need to send your own email. Following you see the data structure from the webhook when an email was sent. When an email was sent by Hanko, the `delivered_by_hanko` property is set to `true` if "Email delivery by Hanko" is disabled the property is set to `false`.
+## Send your own emails
+
+When an email needs to be sent, the `email.send` webhook event will be triggered, providing you with all the necessary data to send your own email. The webhook payload will include the following information:
 
 ```json
 {
@@ -37,9 +45,18 @@ The webhook event sends all data you need to send your own email. Following you 
 }
 ```
 
-The webhook data includes the email that Hanko would have sent (`subject`, `body_plain`, `body`). The `data` property contains data specific for the `type` of the email.
+* `subject`: The subject line of the email.
+* `body_plain`: The plain text version of the email body.
+* `body`: The HTML version of the email body.
+* `to_email_address`: The recipient's email address.
+* `delivered_by_hanko`: Indicates whether the email was delivered by Hanko (true) or not (false).
+* `accept_language`: The preferred language for the email content.
+* `type`: The type of the email being sent (e.g., "passcode").
+* `data`: Additional data specific to the email type.
 
-Possible email types and its data:
+The `data` property in the webhook payload provides type-specific data that can be used to personalize the email further. The structure of the `data` property varies depending on the `type` of the email being sent.
+
+For example, if the email type is "passcode", the `data` property will include the following fields:
 
 <Tabs>
     <Tab title="passcode">
@@ -53,10 +70,10 @@ Possible email types and its data:
         |property|description|
         |----|----|
         |`service_name`|The name of the service set in the console as project name|
-        |`otp_code`|The passcode the user can use to login|
-        |`ttl`|How long the passcode is valid in seconds|
-        |`valid_until`|The unix timestamp when the passcode gets invalid|
+        |`otp_code`|The passcode the user can use to log in|
+        |`ttl`|The validity duration of the passcode in seconds|
+        |`valid_until`|The Unix timestamp indicating when the passcode expires|
     </Tab>
 </Tabs>
 
-With this information you can send the email to the user yourself.
+Using the provided webhook data, you can compose and send the email to the user using your preferred email service provider or custom email infra.
