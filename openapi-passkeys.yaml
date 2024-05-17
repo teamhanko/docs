@@ -44,7 +44,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -76,7 +76,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -103,7 +103,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -132,7 +132,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -162,7 +162,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -190,7 +190,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -218,7 +218,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -238,7 +238,7 @@ paths:
         "200":
           $ref: "#/components/responses/jwks"
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -266,7 +266,7 @@ paths:
         "500":
           $ref: "#/components/responses/error"
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -294,7 +294,7 @@ paths:
         "500":
           $ref: "#/components/responses/error"
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -329,7 +329,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -366,7 +366,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -403,7 +403,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
@@ -440,7 +440,7 @@ paths:
           $ref: "#/components/responses/error"
       security: []
       servers:
-        - url: "http://{host}:8000/{path_prefix}"
+        - url: "https://passkeys.hanko.io"
           variables:
             host:
               default: localhost
