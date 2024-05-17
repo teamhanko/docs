@@ -13,11 +13,11 @@ info:
     name: GPLv3
 servers:
   - url: "https://passkeys.hanko.io"
-    variables:
-      host:
-        default: localhost
-      path_prefix:
-        default: ""
+    # variables:
+    #   host:
+    #     default: localhost
+    #   path_prefix:
+    #     default: ""
 paths:
   "/{tenant_id}/credentials":
     get:
@@ -45,11 +45,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+      #     variables:
+      #       host:
+      #         default: localhost
+      #       path_prefix:
+      #         default: ""
   "/{tenant_id}/credentials/{credential_id}":
     patch:
       tags:
@@ -77,11 +77,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+      #     variables:
+      #       host:
+      #         default: localhost
+      #       path_prefix:
+      #         default: ""
     delete:
       summary: Remove Credential
       description: Endpoint for removing a webauthn credential
@@ -104,11 +104,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/registration/initialize":
     post:
       tags:
@@ -133,11 +133,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/registration/finalize":
     post:
       tags:
@@ -163,11 +163,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/login/initialize":
     post:
       summary: Start Login
@@ -191,11 +191,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/login/finalize":
     post:
       summary: Finish Login
@@ -219,11 +219,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/.well-known/jwks.json":
     get:
       tags:
@@ -239,11 +239,11 @@ paths:
           $ref: "#/components/responses/jwks"
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/transaction/initialize":
     post:
       summary: Initialize a transaction
@@ -267,11 +267,11 @@ paths:
           $ref: "#/components/responses/error"
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/transaction/finalize":
     post:
       summary: Finalize transaction
@@ -295,11 +295,11 @@ paths:
           $ref: "#/components/responses/error"
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/mfa/registration/initialize":
     post:
       tags:
@@ -330,11 +330,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/mfa/registration/finalize":
     post:
       tags:
@@ -367,11 +367,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/mfa/login/initialize":
     post:
       tags:
@@ -404,11 +404,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
   "/{tenant_id}/mfa/login/finalize":
     post:
       tags:
@@ -441,11 +441,11 @@ paths:
       security: []
       servers:
         - url: "https://passkeys.hanko.io"
-          variables:
-            host:
-              default: localhost
-            path_prefix:
-              default: ""
+          # variables:
+          #   host:
+          #     default: localhost
+          #   path_prefix:
+          #     default: ""
 tags:
   - name: credentials
     description: Represents all objects which are related to WebAuthn credentials
