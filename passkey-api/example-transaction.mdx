@@ -17,6 +17,12 @@ as we will referring to settings and variables.
 
 Every transaction requires a user ID, a transaction ID and the transaction data to be performed.
 
+<Warning>
+  Be aware that a transaction ID needs to be a tenant-wide unique identifier. Using the same identifier with the same or another user
+  on the same tenant will lead to a `409 Conflict` http status message.
+</Warning>
+
+
 **Backend:**
 
 ```jsx
@@ -29,7 +35,7 @@ app.post("/passkey/start-transaction", async (req, res) => {
   /*
     The transaction body can look like this:
     {
-      transactionId: "your-transaction-identifier",
+      transactionId: "your-unique-transaction-identifier",
       transactionData: {
         amount: 123.45,
         usedFor: "Buying a Hanko Cloud membership"
