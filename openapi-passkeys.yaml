@@ -1,8 +1,7 @@
 openapi: 3.1.0
 info:
-  version: "1.0"
+  version: "1.1"
   title: passkey-server
-  summary: "OpenAPI Spec for creating, managing and using passkeys"
   description: "This API shall represent the private and public endpoints for passkey registration, management and authentication"
   termsOfService: "https://www.hanko.io/terms"
   contact:
@@ -14,11 +13,11 @@ info:
     name: GPLv3
 servers:
   - url: "https://passkeys.hanko.io"
-    # variables:
-    #   host:
-    #     default: localhost
-    #   path_prefix:
-    #     default: ""
+    variables:
+      host:
+        default: localhost
+      path_prefix:
+        default: ""
 paths:
   "/{tenant_id}/credentials":
     get:
@@ -88,6 +87,7 @@ paths:
       description: Endpoint for removing a webauthn credential
       operationId: delete-credentials-credentialId
       parameters:
+        - $ref: "#/components/parameters/X-API-KEY"
         - $ref: "#/components/parameters/credential_id"
         - $ref: "#/components/parameters/tenant_id"
       responses:
@@ -175,6 +175,8 @@ paths:
       operationId: post-login-initialize
       parameters:
         - $ref: "#/components/parameters/tenant_id"
+      requestBody:
+        $ref: "#/components/requestBodies/post-login-initialize"
       responses:
         "200":
           $ref: "#/components/responses/post-login-initialize"
@@ -298,9 +300,157 @@ paths:
               default: localhost
             path_prefix:
               default: ""
+  "/{tenant_id}/mfa/registration/initialize":
+    post:
+      tags:
+        - credentials
+        - mfa
+      summary: Start MFA Registration
+      description: Initialize a registration for mfa credentials
+      operationId: post-mfa-registration-initialize
+      parameters:
+        - $ref: "#/components/parameters/X-API-KEY"
+        - name: tenant_id
+          in: path
+          description: Tenant ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/post-registration-initialize"
+      responses:
+        "200":
+          $ref: "#/components/responses/post-registration-initialize"
+        "400":
+          $ref: "#/components/responses/error"
+        "401":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+      security: []
+      servers:
+        - url: "https://passkeys.hanko.io"
+          variables:
+            host:
+              default: localhost
+            path_prefix:
+              default: ""
+  "/{tenant_id}/mfa/registration/finalize":
+    post:
+      tags:
+        - credentials
+        - mfa
+      summary: Finish MFA Registration
+      description: Finish credential registration process
+      operationId: post-mfa-registration-finalize
+      parameters:
+        - $ref: "#/components/parameters/X-API-KEY"
+        - name: tenant_id
+          in: path
+          description: Tenant ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/post-registration-finalize"
+      responses:
+        "200":
+          $ref: "#/components/responses/token"
+        "400":
+          $ref: "#/components/responses/error"
+        "401":
+          $ref: "#/components/responses/error"
+        "404":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+      security: []
+      servers:
+        - url: "https://passkeys.hanko.io"
+          variables:
+            host:
+              default: localhost
+            path_prefix:
+              default: ""
+  "/{tenant_id}/mfa/login/initialize":
+    post:
+      tags:
+        - credentials
+        - mfa
+      summary: Start MFA Login
+      description: Initialize a login flow for MFA
+      operationId: post-mfa-login-initialize
+      parameters:
+        - $ref: "#/components/parameters/X-API-KEY"
+        - name: tenant_id
+          in: path
+          description: Tenant ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/post-mfa-login-initialize"
+      responses:
+        "200":
+          $ref: "#/components/responses/post-login-initialize"
+        "400":
+          $ref: "#/components/responses/error"
+        "401":
+          $ref: "#/components/responses/error"
+        "404":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+      security: []
+      servers:
+        - url: "https://passkeys.hanko.io"
+          variables:
+            host:
+              default: localhost
+            path_prefix:
+              default: ""
+  "/{tenant_id}/mfa/login/finalize":
+    post:
+      tags:
+        - credentials
+        - mfa
+      summary: Finish MFA Login
+      description: Finalize the login operation
+      operationId: post-mfa-login-finalize
+      parameters:
+        - $ref: "#/components/parameters/X-API-KEY"
+        - name: tenant_id
+          in: path
+          description: Tenant ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/post-login-finalize"
+      responses:
+        "200":
+          $ref: "#/components/responses/token"
+        "400":
+          $ref: "#/components/responses/error"
+        "401":
+          $ref: "#/components/responses/error"
+        "404":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+      security: []
+      servers:
+        - url: "https://passkeys.hanko.io"
+          variables:
+            host:
+              default: localhost
+            path_prefix:
+              default: ""
 tags:
   - name: credentials
     description: Represents all objects which are related to WebAuthn credentials
+  - name: mfa
+    description: Represents all objects which are related to MFA in common
   - name: webauthn
     description: Represents all objects which are related to WebAuthn in common
 components:
@@ -322,7 +472,7 @@ components:
         format: uuid
         minLength: 36
         maxLength: 36
-        examples:
+        example:
           - 1f496bcd-49da-4839-a02f-7ce681cdaaaa
     tenant_id:
       name: tenant_id
@@ -334,7 +484,7 @@ components:
         format: uuid
         minLength: 36
         maxLength: 36
-        examples:
+        example:
           - 1f496bcd-49da-4839-a02f-7ce681ccb488
     X-API-KEY:
       name: apiKey
@@ -368,13 +518,9 @@ components:
                 type: string
                 maxLength: 128
               icon:
-                type:
-                  - string
-                  - "null"
+                type: string
               display_name:
-                type:
-                  - string
-                  - "null"
+                type: string
                 maxLength: 128
             required:
               - user_id
@@ -390,9 +536,7 @@ components:
                   response:
                     $ref: "#/components/schemas/authenticator-attestation-response"
                   transports:
-                    type:
-                      - array
-                      - "null"
+                    type: array
                     uniqueItems: true
                     items:
                       type: string
@@ -408,8 +552,21 @@ components:
                 properties:
                   response:
                     $ref: "#/components/schemas/autenticator-assertion-response"
+                  clientExtensionResults:
+                    type: object
+                    properties:
+                      appid:
+                        type: boolean
+                      appidExclude:
+                        type: boolean
+                      credProps:
+                        type: object
+                        properties:
+                          rk:
+                            type: boolean
                 required:
                   - response
+                  - clientExtensionResults
     post-transaction-initialize:
       content:
         application/json:
@@ -427,6 +584,26 @@ components:
               - user_id
               - transaction_id
               - transaction_data
+    post-login-initialize:
+      description: Body for login/initialize
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user_id:
+                type: string
+                description: optional - when provided the API Key needs to be sent to the server too.
+    post-mfa-login-initialize:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user_id:
+                type: string
+            required:
+              - user_id
   responses:
     get-credentials:
       description: Example response
@@ -442,9 +619,7 @@ components:
                 id:
                   type: string
                 name:
-                  type:
-                    - string
-                    - "null"
+                  type: string
                 public_key:
                   type: string
                 attestation_type:
@@ -455,9 +630,7 @@ components:
                   minLength: 36
                   maxLength: 36
                 last_used_at:
-                  type:
-                    - string
-                    - "null"
+                  type: string
                   format: date-time
                 created_at:
                   type: string
@@ -473,6 +646,9 @@ components:
                 backup_state:
                   type: boolean
                   default: false
+                is_mfa:
+                  type: boolean
+                  default: false
               required:
                 - id
                 - public_key
@@ -482,6 +658,7 @@ components:
                 - transports
                 - backup_eligible
                 - backup_state
+                - is_mfa
     error:
       description: Error Response with detailed information
       content:
@@ -490,25 +667,15 @@ components:
             type: object
             properties:
               title:
-                type:
-                  - string
-                  - "null"
-                examples:
+                type: string
+                example:
                   - explanatory title
               details:
-                type:
-                  - string
-                  - "null"
-                examples:
+                type: string
+                example:
                   - Information which helps resolving the problem
               status:
-                type:
-                  - integer
-                  - "null"
-              additional:
-                type:
-                  - object
-                  - "null"
+                type: integer
     post-registration-initialize:
       description: Example response
       content:
@@ -518,43 +685,46 @@ components:
             properties:
               publicKey:
                 type: object
-                additionalProperties: false
                 properties:
                   rp:
                     $ref: "#/components/schemas/relying-party-entity"
                   user:
-                    $ref: "#/components/schemas/user-entity"
+                    $ref: "#/components/schemas/public-key-user"
                   challenge:
                     type: string
                   pubKeyCredParams:
-                    type:
-                      - array
-                      - "null"
+                    type: array
                     items:
                       $ref: "#/components/schemas/credential-parameter-entity"
                   timeout:
-                    type:
-                      - integer
-                      - "null"
+                    type: integer
                   excludeCredentials:
-                    type:
-                      - array
-                      - "null"
+                    type: array
                     items:
                       $ref: "#/components/schemas/credential-descriptor-entity"
                   authenticatorSelection:
                     $ref: "#/components/schemas/authentication-selection-entity"
                   attestation:
                     type: string
+                    enum:
+                      - direct
+                      - enterprise
+                      - indirect
+                      - none
                   extensions:
-                    type: array
-                    uniqueItems: true
-                    items:
-                      type: object
+                    type: object
+                    properties:
+                      appid:
+                        type: string
+                      appidExclude:
+                        type: string
+                      credProps:
+                        type: boolean
                 required:
                   - rp
                   - user
                   - challenge
+                  - pubKeyCredParams
             required:
               - publicKey
     post-login-initialize:
@@ -566,48 +736,49 @@ components:
             properties:
               publicKey:
                 type: object
-                additionalProperties: false
                 properties:
                   challenge:
                     type: string
                   timeout:
-                    type:
-                      - integer
-                      - "null"
-                    format: int32
+                    type: integer
                   rpId:
-                    type:
-                      - string
-                      - "null"
+                    type: string
                   allowCredentials:
-                    type:
-                      - array
-                      - "null"
+                    type: array
                     items:
-                      type: string
+                      $ref: "#/components/schemas/credential-descriptor-entity"
                   userVerification:
-                    type:
-                      - string
-                      - "null"
+                    type: string
+                    enum:
+                      - discouraged
+                      - preferred
+                      - required
                   extensions:
-                    type:
-                      - array
-                      - "null"
-                    uniqueItems: true
-                    items:
-                      type: object
-                      additionalProperties: false
+                    type: object
+                    properties:
+                      appid:
+                        type: boolean
+                      appidExclude:
+                        type: boolean
+                      credProps:
+                        type: object
+                        properties:
+                          rk:
+                            type: boolean
                 required:
                   - challenge
-            required:
-              - publicKey
+              mediation:
+                type: string
+                enum:
+                  - optional
+                  - required
+                  - silent
     jwks:
       description: Example response
       content:
         application/json:
           schema:
             type: object
-            additionalProperties: false
             properties:
               keys:
                 type: array
@@ -620,23 +791,23 @@ components:
                     alg:
                       type: string
                       readOnly: true
-                      examples:
+                      example:
                         - RS256
                     e:
                       type: string
                       readOnly: true
-                      examples:
+                      example:
                         - AAAA
                     kid:
                       type: string
                       format: uuid
                       readOnly: true
-                      examples:
+                      example:
                         - 483b2499-1ed7-4325-94e3-97e8118ceee9
                     kty:
                       type: string
                       readOnly: true
-                      examples:
+                      example:
                         - RSA
                     "n":
                       type: string
@@ -644,7 +815,7 @@ components:
                     use:
                       type: string
                       readOnly: true
-                      examples:
+                      example:
                         - sig
                   minProperties: 6
             minProperties: 1
@@ -654,7 +825,6 @@ components:
         application/json:
           schema:
             type: object
-            additionalProperties: false
             properties:
               token:
                 type: string
@@ -668,10 +838,12 @@ components:
           properties:
             rawId:
               type: string
-            clientExtensionResults:
-              type: object
             authenticatorAttachment:
               type: string
+              enum:
+                - cross-platform
+                - platform
+                - null
           required:
             - rawId
     credential:
@@ -681,7 +853,8 @@ components:
         id:
           type: string
         type:
-          type: string
+          enum:
+            - public-key
       required:
         - id
         - type
@@ -694,9 +867,7 @@ components:
             attestationObject:
               type: string
             transports:
-              type:
-                - array
-                - "null"
+              type: array
               uniqueItems: true
               items:
                 type: string
@@ -721,9 +892,7 @@ components:
             signature:
               type: string
             userHandle:
-              type:
-                - string
-                - "null"
+              type: string | null
           required:
             - authenticatorData
             - signature
@@ -734,8 +903,6 @@ components:
           properties:
             id:
               type: string
-          required:
-            - id
         - $ref: "#/components/schemas/credential-entity"
     credential-entity:
       type: object
@@ -743,32 +910,29 @@ components:
       properties:
         name:
           type: string
-        icon:
-          type:
-            - string
-            - "null"
       required:
         - name
-    user-entity:
-      title: user-entity
-      allOf:
-        - type: object
-          properties:
-            id:
-              type: string
-            displayName:
-              type:
-                - string
-                - "null"
-          required:
-            - id
-        - $ref: "#/components/schemas/credential-entity"
+    public-key-user:
+      type: object
+      title: public-key-user
+      properties:
+        id:
+          type: string
+        displayName:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - displayName
+        - name
     credential-parameter-entity:
       type: object
       title: credential-parameter-entity
       properties:
         type:
-          type: string
+          enum:
+            - public-key
         alg:
           type: integer
           format: int32
@@ -780,16 +944,21 @@ components:
       title: credential-descriptor-entity
       properties:
         type:
-          type: string
+          enum:
+            - public-key
         id:
           type: string
         transports:
-          type:
-            - array
-            - "null"
+          type: array
           uniqueItems: true
           items:
             type: string
+            enum:
+              - ble
+              - hybrid
+              - internal
+              - nfc
+              - usb
       required:
         - type
         - id
@@ -798,19 +967,22 @@ components:
       title: authentication-selection-entity
       properties:
         authenticatorAttachement:
-          type:
-            - string
-            - "null"
+          type: string
+          enum:
+            - cross-platform
+            - platform
         requireResidentKey:
-          type:
-            - boolean
-            - "null"
+          type: boolean
           default: false
         residentKey:
-          type:
-            - string
-            - "null"
+          type: string
+          enum:
+            - discouraged
+            - preferred
+            - required
         userVerification:
-          type:
-            - string
-            - "null"
+          type: string
+          enum:
+            - discouraged
+            - preferred
+            - required

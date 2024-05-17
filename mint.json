@@ -224,6 +224,15 @@
             "passkey-api/reference/finalize-transaction"
           ]
         },
+        {
+          "group": "MFA",
+          "pages": [
+            "passkey-api/reference/credentials/start-mfa-login",
+            "passkey-api/reference/credentials/finish-mfa-login",
+            "passkey-api/reference/credentials/start-mfa-registration",
+            "passkey-api/reference/credentials/finish-mfa-registration"
+          ]
+        },
         "passkey-api/reference/credentials/well-known-jwks"
       ]
     },
