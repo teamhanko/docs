@@ -147,7 +147,8 @@
           "group": "Migrations",
           "pages": ["guides/migrations/import-export-users"]
         },
-        "guides/webhooks/introduction"
+        "guides/webhooks/introduction",
+        "guides/custom-emails/email-delivery"
       ]
     },
     {
