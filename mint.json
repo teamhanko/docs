@@ -140,6 +140,12 @@
           ]
         },
         {
+          "group": "Cloud Console",
+          "pages": [
+            "guides/cloud-console/session-duration"
+          ]
+        },
+        {
           "group": "Databases",
           "pages": ["guides/databases/supabase"]
         },
