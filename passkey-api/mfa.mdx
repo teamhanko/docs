@@ -13,7 +13,7 @@ This example demonstrates how to implement MFA in Node.js using the [@teamhanko/
 
 Install the Passkey SDK:
 
-<CodeGroup>
+<CodeGroup> 
 
 ```bash npm
 npm i @teamhanko/passkeys-sdk
@@ -43,6 +43,8 @@ PASSKEYS_TENANT_ID=your-tenant-id
 ```
 
 ## Allow users to register passkeys for MFA
+
+On your backend, you’ll have to call `tenant({ ... }).user(userId).mfa.registration.initialize()` and `mfa.registration.finalize()` to create and store a passkey for your user which will be used as an MFA.
 
 ```js services.js
 import { tenant } from "@teamhanko/passkeys-sdk";
@@ -104,6 +106,10 @@ async function handleMfaRegister(req, res) {
 ```
 
 ### Frontend:
+
+On your frontend, the `registerMfaPasskey()` function handles the passkey registration process. It first sends a request to the server to initiate the registration process and receives the response for creating a new passkey. 
+
+It then uses the `@github/webauthn-json` library to create a new passkey credential based on the received options from the response. Finally, it sends another request to the server with the newly created credential to complete the registration process.
 
 ```tsx
 async function registerMfaPasskey() {
@@ -199,6 +205,8 @@ async function handleMfaLogin(req, res) {
 ```
 
 ### Frontend:
+
+Feel free to customize the MFA flow based on your app's requirements. In our [example implementation](https://github.com/teamhanko/passkeys-react-express), if `mfaRequired=true` is received from the login API, the user is redirected to an MFA page where passkey-based multi-factor authentication is performed.
 
 ```tsx
 async function mfaLogin() {
