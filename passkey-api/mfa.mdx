@@ -68,7 +68,6 @@ async function startMfaRegistration(userID) {
   const createOptions = await passkeyApi
     .user(user.id)
     .mfa.registration.initialize({
-      userId: user.id,
       username: user.email || "",
     });
 
@@ -109,7 +108,7 @@ async function handleMfaRegister(req, res) {
 }
 ```
 
-### Frontend:
+### Frontend
 
 On your frontend, the `registerMfaPasskey()` function handles the passkey registration process. It first sends a request to the server to initiate the registration process and receives the response for creating a new passkey. 
 
@@ -158,9 +157,7 @@ async function registerMfaPasskey() {
 ```js services.js
 async function startMfaLogin(userID) {
   const user = db.users.find((user) => user.id === userID);
-  const options = await passkeyApi.user(user.id).mfa.login.initialize({
-    userId: user.id,
-  });
+  const options = await passkeyApi.user(user.id).mfa.login.initialize();
   return options;
 }
 
@@ -174,9 +171,7 @@ async function finishMfaLogin(userID, options) {
 ```js controller.js
 async function handleMfaLogin(req, res) {
   const { user } = req;
-  console.log("userForMfaLogin", user);
   const userID = user.id;
-  console.log("userIDfromMFALogin", userID);
 
   if (!userID) {
     return res.status(401).json({ message: "MFA Login not allowed" });
@@ -208,7 +203,7 @@ async function handleMfaLogin(req, res) {
 }
 ```
 
-### Frontend:
+### Frontend
 
 Feel free to customize the MFA flow based on your app's requirements. In our [example implementation](https://github.com/teamhanko/passkeys-react-express), if `mfaRequired=true` is received from the login API, the user is redirected to an MFA page where passkey-based multi-factor authentication is performed.
 
