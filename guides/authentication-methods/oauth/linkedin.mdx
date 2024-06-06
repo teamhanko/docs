@@ -1,0 +1,216 @@
+---
+title: Add LinkedIn Login
+sidebarTitle: LinkedIn
+description: In this guide you will learn how to add a login with LinkedIn to your application.
+---
+
+<Warning>
+  This feature is not yet available on Hanko Cloud.
+</Warning>
+
+## Prerequisites
+
+1. You need a Hanko Cloud account and a project. Learn more on how to set them up [here](https://docs.hanko.io/setup-hanko-cloud).
+2. You need a LinkedIn account. You can create an account [here](https://www.linkedin.com/signup).
+
+## Get your provider redirect URL
+
+When creating an LinkedIn application, you need to provide a redirect URL that determines where the third party
+provider redirects after a successful login. This redirect URL consists of the base URL of the Hanko API
+and the [`/thirdparty/callback`](http://docs.hanko.io/api/public#tag/Third-Party/operation/thirdPartyCallback) endpoint. You can always view your redirect URL in the Hanko Cloud Console:
+
+1. Sign in to [cloud.hanko.io](https://cloud.hanko.io).
+2. Select your `Organization`.
+3. Select your `Project`.
+4. In the left sidebar, click `Settings`, then select `Identity providers`.
+5. Find your redirect URL in the `Redirect URL` input.
+
+<Frame>
+  <img
+    src="/images/oauth-providers/hanko-callback-url.png"
+    alt="Hanko Callback URL"
+    width={500}
+    style={{ borderRadius: "0.5rem" }}
+  />
+</Frame>
+
+You need the redirect URL for [creating a new LinkedIn application](#create-a-new-linkedin-application) in the next step and
+[configuring your credentials with Hanko](#configure-credentials-with-hanko) (you will also configure the remaining
+configuration options visible in the above screen in this step).
+
+## Create a new LinkedIn application
+
+1. Navigate to and log in to the [LinkedIn developer portal](https://www.linkedin.com/developers/login).
+
+<Frame>
+  <img src="/images/oauth-providers/linkedin/dashboard.png"
+       alt="dashboard"
+       width={500}
+       style={{ borderRadius: "0.5rem" }} />
+</Frame>
+
+2. Click on the `Create app` button.
+
+<Frame>
+  <img src="/images/oauth-providers/linkedin/create-app.png"
+       alt="create linkedin app"
+       width={500}
+       style={{ borderRadius: "0.5rem" }} />
+</Frame>
+
+3. Enter your application name in `App name`.
+4. Enter your LinkedIn company page url in `LinkedIn Page` or create one.
+5. (Optional) Enter your privacy policy page url in `Privacy policy URL`.
+6. Upload a logo for your application.
+7. Accept the terms and conditions.
+8. Click on the `Create app` button.
+
+<Frame>
+  <img src="/images/oauth-providers/linkedin/product-list.png"
+       alt="product list"
+       width={500}
+       style={{ borderRadius: "0.5rem" }} />
+</Frame>
+
+9. Search for the `Sign In with LinkedIn using OpenID Connect` card from the product list.
+10. Click `Request access`.
+
+<Frame>
+  <img src="/images/oauth-providers/linkedin/request-access-sign-in.png"
+       alt="request access for sign in"
+       width={500}
+       style={{ borderRadius: "0.5rem" }} />
+</Frame>
+
+11. Accept the terms and conditions.
+12. Click on the `Request access` Button.
+13. The card should now show as added product.
+14. Click on `Auth` and scroll to `OAuth 2.0 settings`
+
+<Frame>
+  <img src="/images/oauth-providers/linkedin/oauth-settings.png"
+       alt="OAuth 2.0 settings"
+       width={500}
+       style={{ borderRadius: "0.5rem" }} />
+</Frame>
+
+15. Click on the `pencil` next to `Authorized redirect URLs for your app`
+16. Click on `+ Add redirect URL`
+17. Enter the `Redirect URL` you obtained in the [first step](#get-your-provider-redirect-url) as the value.
+18. Click on the `Update` button.
+
+## Get your client ID and secret
+
+You can view the client ID as well as the secret of your app in the `Auth` tab on your app page.
+You will need this when [configuring your credentials with Hanko](#configure-credentials-with-hanko)
+
+<Frame>
+  <img src="/images/oauth-providers/linkedin/client-id-secret.png"
+       alt="Client ID and Secret"
+       width={500}
+       style={{ borderRadius: "0.5rem" }} />
+</Frame>
+
+## Configure credentials with Hanko
+
+1. In the Hanko Cloud Console, navigate to your project `Settings` and select `Identity providers`.
+2. Configure the following:
+
+<Frame>
+  <img
+    src="/images/oauth-providers/hanko-callback-url.png"
+    alt="Hanko Callback URL"
+    width={500}
+    style={{ borderRadius: "0.5rem" }}
+  />
+</Frame>
+
+      - **Error Redirect URL**: This is the URL target in your frontend the Hanko API redirects to if an error occurs during third
+    party sign-in. If your frontend [uses the `hanko-elements` web components](#frontend-integration), this URL should be the URL of the
+    page that embeds the web component such that errors can be processed properly by the web component.
+      - **Allowed Redirect URL**: This is the URL target in your frontend the Hanko API is allowed to redirect to after third party
+    authentication was successful. If your frontend [uses the `hanko-elements` web components](#frontend-integration), this URL should be
+    the URL of the page that embeds the web component.
+
+        <Note>
+        The allowed redirect URL supports wildcard matching through globbing:
+         - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
+         - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
+         -  Use ** to act as a super-wildcard/match-all.
+        </Note>
+
+2. In the `Providers` section, select `LinkedIn` and use the `Enable provider` toggle to enable the provider.
+3. Provide the `Client ID` and `Client Secret` you obtained in one of the [previous section](#get-your-client-id-and-secret)
+in the remaining inputs.
+4. Click `Save`.
+
+## Frontend integration
+
+To enable a login with LinkedIn in your frontend application we recommend using either our pre-built UI as
+provided by the [`@teamhanko/hanko-elements`](https://www.npmjs.com/package/@teamhanko/hanko-elements) package or building a custom UI using
+the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk).
+
+<Tabs>
+
+  <Tab title="Hanko Elements">
+    We recommend following one of our [quickstart guides](https://docs.hanko.io/quickstarts) to integrate
+    the `<hanko-auth>` component from our `@teamhanko/hanko-elements` package in your frontend application .
+    On successful integration, the component will display a button for signing in with `LinkedIn` in the login view
+    of the component.
+
+    <Note>
+      Make sure to configure the page the web component is embedded on as your `error redirect URL` as well as an
+      `allowed redirect URL` (see the [previous step](#configure-credentials-with-hanko)).
+    </Note>
+
+    On successful authentication with the provider, the backend issues a session cookie and the web component
+    continues the usual component flow on success. Errors that occur during third party
+    provider authentication are also picked up and displayed in the web component accordingly.
+  </Tab>
+
+  <Tab title="Hanko Frontend SDK">
+    When building your own UI, you can use the `@teamhanko/hanko-frontend-sdk` to initialize third party sign in.
+    Create a [`Hanko` client](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/Client.html) instance and call  the
+    `thirdParty.auth` method with `linkedin` as your provider and the target URL in your app you want to redirect
+    to after authentication.
+
+    ```js
+    import { Hanko } from "@teamhanko/hanko-frontend-sdk";
+
+    // you can find the Hanko API URL on the dashboard of your project
+    // in the Hanko Cloud Console
+    const hanko = new Hanko("<your_hanko_api_url>");
+
+    async function signInWithLinkedIn() {
+      try {
+      // the redirect url argument must be one of the allowed redirect URLs
+      // configured in the previous step.
+      await hanko.thirdParty.auth("linkedin", "<your_redirect_url>");
+    } catch (error) {
+      // handle error
+    }
+    }
+    ```
+
+    On successful authentication, the API redirects you to the given redirect URL. The URL query includes a one time
+    token that must be exchanged for a JWT. Use the `token.validate` method on your client to validate the token:
+
+    ```js
+    import { Hanko } from "@teamhanko/hanko-frontend-sdk";
+
+    const hanko = new Hanko("<your_hanko_api_url>");
+
+      async function onLoad() {
+        try {
+        await hanko.token.validate();
+      } catch (error) {
+        // handle error
+      }
+        // you should now have a JWT cookie set
+      }
+      ```
+
+      On success, the API issues a JWT which is then set by the SDK as a cookie (hanko). All other SDK methods
+      can now use the cookie to make authenticated requests to the API.
+  </Tab>
+</Tabs>
