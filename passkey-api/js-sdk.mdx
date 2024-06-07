@@ -72,6 +72,217 @@ const creationOptions = await tenant.registration.initialize({
 
 ## Example Implementation
 
+<Steps>
+<Step title="Install the SDK">
+
+<CodeGroup>
+
+```bash npm
+npm i @teamhanko/passkeys-sdk
+```
+
+```bash yarn
+yarn add @teamhanko/passkeys-sdk
+```
+
+```bash bun
+bun add @teamhanko/passkeys-sdk
+```
+
+```bash pnpm
+pnpm add @teamhanko/passkeys-sdk
+```
+
+</CodeGroup>
+</Step>
+<Step title="Get your tenant ID and API key">
+
+Get your tenant ID and API key from [Hanko Cloud](https://cloud.hanko.io/) and add them to your `.env` file.
+
+```bash .env
+PASSKEYS_API_KEY=your-api-key
+PASSKEYS_TENANT_ID=your-tenant-id
+```
+
+</Step>
+<Step title="Allow users to register passkeys as a login method">
+On your backend, you’ll have to call `tenant({ ... }).registration.initialize()` and `registration.finalize()` to create and store a passkey.
+```js services.js
+import { tenant } from "@teamhanko/passkeys-sdk";
+import dotenv from "dotenv";
+import db from "../db.js";
+
+dotenv.config();
+
+const passkeyApi = tenant({
+  apiKey: process.env.PASSKEYS_API_KEY,
+  tenantId: process.env.PASSKEYS_TENANT_ID,
+});
+
+async function startServerPasskeyRegistration(userID) {
+  const user = db.users.find((user) => user.id === userID);
+
+  const createOptions = await passkeyApi.registration.initialize({
+    userId: user.id,
+    username: user.email || "",
+  });
+
+  return createOptions;
+}
+
+async function finishServerPasskeyRegistration(credential) {
+  await passkeyApi.registration.finalize(credential);
+}
+```
+
+```js controllers.js
+async function handlePasskeyRegister(req, res) {
+  const { user } = req;
+  const userID = user.id;
+
+  if (!userID) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  console.log("userId", userID);
+
+  const { start, finish, credential } = req.body;
+
+  try {
+    if (start) {
+      const createOptions = await startServerPasskeyRegistration(userID);
+      console.log("registration start");
+      return res.json({ createOptions });
+    }
+    if (finish) {
+      await finishServerPasskeyRegistration(credential);
+      return res.json({ message: "Registered Passkey" });
+    }
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+}
+```
+
+**Frontend**
+
+On your frontend, the `registerPasskey()` function handles the passkey registration process. It first sends a request to the server to initiate the registration process and receives the response for creating a new passkey. 
+
+It then uses the `@github/webauthn-json` library to create a new passkey credential based on the received options from the response. Finally, it sends another request to the server with the newly created credential to complete the registration process.
+
+```tsx
+  async function registerPasskey() {
+        const createOptionsResponse = await fetch("http://localhost:5001/api/passkeys/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include',
+            body: JSON.stringify({ start: true, finish: false, credential: null }),
+        });
+
+        const { createOptions } = await createOptionsResponse.json();
+        console.log("createOptions", createOptions)
+
+        const credential = await create(
+            createOptions as CredentialCreationOptionsJSON,
+        );
+        console.log(credential)
+
+        const response = await fetch("http://localhost:5001/api/passkeys/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ start: false, finish: true, credential }),
+        });
+        console.log(response)
+
+        if (response.ok) {
+            toast.success("Registered passkey successfully!");
+            return;
+        }
+    }
+```
+</Step>
+<Step title="Allow users to log in with passkeys">
+
+```js services.js
+async function startServerPasskeyLogin() {
+  const options = await passkeyApi.login.initialize();
+  return options;
+}
+
+async function finishServerPasskeyLogin(options) {
+  const response = await passkeyApi.login.finalize(options);
+  return response;
+}
+```
+
+```js controllers.js
+async function handlePasskeyLogin(req, res) {
+  const { start, finish, options } = req.body;
+
+  try {
+    if (start) {
+      const loginOptions = await startServerPasskeyLogin();
+      return res.json({ loginOptions });
+    }
+    if (finish) {
+      const jwtToken = await finishServerPasskeyLogin(options);
+      const userID = await getUserID(jwtToken?.token ?? "");
+      console.log("userID from hanko", userID);
+      const user = db.users.find((user) => user.id === userID);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid user" });
+      }
+      console.log("user", user);
+      const sessionId = uuidv4();
+      setUser(sessionId, user);
+      res.cookie("sessionId", sessionId);
+      return res.json({ message: " Passkey Login successful" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred during the passke login process." });
+  }
+}
+```
+
+**Frontend**
+```tsx 
+    async function signInWithPasskey() {
+        const createOptionsResponse = await fetch("http://localhost:5001/api/passkeys/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include',
+            body: JSON.stringify({ start: true, finish: false, credential: null }),
+        });
+
+        const { loginOptions } = await createOptionsResponse.json();
+
+        // Open "register passkey" dialog
+        const options = await get(
+            loginOptions as any,
+        );
+
+        const response = await fetch("http://localhost:5001/api/passkeys/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include',
+            body: JSON.stringify({ start: false, finish: true, options }),
+        });
+
+        if (response.ok) {
+            console.log("user logged in with passkey")
+            navigate("/dashboard")
+            return;
+        }
+    }
+```
+</Step>
+</Steps>
+
+## Try it yourself 
+
 Check out sample apps made using the SDK:
 
 <CardGroup cols={2}>
@@ -128,3 +339,4 @@ Check out sample apps made using the SDK:
     Full source code available on our GitHub.
   </Card>
 </CardGroup>
+

@@ -39,7 +39,7 @@ pnpm add @teamhanko/passkeys-sdk
 
 ## Get your tenant ID and API key
 
-Get your tenant ID and API key from Hanko Cloud and add them to your .env.local file.
+Get your tenant ID and API key from Hanko Cloud and add them to your `.env` file.
 
 ```bash .env
 PASSKEYS_API_KEY=your-api-key
@@ -80,7 +80,7 @@ async function finishMfaRegistration(userID, credential) {
 }
 ```
 
-```js controller.js
+```js controllers.js
 async function handleMfaRegister(req, res) {
   const { user } = req;
   const userID = user.id;
@@ -168,7 +168,7 @@ async function finishMfaLogin(userID, options) {
 }
 ```
 
-```js controller.js
+```js controllers.js
 async function handleMfaLogin(req, res) {
   const { user } = req;
   const userID = user.id;
