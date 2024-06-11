@@ -19,7 +19,7 @@ Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT]
 
 2. **Retrieve the JSON Web Key Set ([JWKS](https://datatracker.ietf.org/doc/html/rfc7517)):** The JWKS has the public keys to verify the JWT. Fetch it from the Hanko API's `.well-known/jwks.json` endpoint.
 
-3. **Find the matching JWK from the list of JWKS retrieved** The matching JWK is the one that has the same kid found at step 1.
+3. **Find the matching JWK from the JWKS retrieved at step 2** The matching JWK is the one that has the same kid found at step 1.
 
 4. **Verify the JWT:** Use the matching JWK to verify the JWT.
 
@@ -106,10 +106,10 @@ async fn validate_hanko_token(token: &str) -> Result<UserDecodedJwtInfo, Box<dyn
     // 1) Recover the kid from the user JWT.
     let jwt_kid = get_jwt_kid(token)?;
 
-    // 2) Retrieve the JSON Web Key Set.
+    // 2) Retrieve the JSON Web Key Set (JWKS).
     let jwks = fetch_jwks().await?;
 
-    // 3) Find the matching JWK from the list of JWKS retrieved.
+    // 3) Find the matching JWK from the JWKS retrieved at step 2*
     let matching_jwk = jwks.keys.iter().find(|jwk| jwk.kid == jwt_kid);
 
     // 4) Verify the JWT.
