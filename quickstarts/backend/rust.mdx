@@ -27,7 +27,15 @@ Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT]
 
 Below is a sample code in rust validating the user JWT using [reqwest](https://github.com/seanmonstar/reqwest) and [jsonwebtoken library](https://github.com/Keats/jsonwebtoken) packages:
 
-```rust
+```toml Cargo.toml
+[dependencies]
+jsonwebtoken = "9.3.0"
+reqwest = { version = "0.12.4", features = ["json"]}
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+```
+
+```rust main.rs
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use reqwest;
 use serde::{Deserialize, Serialize};
