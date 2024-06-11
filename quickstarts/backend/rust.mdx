@@ -25,8 +25,8 @@ Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT]
 
 <Warning>
   The JWKS should be cached in the backend to avoid querying the endpoint every
-  time a token needs to be validated. It is recommended to retrieve the JWK when
-  no JWK matches the token kid has been found at (step 3).
+  time a token needs to be validated. It is recommended to retrieve the JWKS
+  when no JWK matches the JWT kid (step 3).
 </Warning>
 
 ### Rust-based Backend Example
