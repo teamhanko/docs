@@ -879,6 +879,9 @@ paths:
       operationId: listUser
       tags:
         - User Management
+      security:
+        - CookieAuth: [ ]
+        - BearerTokenAuth: [ ]
       parameters:
         - name: id
           in: path
