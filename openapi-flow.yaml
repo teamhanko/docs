@@ -1128,6 +1128,11 @@ components:
       additionalProperties: false
     InputDataPasswordRecovery:
       title: PasswordRecovery
+      description: Input data for the `password_recovery` action.
+      type: object
+      properties:
+        new_password:
+          type: string
     InputDataRegisterLoginIdentifier:
       title: RegisterLoginIdentifier
       description: Input data for the `register_login_identifier` action.
@@ -2385,6 +2390,7 @@ components:
                     - $ref: "#/components/schemas/InputDataVerifyPasscode"
                     - $ref: "#/components/schemas/InputDataPasswordLogin"
                     - $ref: "#/components/schemas/InputDataRegisterPassword"
+                    - $ref: "#/components/schemas/InputDataPasswordRecovery"
                     - $ref: "#/components/schemas/InputDataThirdPartyOauth"
                     - $ref: "#/components/schemas/InputDataExchangeToken"
                     - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
