@@ -1133,6 +1133,7 @@ components:
       properties:
         new_password:
           type: string
+      additionalProperties: false
     InputDataRegisterLoginIdentifier:
       title: RegisterLoginIdentifier
       description: Input data for the `register_login_identifier` action.
