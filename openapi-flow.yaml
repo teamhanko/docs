@@ -4,7 +4,6 @@ info:
   description: Flow API
   version: 1.0.0
 servers:
-  - url: 'http://localhost:8000'
   - url: "https://{tenant_id}.hanko.io"
     variables:
       tenant_id:
@@ -107,9 +106,9 @@ components:
       name: action
       description: |
         String of the format `{action_name}@{flow_id}`. Indicates the action to perform on the flow with the 
-        given `flow_id`.
+        given `flow_id`. Omitting the query parameter initializes a new flow.
         
-        _Note for playground usage_: You can derive the value for this query parameter from the an `action`'s `href` 
+        _Note for playground usage_: You can derive the value for this query parameter from the `action`'s `href` 
         property in a flow state response, e.g. for an `href` value of 
         `/login?action=register_client_capabilities%4015655672-41ca-48cc-afb1-90be77075764` the (non-URL-encoded) value
         would be `register_client_capabilities@15655672-41ca-48cc-afb1-90be77075764`.
@@ -667,6 +666,8 @@ components:
       properties:
         webauthn_verify_attestation_response:
           $ref: "#/components/schemas/ActionWebauthnVerifyAttestationResponse"
+        back:
+          $ref: "#/components/schemas/ActionBack"
     AnyValue:
       description: Can be any value - string, number, boolean, array or object.
     CSRFToken:
@@ -1133,6 +1134,8 @@ components:
       properties:
         new_password:
           type: string
+      required:
+        - new_password
       additionalProperties: false
     InputDataRegisterLoginIdentifier:
       title: RegisterLoginIdentifier
@@ -1153,7 +1156,6 @@ components:
       properties:
         new_password:
           type: string
-          format: email
       required:
         - new_password
       additionalProperties: false
@@ -1212,8 +1214,8 @@ components:
         assertion_response:
           description: |
             The [AuthenticatorAssertionResponse](https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAssertionResponse)
-            from the WebAuthn API as a string.
-          type: string
+            from the WebAuthn API.
+          type: object
       required:
         - assertion_response
       additionalProperties: false
@@ -1225,8 +1227,8 @@ components:
         public_key:
           description: | 
             The [AuthenticatorAttestationResponse](https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAttestationResponse)
-            from the WebAuthn API as a string.
-          type: string
+            from the WebAuthn API.
+          type: object
       required:
         - public_key
       additionalProperties: false
@@ -1879,7 +1881,7 @@ components:
               enum:
                 - "success"
             payload:
-              type: object
+              $ref: "#/components/schemas/PayloadProfileData"
             status:
               type: integer
               enum:
@@ -2084,6 +2086,7 @@ components:
         - $ref: "#/components/schemas/StateProfileInit"
         - $ref: "#/components/schemas/StateProfileAccountDeleted"
         - $ref: "#/components/schemas/StatePasscodeConfirmation"
+        - $ref: "#/components/schemas/StateProfileWebauthnCredentialVerification"
       discriminator:
         propertyName: name
         mapping:
@@ -2091,6 +2094,7 @@ components:
           profile_init: "#/components/schemas/StateProfileInit"
           account_deleted: "#/components/schemas/StateProfileAccountDeleted"
           passcode_confirmation: "#/components/schemas/StatePasscodeConfirmation"
+          webauthn_credential_verification: "#/components/schemas/StateProfileWebauthnCredentialVerification"
     StatesRegistration:
       oneOf:
         - $ref: "#/components/schemas/StatePreflight"
