@@ -757,7 +757,7 @@ components:
             type:
               type: string
               enum:
-                - "string"
+                - "email"
             max_length:
               default: 120
             required:
