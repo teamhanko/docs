@@ -14,29 +14,17 @@ const hanko = new Hanko("YOUR_HANKO_API_URL");
 ## Events
 It is possible to bind callbacks to different custom events in use of the SDKs event listener functions. The callback function will be called when the event happens and an object will be passed in, containing event details.
 
-### Auth Flow Completed
-
-Will be triggered after a session has been created and the user has completed possible additional steps (e.g. passkey registration or password recovery) via the `<hanko-auth>` element.
-
-```js
-hanko.onAuthFlowCompleted((authFlowCompletedDetail) => {
-  // Login, registration or recovery has been completed successfully. You can now take control and redirect the
-  // user to protected pages.
-  console.info(
-    `User successfully completed the registration or authorization process (user-id: "${authFlowCompletedDetail.userID}")`
-  );
-});
-```
-
 ### Session created
 
-Will be triggered before the `hanko-auth-flow-completed` happens, as soon as the user is technically logged in. It will also be triggered when the user logs in via another browser window. The event can be used to obtain the JWT.
+Will be triggered after a session has been created and the user has completed possible additional steps (e.g. passkey
+registration or password recovery). It will also be triggered when the user logs in via another browser window. The
+event can be used to obtain the JWT.
 
 ```js
 hanko.onSessionCreated((sessionDetail) => {
   // A new JWT has been issued.
   console.info(
-    `Session created or updated (user-id: "${sessionDetail.userID}", jwt: ${sessionDetail.jwt})`
+    `Session created or updated (jwt: ${sessionDetail.jwt})`
   );
 });
 ```

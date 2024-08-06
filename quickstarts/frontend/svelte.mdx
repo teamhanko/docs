@@ -64,7 +64,7 @@ The `<hanko-auth>` web component adds a login interface to your app. Begin by im
   });
 </script>
 
-<hanko-auth on:onAuthFlowCompleted={redirectAfterLogin} />
+<hanko-auth on:onSessionCreated={redirectAfterLogin} />
 ```
 
 By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇

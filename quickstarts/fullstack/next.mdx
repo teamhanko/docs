@@ -54,7 +54,7 @@ NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 
 The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the register function from `@teamhanko/hanko-elements` into your Next.js component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, include it in your JSX.
 
-The Hanko client from `@teamhanko/hanko-elements` allows you to subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onAuthFlowCompleted` event here triggers when a user successfully logs in. You can use this event to perform any desired action.
+The Hanko client from `@teamhanko/hanko-elements` allows you to subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onSessionCreated` event here triggers when a user successfully logs in. You can use this event to perform any desired action.
 
 <Tabs>
 <Tab title="App directory">
@@ -72,11 +72,7 @@ export default function HankoAuth() {
  
   const [hanko, setHanko] = useState<Hanko>();
  
-  useEffect(() => {
-    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-      setHanko(new Hanko(hankoApi))
-    );
-  }, []);
+  useEffect(() => setHanko(new Hanko(hankoApi)), []);
  
   const redirectAfterLogin = useCallback(() => {
     // successfully logged in, redirect to a page in your application
@@ -85,7 +81,7 @@ export default function HankoAuth() {
  
   useEffect(
     () =>
-      hanko?.onAuthFlowCompleted(() => {
+      hanko?.onSessionCreated(() => {
         redirectAfterLogin();
       }),
     [hanko, redirectAfterLogin]
@@ -114,11 +110,7 @@ export default function HankoAuth() {
 
   const [hanko, setHanko] = useState<Hanko>();
 
-  useEffect(() => {
-    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-      setHanko(new Hanko(hankoApi))
-    );
-  }, []);
+  useEffect(() => setHanko(new Hanko(hankoApi)), []);
 
   const redirectAfterLogin = useCallback(() => {
     // successfully logged in, redirect to a page in your application
@@ -127,7 +119,7 @@ export default function HankoAuth() {
 
   useEffect(
     () =>
-      hanko?.onAuthFlowCompleted(() => {
+      hanko?.onSessionCreated(() => {
         redirectAfterLogin();
       }),
     [hanko, redirectAfterLogin]
@@ -150,8 +142,7 @@ export default function HankoAuth() {
 <Tabs>
 <Tab title="App directory">
 ```jsx app/login/page.tsx
-import dynamic from 'next/dynamic';
-const HankoAuth = dynamic(() => import('@/components/HankoAuth'), { ssr: false })
+import HankoAuth from "@/components/HankoAuth";
 
 export default function LoginPage() {
  return (
@@ -163,8 +154,7 @@ export default function LoginPage() {
 
 <Tab title="Pages directory">
 ```jsx pages/login.tsx
-import dynamic from 'next/dynamic';
-const HankoAuth = dynamic(() => import('@/components/HankoAuth'), { ssr: false })
+import HankoAuth from "@/components/HankoAuth";
 
 export default function LoginPage() {
   return (
@@ -174,18 +164,6 @@ export default function LoginPage() {
 ```
 </Tab>
 </Tabs>
-
-<Info>
-**Why we use dynamic import in Nextjs?** 🤔
-
-We use `customEvents` and WebAuthn API for passkeys, which are only available on the Client side.
-
-The register function tries to set up the `<hanko-auth>` element for the browser. However, Next.js creates pages before they're shown, and it can't access the browser's tools during this process. This means our setup might not work.
-
-To fix this, we can use Next.js's [dynamic import](https://nextjs.org/docs/advanced-features/dynamic-import) to load our component only when it's displayed on the client-side and skip the pre-creation step.
-
-You'll need to do this for `<hanko-profile>` component too.
-</Info>
 
 By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
 
@@ -271,11 +249,7 @@ export default function LogoutBtn() {
   const router = useRouter();
   const [hanko, setHanko] = useState<Hanko>();
  
-  useEffect(() => {
-    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-      setHanko(new Hanko(hankoApi ?? ""))
-    );
-  }, []);
+  useEffect(() => setHanko(new Hanko(hankoApi ?? "")), []);
  
   const logout = async () => {
     try {
@@ -305,11 +279,7 @@ export default function LogoutBtn() {
   const router = useRouter();
   const [hanko, setHanko] = useState<Hanko>();
 
-  useEffect(() => {
-    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-      setHanko(new Hanko(hankoApi ?? ""))
-    );
-  }, []);
+  useEffect(() => setHanko(new Hanko(hankoApi ?? "")), []);
 
   const logout = async () => {
     try {
@@ -395,11 +365,7 @@ export function useUserData(): HankoUser {
     error: null,
   });
 
-  useEffect(() => {
-    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-      setHanko(new Hanko(hankoApi))
-    );
-  }, []);
+  useEffect(() => setHanko(new Hanko(hankoApi)), []);
 
   useEffect(() => {
     hanko?.user
@@ -442,11 +408,7 @@ export function useSessionData(): HankoSession {
     error: null,
   });
 
-  useEffect(() => {
-    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-      setHanko(new Hanko(hankoApi))
-    );
-  }, []);
+  useEffect(() => setHanko(new Hanko(hankoApi)), []);
 
   useEffect(() => {
     if (hanko) {

@@ -60,7 +60,7 @@ export default function HankoAuth() {
   };
 
   onMount(() => {
-    hanko.onAuthFlowCompleted(() => {
+    hanko.onSessionCreated(() => {
       redirectAfterLogin();
     });
 

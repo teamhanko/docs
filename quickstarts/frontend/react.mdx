@@ -117,7 +117,7 @@ The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific
 
       useEffect(
         () =>
-          hanko.onAuthFlowCompleted(() => {
+          hanko.onSessionCreated(() => {
             redirectAfterLogin();
           }),
         [hanko, redirectAfterLogin]
@@ -151,7 +151,7 @@ The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific
 
     useEffect(
       () =>
-        hanko.onAuthFlowCompleted(() => {
+        hanko.onSessionCreated(() => {
           redirectAfterLogin();
         }),
       [hanko, redirectAfterLogin]

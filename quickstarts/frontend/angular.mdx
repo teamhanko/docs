@@ -113,13 +113,13 @@ callback functions within your component. This allows you to respond to the disp
 <Tab title='login.component.html'>
 
 ```html
-<hanko-auth /> <hanko-events (onAuthFlowCompleted)="redirectAfterLogin()" />
+<hanko-auth /> <hanko-events (onSessionCreated)="redirectAfterLogin()" />
 ```
 
 The lines above can be combined to:
 
 ```html
-<hanko-auth (onAuthFlowCompleted)="redirectAfterLogin()" />
+<hanko-auth (onSessionCreated)="redirectAfterLogin()" />
 ```
 
 </Tab>

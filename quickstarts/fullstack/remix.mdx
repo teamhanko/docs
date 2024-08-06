@@ -81,7 +81,7 @@ const HankoAuth = () => {
 
     useEffect(() => {
         if (hanko) {
-            hanko.onAuthFlowCompleted(() => {
+            hanko.onSessionCreated(() => {
                 redirectAfterLogin();
             });
         }
