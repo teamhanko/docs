@@ -252,6 +252,14 @@
       "pages": [
         "api-reference/public/introduction",
         {
+          "group": "Flow",
+          "pages": [
+            "api-reference/flow/registration",
+            "api-reference/flow/login",
+            "api-reference/flow/profile"
+          ]
+        },
+        {
           "group": "Status",
           "pages": ["api-reference/public/status/status-page"]
         },
