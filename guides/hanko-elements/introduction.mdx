@@ -140,7 +140,7 @@ components in your code.
 
 <Info>
 For a functioning page, at least the `<hanko-auth>` element should be placed, so the users can sign-in, and also,
-a handler for the "onAuthFlowCompleted" event should be added, to customize the behaviour after the authentication flow has been completed
+a handler for the "onSessionCreated" event should be added, to customize the behaviour after the authentication flow has been completed
 (e.g. redirect to another page). These steps will be described in the below sections.
 </Info>
 
@@ -210,7 +210,7 @@ If you have followed the steps mentioned above, you should now be able to place 
   await register("YOUR_HANKO_API_URL");
 
   const authComponent = document.getElementById("authComponent");
-  authComponent.addEventListener("onAuthFlowCompleted", () => {
+  authComponent.addEventListener("onSessionCreated", () => {
     // redirect to a different page
   });
 </script>

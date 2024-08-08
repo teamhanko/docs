@@ -136,7 +136,7 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
 
   </Step>
   <Step title="Use the API in HankoAuth component">
-    Use the API to add a new user to the 'users' table, as soon as user is authenticated and `onAuthFlowCompleted` is triggered.
+    Use the API to add a new user to the 'users' table, as soon as user is authenticated and `onSessionCreated` is triggered.
 
     ```tsx components/hanko/HankoAuth.tsx
     "use client";
@@ -152,11 +152,7 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
 
       const [hanko, setHanko] = useState<Hanko>();
 
-      useEffect(() => {
-        import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-          setHanko(new Hanko(hankoApi))
-        );
-      }, []);
+      useEffect(() => setHanko(new Hanko(hankoApi)), []);
 
       const redirectAfterLogin = useCallback(() => {
         // successfully logged in, redirect to a page in your application
@@ -165,7 +161,7 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
 
       useEffect(
         () =>
-          hanko?.onAuthFlowCompleted(async () => {
+          hanko?.onSessionCreated(async () => {
             const user = await hanko.user.getCurrent()
 
             const fetchData = async () => {

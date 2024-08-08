@@ -712,7 +712,7 @@ export default function Login() {
 
   useEffect(
     () =>
-      hanko?.onAuthFlowCompleted(() => {
+      hanko?.onSessionCreated(() => {
         redirectAfterLogin();
       }),
     [hanko, redirectAfterLogin]

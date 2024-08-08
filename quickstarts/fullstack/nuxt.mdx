@@ -98,7 +98,7 @@ definePageMeta({
 </template>
 ```
 
-Alternatively you can redirect the user to a page of your choice by adding the `<hanko-events>` component to your page and listening for the `onAuthFlowCompleted` event.
+Alternatively you can redirect the user to a page of your choice by adding the `<hanko-events>` component to your page and listening for the `onSessionCreated` event.
 
 ```jsx login.vue
 <script setup lang="ts">
@@ -108,7 +108,7 @@ function afterLogin() {
 </script>
 <template>
   <hanko-auth />
-  <hanko-events @onAuthFlowCompleted="afterLogin()" />
+  <hanko-events @onSessionCreated="afterLogin()" />
 </template>
 ```
 

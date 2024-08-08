@@ -46,7 +46,7 @@ The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific
 
     const { hanko } = await register(process.env.HANKO_API_URL);
 
-    hanko.onAuthFlowCompleted(() => {
+    hanko.onSessionCreated(() => {
       // successfully logged in, redirect to a page in your application
       document.location.href = "...";
     });
