@@ -70,273 +70,102 @@ const creationOptions = await tenant.registration.initialize({
 
 {/* TODO complete node.js tutorial just like "/passkey-api/example-implementation"? */}
 
-## Example Implementation
+## Methods
 
-<Steps>
-<Step title="Install the SDK">
+### Initializing the API
 
-<CodeGroup>
-
-```bash npm
-npm i @teamhanko/passkeys-sdk
+```typescript
+const passkeys = tenant({ baseUrl?: string, apiKey: string, tenantId: string })
 ```
 
-```bash yarn
-yarn add @teamhanko/passkeys-sdk
+### Registration
+
+#### Initialize Registration
+
+```typescript
+passkeys.registration.initialize({ userId: string, username: string, icon?: string, displayName?: string })
 ```
 
-```bash bun
-bun add @teamhanko/passkeys-sdk
+Initialize the registration process for a new user.
+
+#### Finalize Registration
+
+```typescript
+passkeys.registration.finalize(credential)
 ```
 
-```bash pnpm
-pnpm add @teamhanko/passkeys-sdk
+Finalize the registration process. The `credential` should be the credential returned by the user's browser (from `navigator.credentials.create()`).
+
+### Login
+
+#### Initialize Login
+
+```typescript
+passkeys.login.initialize()
 ```
 
-</CodeGroup>
-</Step>
-<Step title="Get your tenant ID and API key">
+Initialize the login process.
 
-Get your tenant ID and API key from [Hanko Cloud](https://cloud.hanko.io/) and add them to your `.env` file.
+#### Finalize Login
 
-```bash .env
-PASSKEYS_API_KEY=your-api-key
-PASSKEYS_TENANT_ID=your-tenant-id
+```typescript
+passkeys.login.finalize(credential)
 ```
 
-</Step>
-<Step title="Allow users to register passkeys as a login method">
-On your backend, you’ll have to call `tenant({ ... }).registration.initialize()` and `registration.finalize()` to create and store a passkey.
-```js services.js
-import { tenant } from "@teamhanko/passkeys-sdk";
-import dotenv from "dotenv";
-import db from "../db.js";
+Finalize the login process. The `credential` should be the credential returned by the user's browser (from `navigator.credentials.get()`).
 
-dotenv.config();
+### Multi-Factor Authentication (MFA)
 
-const passkeyApi = tenant({
-  apiKey: process.env.PASSKEYS_API_KEY,
-  tenantId: process.env.PASSKEYS_TENANT_ID,
-});
+#### MFA Registration
 
-async function startServerPasskeyRegistration(userID) {
-  const user = db.users.find((user) => user.id === userID);
-
-  const createOptions = await passkeyApi.registration.initialize({
-    userId: user.id,
-    username: user.email || "",
-  });
-
-  return createOptions;
-}
-
-async function finishServerPasskeyRegistration(credential) {
-  await passkeyApi.registration.finalize(credential);
-}
+```typescript
+passkeys.user(userId).mfa.registration.initialize({ username: string, icon?: string, displayName?: string })
+passkeys.user(userId).mfa.registration.finalize(credential)
 ```
 
-```js controllers.js
-async function handlePasskeyRegister(req, res) {
-  const { user } = req;
-  const userID = user.id;
+Initialize and finalize MFA registration for a specific user.
 
-  if (!userID) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  console.log("userId", userID);
+#### MFA Login
 
-  const { start, finish, credential } = req.body;
-
-  try {
-    if (start) {
-      const createOptions = await startServerPasskeyRegistration(userID);
-      console.log("registration start");
-      return res.json({ createOptions });
-    }
-    if (finish) {
-      await finishServerPasskeyRegistration(credential);
-      return res.json({ message: "Registered Passkey" });
-    }
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-}
+```typescript
+passkeys.user(userId).mfa.login.initialize()
+passkeys.user(userId).mfa.login.finalize(credential)
 ```
 
-**Frontend**
+Initialize and finalize MFA login for a specific user.
 
-On your frontend, the `registerPasskey()` function handles the passkey registration process. It first sends a request to the server to initiate the registration process and receives the response for creating a new passkey. 
+### User-specific Operations
 
-It then uses the `@github/webauthn-json` library to create a new passkey credential based on the received options from the response. Finally, it sends another request to the server with the newly created credential to complete the registration process.
+These methods all operate on a user. You'll need to pass their user ID using `.user(userId)`
 
-```tsx
-  async function registerPasskey() {
-        const createOptionsResponse = await fetch("http://localhost:5001/api/passkeys/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: 'include',
-            body: JSON.stringify({ start: true, finish: false, credential: null }),
-        });
+#### Get User Credentials
 
-        const { createOptions } = await createOptionsResponse.json();
-        console.log("createOptions", createOptions)
-
-        const credential = await create(
-            createOptions as CredentialCreationOptionsJSON,
-        );
-        console.log(credential)
-
-        const response = await fetch("http://localhost:5001/api/passkeys/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ start: false, finish: true, credential }),
-        });
-        console.log(response)
-
-        if (response.ok) {
-            toast.success("Registered passkey successfully!");
-            return;
-        }
-    }
-```
-</Step>
-<Step title="Allow users to log in with passkeys">
-
-```js services.js
-async function startServerPasskeyLogin() {
-  const options = await passkeyApi.login.initialize();
-  return options;
-}
-
-async function finishServerPasskeyLogin(options) {
-  const response = await passkeyApi.login.finalize(options);
-  return response;
-}
+```typescript
+passkeys.user(userId).credentials()
 ```
 
-```js controllers.js
-async function handlePasskeyLogin(req, res) {
-  const { start, finish, options } = req.body;
+Retrieve a list of WebAuthn credentials for a specific user.
 
-  try {
-    if (start) {
-      const loginOptions = await startServerPasskeyLogin();
-      return res.json({ loginOptions });
-    }
-    if (finish) {
-      const jwtToken = await finishServerPasskeyLogin(options);
-      const userID = await getUserID(jwtToken?.token ?? "");
-      console.log("userID from hanko", userID);
-      const user = db.users.find((user) => user.id === userID);
-      if (!user) {
-        return res.status(401).json({ message: "Invalid user" });
-      }
-      console.log("user", user);
-      const sessionId = uuidv4();
-      setUser(sessionId, user);
-      res.cookie("sessionId", sessionId);
-      return res.json({ message: " Passkey Login successful" });
-    }
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred during the passke login process." });
-  }
-}
+### Credential Operations
+
+#### Remove Credential
+
+```typescript
+passkeys.credential(credentialId).remove()
 ```
 
-**Frontend**
-```tsx 
-    async function signInWithPasskey() {
-        const createOptionsResponse = await fetch("http://localhost:5001/api/passkeys/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: 'include',
-            body: JSON.stringify({ start: true, finish: false, credential: null }),
-        });
+Remove a specific credential.
 
-        const { loginOptions } = await createOptionsResponse.json();
+### Other Operations
 
-        // Open "register passkey" dialog
-        const options = await get(
-            loginOptions as any,
-        );
+#### Get JWKS
 
-        const response = await fetch("http://localhost:5001/api/passkeys/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: 'include',
-            body: JSON.stringify({ start: false, finish: true, options }),
-        });
-
-        if (response.ok) {
-            console.log("user logged in with passkey")
-            navigate("/dashboard")
-            return;
-        }
-    }
+```typescript
+passkeys.jwks()
 ```
-</Step>
-</Steps>
 
-## Try it yourself 
+Retrieve the JSON Web Key Set (JWKS) for the tenant.
 
-Check out sample apps made using the SDK:
+## Error Handling
 
-<CardGroup cols={2}>
-  <Card
-    title="React-Express Example"
-    href="https://github.com/teamhanko/passkeys-react-express"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-brand-react"
-        width="30"
-        height="30"
-        viewBox="0 0 30 30"
-        strokeWidth="2"
-        stroke="#5465FF"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M6.306 8.711c-2.602 .723 -4.306 1.926 -4.306 3.289c0 2.21 4.477 4 10 4c.773 0 1.526 -.035 2.248 -.102"></path>
-        <path d="M17.692 15.289c2.603 -.722 4.308 -1.926 4.308 -3.289c0 -2.21 -4.477 -4 -10 -4c-.773 0 -1.526 .035 -2.25 .102"></path>
-        <path d="M6.305 15.287c-.676 2.615 -.485 4.693 .695 5.373c1.913 1.105 5.703 -1.877 8.464 -6.66c.387 -.67 .733 -1.339 1.036 -2"></path>
-        <path d="M17.694 8.716c.677 -2.616 .487 -4.696 -.694 -5.376c-1.913 -1.105 -5.703 1.877 -8.464 6.66c-.387 .67 -.733 1.34 -1.037 2"></path>
-        <path d="M12 5.424c-1.925 -1.892 -3.82 -2.766 -5 -2.084c-1.913 1.104 -1.226 5.877 1.536 10.66c.386 .67 .793 1.304 1.212 1.896"></path>
-        <path d="M12 18.574c1.926 1.893 3.821 2.768 5 2.086c1.913 -1.104 1.226 -5.877 -1.536 -10.66c-.375 -.65 -.78 -1.283 -1.212 -1.897"></path>
-        <path d="M11.5 12.866a1 1 0 1 0 1 -1.732a1 1 0 0 0 -1 1.732z"></path>
-      </svg>
-    }
-  >
-    Full source code available on our GitHub.
-  </Card>
-  <Card
-    title="Remix example"
-    href="https://github.com/teamhanko/passkeys-remix"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-brand-github"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        stroke="#5465FF"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"></path>
-      </svg>
-    }
-  >
-    Full source code available on our GitHub.
-  </Card>
-</CardGroup>
-
+The API uses a custom `PasskeyError` class for error handling. Errors will include a message and potentially the original error that caused the issue.
