@@ -986,6 +986,19 @@ components:
               type: string
               enum:
                 - "boolean"
+    InputWebauthnPlatformAuthenticatorAvailable:
+      allOf:
+        - $ref: "#/components/schemas/Input"
+        - type: object
+          properties:
+            name:
+              type: string
+              enum:
+                - "webauthn_platform_authenticator_available"
+            type:
+              type: string
+              enum:
+                - "boolean"
     InputDataExchangeToken:
       title: ExchangeToken
       description: Input data for the `exchange_token` action.
@@ -1082,6 +1095,9 @@ components:
           type: boolean
           default: false
         webauthn_conditional_mediation_available:
+          type: boolean
+          default: false
+        webauthn_platform_authenticator_available:
           type: boolean
           default: false
       required:
@@ -1325,6 +1341,8 @@ components:
           $ref: "#/components/schemas/InputWebauthnAvailable"
         webauthn_conditional_mediation_available:
           $ref: "#/components/schemas/InputWebauthnConditionalMediationAvailable"
+        webauthn_platform_authenticator_available:
+          $ref: "#/components/schemas/InputWebauthnPlatformAuthenticatorAvailable"
       required:
         - webauthn_available
     InputsRegisterLoginIdentifier:
