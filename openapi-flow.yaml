@@ -1219,11 +1219,8 @@ components:
       properties:
         password:
           type: string
-        csrf_token:
-          $ref: "#/components/schemas/CSRFToken"
       required:
         - password
-        - csrf_token
       additionalProperties: false
     InputDataPasswordRecovery:
       title: PasswordRecovery
@@ -1779,7 +1776,7 @@ components:
                 otp_image_source:
                   description: |
                     Contains a QR code to scan with an authenticator app as a string in 
-                    [data-URL](https://datatracker.ietf.org/doc/html/rfc2397) format. Can be directly
+                    ["data" URL](https://datatracker.ietf.org/doc/html/rfc2397) format. Can be directly
                     used as the value for the `src` attribute in an HTML `img` element.
                   type: string
                 otp_secret:
