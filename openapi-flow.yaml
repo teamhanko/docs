@@ -1513,6 +1513,15 @@ components:
                 type: boolean
               is_verified:
                 type: boolean
+        mfa_config:
+          type: object
+          properties:
+            auth_app_set_up:
+              type: boolean
+            totp_enabled:
+              type: boolean
+            security_keys_enabled:
+              type: boolean
         username:
           type: string
         created_at:
