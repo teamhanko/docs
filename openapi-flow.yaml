@@ -389,6 +389,15 @@ components:
                 - "password_create"
             inputs:
               $ref: "#/components/schemas/InputsPasswordCreate"
+    ActionOTPSecretDelete:
+      description: Delete an OTP secret.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "otp_secret_delete"
     ActionPasswordDelete:
       description: Delete a password.
       allOf:
@@ -466,6 +475,26 @@ components:
                 - "username_set"
             inputs:
               $ref: "#/components/schemas/InputsUsernameSet"
+    ActionSecurityKeyCreate:
+      description: Create a security key.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "security_key_create"
+    ActionSecurityKeyDelete:
+      description: Delete a security key.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "security_key_delete"
+            inputs:
+              $ref: "#/components/schemas/InputsSecurityKeyDelete"
     ActionSkip:
       description: Skip to the next state.
       allOf:
@@ -721,6 +750,8 @@ components:
       properties:
         account_delete:
           $ref: "#/components/schemas/ActionAccountDelete"
+        continue_to_otp_secret_creation:
+          $ref: "#/components/schemas/ActionContinueToOTPSecretCreation"
         email_create:
           $ref: "#/components/schemas/ActionEmailCreate"
         email_delete:
@@ -729,12 +760,18 @@ components:
           $ref: "#/components/schemas/ActionEmailSetPrimary"
         email_verify:
           $ref: "#/components/schemas/ActionEmailVerify"
+        otp_secret_delete:
+          $ref: "#/components/schemas/ActionOTPSecretDelete"
         password_create:
           $ref: "#/components/schemas/ActionPasswordCreate"
         password_update:
           $ref: "#/components/schemas/ActionPasswordUpdate"
         password_delete:
           $ref: "#/components/schemas/ActionPasswordDelete"
+        security_key_create:
+          $ref: "#/components/schemas/ActionSecurityKeyCreate"
+        security_key_delete:
+          $ref: "#/components/schemas/ActionSecurityKeyDelete"
         username_set:
           $ref: "#/components/schemas/ActionUsernameSet"
         username_delete:
@@ -1031,6 +1068,21 @@ components:
               default: true
             hidden:
               default: true
+    InputSecurityKeyID:
+      allOf:
+        - $ref: "#/components/schemas/Input"
+        - type: object
+          properties:
+            name:
+              enum:
+                - "security_key_id"
+            type:
+              enum:
+                - "string"
+            required:
+              default: true
+            hidden:
+              default: true
     InputToken:
       allOf:
         - $ref: "#/components/schemas/Input"
@@ -1302,6 +1354,16 @@ components:
       required:
         - new_password
       additionalProperties: false
+    InputDataSecurityKeyDelete:
+      title: SecurityKeyDelete
+      description: Input data for the `security_key_delete` action.
+      type: object
+      properties:
+        security_key_id:
+          type: string
+      required:
+        - security_key_id
+      additionalProperties: false
     InputDataThirdPartyOauth:
       title: ThirdPartyOauth
       description: Input data for the `thirdparty_oauth` action.
@@ -1489,6 +1551,11 @@ components:
           $ref: "#/components/schemas/InputEmail"
         username:
           $ref: "#/components/schemas/InputUsername"
+    InputsSecurityKeyDelete:
+      type: object
+      properties:
+        security_key_id:
+          $ref: "#/components/schemas/InputSecurityKeyID"
     InputsRegisterPassword:
       type: object
       properties:
@@ -2320,6 +2387,7 @@ components:
         - $ref: "#/components/schemas/StateProfileAccountDeleted"
         - $ref: "#/components/schemas/StatePasscodeConfirmation"
         - $ref: "#/components/schemas/StateProfileWebauthnCredentialVerification"
+        - $ref: "#/components/schemas/StateMFAOTPSecretCreation"
       discriminator:
         propertyName: name
         mapping:
@@ -2328,6 +2396,7 @@ components:
           account_deleted: "#/components/schemas/StateProfileAccountDeleted"
           passcode_confirmation: "#/components/schemas/StatePasscodeConfirmation"
           webauthn_credential_verification: "#/components/schemas/StateProfileWebauthnCredentialVerification"
+          mfa_otp_secret_creation: "#/components/schemas/StateMFAOTPSecretCreation"
     StatesRegistration:
       oneOf:
         - $ref: "#/components/schemas/StatePreflight"
@@ -2702,6 +2771,8 @@ components:
                   - $ref: "#/components/schemas/InputDataEmailVerify"
                   - $ref: "#/components/schemas/InputDataPasswordCreate"
                   - $ref: "#/components/schemas/InputDataPasswordUpdate"
+                  - $ref: "#/components/schemas/InputDataOTPCodeVerify"
+                  - $ref: "#/components/schemas/InputDataSecurityKeyDelete"
                   - $ref: "#/components/schemas/InputDataUsernameSet"
                   - $ref: "#/components/schemas/InputDataVerifyPasscode"
                   - $ref: "#/components/schemas/InputDataWebauthnCredentialRename"
