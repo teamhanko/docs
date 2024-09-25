@@ -156,6 +156,24 @@ components:
             action:
               enum:
                 - "back"
+    ActionContinueToLoginOTP:
+      description: Continue to the `login_otp` state.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "continue_to_login_otp"
+    ActionContinueToLoginSecurityKey:
+      description: Continue to the `login_security_key` state.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "continue_to_login_security_key"
     ActionContinueToOTPSecretCreation:
       description: Continue to the `mfa_otp_secret_creation` state.
       allOf:
@@ -347,6 +365,17 @@ components:
             action:
               enum:
                 - "otp_code_verify"
+            inputs:
+              $ref: "#/components/schemas/InputsOTPCodeVerify"
+    ActionOTPCodeValidate:
+      description: Validate an OTP code for use as a second factor.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "otp_code_validate"
             inputs:
               $ref: "#/components/schemas/InputsOTPCodeVerify"
     ActionPasswordCreate:
@@ -578,6 +607,20 @@ components:
           $ref: "#/components/schemas/ActionContinueToPasscodeConfirmationRecovery"
         back:
           $ref: "#/components/schemas/ActionBack"
+    ActionsLoginOTP:
+      type: object
+      properties:
+        otp_code_validate:
+          $ref: "#/components/schemas/ActionOTPCodeValidate"
+        continue_to_login_security_key:
+          $ref: "#/components/schemas/ActionContinueToLoginSecurityKey"
+    ActionsLoginSecurityKey:
+      type: object
+      properties:
+        webauthn_generate_request_options:
+          $ref: "#/components/schemas/ActionWebauthnGenerateRequestOptions"
+        continue_to_login_otp:
+          $ref: "#/components/schemas/ActionContinueToLoginOTP"
     ActionsLoginPasswordRecovery:
       type: object
       properties:
@@ -1199,6 +1242,11 @@ components:
           required:
             - username
       minProperties: 1
+    InputDataOTPCodeValidate:
+      allOf:
+        - $ref: "#/components/schemas/InputDataOTPCodeVerify"
+        - title: OTPCodeValidate
+        - description: Input data for the `otp_code_validate` action.
     InputDataOTPCodeVerify:
       title: OTPCodeVerify
       description: Input data for the `otp_code_verify` action.
@@ -1398,6 +1446,8 @@ components:
           $ref: "#/components/schemas/InputOTPCode"
       required:
         - otp_code
+    InputsOTPCodeValidate:
+      $ref: "#/components/schemas/InputsOTPCodeVerify"
     InputsPasswordCreate:
       type: object
       properties:
@@ -1692,6 +1742,22 @@ components:
               type: integer
               enum:
                 - 200
+    StateLoginOTP:
+      title: LoginOTP
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateBase"
+        - properties:
+            actions:
+              $ref: "#/components/schemas/ActionsLoginOTP"
+            name:
+              type: string
+              enum:
+                - "login_otp"
+            status:
+              type: integer
+              enum:
+                - 200
     StateLoginPasskey:
       title: LoginPasskey
       type: object
@@ -1738,6 +1804,22 @@ components:
               type: string
               enum:
                 - "login_password_recovery"
+            status:
+              type: integer
+              enum:
+                - 200
+    StateLoginSecurityKey:
+      title: LoginSecurityKey
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateBase"
+        - properties:
+            actions:
+              $ref: "#/components/schemas/ActionsLoginSecurityKey"
+            name:
+              type: string
+              enum:
+                - "login_security_key"
             status:
               type: integer
               enum:
@@ -2194,6 +2276,8 @@ components:
         - $ref: "#/components/schemas/StateLoginPassword"
         - $ref: "#/components/schemas/StateLoginPasswordRecovery"
         - $ref: "#/components/schemas/StateLoginMethodChooser"
+        - $ref: "#/components/schemas/StateLoginOTP"
+        - $ref: "#/components/schemas/StateLoginSecurityKey"
         - $ref: "#/components/schemas/StateMFAMethodChooser"
         - $ref: "#/components/schemas/StateMFAOTPSecretCreation"
         - $ref: "#/components/schemas/StateMFASecurityKeyCreation"
@@ -2211,10 +2295,12 @@ components:
         mapping:
           preflight: "#/components/schemas/StatePreflight"
           login_init: "#/components/schemas/StateLoginInit"
+          login_method_chooser: "#/components/schemas/StateLoginMethodChooser"
+          login_otp: "#/components/schemas/StateLoginOTP"
           login_passkey: "#/components/schemas/StateLoginPasskey"
           login_password: "#/components/schemas/StateLoginPassword"
           login_password_recovery: "#/components/schemas/StateLoginPasswordRecovery"
-          login_method_chooser: "#/components/schemas/StateLoginMethodChooser"
+          login_security_key: "#/components/schemas/StateLoginSecurityKey"
           passcode_confirmation: "#/components/schemas/StatePasscodeConfirmation"
           password_creation: "#/components/schemas/StatePasswordCreation"
           mfa_method_chooser: "#/components/schemas/StateMFAMethodChooser"
@@ -2591,6 +2677,7 @@ components:
                     - $ref: "#/components/schemas/InputDataRegisterPassword"
                     - $ref: "#/components/schemas/InputDataPasswordRecovery"
                     - $ref: "#/components/schemas/InputDataOTPCodeVerify"
+                    - $ref: "#/components/schemas/InputDataOTPCodeValidate"
                     - $ref: "#/components/schemas/InputDataThirdPartyOauth"
                     - $ref: "#/components/schemas/InputDataExchangeToken"
                     - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
