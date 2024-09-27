@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: "0.9.1"
+  version: "1.0.3"
   title: "Hanko Admin API"
   description: |
     ## Introduction
@@ -138,6 +138,9 @@ paths:
                     required:
                       - address
                       - is_primary
+                username:
+                  description: The username of the new user
+                  type: string
                 created_at:
                   description: Time of creation of the user
                   type: string
@@ -583,6 +586,56 @@ components:
             code: 404
             message: Not found
   schemas:
+    Identity:
+      description: A third party provider identity
+      type: object
+      properties:
+        id:
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+          description: The ID of the identity
+          example: 77f8d594-9765-4891-ab2b-f31a797b531d
+        email_id:
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+          description: The ID of the email this identity is coupled with
+          example: d4095586-8318-4a40-a840-b4260496f85a
+        provider_id:
+          description: The user's third party provider account/user ID
+          type: string
+        provider_name:
+          description: The name of the third party provider this identity coupled with
+          type: string
+        created_at:
+          description: Time of creation of the password credential
+          type: string
+          format: date-time
+        updated_at:
+          description: Time of last update of the password credential
+          type: string
+          format: date-time
+    Identities:
+      description: A list of third party provider identities
+      type: array
+      items:
+        $ref: "#/components/schemas/Identity"
+    Password:
+      description: The password credential of a user
+      type: object
+      properties:
+        id:
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+          description: The ID of the password credential
+          example: 28a7206b-e789-435a-b87c-108e034135c2
+        created_at:
+          description: Time of creation of the password credential
+          type: string
+          format: date-time
+        updated_at:
+          description: Time of last update of the password credential
+          type: string
+          format: date-time
     UUID4:
       type: string
       format: uuid4
@@ -616,6 +669,29 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Email"
+        username:
+          $ref: "#/components/schemas/Username"
+        password:
+          $ref: "#/components/schemas/Password"
+        identities:
+          $ref: "#/components/schemas/Identities"
+    Username:
+      description: The username of the user
+      type: object
+      properties:
+        id:
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+          description: The ID of the username
+          example: 8cbed467-554b-4d17-b23f-bce1b4f1db92
+        created_at:
+          description: Time of creation of the username
+          type: string
+          format: date-time
+        updated_at:
+          description: Time of last update of the username
+          type: string
+          format: date-time
     WebAuthnCredential:
       type: object
       required:
@@ -629,6 +705,7 @@ components:
           description: The ID of the credential
           allOf:
             - $ref: "#/components/schemas/UUID4"
+          example: f9bebc04-b894-4018-bdb8-8b520a532fef
         name:
           description: A name that the user choose
           type: string
@@ -664,6 +741,7 @@ components:
           description: The ID of the email
           allOf:
             - $ref: "#/components/schemas/UUID4"
+          example: 802df042-1ac2-496d-af81-6ace729ed055
         address:
           description: The email address
           type: string
