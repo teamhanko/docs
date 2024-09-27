@@ -1,7 +1,7 @@
 
 openapi: 3.0.0
 info:
-  version: '0.8.0'
+  version: '1.0.3'
   title: 'Hanko Public API'
   description: |
     ## Introduction
@@ -1476,6 +1476,9 @@ components:
           description: Time of last update of the user
           type: string
           format: date-time
+        username:
+          description: The username of the user
+          type: string
         webauthn_credentials:
           description: List of registered Webauthn credentials
           type: array
