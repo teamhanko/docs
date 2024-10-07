@@ -74,7 +74,8 @@ paths:
             allOf:
               - $ref: "#/components/schemas/UUID4"
             example: c339547d-e17d-4ba7-8a1d-b3d5a4d17c1c
-          description: Only users with the specified user_id are included
+          description: | 
+            A single ID or a comma-separated list of IDs. Only users with the specified IDs are included in the result.
         - in: query
           name: email
           schema:
