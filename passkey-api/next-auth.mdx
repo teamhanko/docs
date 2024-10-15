@@ -169,7 +169,7 @@ Let's add a button that triggers the "Sign in with passkey" dialog:
 
 import { signInWithPasskey } from "@teamhanko/passkeys-next-auth-provider/client";
 
-export default LoginButton() {
+export default function LoginButton() {
 	return (
 		<button onClick={() => signInWithPasskey({ tenantId: process.env.NEXT_PUBLIC_PASSKEYS_TENANT_ID })}>
 			Sign in with passkey
