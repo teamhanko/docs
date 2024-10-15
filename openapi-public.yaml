@@ -1042,7 +1042,7 @@ components:
         application/json:
           schema:
             properties:
-              isValid:
+              is_valid:
                 description: Indicates whether the session is valid or not
                 type: boolean
               expiration_time:
