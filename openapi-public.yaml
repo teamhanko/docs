@@ -1,7 +1,6 @@
-
 openapi: 3.0.0
 info:
-  version: '1.0.3'
+  version: '1.1.0'
   title: 'Hanko Public API'
   description: |
     ## Introduction
@@ -580,6 +579,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HankoConfiguration'
+  /sessions/validate:
+    get:
+      tags:
+        - Session Management
+      summary: Validate a session
+      description: Validate a session using a cookie header or an authorization header.
+      security:
+        - CookieAuth: [ ]
+        - BearerTokenAuth: [ ]
+      responses:
+        200:
+          $ref: "#/components/responses/ValidateSessionResponse"
+    post:
+      tags:
+        - Session Management
+      summary: Validate a session
+      description: Validate a session using a session token in a request body.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                session_token:
+                  description: The session token (JWT) to validate
+                  type: string
+                  format: JWT
+              required:
+                - session_token
+      responses:
+        200:
+          $ref: "#/components/responses/ValidateSessionResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
   /thirdparty/auth:
     get:
       summary: 'Initialize third party login'
@@ -1004,6 +1036,25 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 components:
   responses:
+    ValidateSessionResponse:
+      description: Session validation response
+      content:
+        application/json:
+          schema:
+            properties:
+              isValid:
+                description: Indicates whether the session is valid or not
+                type: boolean
+              expiration_time:
+                description: Date-time indicating the expiration of the session
+                type: string
+                format: date-time
+              user_id:
+                description: The ID of the user the session is associated with
+                type: string
+                format: uuid4
+            required:
+              - isValid
     BadRequest:
       description: Bad Request
       content:

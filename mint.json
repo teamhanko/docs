@@ -328,6 +328,13 @@
             "api-reference/public/email-management/marks-the-email-address-as-primary-email",
             "api-reference/public/email-management/delete-an-email-address"
           ]
+        },
+        {
+          "group": "Session Management",
+          "pages": [
+            "api-reference/public/session-management/validate-a-session",
+            "api-reference/public/session-management/validate-a-session-1"
+          ]
         }
       ]
     },
