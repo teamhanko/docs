@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Flow API
   description: Flow API
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: "https://{tenant_id}.hanko.io"
     variables:
@@ -130,7 +130,7 @@ components:
           description: The description for the action.
           type: string
         inputs:
-          description: | 
+          description: |
             The inputs for the action. 
             
             An input indicates that when making a request to perform an action, the `input_data` value of the 
@@ -408,6 +408,17 @@ components:
                 - "username_set"
             inputs:
               $ref: "#/components/schemas/InputsUsernameSet"
+    ActionSessionDelete:
+      description: Revoke a session.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "session_delete"
+            inputs:
+              $ref: "#/components/schemas/InputsSessionDelete"
     ActionSkip:
       description: Skip to the next state.
       allOf:
@@ -449,16 +460,16 @@ components:
             inputs:
               $ref: "#/components/schemas/InputsWebauthnCredentialDelete"
     ActionWebauthnCredentialRename:
-        description: Rename a passkey.
-        allOf:
-          - $ref: "#/components/schemas/Action"
-          - type: object
-            properties:
-              action:
-                enum:
-                  - "webauthn_credential_rename"
-              inputs:
-                $ref: "#/components/schemas/InputsWebauthnCredentialRename"
+      description: Rename a passkey.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "webauthn_credential_rename"
+            inputs:
+              $ref: "#/components/schemas/InputsWebauthnCredentialRename"
     ActionWebauthnGenerateCreationOptions:
       description: Generate passkey creation options for registering a passkey.
       allOf:
@@ -638,6 +649,8 @@ components:
           $ref: "#/components/schemas/ActionPasswordUpdate"
         password_delete:
           $ref: "#/components/schemas/ActionPasswordDelete"
+        session_delete:
+          $ref: "#/components/schemas/ActionSessionDelete"
         username_set:
           $ref: "#/components/schemas/ActionUsernameSet"
         username_delete:
@@ -868,7 +881,7 @@ components:
               enum:
                 - "string"
             value:
-                type: string
+              type: string
             required:
               default: true
             hidden:
@@ -912,6 +925,21 @@ components:
             name:
               enum:
                 - "redirect_to"
+            type:
+              enum:
+                - "string"
+            required:
+              default: true
+            hidden:
+              default: true
+    InputSessionID:
+      allOf:
+        - $ref: "#/components/schemas/Input"
+        - type: object
+          properties:
+            name:
+              enum:
+                - "session_id"
             type:
               enum:
                 - "string"
@@ -1159,6 +1187,22 @@ components:
       required:
         - new_password
       additionalProperties: false
+    InputDataSessionDelete:
+      title: SessionDelete
+      description: Input data for the `session_delete` action.
+      type: object
+      properties:
+        session_id:
+          description: |
+            The ID of the session to revoke. 
+            
+            If server-side sessions are enabled, session IDs can be obtained from
+            session tokens (JWTs) through their `session_id` claim.
+          type: string
+          format: uuid4
+      required:
+        - session_id
+      additionalProperties: false
     InputDataThirdPartyOauth:
       title: ThirdPartyOauth
       description: Input data for the `thirdparty_oauth` action.
@@ -1225,7 +1269,7 @@ components:
       type: object
       properties:
         public_key:
-          description: | 
+          description: |
             The [AuthenticatorAttestationResponse](https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAttestationResponse)
             from the WebAuthn API.
           type: object
@@ -1340,6 +1384,11 @@ components:
       properties:
         new_password:
           $ref: "#/components/schemas/InputNewPassword"
+    InputsSessionDelete:
+      type: object
+      properties:
+        session_id:
+          $ref: "#/components/schemas/InputSessionID"
     InputsThirdPartyOauth:
       type: object
       properties:
@@ -2389,17 +2438,17 @@ components:
             properties:
               input_data:
                 oneOf:
-                    - $ref: "#/components/schemas/InputDataRegisterClientCapabilities"
-                    - $ref: "#/components/schemas/InputDataContinueWithLoginIdentifier"
-                    - $ref: "#/components/schemas/InputDataEmailAddressSet"
-                    - $ref: "#/components/schemas/InputDataVerifyPasscode"
-                    - $ref: "#/components/schemas/InputDataPasswordLogin"
-                    - $ref: "#/components/schemas/InputDataRegisterPassword"
-                    - $ref: "#/components/schemas/InputDataPasswordRecovery"
-                    - $ref: "#/components/schemas/InputDataThirdPartyOauth"
-                    - $ref: "#/components/schemas/InputDataExchangeToken"
-                    - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
-                    - $ref: "#/components/schemas/InputDataWebauthnVerifyAssertionResponse"
+                  - $ref: "#/components/schemas/InputDataRegisterClientCapabilities"
+                  - $ref: "#/components/schemas/InputDataContinueWithLoginIdentifier"
+                  - $ref: "#/components/schemas/InputDataEmailAddressSet"
+                  - $ref: "#/components/schemas/InputDataVerifyPasscode"
+                  - $ref: "#/components/schemas/InputDataPasswordLogin"
+                  - $ref: "#/components/schemas/InputDataRegisterPassword"
+                  - $ref: "#/components/schemas/InputDataPasswordRecovery"
+                  - $ref: "#/components/schemas/InputDataThirdPartyOauth"
+                  - $ref: "#/components/schemas/InputDataExchangeToken"
+                  - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
+                  - $ref: "#/components/schemas/InputDataWebauthnVerifyAssertionResponse"
               csrf_token:
                 $ref: "#/components/schemas/CSRFToken"
             additionalProperties: false
@@ -2420,6 +2469,7 @@ components:
                   - $ref: "#/components/schemas/InputDataEmailVerify"
                   - $ref: "#/components/schemas/InputDataPasswordCreate"
                   - $ref: "#/components/schemas/InputDataPasswordUpdate"
+                  - $ref: "#/components/schemas/InputDataSessionDelete"
                   - $ref: "#/components/schemas/InputDataUsernameSet"
                   - $ref: "#/components/schemas/InputDataVerifyPasscode"
                   - $ref: "#/components/schemas/InputDataWebauthnCredentialRename"
