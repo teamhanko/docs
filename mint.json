@@ -107,7 +107,7 @@
       "pages": [
         {
           "group": "Users",
-          "pages": ["guides/users/get-user-data", "guides/users/jwt-content"]
+          "pages": ["guides/users/get-user-data"]
         },
         {
           "group": "Authentication Methods",
@@ -143,10 +143,7 @@
         },
         {
           "group": "Cloud Console",
-          "pages": [
-            "guides/cloud-console/session-duration",
-            "guides/cloud-console/custom-smtp-server"
-          ]
+          "pages": ["guides/cloud-console/custom-smtp-server"]
         },
         {
           "group": "Databases",
@@ -156,6 +153,7 @@
           "group": "Migrations",
           "pages": ["guides/migrations/import-export-users"]
         },
+        "guides/sessions/session-management",
         "guides/webhooks/introduction",
         "guides/custom-emails/email-delivery"
       ]
