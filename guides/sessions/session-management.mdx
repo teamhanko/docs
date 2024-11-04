@@ -16,9 +16,10 @@ API operations that establish a session (login, registration) return a session t
 header.
 
 <Note>
-    When using [Hanko Elements](/guides/hanko-elements/introduction) or the [Hanko Frontend SDK](/resources/sdks#sdks),
-    the session token is read from the `X-Auth-Token` header and used to set a cookie (name: `hanko`) on the client-side.
-    If you use neither Hanko Elements nor the SDK, you have to take care of storing the session token yourself.
+    When using [Hanko Elements](https://docs.hanko.io/guides/hanko-elements/introduction) or
+    the [Hanko Frontend SDK](https://docs.hanko.io/resources/sdks#sdks), the session token is read from the
+    `X-Auth-Token` header and used to set a cookie (name: `hanko`) on the client-side. If you use neither Hanko
+    Elements nor the SDK, you have to take care of storing the session token yourself.
 </Note>
 
 Subsequent requests to protected API endpoints must then provide the session token in a `Cookie` request header
@@ -36,9 +37,10 @@ makes use of a unique identifier that is generated, persisted in the database
 alongside its association to a user, and stored in the session JWT under the `session_id` claim. For all future requests,
 the Hanko API validates the JWT signature and uses the `session_id` to query the database for a matching active session.
 Stateful sessions have the benefit of allowing for remote session revocation. This means that if a user is logged in
-on one device but also has multiple sessions across other devices, the API's [Profile](/api-reference/flow/profile)
-Flow allows listing and explicitly terminating the session on those devices. This feature is also reflected in the UI
-provided by the Hanko Elements' [Profile Component](/guides/hanko-elements/profile-component).
+on one device but also has multiple sessions across other devices, the API's
+[Profile](https://docs.hanko.io/api-reference/flow/profile) Flow allows listing and explicitly terminating the session
+on those devices. This feature is also reflected in the UI provided by the Hanko
+Elements' [Profile Component](https://docs.hanko.io/guides/hanko-elements/profile-component).
 
 To configure the desired session type:
 
@@ -60,7 +62,8 @@ The public key, a JSON Web Key ([JWK](https://datatracker.ietf.org/doc/html/rfc7
 API's `.well-known/jwks.json` endpoint as part of a JSON Web Key Set
 ([JWKS](https://datatracker.ietf.org/doc/html/rfc7517#section-5)). To validate the JWT:
 
-1. Fetch the JWKS from the`.well-known/jwks.json` [endpoint](/api-reference/public/well-known/get-json-web-key-set).
+1. Fetch the JWKS from the`.well-known/jwks.json`
+[endpoint](https://docs.hanko.io/api-reference/public/well-known/get-json-web-key-set).
 2. Parse and validate the JWT using the JWKS. We recommend using a web framework middleware (if you are using one) or
 a third-party library instead of parsing and validating the token yourself. Use a library that supports the
 aforementioned signing algorithm (RS256).
@@ -70,15 +73,16 @@ aforementioned signing algorithm (RS256).
     operation as an optional argument in their central verification functions
     (e.g. the JavaScript [jose](https://www.npmjs.com/package/jose) package's
     [createRemoteJWKSet](https://github.com/panva/jose/blob/main/docs/jwks/remote/functions/createRemoteJWKSet.md#examples)
-    , see [this guide](/quickstarts/backend/node#express) for an example of its
+    , see [this guide](https://docs.hanko.io/quickstarts/backend/node#express) for an example of its
     usage for validating a stateless session token). If the library of your choice does not support this, you have to match
     the `kid` property in the [header](#jwt-header) of your session token with the `kid` of a JWK contained in the fetched JWK Set and use the matching
-    JWK to verify the token (see [this](/quickstarts/backend/rust) guide for an example).
+    JWK to verify the token (see [this](https://docs.hanko.io/quickstarts/backend/rust) guide for an example).
 </Accordion>
 
 ### Validating stateful sessions
 
-With stateful sessions you can instead use the `sessions/validate` [endpoint](/api-reference/public/session-management/validate-a-session-1)
+With stateful sessions you can instead use the `sessions/validate`
+[endpoint](https://docs.hanko.io/api-reference/public/session-management/validate-a-session-1)
 to validate the session. You need to provide the session token in the request body. The endpoint validates the token's
 expiry and signature and ensures that the encoded `session_id` matches a persisted session.
 
@@ -95,7 +99,7 @@ Depending on configuration, there multiple ways of (explicitly or implicitly) te
 ### Explicit user logout
 
 A user can explicitly request a logout. This requires a request to the `/users/logout`
-[endpoint](http://localhost:3000/api-reference/public/user-management/log-out-the-current-user).
+[endpoint](https://docs.hanko.io/api-reference/public/user-management/log-out-the-current-user).
 A successful request clears session cookies and, if stateful sessions are enabled, terminates the session associated
 with the session token.
 

@@ -18,14 +18,15 @@ title: Integrate Hanko with Node backend
 Upon a successful login, Hanko sends a cookie containing a JSON Web Token
 ([JWT](https://datatracker.ietf.org/doc/html/rfc7519)). You can use this JWT to authenticate requests on your backend.
 
-<Note>See [here](/guides/sessions) for more details on sessions</Note>
+<Note>See [here](https://docs.hanko.io/guides/sessions) for more details on sessions</Note>
 
 The steps required to validate a session JWT depend on whether sessions are configured to be stateful (server-side) or
 stateless.
 
 <Tabs>
     <Tab title="Stateful (server-side)">
-        1. **Validate the session using the `sessions/validate` [endpoint](/api-reference/public/session-management/validate-a-session-1):**
+        1. **Validate the session using the `sessions/validate`
+        [endpoint](https://docs.hanko.io/api-reference/public/session-management/validate-a-session-1):**
         Use the session token to retrieve info about session validity, expiry, and user ID of the user the session
         is associated with.
     </Tab>
