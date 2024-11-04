@@ -38,7 +38,7 @@ alongside its association to a user, and stored in the session JWT under the `se
 the Hanko API validates the JWT signature and uses the `session_id` to query the database for a matching active session.
 Stateful sessions have the benefit of allowing for remote session revocation. This means that if a user is logged in
 on one device but also has multiple sessions across other devices, the API's
-[Profile](https://docs.hanko.io/api-reference/flow/profile) Flow allows listing and explicitly terminating the session
+[Profile](https://docs.hanko.io/api-reference/flow/profile) flow allows listing and explicitly terminating the session
 on those devices. This feature is also reflected in the UI provided by the Hanko
 Elements' [Profile Component](https://docs.hanko.io/guides/hanko-elements/profile-component).
 
@@ -86,7 +86,7 @@ With stateful sessions you can instead use the `sessions/validate`
 to validate the session. You need to provide the session token in the request body. The endpoint validates the token's
 expiry and signature and ensures that the encoded `session_id` matches a persisted session.
 
-The session endpoint returns an object, that contains information about the validity of a session, the
+The session endpoint returns an object that contains information about the validity of a session, the
 session token's expiry as well as the ID of the user the session is associated with. The latter allows you to later retrieve
 additional user information through [public](https://docs.hanko.io/api-reference/public/user-management/get-a-user-by-id)
 or [administrative](https://docs.hanko.io/api-reference/admin/user-management/get-a-user-by-id) user management
