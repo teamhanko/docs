@@ -122,6 +122,11 @@ Sessions can also be (implicitly) terminated by exceeding the number of allowed 
 Hanko allows 5 concurrent sessions. If a user establishes another session, then the oldest session becomes
 invalid.
 
+<Note>
+    Stateful (server-side) sessions must be enabled (see:
+    [Stateless vs. stateful sessions](#stateless-vs-stateful-sessions)) to configure concurrent session limits.
+</Note>
+
 To configure the allowed amount of concurrent sessions:
 
 1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
