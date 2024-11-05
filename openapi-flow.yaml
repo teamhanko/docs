@@ -156,6 +156,33 @@ components:
             action:
               enum:
                 - "back"
+    ActionContinueToLoginOTP:
+      description: Continue to the `login_otp` state.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "continue_to_login_otp"
+    ActionContinueToLoginSecurityKey:
+      description: Continue to the `login_security_key` state.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "continue_to_login_security_key"
+    ActionContinueToOTPSecretCreation:
+      description: Continue to the `mfa_otp_secret_creation` state.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "continue_to_otp_secret_creation"
     ActionContinueToPasscodeConfirmation:
       description: Continue to the `passcode_confirmation` state.
       allOf:
@@ -201,6 +228,15 @@ components:
             action:
               enum:
                 - "continue_to_password_login"
+    ActionContinueToSecurityKeyCreation:
+      description: Continue to the `mfa_security_key_creation` state.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "continue_to_security_key_creation"
     ActionContinueWithLoginIdentifier:
       description: Provide a login identifier (email or username).
       allOf:
@@ -320,6 +356,28 @@ components:
             action:
               enum:
                 - "resend_passcode"
+    ActionOTPCodeVerify:
+      description: Verify an OTP code to set up (T)OTP MFA.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "otp_code_verify"
+            inputs:
+              $ref: "#/components/schemas/InputsOTPCodeVerify"
+    ActionOTPCodeValidate:
+      description: Validate an OTP code for use as a second factor.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "otp_code_validate"
+            inputs:
+              $ref: "#/components/schemas/InputsOTPCodeVerify"
     ActionPasswordCreate:
       description: Create a password.
       allOf:
@@ -331,6 +389,15 @@ components:
                 - "password_create"
             inputs:
               $ref: "#/components/schemas/InputsPasswordCreate"
+    ActionOTPSecretDelete:
+      description: Delete an OTP secret.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "otp_secret_delete"
     ActionPasswordDelete:
       description: Delete a password.
       allOf:
@@ -408,6 +475,26 @@ components:
                 - "username_set"
             inputs:
               $ref: "#/components/schemas/InputsUsernameSet"
+    ActionSecurityKeyCreate:
+      description: Create a security key.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "security_key_create"
+    ActionSecurityKeyDelete:
+      description: Delete a security key.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "security_key_delete"
+            inputs:
+              $ref: "#/components/schemas/InputsSecurityKeyDelete"
     ActionSessionDelete:
       description: Revoke a session.
       allOf:
@@ -560,11 +647,50 @@ components:
           $ref: "#/components/schemas/ActionContinueToPasscodeConfirmationRecovery"
         back:
           $ref: "#/components/schemas/ActionBack"
+    ActionsLoginOTP:
+      type: object
+      properties:
+        otp_code_validate:
+          $ref: "#/components/schemas/ActionOTPCodeValidate"
+        continue_to_login_security_key:
+          $ref: "#/components/schemas/ActionContinueToLoginSecurityKey"
+    ActionsLoginSecurityKey:
+      type: object
+      properties:
+        webauthn_generate_request_options:
+          $ref: "#/components/schemas/ActionWebauthnGenerateRequestOptions"
+        continue_to_login_otp:
+          $ref: "#/components/schemas/ActionContinueToLoginOTP"
     ActionsLoginPasswordRecovery:
       type: object
       properties:
         password_recovery:
           $ref: "#/components/schemas/ActionPasswordRecovery"
+    ActionsMFAMethodChooser:
+      type: object
+      properties:
+        back:
+          $ref: "#/components/schemas/ActionBack"
+        continue_to_otp_secret_creation:
+          $ref: "#/components/schemas/ActionContinueToOTPSecretCreation"
+        continue_to_security_key_creation:
+          $ref: "#/components/schemas/ActionContinueToSecurityKeyCreation"
+        skip:
+          $ref: "#/components/schemas/ActionSkip"
+    ActionsMFAOTPSecretCreation:
+      type: object
+      properties:
+        otp_code_verify:
+          $ref: "#/components/schemas/ActionOTPCodeVerify"
+        back:
+          $ref: "#/components/schemas/ActionBack"
+    ActionsMFASecurityKeyCreation:
+      type: object
+      properties:
+        webauthn_generate_creation_options:
+          $ref: "#/components/schemas/ActionWebauthnGenerateCreationOptions"
+        back:
+          $ref: "#/components/schemas/ActionBack"
     ActionsOnboardingCreatePasskey:
       type: object
       properties:
@@ -635,6 +761,8 @@ components:
       properties:
         account_delete:
           $ref: "#/components/schemas/ActionAccountDelete"
+        continue_to_otp_secret_creation:
+          $ref: "#/components/schemas/ActionContinueToOTPSecretCreation"
         email_create:
           $ref: "#/components/schemas/ActionEmailCreate"
         email_delete:
@@ -643,12 +771,18 @@ components:
           $ref: "#/components/schemas/ActionEmailSetPrimary"
         email_verify:
           $ref: "#/components/schemas/ActionEmailVerify"
+        otp_secret_delete:
+          $ref: "#/components/schemas/ActionOTPSecretDelete"
         password_create:
           $ref: "#/components/schemas/ActionPasswordCreate"
         password_update:
           $ref: "#/components/schemas/ActionPasswordUpdate"
         password_delete:
           $ref: "#/components/schemas/ActionPasswordDelete"
+        security_key_create:
+          $ref: "#/components/schemas/ActionSecurityKeyCreate"
+        security_key_delete:
+          $ref: "#/components/schemas/ActionSecurityKeyDelete"
         session_delete:
           $ref: "#/components/schemas/ActionSessionDelete"
         username_set:
@@ -822,6 +956,21 @@ components:
               type: string
               enum:
                 - "new_password"
+    InputOTPCode:
+      allOf:
+        - $ref: "#/components/schemas/Input"
+        - type: object
+          properties:
+            name:
+              enum:
+                - "otp_code"
+            type:
+              enum:
+                - "string"
+            required:
+              default: true
+            hidden:
+              default: false
     InputPassword:
       allOf:
         - $ref: "#/components/schemas/Input"
@@ -932,6 +1081,21 @@ components:
               default: true
             hidden:
               default: true
+    InputSecurityKeyID:
+      allOf:
+        - $ref: "#/components/schemas/Input"
+        - type: object
+          properties:
+            name:
+              enum:
+                - "security_key_id"
+            type:
+              enum:
+                - "string"
+            required:
+              default: true
+            hidden:
+              default: true
     InputSessionID:
       allOf:
         - $ref: "#/components/schemas/Input"
@@ -1010,6 +1174,19 @@ components:
               type: string
               enum:
                 - "webauthn_conditional_mediation_available"
+            type:
+              type: string
+              enum:
+                - "boolean"
+    InputWebauthnPlatformAuthenticatorAvailable:
+      allOf:
+        - $ref: "#/components/schemas/Input"
+        - type: object
+          properties:
+            name:
+              type: string
+              enum:
+                - "webauthn_platform_authenticator_available"
             type:
               type: string
               enum:
@@ -1112,6 +1289,9 @@ components:
         webauthn_conditional_mediation_available:
           type: boolean
           default: false
+        webauthn_platform_authenticator_available:
+          type: boolean
+          default: false
       required:
         - webauthn_available
       additionalProperties: false
@@ -1142,6 +1322,24 @@ components:
           required:
             - username
       minProperties: 1
+    InputDataOTPCodeValidate:
+      allOf:
+        - $ref: "#/components/schemas/InputDataOTPCodeVerify"
+        - title: OTPCodeValidate
+        - description: Input data for the `otp_code_validate` action.
+    InputDataOTPCodeVerify:
+      title: OTPCodeVerify
+      description: Input data for the `otp_code_verify` action.
+      type: object
+      properties:
+        otp_code:
+          description: |
+          type: string
+          minLength: 6
+          maxLength: 6
+      required:
+        - otp_code
+      additionalProperties: false
     InputDataPasswordLogin:
       title: PasswordLogin
       description: Input data for the `password_login` action.
@@ -1149,11 +1347,8 @@ components:
       properties:
         password:
           type: string
-        csrf_token:
-          $ref: "#/components/schemas/CSRFToken"
       required:
         - password
-        - csrf_token
       additionalProperties: false
     InputDataPasswordRecovery:
       title: PasswordRecovery
@@ -1186,6 +1381,16 @@ components:
           type: string
       required:
         - new_password
+      additionalProperties: false
+    InputDataSecurityKeyDelete:
+      title: SecurityKeyDelete
+      description: Input data for the `security_key_delete` action.
+      type: object
+      properties:
+        security_key_id:
+          type: string
+      required:
+        - security_key_id
       additionalProperties: false
     InputDataSessionDelete:
       title: SessionDelete
@@ -1340,6 +1545,15 @@ components:
           $ref: "#/components/schemas/InputWebauthnAvailable"
       required:
         - public_key
+    InputsOTPCodeVerify:
+      type: object
+      properties:
+        otp_code:
+          $ref: "#/components/schemas/InputOTPCode"
+      required:
+        - otp_code
+    InputsOTPCodeValidate:
+      $ref: "#/components/schemas/InputsOTPCodeVerify"
     InputsPasswordCreate:
       type: object
       properties:
@@ -1369,6 +1583,8 @@ components:
           $ref: "#/components/schemas/InputWebauthnAvailable"
         webauthn_conditional_mediation_available:
           $ref: "#/components/schemas/InputWebauthnConditionalMediationAvailable"
+        webauthn_platform_authenticator_available:
+          $ref: "#/components/schemas/InputWebauthnPlatformAuthenticatorAvailable"
       required:
         - webauthn_available
     InputsRegisterLoginIdentifier:
@@ -1379,6 +1595,11 @@ components:
           $ref: "#/components/schemas/InputEmail"
         username:
           $ref: "#/components/schemas/InputUsername"
+    InputsSecurityKeyDelete:
+      type: object
+      properties:
+        security_key_id:
+          $ref: "#/components/schemas/InputSecurityKeyID"
     InputsRegisterPassword:
       type: object
       properties:
@@ -1524,45 +1745,11 @@ components:
         passkeys:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-              aaguid:
-                type: string
-                format: uuid
-              attestation_type:
-                type: string
-                enum:
-                  - none
-                  - packed
-                  - tpm
-                  - android-key
-                  - android-safetynet
-                  - fido-u2f
-                  - apple
-              backup_eligible:
-                type: boolean
-              backup_state:
-                type: boolean
-              created_at:
-                type: string
-                format: date-time
-              last_used_at:
-                type: string
-                format: date-time
-              public-key:
-                type: string
-              transports:
-                type: array
-                items:
-                  type: string
-                  enum:
-                    - ble
-                    - internal
-                    - nfc
-                    - usb
+            $ref: "#/components/schemas/WebauthnCredential"
+        security_keys:
+          type: array
+          items:
+            $ref: "#/components/schemas/WebauthnCredential"
         emails:
           type: array
           items:
@@ -1578,6 +1765,15 @@ components:
                 type: boolean
               is_verified:
                 type: boolean
+        mfa_config:
+          type: object
+          properties:
+            auth_app_set_up:
+              type: boolean
+            totp_enabled:
+              type: boolean
+            security_keys_enabled:
+              type: boolean
         username:
           type: string
         created_at:
@@ -1662,6 +1858,22 @@ components:
               type: integer
               enum:
                 - 200
+    StateLoginOTP:
+      title: LoginOTP
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateBase"
+        - properties:
+            actions:
+              $ref: "#/components/schemas/ActionsLoginOTP"
+            name:
+              type: string
+              enum:
+                - "login_otp"
+            status:
+              type: integer
+              enum:
+                - 200
     StateLoginPasskey:
       title: LoginPasskey
       type: object
@@ -1708,6 +1920,84 @@ components:
               type: string
               enum:
                 - "login_password_recovery"
+            status:
+              type: integer
+              enum:
+                - 200
+    StateLoginSecurityKey:
+      title: LoginSecurityKey
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateBase"
+        - properties:
+            actions:
+              $ref: "#/components/schemas/ActionsLoginSecurityKey"
+            name:
+              type: string
+              enum:
+                - "login_security_key"
+            status:
+              type: integer
+              enum:
+                - 200
+    StateMFAMethodChooser:
+      title: MFAMethodChooser
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateBase"
+        - properties:
+            actions:
+              $ref: "#/components/schemas/ActionsMFAMethodChooser"
+            name:
+              type: string
+              enum:
+                - "mfa_method_chooser"
+            status:
+              type: integer
+              enum:
+                - 200
+    StateMFAOTPSecretCreation:
+      title: MFAOTPSecretCreation
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateBase"
+        - properties:
+            actions:
+              $ref: "#/components/schemas/ActionsMFAOTPSecretCreation"
+            name:
+              type: string
+              enum:
+                - "mfa_otp_secret_creation"
+            payload:
+              type: object
+              properties:
+                otp_image_source:
+                  description: |
+                    Contains a QR code to scan with an authenticator app as a string in 
+                    ["data" URL](https://datatracker.ietf.org/doc/html/rfc2397) format. Can be directly
+                    used as the value for the `src` attribute in an HTML `img` element.
+                  type: string
+                otp_secret:
+                  description: |
+                    Shared secret that can be provided to authenticator apps if scanning
+                    a QR code is not available.
+                  type: string
+            status:
+              type: integer
+              enum:
+                - 200
+    StateMFASecurityKeyCreation:
+      title: MFASecurityKeyCreation
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateBase"
+        - properties:
+            actions:
+              $ref: "#/components/schemas/ActionsMFASecurityKeyCreation"
+            name:
+              type: string
+              enum:
+                - "mfa_security_key_creation"
             status:
               type: integer
               enum:
@@ -2102,6 +2392,11 @@ components:
         - $ref: "#/components/schemas/StateLoginPassword"
         - $ref: "#/components/schemas/StateLoginPasswordRecovery"
         - $ref: "#/components/schemas/StateLoginMethodChooser"
+        - $ref: "#/components/schemas/StateLoginOTP"
+        - $ref: "#/components/schemas/StateLoginSecurityKey"
+        - $ref: "#/components/schemas/StateMFAMethodChooser"
+        - $ref: "#/components/schemas/StateMFAOTPSecretCreation"
+        - $ref: "#/components/schemas/StateMFASecurityKeyCreation"
         - $ref: "#/components/schemas/StatePasscodeConfirmation"
         - $ref: "#/components/schemas/StatePasswordCreation"
         - $ref: "#/components/schemas/StateCredentialOnboardingChooser"
@@ -2116,12 +2411,17 @@ components:
         mapping:
           preflight: "#/components/schemas/StatePreflight"
           login_init: "#/components/schemas/StateLoginInit"
+          login_method_chooser: "#/components/schemas/StateLoginMethodChooser"
+          login_otp: "#/components/schemas/StateLoginOTP"
           login_passkey: "#/components/schemas/StateLoginPasskey"
           login_password: "#/components/schemas/StateLoginPassword"
           login_password_recovery: "#/components/schemas/StateLoginPasswordRecovery"
-          login_method_chooser: "#/components/schemas/StateLoginMethodChooser"
+          login_security_key: "#/components/schemas/StateLoginSecurityKey"
           passcode_confirmation: "#/components/schemas/StatePasscodeConfirmation"
           password_creation: "#/components/schemas/StatePasswordCreation"
+          mfa_method_chooser: "#/components/schemas/StateMFAMethodChooser"
+          mfa_otp_secret_creation: "#/components/schemas/StateMFAOTPSecretCreation"
+          mfa_security_key_creation: "#/components/schemas/StateMFASecurityKeyCreation"
           credential_onboarding_chooser: "#/components/schemas/StateCredentialOnboardingChooser"
           onboarding_create_passkey: "#/components/schemas/StateOnboardingCreatePasskey"
           onboarding_verify_passkey_attestation: "#/components/schemas/StateOnboardingVerifyPasskeyAttestation"
@@ -2136,6 +2436,7 @@ components:
         - $ref: "#/components/schemas/StateProfileAccountDeleted"
         - $ref: "#/components/schemas/StatePasscodeConfirmation"
         - $ref: "#/components/schemas/StateProfileWebauthnCredentialVerification"
+        - $ref: "#/components/schemas/StateMFAOTPSecretCreation"
       discriminator:
         propertyName: name
         mapping:
@@ -2144,6 +2445,7 @@ components:
           account_deleted: "#/components/schemas/StateProfileAccountDeleted"
           passcode_confirmation: "#/components/schemas/StatePasscodeConfirmation"
           webauthn_credential_verification: "#/components/schemas/StateProfileWebauthnCredentialVerification"
+          mfa_otp_secret_creation: "#/components/schemas/StateMFAOTPSecretCreation"
     StatesRegistration:
       oneOf:
         - $ref: "#/components/schemas/StatePreflight"
@@ -2151,6 +2453,9 @@ components:
         - $ref: "#/components/schemas/StatePasscodeConfirmation"
         - $ref: "#/components/schemas/StatePasswordCreation"
         - $ref: "#/components/schemas/StateCredentialOnboardingChooser"
+        - $ref: "#/components/schemas/StateMFAMethodChooser"
+        - $ref: "#/components/schemas/StateMFAOTPSecretCreation"
+        - $ref: "#/components/schemas/StateMFASecurityKeyCreation"
         - $ref: "#/components/schemas/StateOnboardingCreatePasskey"
         - $ref: "#/components/schemas/StateOnboardingVerifyPasskeyAttestation"
         - $ref: "#/components/schemas/StateThirdParty"
@@ -2165,8 +2470,51 @@ components:
           credential_onboarding_chooser: "#/components/schemas/StateCredentialOnboardingChooser"
           onboarding_create_passkey: "#/components/schemas/StateOnboardingCreatePasskey"
           onboarding_verify_passkey_attestation: "#/components/schemas/StateOnboardingVerifyPasskeyAttestation"
+          mfa_method_chooser: "#/components/schemas/StateMFAMethodChooser"
+          mfa_otp_secret_creation: "#/components/schemas/StateMFAOTPSecretCreation"
+          mfa_security_key_creation: "#/components/schemas/StateMFASecurityKeyCreation"
           thirdparty: "#/components/schemas/StateThirdParty"
           success: "#/components/schemas/StateSuccess"
+    WebauthnCredential:
+      type: object
+      properties:
+        aaguid:
+          type: string
+          format: uuid
+        attestation_type:
+          type: string
+          enum:
+            - none
+            - packed
+            - tpm
+            - android-key
+            - android-safetynet
+            - fido-u2f
+            - apple
+        backup_eligible:
+          type: boolean
+        backup_state:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        last_used_at:
+          type: string
+          format: date-time
+        public-key:
+          type: string
+        transports:
+          type: array
+          items:
+            type: string
+            enum:
+              - ble
+              - internal
+              - nfc
+              - usb
     X-Auth-Token:
       type: string
       format: JWT
@@ -2422,6 +2770,7 @@ components:
                   - $ref: "#/components/schemas/InputDataRegisterLoginIdentifier"
                   - $ref: "#/components/schemas/InputDataRegisterPassword"
                   - $ref: "#/components/schemas/InputDataVerifyPasscode"
+                  - $ref: "#/components/schemas/InputDataOTPCodeVerify"
                   - $ref: "#/components/schemas/InputDataThirdPartyOauth"
                   - $ref: "#/components/schemas/InputDataExchangeToken"
                   - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
@@ -2438,17 +2787,19 @@ components:
             properties:
               input_data:
                 oneOf:
-                  - $ref: "#/components/schemas/InputDataRegisterClientCapabilities"
-                  - $ref: "#/components/schemas/InputDataContinueWithLoginIdentifier"
-                  - $ref: "#/components/schemas/InputDataEmailAddressSet"
-                  - $ref: "#/components/schemas/InputDataVerifyPasscode"
-                  - $ref: "#/components/schemas/InputDataPasswordLogin"
-                  - $ref: "#/components/schemas/InputDataRegisterPassword"
-                  - $ref: "#/components/schemas/InputDataPasswordRecovery"
-                  - $ref: "#/components/schemas/InputDataThirdPartyOauth"
-                  - $ref: "#/components/schemas/InputDataExchangeToken"
-                  - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
-                  - $ref: "#/components/schemas/InputDataWebauthnVerifyAssertionResponse"
+                    - $ref: "#/components/schemas/InputDataRegisterClientCapabilities"
+                    - $ref: "#/components/schemas/InputDataContinueWithLoginIdentifier"
+                    - $ref: "#/components/schemas/InputDataEmailAddressSet"
+                    - $ref: "#/components/schemas/InputDataVerifyPasscode"
+                    - $ref: "#/components/schemas/InputDataPasswordLogin"
+                    - $ref: "#/components/schemas/InputDataRegisterPassword"
+                    - $ref: "#/components/schemas/InputDataPasswordRecovery"
+                    - $ref: "#/components/schemas/InputDataOTPCodeVerify"
+                    - $ref: "#/components/schemas/InputDataOTPCodeValidate"
+                    - $ref: "#/components/schemas/InputDataThirdPartyOauth"
+                    - $ref: "#/components/schemas/InputDataExchangeToken"
+                    - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
+                    - $ref: "#/components/schemas/InputDataWebauthnVerifyAssertionResponse"
               csrf_token:
                 $ref: "#/components/schemas/CSRFToken"
             additionalProperties: false
@@ -2469,6 +2820,8 @@ components:
                   - $ref: "#/components/schemas/InputDataEmailVerify"
                   - $ref: "#/components/schemas/InputDataPasswordCreate"
                   - $ref: "#/components/schemas/InputDataPasswordUpdate"
+                  - $ref: "#/components/schemas/InputDataOTPCodeVerify"
+                  - $ref: "#/components/schemas/InputDataSecurityKeyDelete"
                   - $ref: "#/components/schemas/InputDataSessionDelete"
                   - $ref: "#/components/schemas/InputDataUsernameSet"
                   - $ref: "#/components/schemas/InputDataVerifyPasscode"
