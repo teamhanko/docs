@@ -1,0 +1,219 @@
+---
+sidebarTitle: Sessions
+title: Sessions
+description: Learn how to manage user sessions.
+---
+
+## Sessions and JSON Web Tokens
+
+A session is created when a user authenticates with Hanko (either by registering a new account or by signing in to
+an account). The session is represented by a JSON Web Token ([JWT](https://datatracker.ietf.org/doc/html/rfc7519)).
+JWTs encode claims about subjects (users) as JSON objects. They can also include a signature, in which case their
+structure is that of a JSON Web Signature ([JWS](https://datatracker.ietf.org/doc/html/rfc7515)). All JWTs issued by
+Hanko are signed JWSs.
+
+API operations that establish a session (login, registration) return a session token in an `X-Auth-Token`
+header.
+
+<Note>
+    When using [Hanko Elements](https://docs.hanko.io/guides/hanko-elements/introduction) or
+    the [Hanko Frontend SDK](https://docs.hanko.io/resources/sdks#sdks), the session token is read from the
+    `X-Auth-Token` header and used to set a cookie (name: `hanko`) on the client-side. If you use neither Hanko
+    Elements nor the SDK, you have to take care of storing the session token yourself.
+</Note>
+
+Subsequent requests to protected API endpoints must then provide the session token in a `Cookie` request header
+or alternatively in an `Authorization` header with the `Bearer` scheme (i.e. `Authorization: Bearer <JWT>`).
+
+## Stateless vs. stateful sessions
+
+Sessions can be configured as either stateless or stateful (server-side) sessions.
+
+- <u>**Stateless**</u>: with stateless sessions, a session JWT is generated that contains claims about the user. For
+all future requests to protected endpoints, the API validates the JWT's expiry and signature  (see
+[below](#session-jwt-structure) for details on the JWT structure).
+- <u>**Stateful**</u> (default): with stateful sessions, a JWT is generated in the same way but session validation
+makes use of a unique identifier that is generated, persisted in the database
+alongside its association to a user, and stored in the session JWT under the `session_id` claim. For all future requests,
+the Hanko API validates the JWT signature and uses the `session_id` to query the database for a matching active session.
+Stateful sessions have the benefit of allowing for remote session revocation. This means that if a user is logged in
+on one device but also has multiple sessions across other devices, the API's
+[Profile](https://docs.hanko.io/api-reference/flow/profile) flow allows listing and explicitly terminating the session
+on those devices. This feature is also reflected in the UI provided by the Hanko
+Elements' [Profile Component](https://docs.hanko.io/guides/hanko-elements/profile-component).
+
+To configure the desired session type:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Under `Server side sessions`, toggle the desired session type and click `Save`.
+
+## Session validation
+
+JWTs should be parsed and its claims and signature validated to ensure the token is authentic and has not been tampered
+with or has expired.
+
+### Validating stateless sessions
+
+The JWT token signature is generated using the RS256 (RSA Signature with SHA-256) algorithm. It is an asymmetric
+algorithm, that uses a public/private key pair. The private key is kept secret and stored by the Hanko API. It is
+used to create the token's signature.
+The public key, a JSON Web Key ([JWK](https://datatracker.ietf.org/doc/html/rfc7517)), is published through the Hanko
+API's `.well-known/jwks.json` endpoint as part of a JSON Web Key Set
+([JWKS](https://datatracker.ietf.org/doc/html/rfc7517#section-5)). To validate the JWT:
+
+1. Fetch the JWKS from the`.well-known/jwks.json`
+[endpoint](https://docs.hanko.io/api-reference/public/well-known/get-json-web-key-set).
+2. Parse and validate the JWT using the JWKS. We recommend using a web framework middleware (if you are using one) or
+a third-party library instead of parsing and validating the token yourself. Use a library that supports the
+aforementioned signing algorithm (RS256).
+
+<Accordion title="Third-party library JWK set support">
+    Some libraries contain convenience functions for fetching remote or local JWK Sets and using the result of this
+    operation as an optional argument in their central verification functions
+    (e.g. the JavaScript [jose](https://www.npmjs.com/package/jose) package's
+    [createRemoteJWKSet](https://github.com/panva/jose/blob/main/docs/jwks/remote/functions/createRemoteJWKSet.md#examples)
+    , see [this guide](https://docs.hanko.io/quickstarts/backend/node#express) for an example of its
+    usage for validating a stateless session token). If the library of your choice does not support this, you have to match
+    the `kid` property in the [header](#jwt-header) of your session token with the `kid` of a JWK contained in the fetched JWK Set and use the matching
+    JWK to verify the token (see [this](https://docs.hanko.io/quickstarts/backend/rust) guide for an example).
+</Accordion>
+
+### Validating stateful sessions
+
+With stateful sessions you can instead use the `sessions/validate`
+[endpoint](https://docs.hanko.io/api-reference/public/session-management/validate-a-session-1)
+to validate the session. You need to provide the session token in the request body. The endpoint validates the token's
+expiry and signature and ensures that the encoded `session_id` matches a persisted session.
+
+The session endpoint returns an object that contains information about the validity of a session, the
+session token's expiry as well as the ID of the user the session is associated with. The latter allows you to later retrieve
+additional user information through [public](https://docs.hanko.io/api-reference/public/user-management/get-a-user-by-id)
+or [administrative](https://docs.hanko.io/api-reference/admin/user-management/get-a-user-by-id) user management
+endpoints.
+
+## Session termination
+
+Depending on configuration, there multiple ways of (explicitly or implicitly) terminating a session.
+
+### Explicit user logout
+
+A user can explicitly request a logout. This requires a request to the `/users/logout`
+[endpoint](https://docs.hanko.io/api-reference/public/user-management/log-out-the-current-user).
+A successful request clears session cookies and, if stateful sessions are enabled, terminates the session associated
+with the session token.
+
+### Limiting session duration
+
+Sessions can be terminated (or: become invalid) by exceeding an expiry. This expiry can be configured by setting the
+session duration. Session duration determines how long a user remains logged in after authenticating.
+By default, the session duration is set to 12 hours in the Hanko Cloud Console.
+You can change this to a value between 1 minute and 1 month to suit your application's needs.
+
+To change the session duration, follow these steps:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Under `Session duration`, set the desired session duration and click `Save`.
+
+### Limiting concurrent session
+
+Sessions can also be (implicitly) terminated by exceeding the number of allowed active sessions. By default,
+Hanko allows 5 concurrent sessions. If a user establishes another session, then the oldest session becomes
+invalid.
+
+<Note>
+    Stateful (server-side) sessions must be enabled (see:
+    [Stateless vs. stateful sessions](#stateless-vs-stateful-sessions)) to configure concurrent session limits.
+</Note>
+
+To configure the allowed amount of concurrent sessions:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Under `Session limit`, enter the desired amount and click `Save`.
+
+
+## Session JWT structure
+
+The session JWT is a [compact](https://datatracker.ietf.org/doc/html/rfc7515#section-3.1) JWS. It is a string composed
+of three base64 URL safe encoded parts ([header](#jwt-header), [payload](#jwt-payload) and signature), separated by a
+dot (`.`). The JWT payload contains the claims about a user.
+
+### JWT Header
+
+```json
+{
+  "alg": "RS256",
+  "kid": "2288bfa9-3214-4f19-9757-92631190420b",
+  "typ": "JWT"
+}
+```
+
+<ResponseField name="alg" type="string">
+    The algorithm used for signing this token.
+</ResponseField>
+
+<ResponseField name="kid" type="string">
+    The key ID indicating which key was used to secure the token.
+</ResponseField>
+
+<ResponseField name="typ" type="string">
+    The media type of this token.
+</ResponseField>
+
+
+### JWT Payload
+
+```json
+{
+  "aud": [ "example.com" ],
+  "email": {
+    "address": "user@example.com",
+    "is_primary": true,
+    "is_verified": true
+  },
+  "exp": 17123108000,
+  "iat": 1712307200,
+  "session_id": "140f3967-ab87-4caa-80bd-603ac59c545f",
+  "sub": "9930ac89-1584-488c-bd63-1607f03ab1e8"
+}
+```
+
+<ResponseField name="aud" type="string[]">
+    The audience for which the JWT was created. It specifies the intended recipient or system that should accept this
+    JWT. When using Hanko Cloud, the `aud` will be your `App URL`.
+</ResponseField>
+
+<ResponseField name="email" type="object">
+    An object containing information about the user’s email address.
+    <Expandable title="properties">
+        <ResponseField name="address" type="string">
+            The current primary email address of the user.
+        </ResponseField>
+        <ResponseField name="is_primary" type="boolean">
+            A boolean field indicating whether the email address is the primary email. Currently, this field is
+            redundant because only the primary email is included in the JWT.
+        </ResponseField>
+        <ResponseField name="is_verified" type="boolean">
+            A boolean field indicating whether the email address has been verified.
+        </ResponseField>
+    </Expandable>
+</ResponseField>
+
+<ResponseField name="exp" type="integer">
+    The (UNIX) timestamp indicating when the JWT will expire.
+</ResponseField>
+
+<ResponseField name="iat" type="integer">
+    The (UNIX) timestamp indicating when the JWT was created.
+</ResponseField>
+
+<ResponseField name="session_id" type="string">
+    The ID of the session.
+</ResponseField>
+
+<ResponseField name="sub" type="integer">
+    The ID of the user.
+</ResponseField>
+
