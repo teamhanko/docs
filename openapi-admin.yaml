@@ -23,7 +23,7 @@ externalDocs:
   url: https://github.com/teamhanko/hanko
 servers:
   # - url: "http://localhost:8001"
-  - url: "https://{tenant_id}.hanko.io"
+  - url: "https://{tenant_id}.hanko.io/admin"
     variables:
       tenant_id:
         default: "default"
