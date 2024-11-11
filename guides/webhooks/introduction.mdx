@@ -8,6 +8,10 @@ Webhooks are an easy way to get informed about changes in your Hanko instance (e
 To use webhooks you have to provide an endpoint on your application which can process the events. Please be aware that your
 endpoint need to respond with an HTTP status code 200. Else-wise the delivery of the event will not be counted as successful.
 
+<Warning>
+    Your server **must** return the complete certificate chain otherwise the request will fail.
+</Warning>
+
 ## Events
 When a webhook is triggered it will send you a **JSON** body which contains the event and a jwt.
 The JWT contains 2 custom claims:
