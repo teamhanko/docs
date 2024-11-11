@@ -33,6 +33,8 @@ paths:
     get:
       summary: Status page
       description: Return information about the API status. Returns a 500 if there are issues with database connectivity.
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: status
       tags:
         - Status
@@ -52,6 +54,8 @@ paths:
   /users:
     get:
       summary: "Get a list of users"
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: listUsers
       tags:
         - User Management
@@ -111,6 +115,8 @@ paths:
           $ref: "#/components/responses/BadRequest"
     post:
       summary: Create a new user
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: createUser
       tags:
         - User Management
@@ -164,6 +170,8 @@ paths:
   /users/{id}:
     delete:
       summary: "Delete a user by ID"
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: deleteUser
       tags:
         - User Management
@@ -183,6 +191,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     get:
       summary: "Get a user by ID"
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: getUser
       tags:
         - User Management
@@ -209,6 +219,8 @@ paths:
   /audit_logs:
     get:
       summary: "Get a list of audit logs"
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: listAuditLogs
       tags:
         - Audit Logs
@@ -297,6 +309,8 @@ paths:
   /metrics:
     get:
       summary: "Get Prometheus metrics."
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: getMetrics
       tags:
         - Metrics
@@ -312,6 +326,8 @@ paths:
     get:
       summary: Get a list of webhooks
       description: "Returns a list of all configured webhooks. "
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: list-webhooks
       responses:
         "200":
@@ -334,6 +350,8 @@ paths:
     post:
       summary: Create a new database webhook
       description: ""
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: create-db-webhooks
       requestBody:
         content:
@@ -354,6 +372,8 @@ paths:
   "/webhooks/{id}":
     get:
       summary: Get a webhook by ID
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: get-webhooks-id
       parameters:
         - $ref: "#/components/parameters/Id"
@@ -372,6 +392,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     delete:
       summary: Delete a webhook by ID
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: delete-webhooks-id
       parameters:
         - $ref: "#/components/parameters/Id"
@@ -386,6 +408,8 @@ paths:
           description: Internal Server Error
     put:
       summary: Update a webhook by ID
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: put-webhooks-id
       parameters:
         - $ref: "#/components/parameters/Id"
@@ -417,6 +441,8 @@ paths:
   "/users/{id}/emails":
     get:
       summary: Get a list of emails for a user
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: get-users-id-emails
       parameters:
         - $ref: "#/components/parameters/Id"
@@ -435,6 +461,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     post:
       summary: Create an email for a user
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: post-users-id-emails
       parameters:
         - $ref: "#/components/parameters/Id"
@@ -458,6 +486,8 @@ paths:
   "/users/{id}/emails/{email_id}":
     get:
       summary: Get an email of a user
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: get-users-id-emails-email_id
       parameters:
         - $ref: "#/components/parameters/Id"
@@ -482,6 +512,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     delete:
       summary: Remove an email from a user
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: delete-users-emails-email_id
       parameters:
         - $ref: "#/components/parameters/Id"
@@ -505,6 +537,8 @@ paths:
   "/users/{id}/emails/{email_id}/set_primary":
     post:
       summary: Set email as primary
+      security:
+        - BearerApiKeyAuth: [ ]
       operationId: post-users-emails-email_id-set_primary
       parameters:
         - $ref: "#/components/parameters/Id"
@@ -523,6 +557,11 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 components:
+  securitySchemes:
+    BearerApiKeyAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
   parameters:
     Id:
       name: id
