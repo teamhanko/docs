@@ -51,6 +51,33 @@ paths:
       #       path_prefix:
       #         default: ""
   "/{tenant_id}/credentials/{credential_id}":
+    get:
+      tags:
+        - credentials
+      summary: Get a credential
+      description: Endpoint for getting details of a credential
+      operationId: get-credentials-credentialId
+      parameters:
+        - $ref: "#/components/parameters/X-API-KEY"
+        - $ref: "#/components/parameters/credential_id"
+        - $ref: "#/components/parameters/tenant_id"
+      requestBody:
+        description: ""
+        content: { }
+      responses:
+        "200":
+          $ref: "#/components/responses/get-credential"
+        "400":
+          $ref: "#/components/responses/error"
+        "401":
+          $ref: "#/components/responses/error"
+        "404":
+          $ref: "#/components/responses/error"
+        "500":
+          $ref: "#/components/responses/error"
+      security: []
+      servers:
+        - url: "https://passkeys.hanko.io"
     patch:
       tags:
         - credentials
@@ -467,15 +494,12 @@ components:
     credential_id:
       name: credential_id
       in: path
-      description: UUID of the credential
+      description: The ID of the webauthn credential
       required: true
       schema:
         type: string
-        format: uuid
-        minLength: 36
-        maxLength: 36
         example:
-          - 1f496bcd-49da-4839-a02f-7ce681cdaaaa
+          - 9c9U-4tB0glkGr3TEv39An3GVmg
     tenant_id:
       name: tenant_id
       in: path
@@ -616,52 +640,13 @@ components:
             type: array
             uniqueItems: true
             items:
-              type: object
-              additionalProperties: false
-              properties:
-                id:
-                  type: string
-                name:
-                  type: string
-                public_key:
-                  type: string
-                attestation_type:
-                  type: string
-                aaguid:
-                  type: string
-                  format: uuid
-                  minLength: 36
-                  maxLength: 36
-                last_used_at:
-                  type: string
-                  format: date-time
-                created_at:
-                  type: string
-                  format: date-time
-                transports:
-                  type: array
-                  uniqueItems: true
-                  items:
-                    type: string
-                backup_eligible:
-                  type: boolean
-                  default: false
-                backup_state:
-                  type: boolean
-                  default: false
-                is_mfa:
-                  type: boolean
-                  default: false
-              required:
-                - id
-                - public_key
-                - attestation_type
-                - aaguid
-                - created_at
-                - transports
-                - backup_eligible
-                - backup_state
-                - is_mfa
+              $ref: "#/components/schemas/webauthn-credential"
+    get-credential:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/webauthn-credential"
     error:
       description: Error Response with detailed information
       content:
@@ -989,3 +974,50 @@ components:
             - discouraged
             - preferred
             - required
+    webauthn-credential:
+        title: webauthn-credential
+        type: object
+        properties:
+          id:
+            type: string
+          name:
+            type: string
+          public_key:
+            type: string
+          attestation_type:
+            type: string
+          aaguid:
+            type: string
+            format: uuid
+            minLength: 36
+            maxLength: 36
+          last_used_at:
+            type: string
+            format: date-time
+          created_at:
+            type: string
+            format: date-time
+          transports:
+            type: array
+            uniqueItems: true
+            items:
+              type: string
+          backup_eligible:
+            type: boolean
+            default: false
+          backup_state:
+            type: boolean
+            default: false
+          is_mfa:
+            type: boolean
+            default: false
+        required:
+          - id
+          - public_key
+          - attestation_type
+          - aaguid
+          - created_at
+          - transports
+          - backup_eligible
+          - backup_state
+          - is_mfa
