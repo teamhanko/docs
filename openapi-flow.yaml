@@ -1670,6 +1670,27 @@ components:
       properties:
         email:
           $ref: "#/components/schemas/InputUsername"
+    LastLogin:
+      description: Contains data about the last login and MFA methods used by the user.
+      type: object
+      properties:
+        login_method:
+          description: The login method used.
+          type: string
+          enum:
+            - password
+            - passkey
+            - passcode
+            - third_party
+        mfa_method:
+          description: The MFA method used.
+          type: string
+          enum:
+            - totp
+            - security_key
+        third_party_provider:
+          description: Contains the name of the third party provider used if `login_method` is `third_party`.
+          type: string
     Link:
       type: object
       properties:
@@ -2405,7 +2426,17 @@ components:
         - $ref: "#/components/schemas/StateOnboardingEmail"
         - $ref: "#/components/schemas/StateOnboardingUsername"
         - $ref: "#/components/schemas/StateThirdParty"
-        - $ref: "#/components/schemas/StateSuccess"
+        - allOf:
+           - $ref: "#/components/schemas/StateSuccess"
+           - type: object
+             properties:
+               payload:
+                 allOf:
+                   - $ref: "#/components/schemas/PayloadProfileData"
+                   - type: object
+                     properties:
+                       last_login:
+                         $ref: "#/components/schemas/LastLogin"
       discriminator:
         propertyName: name
         mapping:
