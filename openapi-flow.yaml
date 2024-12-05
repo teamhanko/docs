@@ -515,6 +515,23 @@ components:
             action:
               enum:
                 - "skip"
+    ActionTrustDevice:
+      description: |
+        Execution of this action indicates that a user considers the device or browser used as trusted. As a 
+        result, MFA (if it is enabled and the user has registered an MFA credential) is skipped for subsequent logins. 
+        Trust persists until it explicitly expires and its expiry is not
+        extended on subsequent logins. Users must provide MFA again after expiry.
+        
+        Generates a random device token that is returned to the client in a `Set-Cookie` header on flow success.
+        The action is only present in the flow response if this Cookie is not set, i.e. if no trust has been granted 
+        or if the cookie has expired.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "trust_device"
     ActionVerifyPasscode:
       description: Verify a passcode.
       allOf:
@@ -602,6 +619,15 @@ components:
       type: object
       additionalProperties:
         $ref: "#/components/schemas/Action"
+    ActionsDeviceTrust:
+      type: object
+      properties:
+        trust_device:
+          $ref: "#/components/schemas/ActionTrustDevice"
+        skip:
+          $ref: "#/components/schemas/ActionSkip"
+        back:
+          $ref: "#/components/schemas/ActionBack"
     ActionsCredentialOnboardingChooser:
       type: object
       properties:
@@ -1595,16 +1621,16 @@ components:
           $ref: "#/components/schemas/InputEmail"
         username:
           $ref: "#/components/schemas/InputUsername"
-    InputsSecurityKeyDelete:
-      type: object
-      properties:
-        security_key_id:
-          $ref: "#/components/schemas/InputSecurityKeyID"
     InputsRegisterPassword:
       type: object
       properties:
         new_password:
           $ref: "#/components/schemas/InputNewPassword"
+    InputsSecurityKeyDelete:
+      type: object
+      properties:
+        security_key_id:
+          $ref: "#/components/schemas/InputSecurityKeyID"
     InputsSessionDelete:
       type: object
       properties:
@@ -1845,6 +1871,18 @@ components:
             $ref: "#/components/schemas/Link"
           nullable: true
           example: []
+    StateDeviceTrust:
+      title: DeviceTrust
+      allOf:
+        - $ref: "#/components/schemas/StateBase"
+        - type: object
+          properties:
+            actions:
+              $ref: "#/components/schemas/ActionsDeviceTrust"
+            name:
+              type: string
+              enum:
+                - "device_trust"
     StateLoginInit:
       title: LoginInit
       allOf:
@@ -2420,11 +2458,12 @@ components:
         - $ref: "#/components/schemas/StateMFASecurityKeyCreation"
         - $ref: "#/components/schemas/StatePasscodeConfirmation"
         - $ref: "#/components/schemas/StatePasswordCreation"
+        - $ref: "#/components/schemas/StateOnboardingEmail"
+        - $ref: "#/components/schemas/StateOnboardingUsername"
         - $ref: "#/components/schemas/StateCredentialOnboardingChooser"
         - $ref: "#/components/schemas/StateOnboardingCreatePasskey"
         - $ref: "#/components/schemas/StateOnboardingVerifyPasskeyAttestation"
-        - $ref: "#/components/schemas/StateOnboardingEmail"
-        - $ref: "#/components/schemas/StateOnboardingUsername"
+        - $ref: "#/components/schemas/StateDeviceTrust"
         - $ref: "#/components/schemas/StateThirdParty"
         - allOf:
            - $ref: "#/components/schemas/StateSuccess"
@@ -2453,11 +2492,12 @@ components:
           mfa_method_chooser: "#/components/schemas/StateMFAMethodChooser"
           mfa_otp_secret_creation: "#/components/schemas/StateMFAOTPSecretCreation"
           mfa_security_key_creation: "#/components/schemas/StateMFASecurityKeyCreation"
+          onboarding_email: "#/components/schemas/StateOnboardingEmail"
+          onboarding_username: "#/components/schemas/StateOnboardingUsername"
           credential_onboarding_chooser: "#/components/schemas/StateCredentialOnboardingChooser"
           onboarding_create_passkey: "#/components/schemas/StateOnboardingCreatePasskey"
           onboarding_verify_passkey_attestation: "#/components/schemas/StateOnboardingVerifyPasskeyAttestation"
-          onboarding_email: "#/components/schemas/StateOnboardingEmail"
-          onboarding_username: "#/components/schemas/StateOnboardingUsername"
+          device_trust: "#/components/schemas/StateDeviceTrust"
           thirdparty: "#/components/schemas/StateThirdParty"
           success: "#/components/schemas/StateSuccess"
     StatesProfile:
@@ -2552,8 +2592,22 @@ components:
     X-Session-Lifetime:
       type: number
     CookieSession:
+      description: |
+        Value `<JWT>` is a [JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519.html)
+        
+        Only present on the `success` state of the flow.
       type: string
       example: hanko=<JWT>; Path=/; HttpOnly
+    CookieDeviceToken:
+      description: |
+        Issued on a login flow's success if the `trust_device` action was executed during the flow. Used during 
+        subsequent login flows to check if MFA (if it is enabled and the user has registered an MFA credential) 
+        can be skipped.
+
+        Only present on the `success` state of the flow.
+      type: string
+      example: |
+        hanko-device-token=dl4yEFrW8XYU2GQ6IN3gJeqTiVhDKsfK_GYh-_HsAk4ZBdG1M6iA6QXQDJGSJNruS41_-bHTnlDjx8GyJ_WKA==,Path=/; HttpOnly, Secure
   responses:
     LoginFlowResponse:
       description: LoginFlowResponse
@@ -2561,24 +2615,27 @@ components:
         X-Auth-Token:
           description: |
             Used for cross-domain communication between client and Hanko API.
-
+            
             Only present if configured on the tenant and on the `success` state of the flow.
           schema:
             $ref: '#/components/schemas/X-Auth-Token'
         X-Session-Lifetime:
           description: |
             Contains the seconds until the session expires.
-
+            
             Only present on the `success` state of the flow.
           schema:
             $ref: '#/components/schemas/X-Session-Lifetime'
         Set-Cookie:
-          description: |
-            Value `<JWT>` is a [JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519.html)
-
-            Only present on the `success` state of the flow.
           schema:
-            $ref: '#/components/schemas/CookieSession'
+            anyOf:
+              - $ref: '#/components/schemas/CookieSession'
+              - $ref: '#/components/schemas/CookieDeviceToken'
+          examples:
+            session:
+              value: hanko=<JWT>; Path=/; HttpOnly
+            device_token:
+              value:  hanko-device-token=dl4yEFrW8XYU2GQ6IN3gJeqTiVhDKsfK_GYh-_HsAk4ZBdG1M6iA6QXQDJGSJNruS41_-bHTnlDjx8GyJ_WKA==,Path=/; HttpOnly, Secure
       content:
         application/json:
           schema:
@@ -2747,21 +2804,21 @@ components:
           description: |
             Enable via configuration option `session.enable_auth_token_header`
             for purposes of cross-domain communication between client and Hanko API.
-
+            
             Only present on the `success` state of the flow.
           schema:
             $ref: '#/components/schemas/X-Auth-Token'
         X-Session-Lifetime:
           description: |
             Contains the seconds until the session expires.
-
+            
             Only present on the `success` state of the flow.
           schema:
             $ref: '#/components/schemas/X-Session-Lifetime'
         Set-Cookie:
           description: |
             Value `<JWT>` is a [JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519.html)
-
+            
             Only present on the `success` state of the flow.
           schema:
             $ref: '#/components/schemas/CookieSession'
@@ -2818,19 +2875,19 @@ components:
             properties:
               input_data:
                 oneOf:
-                    - $ref: "#/components/schemas/InputDataRegisterClientCapabilities"
-                    - $ref: "#/components/schemas/InputDataContinueWithLoginIdentifier"
-                    - $ref: "#/components/schemas/InputDataEmailAddressSet"
-                    - $ref: "#/components/schemas/InputDataVerifyPasscode"
-                    - $ref: "#/components/schemas/InputDataPasswordLogin"
-                    - $ref: "#/components/schemas/InputDataRegisterPassword"
-                    - $ref: "#/components/schemas/InputDataPasswordRecovery"
-                    - $ref: "#/components/schemas/InputDataOTPCodeVerify"
-                    - $ref: "#/components/schemas/InputDataOTPCodeValidate"
-                    - $ref: "#/components/schemas/InputDataThirdPartyOauth"
-                    - $ref: "#/components/schemas/InputDataExchangeToken"
-                    - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
-                    - $ref: "#/components/schemas/InputDataWebauthnVerifyAssertionResponse"
+                  - $ref: "#/components/schemas/InputDataRegisterClientCapabilities"
+                  - $ref: "#/components/schemas/InputDataContinueWithLoginIdentifier"
+                  - $ref: "#/components/schemas/InputDataEmailAddressSet"
+                  - $ref: "#/components/schemas/InputDataVerifyPasscode"
+                  - $ref: "#/components/schemas/InputDataPasswordLogin"
+                  - $ref: "#/components/schemas/InputDataRegisterPassword"
+                  - $ref: "#/components/schemas/InputDataPasswordRecovery"
+                  - $ref: "#/components/schemas/InputDataOTPCodeVerify"
+                  - $ref: "#/components/schemas/InputDataOTPCodeValidate"
+                  - $ref: "#/components/schemas/InputDataThirdPartyOauth"
+                  - $ref: "#/components/schemas/InputDataExchangeToken"
+                  - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
+                  - $ref: "#/components/schemas/InputDataWebauthnVerifyAssertionResponse"
               csrf_token:
                 $ref: "#/components/schemas/CSRFToken"
             additionalProperties: false
