@@ -2591,6 +2591,10 @@ components:
       format: JWT
     X-Session-Lifetime:
       type: number
+    X-Session-Retention:
+      type: string
+      enum:
+        - persistent
     CookieSession:
       description: |
         Value `<JWT>` is a [JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519.html)
@@ -2626,6 +2630,13 @@ components:
             Only present on the `success` state of the flow.
           schema:
             $ref: '#/components/schemas/X-Session-Lifetime'
+        X-Session-Retention:
+          description: |
+            Serves as a hint at what type of cookie (session or persistent) should be created.
+
+            Only present on the `success` state of the flow.
+          schema:
+            $ref: '#/components/schemas/X-Session-Retention'
         Set-Cookie:
           schema:
             anyOf:
@@ -2815,6 +2826,13 @@ components:
             Only present on the `success` state of the flow.
           schema:
             $ref: '#/components/schemas/X-Session-Lifetime'
+        X-Session-Retention:
+          description: |
+            Serves as a hint at what type of cookie (session or persistent) should be created.
+
+            Only present on the `success` state of the flow.
+          schema:
+            $ref: '#/components/schemas/X-Session-Retention'
         Set-Cookie:
           description: |
             Value `<JWT>` is a [JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519.html)
