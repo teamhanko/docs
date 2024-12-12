@@ -639,6 +639,76 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/users/{id}/webauthn_credentials":
+    get:
+      summary: List all WebAuthn credential of a user
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: get-users-webauthn_credentials
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WebAuthnCredential"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/users/{id}/webauthn_credentials/{credential_id}":
+    get:
+      summary: Get a WebAuthn credential of a user
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: get-users-webauthn_credentials-credential_id
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - name: credential_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebAuthnCredential"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a WebAuthn credential of a user
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: delete-users-webauthn_credentials-credential_id
+      parameters:
+        - $ref: "#/components/parameters/Id"
+        - name: credential_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/sessions":
     post:
       summary: Create a new session token for a user
@@ -848,6 +918,9 @@ components:
         - attestation_type
         - aaguid
         - created_at
+        - backup_eligible
+        - backup_state
+        - mfa_only
       properties:
         id:
           description: The ID of the credential
@@ -875,6 +948,19 @@ components:
           description: Time of creation of the credential
           type: string
           format: date-time
+        last_used_at:
+          description: The time when the credential was last used
+          type: string
+          format: date-time
+        backup_eligible:
+          description: Indicates if the credential can be backed up
+          type: boolean
+        backup_state:
+          description: Indicates if the credential is backed up
+          type: boolean
+        mfa_only:
+          description: Indicates if the credential can only be used as a MFA credential
+          type: boolean
     Email:
       type: object
       required:
