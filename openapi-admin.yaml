@@ -709,6 +709,93 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/users/{id}/password":
+    get:
+      summary: Get password metadata of a user
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: get-users-password
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Password"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a password for a user
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: post-users-password
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePassword"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Password"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: Update the password for a user
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: put-users-password
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePassword"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Password"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete the password of a user
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: get-users-password
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/sessions":
     post:
       summary: Create a new session token for a user
@@ -1209,6 +1296,11 @@ components:
       required:
         - id
         - created_at
+    CreatePassword:
+      type: object
+      properties:
+        password:
+          type: string
   headers:
     X-Total-Count:
       schema:
