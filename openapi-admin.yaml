@@ -602,6 +602,43 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/users/{id}/otp":
+    get:
+      summary: Get the OTP secret metadata
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: get-users-otp
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OTP"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete the OTP secret
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: delete-users-otp
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/sessions":
     post:
       summary: Create a new session token for a user
@@ -1074,6 +1111,18 @@ components:
         - created_at
         - updated_at
         - last_used
+    OTP:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - created_at
   headers:
     X-Total-Count:
       schema:
