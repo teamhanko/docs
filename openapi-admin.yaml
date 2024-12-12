@@ -581,7 +581,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   "/users/{id}/sessions/{session_id}":
     delete:
-      summary: Delete a users active session
+      summary: Delete a session from a user
       security:
         - BearerApiKeyAuth: [ ]
       operationId: delete-users-sessions-session_id
@@ -604,7 +604,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   "/users/{id}/otp":
     get:
-      summary: Get the OTP secret metadata
+      summary: Get the OTP secret metadata of a user
       security:
         - BearerApiKeyAuth: [ ]
       operationId: get-users-otp
@@ -624,7 +624,7 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     delete:
-      summary: Delete the OTP secret
+      summary: Delete the OTP secret from a user
       security:
         - BearerApiKeyAuth: [ ]
       operationId: delete-users-otp
@@ -641,7 +641,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
   "/users/{id}/webauthn_credentials":
     get:
-      summary: List all WebAuthn credential of a user
+      summary: Get a list of all WebAuthn credential for a user
       security:
         - BearerApiKeyAuth: [ ]
       operationId: get-users-webauthn_credentials
@@ -689,7 +689,7 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     delete:
-      summary: Delete a WebAuthn credential of a user
+      summary: Delete a WebAuthn credential from a user
       security:
         - BearerApiKeyAuth: [ ]
       operationId: delete-users-webauthn_credentials-credential_id
