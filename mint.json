@@ -363,7 +363,38 @@
             "api-reference/admin/email-management/set-an-email-as-primary"
           ]
         },
-
+        {
+          "group": "Password Management",
+          "pages": [
+            "api-reference/admin/password-management/create-password",
+            "api-reference/admin/password-management/get-password",
+            "api-reference/admin/password-management/update-password",
+            "api-reference/admin/password-management/delete-password"
+          ]
+        },
+        {
+          "group": "WebAuthn credential Management",
+          "pages": [
+            "api-reference/admin/webauthn-credential-management/list-webauthn-credentials",
+            "api-reference/admin/webauthn-credential-management/get-webauthn-credential",
+            "api-reference/admin/webauthn-credential-management/delete-webauthn-credential"
+          ]
+        },
+        {
+          "group": "OTP Management",
+          "pages": [
+            "api-reference/admin/otp-management/get-otp",
+            "api-reference/admin/otp-management/delete-otp"
+          ]
+        },
+        {
+          "group": "Session Management",
+          "pages": [
+            "api-reference/admin/session-management/create-session",
+            "api-reference/admin/session-management/list-sessions",
+            "api-reference/admin/session-management/delete-session"
+          ]
+        },
         {
           "group": "Webhooks",
           "pages": [
