@@ -440,6 +440,25 @@ components:
                 - "password_recovery"
             inputs:
               $ref: "#/components/schemas/InputsPasswordRecovery"
+    ActionRememberMe:
+      description: |
+        This action determines whether a session cookie or a persistent cookie is issued on flow success. 
+        
+        - If the `remember_me` input is set to `true`, the flow response on flow success contains a `Set-Cookie` header
+        with a persistent cookie and an `X-Session-Retention` header with a `persistent` value.
+        - If the `remember_me` input is set to `false`, the flow response on flow success contains a `Set-Cookie` header
+        with a session cookie and an `X-Session-Retention` header with a `session` value.
+        
+        The action is only present if the tenant's cookie retention type is set to 'prompt'.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "remember_me"
+            inputs:
+              $ref: "#/components/schemas/InputsRememberMe"
     ActionThirdPartyOauth:
       description: |
         Initialize a third party sign-up/sign-in by specifying the `provider` (it must be enabled and configured at the 
@@ -650,6 +669,8 @@ components:
           $ref: "#/components/schemas/ActionWebauthnVerifyAssertionResponse"
         thirdparty_oauth:
           $ref: "#/components/schemas/ActionThirdPartyOauth"
+        remember_me:
+          $ref: "#/components/schemas/ActionRememberMe"
     ActionsLoginMethodChooser:
       type: object
       properties:
@@ -828,6 +849,8 @@ components:
           $ref: "#/components/schemas/ActionRegisterLoginIdentifier"
         thirdparty_oauth:
           $ref: "#/components/schemas/ActionThirdPartyOauth"
+        remember_me:
+          $ref: "#/components/schemas/ActionRememberMe"
     ActionsThirdParty:
       type: object
       properties:
@@ -1106,6 +1129,19 @@ components:
             required:
               default: true
             hidden:
+              default: true
+    InputRememberMe:
+      allOf:
+        - $ref: "#/components/schemas/Input"
+        - type: object
+          properties:
+            name:
+              enum:
+                - "remember_me"
+            type:
+              enum:
+                - "boolean"
+            required:
               default: true
     InputSecurityKeyID:
       allOf:
@@ -1398,6 +1434,16 @@ components:
           type: string
       additionalProperties: false
       minProperties: 1
+    InputDataRememberMe:
+      description: Input data for the `remember_me` action.
+      title: RememberMe
+      type: object
+      properties:
+        remember_me:
+          type: boolean
+      required:
+        - remember_me
+      additionalProperties: false
     InputDataRegisterPassword:
       description: Input data for the `register_password` action.
       title: RegisterPassword
@@ -1626,6 +1672,11 @@ components:
       properties:
         new_password:
           $ref: "#/components/schemas/InputNewPassword"
+    InputsRememberMe:
+      type: object
+      properties:
+        remember_me:
+          $ref: "#/components/schemas/InputRememberMe"
     InputsSecurityKeyDelete:
       type: object
       properties:
@@ -2594,6 +2645,7 @@ components:
     X-Session-Retention:
       type: string
       enum:
+        - session
         - persistent
     CookieSession:
       description: |
@@ -2874,6 +2926,7 @@ components:
                 oneOf:
                   - $ref: "#/components/schemas/InputDataRegisterClientCapabilities"
                   - $ref: "#/components/schemas/InputDataRegisterLoginIdentifier"
+                  - $ref: "#/components/schemas/InputDataRememberMe"
                   - $ref: "#/components/schemas/InputDataRegisterPassword"
                   - $ref: "#/components/schemas/InputDataVerifyPasscode"
                   - $ref: "#/components/schemas/InputDataOTPCodeVerify"
@@ -2895,6 +2948,7 @@ components:
                 oneOf:
                   - $ref: "#/components/schemas/InputDataRegisterClientCapabilities"
                   - $ref: "#/components/schemas/InputDataContinueWithLoginIdentifier"
+                  - $ref: "#/components/schemas/InputDataRememberMe"
                   - $ref: "#/components/schemas/InputDataEmailAddressSet"
                   - $ref: "#/components/schemas/InputDataVerifyPasscode"
                   - $ref: "#/components/schemas/InputDataPasswordLogin"
