@@ -153,6 +153,10 @@
           "group": "Migrations",
           "pages": ["guides/migrations/import-export-users"]
         },
+        {
+          "group": "FlowAPI",
+          "pages": ["guides/flow-api/understanding-the-flow-api"]
+        },
         "guides/sessions/session-management",
         "guides/webhooks/introduction",
         "guides/custom-emails/email-delivery"
