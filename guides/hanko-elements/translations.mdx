@@ -17,50 +17,66 @@ Markup
 
 ## Installing Additional Translations
 
-Translations are currently available for the following languages
+Translations are currently available for the following languages:
 
-- "de" - German
-- "en" - English
-- "fr" - French
+| Value | Language               |
+| ------| -----------------------|
+| `bn`    | Bengali (Bangla)     |
+| `de`    | German               |
+| `en`    | English              |
+| `fr`    | French               |
+| `it`    | Italian              |
+| `pt-BR` | Brazilian Portuguese |
+| `zh`    | Chinese              |
 
-You can import them individually
+You can import them individually:
 
-```js 
+```js
 // Replace the paths below with
 // "https://cdn.jsdelivr.net/npm/@teamhanko/hanko-elements/dist/i18n/{en|de|all|...}.js"
 // if you're using CDN.
 
+import { bn } from "@teamhanko/hanko-elements/i18n/bn";
 import { de } from "@teamhanko/hanko-elements/i18n/de";
 import { en } from "@teamhanko/hanko-elements/i18n/en";
 import { fr } from "@teamhanko/hanko-elements/i18n/fr";
+import { it } from "@teamhanko/hanko-elements/i18n/it";
+import { ptBR } from "@teamhanko/hanko-elements/i18n/ptBR";
 import { zh } from "@teamhanko/hanko-elements/i18n/zh";
 ```
 
-Or import all translations at once
+Or import all translations at once:
 
-```js 
+```js
 import { all } from "@teamhanko/hanko-elements/i18n/all";
 ```
 
-After importing, provide the translations through the `register()` function
+After importing, provide the translations through the `register()` function:
 
-```js 
-register("https://hanko.yourdomain.com", { translations: { de, en, fr, zh } });
+```js
+register("https://hanko.yourdomain.com", { translations: { bn, de, en, fr, it, ptBR, zh } });
 // or
 register("https://hanko.yourdomain.com", { translations: all });
 ```
 
-You can now set the `lang` attribute of the element to the desired language
+You can now set the `lang` attribute of the element to the desired language:
 
-```html 
+```html
 <hanko-auth lang="de"></hanko-auth>
 ```
+
+<Warning>
+    In contrast to the named import of the translation object for Brazilian Portuguese ("ptBR"), the `lang` attribute
+    value must be provided as "pt-BR". Otherwise the language is not recognized by the backend and outgoing emails will
+    default to English.
+</Warning>
+
 
 ## Modifying Translations
 
 You can modify existing translations as follows
 
-```js 
+```js
 import { en } from "@teamhanko/hanko-elements/i18n/en";
 
 en.errors.somethingWentWrong = "Aww, snap!";
@@ -70,11 +86,12 @@ register("YOUR_HANKO_API_URL", { translations: { en } });
 
 ## Adding New Translations
 
-If you need to create a new translation, pass an object that implements (or partially implements) the `Translation` interface.
+If you need to create a new translation, pass an object that implements (or partially implements) the `Translation`
+interface.
 
-Script 
+Script
 
-```js 
+```js
 import { all } from "@teamhanko/hanko-elements/i18n/all";
 import { Translation } from "@teamhanko/hanko-elements"; // if you're using typescript
 
@@ -83,7 +100,7 @@ const myLang: Translation = {...}
 register("YOUR_HANKO_API_URL", {translations: {...all, myLang}});
 ```
 
-Markup 
+Markup
 
 ```html
 <hanko-auth lang="myLang"></hanko-auth>
@@ -91,11 +108,14 @@ Markup
 
 ## Using External Files
 
-For languages provided via the element's lang attribute, or via the fallback language option, that are not included in the object passed to the `translations` option, the component will fetch a JSON file from the location specified by the `translationsLocation` option. For example, if "en" is missing due to an empty object being passed, as shown in the example below, the component will fetch a file named `/i18n/en.json`.
+For languages provided via the element's lang attribute, or via the fallback language option, that are not included in
+the object passed to the `translations` option, the component will fetch a JSON file from the location specified by the
+`translationsLocation` option. For example, if "en" is missing due to an empty object being passed, as shown in the
+example below, the component will fetch a file named `/i18n/en.json`.
 
 Script
 
-```js 
+```js
 register("https://hanko.yourdomain.com", {
   translations: {}, // An empty object, so even the default "en" translation won't be available.
   translationsLocation: "/i18n", // A public folder containing language files, e.g., "en.json".
@@ -111,7 +131,11 @@ Markup
 
 ## Fallback Language
 
-The `fallbackLanguage` option is used to specify a fallback language for the web components when translations are missing or incomplete for a particular language. By setting the `fallbackLanguage` option to a valid language string like "en" or "de", the missing translation strings will be automatically retrieved from the specified fallback language. When the translation for the specified `fallbackLanguage` is not available in the `translations` option, the web components will attempt to fetch it from an external file.
+The `fallbackLanguage` option is used to specify a fallback language for the web components when translations are
+missing or incomplete for a particular language. By setting the `fallbackLanguage` option to a valid language string
+like "en" or "de", the missing translation strings will be automatically retrieved from the specified fallback language.
+When the translation for the specified `fallbackLanguage` is not available in the `translations` option, the web
+components will attempt to fetch it from an external file.
 
 Script
 
@@ -135,3 +159,22 @@ Markup
 <!-- Will appear in English, but the "continue" button label will be "➔"  -->
 <hanko-auth lang="symbols"></hanko-auth>
 ```
+
+## Translation of outgoing emails
+
+If you use Hanko Elements the language supplied to the `lang` attribute of any of the components is also used to convey
+to the Hanko API the language to use for outgoing emails. If you have disabled email delivery through Hanko and
+configured a webhook for the `email.send` event, the value for the `lang` attribute is reflected in the JWT payload of
+the token contained in the webhook request in the `language` claim.
+
+If you do not use Hanko Elements but use the Hanko Frontend SDK to build your own UI you can provide a `lang`
+[option](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/HankoOptions.html) when instantiating the main
+`Hanko` [client](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/Hanko.html). Again, if you choose to
+opt out of email delivery by Hanko and subscribe to the `email.send` event via webhook, the value used as the argument
+is reflected in the JWT payload of the token contained in the webhook request in the `language` claim.
+
+If you do not use the Hanko frontend SDK but communicate with the Hanko API directly, then you must supply an
+`X-Language` header to requests targeting the Flow API endpoints
+([`/registration`](https://docs.hanko.io/api-reference/flow/registration),
+[`/login`](https://docs.hanko.io/api-reference/flow/login),
+[`/profile`](https://docs.hanko.io/api-reference/flow/profile)).

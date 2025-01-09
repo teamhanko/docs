@@ -18,6 +18,7 @@ paths:
       summary: Registration
       parameters:
         - $ref: "#/components/parameters/ActionParam"
+        - $ref: "#/components/parameters/LanguageParam"
       requestBody:
         $ref: "#/components/requestBodies/RegistrationRequestBody"
       responses:
@@ -43,6 +44,7 @@ paths:
       summary: Login
       parameters:
         - $ref: "#/components/parameters/ActionParam"
+        - $ref: "#/components/parameters/LanguageParam"
       requestBody:
         $ref: "#/components/requestBodies/LoginRequestBody"
       responses:
@@ -71,6 +73,7 @@ paths:
         - BearerTokenAuth: []
       parameters:
         - $ref: "#/components/parameters/ActionParam"
+        - $ref: "#/components/parameters/LanguageParam"
       requestBody:
         $ref: "#/components/requestBodies/ProfileRequestBody"
       responses:
@@ -115,6 +118,26 @@ components:
       schema:
         type: string
         example: register_client_capabilities@15655672-41ca-48cc-afb1-90be77075764
+    LanguageParam:
+      in: header
+      name: X-Language
+      schema:
+        type: string
+      description: |
+        Used to internationalize outgoing emails (e.g. for email verification, recovery, etc.). 
+
+        If email delivery by Hanko is enabled the values for supported languages are: 
+          - "bn" (Bengali/Bangla)
+          - "de" (German) 
+          - "en" (English) 
+          - "fr" (French) 
+          - "it" (Italian) 
+          - "pt-BR" (Brazilian Portuguese), 
+          - "zh" (Chinese)
+        
+        If email delivery by Hanko is disabled and a webhook has been configured for the `email.send` event, the
+        JWT payload of the `token` contained in the response to the webhook endpoint contains a `language` claim that
+        reflects the value originally passed as the header value.
   schemas:
     Action:
       description: Action
