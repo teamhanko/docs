@@ -4,6 +4,8 @@ title: Send Custom Emails
 description: Send emails with your own text and style.
 ---
 
+import ProFeatureNote from '/snippets/pro-feature-note.mdx'
+
 This guide will walk you through the process of sending your own emails instead of relying on Hanko's default email delivery.
 
 ## Create a Webhook
@@ -17,63 +19,39 @@ Create a webhook with the event `email.send`. This webhook will be triggered whe
 
 ## Disable Email delivery by Hanko
 
-1. Log in to the [Hanko Cloud Console](https://cloud.hanko.io) and select your project.
-2. Navigate to `Settings > Email`.
-3. Disable the Email delivery by Hanko.
+<ProFeatureNote/>
+
+<Steps>
+    <Step title={"Access your project's email delivery settings"}>
+        Log in to Hanko Cloud, select your organization and project and navigate to `Settings > Email delivery`.
+    </Step>
+    <Step title={"Disable Email delivery"}>
+        Find the `Email delivery by Hanko` setting and click the toggle to disable it.
+    </Step>
+</Steps>
 
 Once disabled, Hanko will no longer send any emails on your behalf.
 
 ## Send your own emails
 
-When an email needs to be sent, the `email.send` webhook event will be triggered, providing you with all the necessary data to send your own email. The webhook payload will include the following information:
+When an email needs to be sent, the `email.send` webhook event will be triggered, providing you with all the necessary
+data to send your own email. The webhook token payload will include the following information:
 
-```json
-{
-  "subject": "",
-  "body_plain": "",
-  "body": "",
-  "to_email_address": "",
-  "delivered_by_hanko": true,
-  "accept_language": "",
-  "type": "passcode",
-  "data": {
-    "service_name": "",
-    "otp_code": "",
-    "ttl": 1000,
-    "valid_until": 1000
-  }
-}
-```
+import WebhookEmailSendExample from '/snippets/webhooks/email-send-example.mdx';
+import WebhookEmailSendProperties from '/snippets/webhooks/email-send-properties.mdx';
 
-* `subject`: The subject line of the email.
-* `body_plain`: The plain text version of the email body.
-* `body`: The HTML version of the email body. (`nullable`)
-* `to_email_address`: The recipient's email address.
-* `delivered_by_hanko`: Indicates whether the email was delivered by Hanko (true) or not (false).
-* `accept_language`: The preferred language for the email content.
-* `type`: The type of the email being sent (e.g., "passcode").
-* `data`: Additional data specific to the email type.
+<AccordionGroup>
+    <Accordion title={"'email.send' token payload example"} defaultOpen={true}>
+        <WebhookEmailSendExample/>
+    </Accordion>
+    <Accordion title={"'email.send' token payload properties"}>
+        <WebhookEmailSendProperties/>
+    </Accordion>
+</AccordionGroup>
 
-The `data` property in the webhook payload provides type-specific data that can be used to personalize the email further. The structure of the `data` property varies depending on the `type` of the email being sent.
+The `data` property in the token payload provides type-specific data that can be used to personalize
+the email further. The structure of the `data` property varies depending on the `type`
+of the email being sent.
 
-For example, if the email type is "passcode", the `data` property will include the following fields:
-
-<Tabs>
-    <Tab title="passcode">
-        ```json
-        "service_name": "",
-        "otp_code": "",
-        "ttl": 1000,
-        "valid_until": 1000
-        ```
-
-        |property|description|
-        |----|----|
-        |`service_name`|The name of the service set in the console as project name|
-        |`otp_code`|The passcode the user can use to log in|
-        |`ttl`|The validity duration of the passcode in seconds|
-        |`valid_until`|The Unix timestamp indicating when the passcode expires|
-    </Tab>
-</Tabs>
-
-Using the provided webhook data, you can compose and send the email to the user using your preferred email service provider or custom email infra.
+Using the provided webhook data, you can compose and send the email to the user using your preferred email service
+provider or custom email infrastructure.
