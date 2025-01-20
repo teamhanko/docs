@@ -1,0 +1,81 @@
+```json
+{
+    "aud": [
+        "Test Service ABC"
+    ],
+    "data": {
+        "created_at": "2025-01-15T12:57:56.724052Z",
+        "emails": [
+            {
+                "id": "d31be36d-08d7-409f-8437-1920628e6e51",
+                "address": "test@example.com",
+                "is_verified": true,
+                "is_primary": true,
+                "created_at": "2025-01-15T13:57:56.72784Z",
+                "updated_at": "2025-01-15T13:57:56.72801Z"
+            }
+        ],
+        "id": "42fbd0dc-28fb-4144-892c-c2c4a0f8f5d8",
+        "identities": [
+            {
+                "id": "b3af92c5-414c-4c6b-a3ea-82ee263badef",
+                "provider_id": "123456abcd",
+                "provider_name": "testprovider",
+                "email_id": "d31be36d-08d7-409f-8437-1920628e6e51",
+                "created_at": "2025-01-17T13:40:11Z",
+                "updated_at": "2025-01-17T13:40:13Z"
+            }
+        ],
+        "otp": {
+            "id": "a7efd1ee-d7b2-440e-9284-625e06931745",
+            "created_at": "2025-01-17T13:39:29.081428Z"
+        },
+        "password": {
+            "id": "6ec87b0c-67db-42ef-9adb-d106734bde02",
+            "created_at": "2025-01-15T13:57:56.735651Z",
+            "updated_at": "2025-01-15T13:57:56.735651Z"
+        },
+        "updated_at": "2025-01-15T13:57:56.724255Z",
+        "username": {
+            "id": "61580d7d-0c11-4c25-bfca-ace21a14cc01",
+            "username": "testmakker",
+            "created_at": "2025-01-15T14:45:00.293001Z",
+            "updated_at": "2025-01-17T13:46:41.700373Z"
+        },
+        "webauthn_credentials": [
+            {
+                "id": "eaYxbrFQJjl5dW5SAr0KznEmHwAen8HUAiaKN9ijsDY",
+                "public_key": "pQECAyYgASFYIMq-SVnCDGIJjK2TAJyEQyXNtOw7x_MuEVUQuW80-AOcIlggyEcR_v5C8PuhrThwgx2urmRqviIb7dyXmGr3oyWk2rU",
+                "attestation_type": "packed",
+                "aaguid": "70a4ab68-d027-451a-9c86-3b8fd8414f68",
+                "last_used_at": "2025-01-17T12:38:28.698563Z",
+                "created_at": "2025-01-17T12:38:28.698563Z",
+                "transports": [
+                    "usb"
+                ],
+                "backup_eligible": false,
+                "backup_state": false,
+                "mfa_only": true
+            },
+            {
+                "id": "BPtYkS1prrGu1owU3StJwWM5uYtVoD1-h4N_rPHrB84",
+                "public_key": "pQECAyYgASFYILo4i3yC0V2kciBHL96EOx08h32CXXIFnuUmggHOhkGvIlggQFIp4CeJhzGpCiTNuQQoyiKV7oMLYxM549ctLJXJkZ0",
+                "attestation_type": "packed",
+                "aaguid": "649b9062-5892-4223-832b-921c5bce5827",
+                "last_used_at": "2025-01-17T12:39:06.718171Z",
+                "created_at": "2025-01-17T12:39:06.718171Z",
+                "transports": [
+                    "usb"
+                ],
+                "backup_eligible": false,
+                "backup_state": false,
+                "mfa_only": false
+            }
+        ]
+    },
+    "evt": "<string>", // the corresponding event type
+    "exp": 1737118303,
+    "iat": 1737118003,
+    "sub": "hanko webhooks"
+}
+```

@@ -1,0 +1,115 @@
+<ResponseField name="aud" type="string[]">
+    The recipients the token is intended for
+</ResponseField>
+        <ResponseField name="data" type="object">
+    <Expandable>
+        <ResponseField name="id" type="string">
+            The ID of the user
+        </ResponseField>
+        <ResponseField name="webauthn_credentials" type="object">
+            Registered WebAuthn credentials (passkeys and security keys) of the user
+            <Expandable>
+                <ResponseField name="aaguid" type="string">
+                    The ID authenticator that created the credential
+                </ResponseField>
+                <ResponseField name="attestation_type" type="string">
+                    Format in which the signature is represented and the various contextual
+                    bindings are incorporated into the attestation statement by the authenticator
+                </ResponseField>
+                <ResponseField name="backup_eligible" type="string">
+                    Indicates whether the credential may be backed up in some fashion such that they may become present
+                    on an authenticator other than their generating authenticator
+                </ResponseField>
+                <ResponseField name="backup_state" type="string">
+                    Indicates whether this credential is backed up or not
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    The time of creation of the credential
+                </ResponseField>
+                <ResponseField name="id" type="string">
+                    The ID of the credential
+                </ResponseField>
+                <ResponseField name="last_used_at" type="string">
+                    Indicates when the credential was lst used
+                </ResponseField>
+                <ResponseField name="public_key" type="string">
+                    The public key of the credential (Base64URL string)
+                </ResponseField>
+                <ResponseField name="transports" type="string[]">
+                    Communication methods/protocols used to create the credential
+                </ResponseField>
+                <ResponseField name="mfa_only" type="string">
+                    Indicates whether this is an MFA credential (security key) or a first factor credential
+                    (passkey)
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
+        <ResponseField name="username" type="object">
+            The username of the user
+        </ResponseField>
+        <ResponseField name="created_at" type="string">
+            Time of creation of the user
+        </ResponseField>
+        <ResponseField name="updated_at" type="string">
+            Time of last update of the user
+        </ResponseField>
+        <ResponseField name="password" type="object">
+            Representation of the password credential of the user
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    The ID of the password credential
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    Time of creation of the password credential
+                </ResponseField>
+                <ResponseField name="updated_at" type="string">
+                    Time of last update of the password credential
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
+        <ResponseField name="identities" type="object[]">
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    The ID of the identity
+                </ResponseField>
+                <ResponseField name="provider_id" type="string">
+                    The ID of the user at the third party provider
+                </ResponseField>
+                <ResponseField name="provider_name" type="string">
+                    The name of the third party provider
+                </ResponseField>
+                <ResponseField name="email_id" type="string">
+                    The ID of the email the identity is related to
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    Time of creation of the identity
+                </ResponseField>
+                <ResponseField name="updated_at" type="string">
+                    Time of last update of the identity
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
+        <ResponseField name="otp" type="object">
+            MFA OTP credential of the user
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    ID of the OTP credential
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    Time of creation of the OTP credential
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
+    </Expandable>
+</ResponseField>
+    <ResponseField name="evt" type="boolean">
+        The event that triggered the webhook containing this data
+    </ResponseField>
+    <ResponseField name="exp" type="number">
+        The expiration date of the token
+    </ResponseField>
+    <ResponseField name="iat" type="number">
+        The time at which the token was issued
+    </ResponseField>
+    <ResponseField name="sub" type="string" default="hanko webhooks">
+</ResponseField>

@@ -1145,6 +1145,11 @@ components:
             - user.update.email.create
             - user.update.email.delete
             - user.update.email.primary
+            - user.update.username
+            - user.update.username.create
+            - user.update.username.delete
+            - user.update.username.update
+            - email.send
     DatabaseWebhook:
       type: object
       title: DatabaseWebhook
@@ -1196,6 +1201,11 @@ components:
               - user.update.email.create
               - user.update.email.delete
               - user.update.email.primary
+              - user.update.username
+              - user.update.username.create
+              - user.update.username.delete
+              - user.update.username.update
+              - email.send
       required:
         - callback
         - events

@@ -1,0 +1,25 @@
+```json
+{
+    "aud": [
+        "Test Service ABC"
+    ],
+    "data": {
+        "subject": "Use passcode 325139 to verify your email address",
+        "body_plain": "Enter the following passcode to verify your email address:\n\n325139\n\nThe passcode is valid for 5 minutes.",
+        "to_email_address": "test@example.com",
+        "delivered_by_hanko": false,
+        "language": "en",
+        "type": "passcode",
+        "data": {
+            "service_name": "Test Service ABC",
+            "otp_code": "325139",
+            "ttl": 300,
+            "valid_until": 1737128997
+        }
+    },
+    "evt": "email.send",
+    "exp": 1737128997,
+    "iat": 1737128697,
+    "sub": "hanko webhooks"
+}
+```

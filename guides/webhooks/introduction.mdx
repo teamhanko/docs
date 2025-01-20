@@ -1,68 +1,389 @@
 ---
 sidebarTitle: "Webhooks"
-title: Learn more about Webhooks
-description: Webhooks allow you to get notified on changes
+title: Webhooks
+description: Learn more about Webhooks
 ---
 
-Webhooks are an easy way to get informed about changes in your Hanko instance (e.g. user or email updates).
-To use webhooks you have to provide an endpoint on your application which can process the events. Please be aware that your
-endpoint need to respond with an HTTP status code 200. Else-wise the delivery of the event will not be counted as successful.
+import WebhookUserPayloadExample from '/snippets/webhooks/user-payload-example.mdx';
+import WebhookUserPayloadProperties from '/snippets/webhooks/user-payload-properties.mdx';
+import WebhookEmailSendExample from '/snippets/webhooks/email-send-example.mdx';
+import WebhookEmailSendProperties from '/snippets/webhooks/email-send-properties.mdx';
+import ProFeatureNote from '/snippets/pro-feature-note.mdx'
+
+<ProFeatureNote/>
+
+## About webhooks
+
+Webhooks allow you to subscribe to events within a Hanko project and automatically receive data deliveries to your
+server/application whenever those events take place. This allows you to, for example, synchronize user data between your
+application(s) and Hanko.
+
+To create a webhook you specify a callback URL and subscribe to events that occur in your Hanko project. Once an
+event that your webhook is subscribed to occurs, Hanko will send an HTTP POST request with data about the event to the
+URL that you specified. If your application provides a publicly available HTTP endpoint listening for webhook deliveries
+at the configured callback URL, it can react and process webhook data.
+
+<Frame caption={"High level overview of creating webhooks and handling webhook deliveries"}>
+    ```mermaid
+    sequenceDiagram
+    participant A as Relying Party
+    participant B as Hanko
+
+    A->>B: Create webhook
+    B->>B: Event occurs
+    B->>A: HTTP POST to callback URL
+    A->>A: Parse webhook payload
+    A->>A: Validate event data
+    A->>A: Process event data
+    A-->>B: Acknowledge delivery
+    ```
+</Frame>
+
+
+## Creating webhooks
+
+To create a webhook:
+
+<Steps>
+    <Step title={"Access your project's webhook settings"}>
+        Log in to the [Hanko Cloud Console](https://cloud.hanko.io), select your organization and project and navigate to
+        `Settings > Webhooks`.
+    </Step>
+    <Step title={"Create a webhook"}>
+        Click `Create webhook`. Enter a callback URL and select the events that you want to subscribe to.
+        See [Events](#events) for more information on the events you can subscribe to.
+    </Step>
+</Steps>
+
+You are free to choose whether you create a single webhook with one HTTP endpoint processing multiple events or
+multiple webhooks with more than one HTTP endpoint handling specific events or event groups.
+
+## Handling webhook deliveries
+
+To handle webhook deliveries:
+
+<Steps>
+    <Step title={"Create callback URL endpoint"}>
+        In order to handle webhook deliveries, your application must provide a publicly available HTTP POST endpoint
+        listening for webhook deliveries at the configured callback URL.
+    </Step>
+    <Step title={"Parse webhook payload"}>
+        Once you have an endpoint set up you need to extract the webhook [event payload](#event-payload). It
+        contains information about which event occurred and the actual event data encoded in a JSON Web Token (JWT).
+    </Step>
+    <Step title={"Validate webhook payload"}>
+        To ensure that your application only processes webhook deliveries that were sent by Hanko and to ensure that
+        the delivery has not been tampered with, you should validate the JWT's signature before processing the delivery
+        further. You can use the JSON Web Key Set available through your tenant's
+        [.well-known](/api-reference/public/well-known/get-json-web-key-set) endpoint to do so.
+    </Step>
+    <Step title={"Parse webhook payload token"}>
+        The JWT contained in the webhook payload must be parsed to obtain the event
+        data from the token payload. The structure of the event data may differ from event type to event type.
+        For more information, see [Event types and token payloads](#event-types-and-token-payloads).
+    </Step>
+    <Step title={"Process event data"}>
+        Once you have extracted the event data from the token you can process it according to your application's needs.
+    </Step>
+</Steps>
+<Accordion title={"Example (Javascript)"}>
+
+This example uses [express](https://www.npmjs.com/package/express) and the [jose](https://www.npmjs.com/package/jose)
+package to parse and verify JWTs.
+
+```shell
+npm install express jose
+```
+
+The example assumes usage of a single HTTP endpoint for all event types but you could just as well configure
+multiple webhooks and use multiple HTTP endpoints.
+
+```javascript
+// These are the dependencies you should have installed for
+// this example.
+const express = require('express');
+const { createRemoteJWKSet, jwtVerify } = require('jose');
+
+const app = express();
+
+// Middleware for parsing requests with a JSON payload.
+app.use(express.json());
+
+// Step 1: This defines a POST endpoint at the `/webhook` path.
+// This path should match the path portion of the URL that you
+// specified for the callback URL when you created the webhook.
+// Once you edit a webhook by updating the callback URL of your
+// webhook, you should change this to match the path portion of
+// the updated URL for your webhook.
+app.post('/webhook', async (req, res) => {
+    // Step 2: Extract the event and token from the request body.
+    // You could use the event type to branch and apply
+    // logic/code for specific event types.
+    // This example assumes one endpoint for all event types so
+    // extracting the `event` property may lead to an unused
+    // variable.
+    const { event, token } = req.body;
+
+    try {
+        // This would likely come from your environment/config.
+        // You can always find your tenant ID on the dashboard
+        // for your project in the Hanko Cloud Console.
+        const tenantId = 'your-tenant-id';
+
+        // See also the API reference:
+        // http://docs.hanko.io/api-reference/public/well-known/get-json-web-key-set
+        const jwksUrl = `https://${tenantId}.hanko.io/.well-known/jwks.json`;
+
+        // Step 3 + 4: Fetch the JWKS of your Hanko tenant, verify
+        // the token signature using the JWKS and extract the
+        // payload.
+        const jwks = createRemoteJWKSet(new URL(jwksUrl));
+        const { payload } = await jwtVerify(token, jwks);
+
+        console.log('Decoded token payload:', payload);
+
+        // Step 6: Do further processing according to your
+        // application's needs.
+
+    } catch (error) {
+        console.error('Error processing the token:', error.message);
+    }
+
+    //  Your endpoint should respond with a 2XX response within 30 seconds
+    //  of receiving a webhook delivery to indicate that the delivery was
+    //  successfully received. If your server takes longer than that to
+    //  respond, then Hanko terminates the connection and considers the
+    //  delivery a failure.
+    res.sendStatus(202);
+});
+
+// Start the Express server
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+```
+</Accordion>
 
 <Warning>
     Your server **must** return the complete certificate chain otherwise the request will fail.
 </Warning>
 
+## Editing/removing webhooks
+
+You can edit or remove configured webhooks. To do so:
+
+<Steps>
+    <Step title={`Access your project's webhook settings`}>
+        Log in to [Hanko Cloud](https://cloud.hanko.io), select your organization and project and navigate to
+        `Settings > Webhooks`.
+    </Step>
+    <Step title={"Edit/delete a webhook"}>
+        Locate the desired webhook and click on the three dots (`...`). Select `Edit` to change either the callback URL
+        of the webhook or the events to subscribe to. Select `Delete` to remove the webhook entirely.
+    </Step>
+</Steps>
+
 ## Events
-When a webhook is triggered it will send you a **JSON** body which contains the event and a jwt.
-The JWT contains 2 custom claims:
 
-* **data**: contains the whole object for which the change was made. (e.g.: the whole user object when an email or user is changed/created/deleted)
-* **evt**: the event for which the webhook was triggered
+There are different types of events you can subscribe to. The event type determines the contents of the event payload
+(i.e. the body content of the request to your callback URL in response to an event occurrence).
 
-A typical webhook event looks like:
+### Event payload
 
-```json
-{
-  "token": "the-jwt-token-which-contains-the-data",
-  "event": "name of the event"
-}
-```
+The structure of the event payload is the same across all event types. It contains the event type and the event data in the form of a JSON Web
+Token (JWT).
 
-## Event Types
+<AccordionGroup>
+    <Accordion title={"Event payload example"}>
+        ```json user.create
+        {
+            "token": "eyJhbGciOiJSUzI1NiIsImtpZCI6...",
+            "event": "user.create"
+        }
+        ```
+    </Accordion>
+    <Accordion title={"Event payload properties"}>
+        <ResponseField name="token" type="string">
+            The JWT that contains the actual webhook event data. It is a JSON Web Signature (JWS). Webhook recipients
+            should verify the signature to ensure that the webhook deliveries were sent by Hanko and have not been
+            tampered with.
+        </ResponseField>
 
-Hanko sends webhooks for the following event types:
+        <ResponseField name="event" type="boolean">
+            The event that triggered this webhook
+        </ResponseField>
+    </Accordion>
+</AccordionGroup>
 
-| Event                     | Triggers on                                                                                        |
-|---------------------------|----------------------------------------------------------------------------------------------------|
-| user                      | user creation, user deletion, user update, email creation, email deletion, change of primary email |
-| user.create               | user creation                                                                                      |
-| user.delete               | user deletion                                                                                      |
-| user.update               | user update, email creation, email deletion, change of primary email                               |
-| user.update.email         | email creation, email deletion, change of primary email                                            |
-| user.update.email.create  | email creation                                                                                     |
-| user.update.email.delete  | email deletion                                                                                     |
-| user.update.email.primary | change of primary email                                                                            |
-| email.send                | an email was send                                                                                  |
+### Event types and token payloads
 
-As you can see, events can have subevents. You are able to filter which events you want to receive by either selecting
-a parent event when you want to receive all subevents or selecting specific subevents.
+Events are structured hierarchically with some events subsuming the occurrence of multiple ("sub")-events. These
+types of events do not actually appear as the value for the `event` property in the webhook event payload. Subscribing
+to these types of events when creating a webhook is a convenient way to group certain event types and allows you to
+structure your callback endpoints around these groups.
 
-## Restrictions
+A webhook's event data is encoded as a JWT in the webhook's callback request body. You need to parse the token
+to access the token's payload which contains the actual event data (see
+[Handling webhook deliveries](#handling-webhook-deliveries) for an example).
 
-Due to security concerns there are some usage restrictions for webhooks in place:
+#### user
 
-* A webhook will be disabled after 30 days without usage. In this scenario usage describes the successful triggering of events
-<Note>This mechanism can be disabled by setting `webhooks.allow_time_expiration` to `false`</Note>
+Subscribing to this event implies subscription to the following events:
+[`user.create`](#user-create),
+[`user.delete`](#user-delete),
+[`user.udpate.email.create`](#user-update-email-create),
+[`user.update.email.delete`](#user-update-email-delete),
+[`user.update.email.primary`](#user-update-email-primary),
+[`user.update.username.create`](#user-update-username-create),
+[`user.update.username.delete`](#user-update-username-delete),
+[`user.update.username.update`](#user-update-username-update)
 
-* A webhook will also be disabled when our trigger mechanism is not successful. The mechanism will try 5 attempts of sending events before disabling a webhook. A trigger is unsuccessful when:
-  * your callback URL is not reachable due to network errors or a wrong url
-  * your webhook endpoint returns HTTP Status codes >= 400
+#### user.create
 
-The restrictions are not available for webhooks defined in the config file.
+This event is triggered when a new user is created.
 
-## Data
+<AccordionGroup>
+    <Accordion title={"'user.create' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.create' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
 
-When a webhook is triggered it will send you a **JSON** body which contains the event and a jwt.
-The JWT contains 2 custom claims:
-* **data**: contains the whole object for which the change was made. (e.g.: the whole user object when an email or user is changed/created/deleted)
-* **evt**: the event for which the webhook was triggered
+#### user.delete
+
+This event is triggered when a user is deleted.
+
+<AccordionGroup>
+    <Accordion title={"'user.delete' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.delete' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### user.update
+
+Subscribing to this event implies subscription to the following events:
+[`user.udpate.email.create`](#user-update-email-create),
+[`user.update.email.delete`](#user-update-email-delete),
+[`user.update.email.primary`](#user-update-email-primary),
+[`user.update.username.create`](#user-update-username-create),
+[`user.update.username.delete`](#user-update-username-delete),
+[`user.update.username.update`](#user-update-username-update)
+
+
+#### user.update.email
+
+Subscribing to this event implies subscription to the following events:
+[`user.udpate.email.create`](#user-update-email-create),
+[`user.update.email.delete`](#user-update-email-delete),
+[`user.update.email.primary`](#user-update-email-primary)
+
+#### user.update.email.create
+
+This event is triggered when an email is created for a user.
+
+<AccordionGroup>
+    <Accordion title={"'user.update.email.create' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.update.email.create' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### user.update.email.delete
+
+This event is triggered when a user's email is deleted.
+
+<AccordionGroup>
+    <Accordion title={"'user.update.email.delete' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.update.email.delete' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+
+#### user.update.email.primary
+
+This event is triggered when a user's email is set as the primary email.
+
+<AccordionGroup>
+    <Accordion title={"'user.update.email.primary' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.update.email.primary' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### user.update.username
+
+Subscribing to this event implies subscription to the following events:
+[`user.update.username.create`](#user-update-username-create),
+[`user.update.username.delete`](#user-update-username-delete),
+[`user.update.username.update`](#user-update-username-update)
+
+#### user.update.username.create
+
+This event is triggered when a username is created for a user.
+
+<AccordionGroup>
+    <Accordion title={"'user.update.username.create' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.update.username.create' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+
+#### user.update.username.delete
+
+This event is triggered when a user's username is deleted.
+
+<AccordionGroup>
+    <Accordion title={"'user.update.username.delete' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.update.username.delete' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### user.update.username.update
+
+This event is triggered when a user's username is updated.
+
+<AccordionGroup>
+    <Accordion title={"'user.update.username.update' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.update.username.update' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### email.send
+
+This event is triggered when an email is sent. Subscribe to this event if you want
+to send customized emails instead of emails based on built-in templates.
+See [Custom Emails](/guides/custom-emails/email-delivery) for more information.
+
+<AccordionGroup>
+    <Accordion title={"'email.send' token payload example"}>
+        <WebhookEmailSendExample/>
+    </Accordion>
+    <Accordion title={"'email.send' token payload properties"}>
+        <WebhookEmailSendProperties/>
+    </Accordion>
+</AccordionGroup>
+
+
