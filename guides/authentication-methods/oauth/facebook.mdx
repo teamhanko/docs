@@ -202,7 +202,7 @@ the web component.
 
 ## Frontend integration
 
-To enable a login with LinkedIn in your frontend application we recommend using either our pre-built UI as
+To enable a login with Facebook in your frontend application we recommend using either our pre-built UI as
 provided by the [`@teamhanko/hanko-elements`](https://www.npmjs.com/package/@teamhanko/hanko-elements) package or building a custom UI using
 the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk).
 
@@ -211,7 +211,7 @@ the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/h
     <Tab title="Hanko Elements">
         We recommend following one of our [quickstart guides](https://docs.hanko.io/quickstarts) to integrate
         the `<hanko-auth>` component from our `@teamhanko/hanko-elements` package in your frontend application .
-        On successful integration, the component will display a button for signing in with `LinkedIn` in the login view
+        On successful integration, the component will display a button for signing in with `Facebook` in the login view
         of the component.
 
         <Note>
@@ -227,7 +227,7 @@ the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/h
     <Tab title="Hanko Frontend SDK">
         When building your own UI, you can use the `@teamhanko/hanko-frontend-sdk` to initialize third party sign in.
         Create a [`Hanko` client](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/Client.html) instance and call  the
-        `thirdParty.auth` method with `linkedin` as your provider and the target URL in your app you want to redirect
+        `thirdParty.auth` method with `facebook` as your provider and the target URL in your app you want to redirect
         to after authentication.
 
         ```js
@@ -237,11 +237,11 @@ the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/h
         // in the Hanko Cloud Console
         const hanko = new Hanko("<your_hanko_api_url>");
 
-        async function signInWithLinkedIn() {
+        async function signInWithFacebook() {
             try {
                 // the redirect url argument must be one of the allowed redirect URLs
                 // configured in the previous step.
-                await hanko.thirdParty.auth("linkedin", "<your_redirect_url>");
+                await hanko.thirdParty.auth("facebook", "<your_redirect_url>");
             } catch (error) {
                 // handle error
             }
