@@ -26,30 +26,28 @@
         <ResponseField name="language" type="string">
             The preferred language for the email content.
         </ResponseField>
-        <ResponseField name="type" type="string">
-            The type of the email being sent (e.g. `passcode`).
+        <ResponseField name="type" type="enum<string>">
+            The type of the email being sent.
+
+            Available options: `login`, `email_login_attempted`, `email_registration_attempted`, `email_verification`,
+            `recovery`
         </ResponseField>
         <ResponseField name="data" type="object">
-            Additional data specific to the email type.
-            <Tabs>
-                <Tab title={"passcode"}>
-                    <Expandable>
-                        <ResponseField name="service_name" type="string">
-                            The name of the service set in the console as the project name
-                        </ResponseField>
-                        <ResponseField name="otp_code" type="string">
-                            The passcode the user can use to log in
-                        </ResponseField>
-                        <ResponseField name="ttl" type="number">
-                            The validity duration of the passcode in seconds
-                        </ResponseField>
-                        <ResponseField name="valid_until" type="number">
-                            The Unix timestamp indicating when the passcode expires
-                        </ResponseField>
-                    </Expandable>
-                </Tab>
-            </Tabs>
-
+            Additional data.
+                <Expandable>
+                    <ResponseField name="service_name" type="string">
+                        The name of the service set in the console as the project name
+                    </ResponseField>
+                    <ResponseField name="otp_code" type="string">
+                        The passcode the user can use to log in
+                    </ResponseField>
+                    <ResponseField name="ttl" type="number">
+                        The validity duration of the passcode in seconds
+                    </ResponseField>
+                    <ResponseField name="valid_until" type="number">
+                        The Unix timestamp indicating when the passcode expires
+                    </ResponseField>
+                </Expandable>
         </ResponseField>
     </Expandable>
 </ResponseField>
