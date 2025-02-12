@@ -1138,6 +1138,7 @@ components:
           type: string
           enum:
             - user
+            - user.login
             - user.create
             - user.delete
             - user.update
@@ -1145,6 +1146,7 @@ components:
             - user.update.email.create
             - user.update.email.delete
             - user.update.email.primary
+            - user.update.password.update
     DatabaseWebhook:
       type: object
       title: DatabaseWebhook
@@ -1189,6 +1191,7 @@ components:
             type: string
             enum:
               - user
+              - user.login
               - user.create
               - user.delete
               - user.update
@@ -1196,6 +1199,7 @@ components:
               - user.update.email.create
               - user.update.email.delete
               - user.update.email.primary
+              - user.update.password.update
       required:
         - callback
         - events
