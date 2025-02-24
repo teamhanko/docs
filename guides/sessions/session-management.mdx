@@ -176,7 +176,8 @@ dot (`.`). The JWT payload contains the claims about a user.
   "exp": 17123108000,
   "iat": 1712307200,
   "session_id": "140f3967-ab87-4caa-80bd-603ac59c545f",
-  "sub": "9930ac89-1584-488c-bd63-1607f03ab1e8"
+  "sub": "9930ac89-1584-488c-bd63-1607f03ab1e8",
+  "username": "johndoe"
 }
 ```
 
@@ -215,5 +216,9 @@ dot (`.`). The JWT payload contains the claims about a user.
 
 <ResponseField name="sub" type="integer">
     The ID of the user.
+</ResponseField>
+
+<ResponseField name="username" type="string">
+    The username of the user (if set).
 </ResponseField>
 
