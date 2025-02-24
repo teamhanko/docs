@@ -233,9 +233,11 @@ to access the token's payload which contains the actual event data (see
 Subscribing to this event implies subscription to the following events:
 [`user.create`](#user-create),
 [`user.delete`](#user-delete),
+[`user.login`](#user-login),
 [`user.udpate.email.create`](#user-update-email-create),
 [`user.update.email.delete`](#user-update-email-delete),
 [`user.update.email.primary`](#user-update-email-primary),
+[`user.update.password.update`](#user-update-password-update)
 [`user.update.username.create`](#user-update-username-create),
 [`user.update.username.delete`](#user-update-username-delete),
 [`user.update.username.update`](#user-update-username-update)
@@ -266,12 +268,27 @@ This event is triggered when a user is deleted.
     </Accordion>
 </AccordionGroup>
 
+#### user.login
+
+This event is triggered when a user logs in.
+
+<AccordionGroup>
+    <Accordion title={"'user.login' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.login' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+
 #### user.update
 
 Subscribing to this event implies subscription to the following events:
 [`user.udpate.email.create`](#user-update-email-create),
 [`user.update.email.delete`](#user-update-email-delete),
 [`user.update.email.primary`](#user-update-email-primary),
+[`user.update.password.update`](#user-update-password-update)
 [`user.update.username.create`](#user-update-username-create),
 [`user.update.username.delete`](#user-update-username-delete),
 [`user.update.username.update`](#user-update-username-update)
@@ -323,6 +340,20 @@ This event is triggered when a user's email is set as the primary email.
         <WebhookUserPayloadProperties/>
     </Accordion>
 </AccordionGroup>
+
+#### user.update.password.update
+
+This event is triggered when a user updates their password through the profile.
+
+<AccordionGroup>
+    <Accordion title={"'user.update.password.update' token payload example"}>
+        <WebhookUserPayloadExample/>
+    </Accordion>
+    <Accordion title={"'user.update.password.update' token payload properties"}>
+        <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
 
 #### user.update.username
 

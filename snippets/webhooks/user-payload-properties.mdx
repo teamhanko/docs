@@ -1,10 +1,102 @@
 <ResponseField name="aud" type="string[]">
     The recipients the token is intended for
 </ResponseField>
-        <ResponseField name="data" type="object">
+<ResponseField name="data" type="object">
     <Expandable>
         <ResponseField name="id" type="string">
             The ID of the user
+        </ResponseField>
+        <ResponseField name="created_at" type="string">
+            Time of creation of the user
+        </ResponseField>
+        <ResponseField name="emails" type="object[]">
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    The ID of the email
+                </ResponseField>
+                <ResponseField name="address" type="string">
+                    The actual email address
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    Time of creation of the email
+                </ResponseField>
+                <ResponseField name="is_primary" type="boolean">
+                    Indicates whether this is the primary email
+                </ResponseField>
+                <ResponseField name="is_verified" type="boolean">
+                    Indicates whether this email is verified
+                </ResponseField>
+                <ResponseField name="updated_at" type="string">
+                    Time of last update of the email
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
+        <ResponseField name="identities" type="object[]">
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    The ID of the identity
+                </ResponseField>
+                <ResponseField name="provider_id" type="string">
+                    The ID of the user at the third party provider
+                </ResponseField>
+                <ResponseField name="provider_name" type="string">
+                    The name of the third party provider
+                </ResponseField>
+                <ResponseField name="email_id" type="string">
+                    The ID of the email the identity is related to
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    Time of creation of the identity
+                </ResponseField>
+                <ResponseField name="updated_at" type="string">
+                    Time of last update of the identity
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
+        <ResponseField name="otp" type="object">
+            MFA OTP credential of the user
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    ID of the OTP credential
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    Time of creation of the OTP credential
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
+        <ResponseField name="password" type="object">
+            Representation of the password credential of the user
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    The ID of the password credential
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    Time of creation of the password credential
+                </ResponseField>
+                <ResponseField name="updated_at" type="string">
+                    Time of last update of the password credential
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
+        <ResponseField name="updated_at" type="string">
+            Time of last update of the user
+        </ResponseField>
+        <ResponseField name="username" type="object">
+            The username of the user
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    The ID of the username
+                </ResponseField>
+                <ResponseField name="username" type="string">
+                    The actual username of the user
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    Time of creation of the username
+                </ResponseField>
+                <ResponseField name="updated_at" type="string">
+                    Time of last update of the username
+                </ResponseField>
+            </Expandable>
         </ResponseField>
         <ResponseField name="webauthn_credentials" type="object">
             Registered WebAuthn credentials (passkeys and security keys) of the user
@@ -41,76 +133,6 @@
                 <ResponseField name="mfa_only" type="string">
                     Indicates whether this is an MFA credential (security key) or a first factor credential
                     (passkey)
-                </ResponseField>
-            </Expandable>
-        </ResponseField>
-        <ResponseField name="username" type="object">
-            The username of the user
-            <Expandable>
-                <ResponseField name="id" type="string">
-                    The ID of the username
-                </ResponseField>
-                <ResponseField name="username" type="string">
-                    The actual username of the user
-                </ResponseField>
-                <ResponseField name="created_at" type="string">
-                    Time of creation of the username
-                </ResponseField>
-                <ResponseField name="updated_at" type="string">
-                    Time of last update of the username
-                </ResponseField>
-            </Expandable>
-        </ResponseField>
-        <ResponseField name="created_at" type="string">
-            Time of creation of the user
-        </ResponseField>
-        <ResponseField name="updated_at" type="string">
-            Time of last update of the user
-        </ResponseField>
-        <ResponseField name="password" type="object">
-            Representation of the password credential of the user
-            <Expandable>
-                <ResponseField name="id" type="string">
-                    The ID of the password credential
-                </ResponseField>
-                <ResponseField name="created_at" type="string">
-                    Time of creation of the password credential
-                </ResponseField>
-                <ResponseField name="updated_at" type="string">
-                    Time of last update of the password credential
-                </ResponseField>
-            </Expandable>
-        </ResponseField>
-        <ResponseField name="identities" type="object[]">
-            <Expandable>
-                <ResponseField name="id" type="string">
-                    The ID of the identity
-                </ResponseField>
-                <ResponseField name="provider_id" type="string">
-                    The ID of the user at the third party provider
-                </ResponseField>
-                <ResponseField name="provider_name" type="string">
-                    The name of the third party provider
-                </ResponseField>
-                <ResponseField name="email_id" type="string">
-                    The ID of the email the identity is related to
-                </ResponseField>
-                <ResponseField name="created_at" type="string">
-                    Time of creation of the identity
-                </ResponseField>
-                <ResponseField name="updated_at" type="string">
-                    Time of last update of the identity
-                </ResponseField>
-            </Expandable>
-        </ResponseField>
-        <ResponseField name="otp" type="object">
-            MFA OTP credential of the user
-            <Expandable>
-                <ResponseField name="id" type="string">
-                    ID of the OTP credential
-                </ResponseField>
-                <ResponseField name="created_at" type="string">
-                    Time of creation of the OTP credential
                 </ResponseField>
             </Expandable>
         </ResponseField>
