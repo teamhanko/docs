@@ -71,6 +71,21 @@
                 "group": "Authentication Methods",
                 "pages": [
                   {
+                    "group": "Enterprise Connections",
+                    "pages": [
+                      "guides/authentication-methods/saml/introduction",
+                      {
+                        "group": "SAML Providers",
+                        "pages": [
+                          "guides/authentication-methods/saml/auth0",
+                          "guides/authentication-methods/saml/google",
+                          "guides/authentication-methods/saml/entra",
+                          "guides/authentication-methods/saml/okta"
+                        ]
+                      }
+                    ]
+                  },
+                  {
                     "group": "OAuth Providers",
                     "pages": [
                       "guides/authentication-methods/oauth/apple",
@@ -164,7 +179,8 @@
                 "pages": [
                   "api-reference/flow/registration",
                   "api-reference/flow/login",
-                  "api-reference/flow/profile"
+                  "api-reference/flow/profile",
+                  "api-reference/flow/token-exchange"
                 ]
               },
               {
@@ -237,6 +253,14 @@
                   "api-reference/public/email-management/add-a-new-email-address-to-the-current-user",
                   "api-reference/public/email-management/marks-the-email-address-as-primary-email",
                   "api-reference/public/email-management/delete-an-email-address"
+                ]
+              },
+              {
+                "group": "SAML",
+                "pages": [
+                  "api-reference/public/saml/get-a-saml-provider",
+                  "api-reference/public/saml/get-saml-metadata",
+                  "api-reference/public/saml/saml-identity-provider-callback"
                 ]
               },
               {
