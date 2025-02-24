@@ -46,6 +46,20 @@
         </ResponseField>
         <ResponseField name="username" type="object">
             The username of the user
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    The ID of the username
+                </ResponseField>
+                <ResponseField name="username" type="string">
+                    The actual username of the user
+                </ResponseField>
+                <ResponseField name="created_at" type="string">
+                    Time of creation of the username
+                </ResponseField>
+                <ResponseField name="updated_at" type="string">
+                    Time of last update of the username
+                </ResponseField>
+            </Expandable>
         </ResponseField>
         <ResponseField name="created_at" type="string">
             Time of creation of the user
@@ -102,7 +116,7 @@
         </ResponseField>
     </Expandable>
 </ResponseField>
-    <ResponseField name="evt" type="boolean">
+    <ResponseField name="evt" type="string">
         The event that triggered the webhook containing this data
     </ResponseField>
     <ResponseField name="exp" type="number">
