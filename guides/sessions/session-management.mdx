@@ -26,21 +26,24 @@ Subsequent requests to protected API endpoints must then provide the session tok
 or alternatively in an `Authorization` header with the `Bearer` scheme (i.e. `Authorization: Bearer <JWT>`).
 
 Upon session creation, a unique identifier is generated and stored in the database, linked to the corresponding user.
-This identifier is also included in the session JWT under the session_id claim. For subsequent requests, the Hanko API
-validates the JWT signature and uses the session_id to query the database for an active session match. This enables
+This identifier is also included in the session JWT under the `session_id` claim. For subsequent requests, the API
+validates the JWT signature and uses the `session_id` to query the database for an active session match. This enables
 remote session revocation. As a result, if a user is logged in on one device but has multiple active sessions across
-other devices, the API’s [Profile](https://docs.hanko.io/api-reference/flow/profile) flow facilitates the listing and
+other devices, the API’s [Profile](/api-reference/flow/profile) flow facilitates the listing and
 explicit termination of sessions on those devices. This functionality is also accessible through the UI via the Hanko
-Elements’ [Profile Component](https://docs.hanko.io/guides/hanko-elements/profile-component).
+Elements’ [Profile Component](/guides/hanko-elements/profile-component).
 
 ## Session validation
 
-To manually validate a session you can use the API's  `sessions/validate` [endpoint](https://docs.hanko.io/api-reference/public/session-management/validate-a-session-1). You need to provide the
-session token in the request body. The endpoint validates the token's
+To manually validate a session you can use the API's  `sessions/validate` [endpoint](/api-reference/public/session-management/validate-a-session-1).
+You need to provide the session token in the request body. The endpoint validates the token's
 expiry and signature and ensures that the encoded `session_id` matches a persisted session.
 
 The session endpoint returns an object that contains information about the validity of a session, the
 session token's expiry as well as claims about the user the session is associated with.
+
+You can also use the Hanko Frontend SDK to check for session validity. See
+[Using the Frontend SDK](/guides/hanko-elements/using-frontend-sdk#sessions) for details.
 
 ## Session termination
 
@@ -78,6 +81,83 @@ To configure the allowed amount of concurrent sessions:
 2. Navigate to `Settings > Session`.
 3. Under `Session limit`, enter the desired amount and click `Save`.
 
+### Limiting cookie retention period
+
+You can configure the retention period of session cookies. Possible configurations are:
+
+- **Persistent** (default): This type sets the `Max-Age` attribute of the cookie to the specified
+[session duration](#limiting-session-duration) (in seconds). The cookie will be automatically deleted from the browser
+once the specified expiry time has been reached.
+- **Session**: This type sets the `Max-Age` attribute of the cookie to 0, resulting in the cookie being deleted from the
+browser when the browser tab or window is closed.
+- **Prompt**: If you use [Hanko Elements](/guides/hanko-elements/introduction) (+1.3) then selecting this type results
+in Hanko Elements displaying a `Stay signed in` checkbox on the login form which allows users to determine the cookie
+retention period: if the checkbox is checked, the cookie will be a `Persistent` cookie, if it is unchecked the
+cookie will be a `Session` cookie.
+
+To configure the cookie retention period:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Under `Stay signed in (cookie type)`, select the desired type and click `Save`.
+
+## Session self-service
+
+There are a number of configurations options for your tenant that provide control over how users manage their session
+through the profile.
+
+### Allowing session revocation
+
+You can control whether the `Profile` flow permits revocation of sessions (via dedicated `session_delete` action).
+If you use [Hanko Elements](/guides/hanko-elements/introduction) (+1.3) then the
+[Profile component](guides/hanko-elements/profile-component) provides interface elements that  allow users to revoke
+active sessions (except the than the one currently in use).
+
+To control self-service session revocation behaviour:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Use the `Allow session revocation` toggle to allow or disallow end-user session revocation via profile.
+
+### Showing sessions on profile
+
+You can control whether information about active sessions is returned in the `Profile` flow.
+If you use [Hanko Elements](/guides/hanko-elements/introduction) (+1.3) then information about active sessions is
+displayed in the [Profile component](guides/hanko-elements/profile-component).
+
+To control whether information about active sessions is returned from the `Profile` flow (and shown in Hanko Elements):
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Use the `Show sessions on profile` toggle to include information about active sessions in the profil API response
+(and the [Hanko Elements profile component](guides/hanko-elements/profile-component)).
+
+## Session metadata retention
+
+You can control whether active session metadata is persisted with a session and returned from session validation
+[endpoints](/api-reference/public/session-management/validate-a-session). This metadata currently includes the IP
+address and the user agent used to establish a session.
+
+To control the type of metadata retained with a session:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. You can configure the following options:
+     -  Use the `Acquire IP address` toggle to include information about the IP (IPv4/IPv6) address used to establish
+        the session.
+     -  Use the `Acquire user agent` toggle to include information about the user agent used to establish the session.
+
+## Session callbacks
+
+You can hook into the session lifecycle by using the Hanko Frontend SDKs central client. See
+[Using the Frontend SDK](/guides/hanko-elements/using-frontend-sdk#events) for details.
+
+## Administrative session management
+
+The [Admin API](/api-reference/admin/introduction#learn-how-to-use-the-hanko-admin-api) allows administrators to
+[create sessions](/api-reference/admin/session-management/create-session),
+[list active sessions](/api-reference/admin/session-management/list-sessions) and
+[delete sessions](/api-reference/admin/session-management/delete-session) for a specific user.
 
 ## Session JWT structure
 
