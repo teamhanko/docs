@@ -32,17 +32,19 @@ A typical webhook event looks like:
 
 Hanko sends webhooks for the following event types:
 
-| Event                     | Triggers on                                                                                        |
-|---------------------------|----------------------------------------------------------------------------------------------------|
-| user                      | user creation, user deletion, user update, email creation, email deletion, change of primary email |
-| user.create               | user creation                                                                                      |
-| user.delete               | user deletion                                                                                      |
-| user.update               | user update, email creation, email deletion, change of primary email                               |
-| user.update.email         | email creation, email deletion, change of primary email                                            |
-| user.update.email.create  | email creation                                                                                     |
-| user.update.email.delete  | email deletion                                                                                     |
-| user.update.email.primary | change of primary email                                                                            |
-| email.send                | an email was send                                                                                  |
+| Event                       | Triggers on                                                                                                                        |
+|-----------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| user                        | user login, user creation, user deletion, user update, email creation, email deletion, change of primary email, change of password |
+| user.login                  | user login                                                                                                                         |
+| user.create                 | user creation                                                                                                                      |
+| user.delete                 | user deletion                                                                                                                      |
+| user.update                 | user update, email creation, email deletion, change of primary email                                                               |
+| user.update.email           | email creation, email deletion, change of primary email                                                                            |
+| user.update.email.create    | email creation                                                                                                                     |
+| user.update.email.delete    | email deletion                                                                                                                     |
+| user.update.email.primary   | change of primary email                                                                                                            |
+| user.update.password.update | change of password                                                                                                                 |
+| email.send                  | an email was send                                                                                                                  |
 
 As you can see, events can have subevents. You are able to filter which events you want to receive by either selecting
 a parent event when you want to receive all subevents or selecting specific subevents.
