@@ -591,6 +591,10 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/ValidateSessionResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: '#/components/responses/InternalServerError'
     post:
       tags:
         - Session Management
@@ -612,6 +616,8 @@ paths:
           $ref: "#/components/responses/ValidateSessionResponse"
         400:
           $ref: "#/components/responses/BadRequest"
+        500:
+          $ref: '#/components/responses/InternalServerError'
   /thirdparty/auth:
     get:
       summary: 'Initialize third party login'
@@ -1049,10 +1055,14 @@ components:
                 description: Date-time indicating the expiration of the session
                 type: string
                 format: date-time
+                deprecated: true
               user_id:
                 description: The ID of the user the session is associated with
                 type: string
                 format: uuid4
+                deprecated: true
+              claims:
+                $ref: '#/components/schemas/JWTClaims'
             required:
               - isValid
     BadRequest:
@@ -1508,6 +1518,40 @@ components:
           description: "The ID of the newly created email address"
           allOf:
             - $ref: '#/components/schemas/UUID4'
+    JWTClaims:
+      type: object
+      description: "The claims extracted from a JWT."
+      properties:
+        subject:
+          description: "The unique identifier of the token's subject."
+          allOf:
+            - $ref: '#/components/schemas/UUID4'
+        issued_at:
+          description: "The timestamp indicating when the token was issued."
+          type: string
+          format: date-time
+        expiration:
+          description: "The timestamp indicating when the token will expire."
+          type: string
+          format: date-time
+        audience:
+          description: "The intended audience of the token."
+          type: string
+        issuer:
+          description: "The entity that issued the token."
+          type: string
+        email:
+          description: "The email address associated with the token's subject, if available."
+          type: string
+          format: email
+        session_id:
+          description: "The unique identifier for the session associated with this token."
+          allOf:
+            - $ref: '#/components/schemas/UUID4'
+      required:
+        - subject
+        - expiration
+        - session_id
     User:
       type: object
       properties:
