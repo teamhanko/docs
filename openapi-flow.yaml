@@ -7,8 +7,8 @@ servers:
   - url: "https://{tenant_id}.hanko.io"
     variables:
       tenant_id:
-        default: "default"
-        description: "Tenant ID to be provided by the user"
+        default: "<replace-with-your-tenant-id>"
+        description: "The (UU)ID of a tenant. Replace the default value with your tenant ID."
 paths:
   /registration:
     post:
