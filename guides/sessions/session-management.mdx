@@ -108,10 +108,11 @@ through the profile.
 
 ### Allowing session revocation
 
-You can control whether the `Profile` flow permits revocation of sessions (via dedicated `session_delete` action).
-If you use [Hanko Elements](/guides/hanko-elements/introduction) (+1.3) then the
-[Profile component](guides/hanko-elements/profile-component) provides interface elements that  allow users to revoke
-active sessions (except the than the one currently in use).
+You can configure whether the [Profile](https://docs.hanko.io/api-reference/flow/profile) flow permits session
+revocation via the dedicated `session_delete` action. If you are using
+[Hanko Elements](/guides/hanko-elements/introduction) version 1.3 or later, the Profile component provides interface
+elements that allow users to revoke active sessions, excluding the session currently in use.
+This session can be revoked manually through a [manual logout](#explicit-user-logout).
 
 To control self-service session revocation behaviour:
 
