@@ -1138,6 +1138,7 @@ components:
           type: string
           enum:
             - user
+            - user.login
             - user.create
             - user.delete
             - user.update
@@ -1194,6 +1195,7 @@ components:
             type: string
             enum:
               - user
+              - user.login
               - user.create
               - user.delete
               - user.update
