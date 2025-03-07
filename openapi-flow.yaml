@@ -1832,7 +1832,7 @@ components:
       type: object
       properties:
         user:
-          $ref: "#/components/schemas/ProfileData"
+          $ref: "#/components/schemas/ProfileDataUser"
     PayloadRequestOptions:
       type: object
       properties:
@@ -1857,8 +1857,51 @@ components:
           format: uri
       required:
         - redirect_url
-    ProfileData:
-      description: User data
+    ProfileDataSessions:
+      description: List of active sessions for this user.
+      type: array
+      items:
+        type: object
+        properties:
+          created_at:
+            description: Time of creation of the session.
+            type: string
+            format: date-time
+          current:
+            description: Indicates whether this session is the session currently used.
+            type: boolean
+          expires_at:
+            description: Time of expiry of the session.
+            type: string
+            format: date-time
+          id:
+            description: The ID of the session.
+            type: string
+            format: uuid
+          ip_address:
+            oneOf:
+              - description: IPv4 address the session was initialized from.
+                type: string
+                format: ipv4
+              - description: IPv6 address the session was initialized from.
+                type: string
+                format: ipv6
+          last_used:
+            description: Time of last usage of this session.
+            type: string
+            format: date-time
+          user_agent:
+            description: |
+              User agent string consisting of the native platform that the browser is running on (Windows, Mac, 
+              Linux, Android, etc.) and a parenthesised name of the user agent.
+            type: string
+          user_agent_raw:
+            description: |
+              The complete user agent, i.e. the exact value of the `User-Agent` header the API received
+              in the request(s) for establishing the session.
+            type: string
+    ProfileDataUser:
+      description: Data pertaining to the user associated with the current session.
       type: object
       properties:
         user_id:
@@ -1928,7 +1971,7 @@ components:
           type: string
         payload:
           description: |
-            Additional data that can be used by the client (e.g `user` data provided in the
+            Additional data that can be used by the client (e.g. `user` or `sessions` data provided in the
             profile flow) or should/must be used as intermediary data in an out of band process to produce input data 
             for advancing the flow (e.g. the WebAuthn credential request/creation options that must be passed to the 
             Webauthn API to produce an assertion/attestation).
@@ -2230,7 +2273,12 @@ components:
               enum:
                 - "profile_init"
             payload:
-              $ref: "#/components/schemas/PayloadProfileData"
+              allOf:
+                - $ref: "#/components/schemas/PayloadProfileData"
+                - type: object
+                  properties:
+                    sessions:
+                      $ref: "#/components/schemas/ProfileDataSessions"
             status:
               type: integer
               enum:
