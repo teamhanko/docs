@@ -93,6 +93,33 @@ paths:
           $ref: "#/components/responses/FlowResponseTooManyRequestsError"
         500:
           $ref: "#/components/responses/FlowResponseInternalServerError"
+  /token_exchange:
+    post:
+      tags:
+        - flow
+      description: |
+        Initialize or advance a token exchange flow. 
+        
+        This flow is only available if SAML is enabled.
+      summary: Token exchange
+      parameters:
+        - $ref: "#/components/parameters/ActionParam"
+        - $ref: "#/components/parameters/LanguageParam"
+      requestBody:
+        $ref: "#/components/requestBodies/TokenExchangeRequestBody"
+      responses:
+        200:
+          $ref: "#/components/responses/TokenExchangeFlowResponse"
+        400:
+          $ref: "#/components/responses/LoginFlowResponseBadRequestError"
+        401:
+          $ref: "#/components/responses/FlowResponseUnauthorizedError"
+        403:
+          $ref: "#/components/responses/FlowResponseForbiddenError"
+        429:
+          $ref: "#/components/responses/FlowResponseTooManyRequestsError"
+        500:
+          $ref: "#/components/responses/FlowResponseInternalServerError"
 components:
   securitySchemes:
     CookieAuth:
@@ -2589,16 +2616,16 @@ components:
         - $ref: "#/components/schemas/StateDeviceTrust"
         - $ref: "#/components/schemas/StateThirdParty"
         - allOf:
-           - $ref: "#/components/schemas/StateSuccess"
-           - type: object
-             properties:
-               payload:
-                 allOf:
-                   - $ref: "#/components/schemas/PayloadProfileData"
-                   - type: object
-                     properties:
-                       last_login:
-                         $ref: "#/components/schemas/LastLogin"
+            - $ref: "#/components/schemas/StateSuccess"
+            - type: object
+              properties:
+                payload:
+                  allOf:
+                    - $ref: "#/components/schemas/PayloadProfileData"
+                    - type: object
+                      properties:
+                        last_login:
+                          $ref: "#/components/schemas/LastLogin"
       discriminator:
         propertyName: name
         mapping:
@@ -2668,6 +2695,19 @@ components:
           mfa_otp_secret_creation: "#/components/schemas/StateMFAOTPSecretCreation"
           mfa_security_key_creation: "#/components/schemas/StateMFASecurityKeyCreation"
           thirdparty: "#/components/schemas/StateThirdParty"
+          success: "#/components/schemas/StateSuccess"
+    StatesTokenExchange:
+      oneOf:
+        - $ref: "#/components/schemas/StatePasscodeConfirmation"
+        - $ref: "#/components/schemas/StateOnboardingUsername"
+        - $ref: "#/components/schemas/StateThirdParty"
+        - $ref: "#/components/schemas/StateSuccess"
+      discriminator:
+        propertyName: name
+        mapping:
+          thirdparty: "#/components/schemas/StateThirdParty"
+          passcode_confirmation: "#/components/schemas/StatePasscodeConfirmation"
+          onboarding_username: "#/components/schemas/StateOnboardingUsername"
           success: "#/components/schemas/StateSuccess"
     WebauthnCredential:
       type: object
@@ -2805,6 +2845,42 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/StatesProfile"
+    TokenExchangeFlowResponse:
+      description: TokenExchangeFlowResponse
+      headers:
+        X-Auth-Token:
+          description: |
+            Enable via configuration option `session.enable_auth_token_header`
+            for purposes of cross-domain communication between client and Hanko API.
+
+            Only present on the `success` state of the flow.
+          schema:
+            $ref: '#/components/schemas/X-Auth-Token'
+        X-Session-Lifetime:
+          description: |
+            Contains the seconds until the session expires.
+
+            Only present on the `success` state of the flow.
+          schema:
+            $ref: '#/components/schemas/X-Session-Lifetime'
+        X-Session-Retention:
+          description: |
+            Serves as a hint at what type of cookie (session or persistent) should be created.
+
+            Only present on the `success` state of the flow.
+          schema:
+            $ref: '#/components/schemas/X-Session-Retention'
+        Set-Cookie:
+          description: |
+            Value `<JWT>` is a [JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519.html)
+
+            Only present on the `success` state of the flow.
+          schema:
+            $ref: '#/components/schemas/CookieSession'
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/StatesTokenExchange"
     FlowResponseForbiddenError:
       description: FlowResponseForbiddenError
       content:
@@ -3059,6 +3135,22 @@ components:
                   - $ref: "#/components/schemas/InputDataVerifyPasscode"
                   - $ref: "#/components/schemas/InputDataWebauthnCredentialRename"
                   - $ref: "#/components/schemas/InputDataWebauthnVerifyAttestationResponse"
+              csrf_token:
+                $ref: "#/components/schemas/CSRFToken"
+            additionalProperties: false
+    TokenExchangeRequestBody:
+      description: TokenExchangeRequestBody
+      content:
+        application/json:
+          schema:
+            title: Token exchange request body
+            type: object
+            properties:
+              input_data:
+                oneOf:
+                  - $ref: "#/components/schemas/InputDataExchangeToken"
+                  - $ref: "#/components/schemas/InputDataVerifyPasscode"
+                  - $ref: "#/components/schemas/InputDataUsernameSet"
               csrf_token:
                 $ref: "#/components/schemas/CSRFToken"
             additionalProperties: false

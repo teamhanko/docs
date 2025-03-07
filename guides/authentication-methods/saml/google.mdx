@@ -1,0 +1,209 @@
+---
+sidebarTitle: Google
+title: Google
+description: Learn how to set up an Enterprise Connection with Google.
+---
+
+## Prerequisites
+
+You need your project's SAML Assertion Consumer Service (ACS) URL and the Service Provider (SP) Entity ID.
+
+### Service Provider Entity ID
+
+The SP Entity ID for your Hanko project is equal to the API URL of your project.
+
+To find the API URL for your project:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Dashboard`.
+3. Copy and save the `API URL`.
+
+<Frame>
+    <img
+        src="/images/saml/hanko-console-api-url.png"
+        alt="Obtain the API URL from the Hanko Cloud project dashboard"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+### Service Provider ACS URL
+
+To find the Assertion Consumer Service (ACS) URL for your project:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Enterprise connections`.
+3. Under `Enterprise connections` find the `Redirect URL` panel.
+4. Copy and save the URL.
+
+<Frame>
+    <img
+        src="/images/saml/hanko-console-acs-url.png"
+        alt="Obtain the Assertion Consumer Service URL in the Hanko Cloud enterprise settings of a project"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+## Create a Google Workspace application
+
+1. Sign in to the [Google Admin Console](https://admin.google.com).
+2. In the left sidebar select `Apps > Web and mobile apps`.
+3. Toggle the `Add app` dropdown in the main view.
+4. Click `Add custom SAML app`.
+
+<Frame>
+    <img
+        src="/images/saml/google/google-create-custom-saml-app.png"
+        alt="Create a custom SAML app in the Google Admin Console"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+5. Provide a name for your app.
+6. Click `Continue`.
+
+<Frame>
+    <img
+        src="/images/saml/google/google-create-custom-saml-app-basic.png"
+        alt="Create a custom SAML app in the Google Admin Console"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+7. Click `Download Metadata`. You currently need to download the file and host it yourself because Hanko needs access to
+the file using a URL, see [Hosting the SAML XML Metadata file](#hosting-the-saml-xml-metadata-file).
+8. Click `Continue`.
+
+<Frame>
+    <img
+        src="/images/saml/google/google-create-custom-saml-app-idp-details.png"
+        alt="Download SAML IdP Metadata XML for your application"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+8. Under `ACS URL` enter your ACS URL
+(see [Prerequisites - Service Provider ACS URL](#service-provider-acs-url)).
+9. Under `Entity ID` enter you project API URL
+(see [Prerequisites - Service Provider Entity ID](#service-provider-entity-id)).
+10. Click `Continue`.
+
+<Frame>
+    <img
+        src="/images/saml/google/google-create-custom-saml-app-sp-details.png"
+        alt="Provide Service Provider details"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+11. In the `Attributes` panel, click `Add Mapping`.
+
+<Frame>
+    <img
+        src="/images/saml/google/google-create-custom-saml-app-add-mapping.png"
+        alt="Provide Service Provider details"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+12. Provide the following mapping:
+
+| Google Directory Attribute | App attribute                                                        |
+|----------------------------|----------------------------------------------------------------------|
+| `Primary email`            | `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress` |
+
+13. Click `Finish`.
+
+<Frame>
+    <img
+        src="/images/saml/google/google-create-custom-saml-app-add-mapping-email.png"
+        alt="Create an attribute mapping for the email address"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+14. You should be redirected to your app's "dashboard". Click the `User access` panel.
+
+<Frame>
+    <img
+        src="/images/saml/google/google-create-custom-saml-app-user-access.png"
+        alt="Configure user access for your application"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+15. Set the `Service status` to `ON for everyone`.
+16. Click `Save`.
+
+<Frame>
+    <img
+        src="/images/saml/google/google-create-custom-saml-app-user-access-2.png"
+        alt="Configure user access for your application"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+## Hosting the SAML XML Metadata file
+
+Google only allows downloading the SAML metadata XML file but Hanko currently does not support upload of metadata files
+(and IdP certificates) and requires access to the file through a URL. You need host the file on a public web service
+(e.g. AWS S3 bucket, Cloudflare R2, or public website) that can be accessed by Hanko.
+
+## Configure an enterprise connection
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Enterprise connections`.
+3. Under `Connections`, click `New connection`.
+
+<Frame>
+    <img
+        src="/images/saml/hanko-console-new-saml-connection.png"
+        alt="Create a new enterprise connection in the Hanko Cloud project settings"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+4. In the shown modal provide the following data:
+    -  A `Name` for the connection.
+    -  A `Domain` for the connection. When users authenticate via SAML SSO, the domain of the email
+    address provided as an identifier at the start of an authentication flow must match the domain configured here.
+    -  A `Metadata URL`. This is the URL of your [hosted SAML XML Metadata file](#hosting-the-saml-xml-metadata-file).
+    -  Select whether you want skip email verification for this provider.
+5. Click `Save` to create the connection.
+
+<Frame>
+    <img
+        src="/images/saml/hanko-console-new-saml-connection-data.png"
+        alt="Provide name, domain, metadata URL and email verification requirement for a new enterprise connection"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+## Testing your integration
+
+To test your integration via [IdP-initiated](/guides/authentication-methods/saml/introduction#identity-provider-initiated-sso)
+flow:
+
+1. Open one of the Google Workspace applications, e.g. Google Calendar.
+2. Access the user's available applications in the top navigation.
+3. Find your application and click the icon for your application.
+
+<Frame>
+    <img
+        src="/images/saml/google/google-test-idp-initiated.png"
+        alt="Test identity provider initiated login via google workspace app (calendar)"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
