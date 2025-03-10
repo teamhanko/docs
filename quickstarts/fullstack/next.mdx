@@ -15,11 +15,25 @@ description: Learn how to quickly add authentication and user profile in your Ne
 ></iframe>
 </Frame>
 
+## Create a Next.js application
+Run the following command to [create a new Next.js application](https://nextjs.org/docs/app/getting-started/installation):
+
+<Note>
+  During the Next.js setup you could pick between two routers, the [App Router](https://nextjs.org/docs/app) and the [Pages Router](https://nextjs.org/docs/pages).
+  Ensure you add the correct code and follow the correct directory structure for Router that you picked.
+</Note>
+
+<CodeGroup> 
+```bash terminal
+npx create-next-app@latest project-name
+```
+</CodeGroup>
+
+
+
 ## Install `@teamhanko/hanko-elements`
-
-Once you've initialized your Next app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
-
-<CodeGroup>
+Open your Next.js project folder in a terminal and run the following command to install the [hanko-elements](/guides/hanko-elements/introduction): 
+<CodeGroup> 
 ```bash npm
 npm install @teamhanko/hanko-elements
 ```
@@ -37,35 +51,52 @@ yarn add @teamhanko/hanko-elements
 ```
 </CodeGroup>
 
-## Add the Hanko API URL
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your `.env` file.
+## Setup your Hanko project
+Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+
+<Note>
+  During creation make sure to input the URL you will be developing on as the `APP URL`.\
+  (Most likely http://localhost:3000/) \
+ \
+  If you already have a project you can change the URL at:\
+  `'your project' > Settings > URLs > App URL`.
+</Note>
+
+## Add your Hanko API URL
+
+Retrieve your API URL from the [Hanko console](https://cloud.hanko.io/), and paste this in a `.env` file.
 
 ```sh .env.local
 NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 ```
 
 <Note>
-  If you are self-hosting you need to provide the URL of your running Hanko
-  backend.
+  If you are self-hosting you need to provide the URL of your running Hanko backend.
 </Note>
 
-## Add `<hanko-auth>` component
 
-The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the register function from `@teamhanko/hanko-elements` into your Next.js component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, include it in your JSX.
+## Create Hanko components
+Lets create a folder called `components` and create two files, `HankoAuth.tsx` and `HankoProfile.jsx`.
 
-The Hanko client from `@teamhanko/hanko-elements` allows you to subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onSessionCreated` event here triggers when a user successfully logs in. You can use this event to perform any desired action.
+Both of these components use the Hanko client from [@teamhanko/hanko-elements](/guides/hanko-elements/introduction), this allows you subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onSessionCreated` event in the hanko auth triggers when a user successfully logs in. You can use these event to perform any desired action.
+
+### Hanko Auth
+
+Now Lets Setup the `HankoAuth.tsx` file to create a functioning login page.
+
+[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
 <Tabs>
 <Tab title="App directory">
 ```jsx components/HankoAuth.tsx
-"use client";
+"use client"; //Only for NextJS App Router
  
 import { useEffect, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { register, Hanko } from "@teamhanko/hanko-elements";
  
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
  
 export default function HankoAuth() {
   const router = useRouter();
@@ -75,7 +106,8 @@ export default function HankoAuth() {
   useEffect(() => setHanko(new Hanko(hankoApi)), []);
  
   const redirectAfterLogin = useCallback(() => {
-    // successfully logged in, redirect to a page in your application
+    // successfully logged in
+    // change this to the page you wish to be redirected to
     router.replace("/dashboard");
   }, [router]);
  
@@ -90,6 +122,7 @@ export default function HankoAuth() {
   useEffect(() => {
     register(hankoApi).catch((error) => {
       // handle error
+      console.log(error);
     });
   }, []);
  
@@ -103,7 +136,7 @@ import { useEffect, useCallback, useState } from "react";
 import { useRouter } from "next/router";
 import { register, Hanko } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
 
 export default function HankoAuth() {
   const router = useRouter();
@@ -113,7 +146,8 @@ export default function HankoAuth() {
   useEffect(() => setHanko(new Hanko(hankoApi)), []);
 
   const redirectAfterLogin = useCallback(() => {
-    // successfully logged in, redirect to a page in your application
+    // successfully logged in
+    // change this to the page you wish to be redirected to
     router.replace("/dashboard");
   }, [router]);
 
@@ -128,6 +162,7 @@ export default function HankoAuth() {
   useEffect(() => {
     register(hankoApi).catch((error) => {
       // handle error
+      console.log(error)
     });
   }, []);
 
@@ -137,7 +172,8 @@ export default function HankoAuth() {
 </Tab>
 </Tabs>
 
-    Now simply import the component you just created (HankoAuth)
+After you created the `HankoAuth` component, import and add it in any page.\
+Just like this.
 
 <Tabs>
 <Tab title="App directory">
@@ -145,9 +181,9 @@ export default function HankoAuth() {
 import HankoAuth from "@/components/HankoAuth";
 
 export default function LoginPage() {
- return (
-   <HankoAuth />
- );
+  return (
+      <HankoAuth/>
+  );
 }
 ```
 </Tab>
@@ -171,20 +207,23 @@ By now, your sign-up and sign-in features should be working. You should see an i
 <img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500" style={{ borderRadius: '0.5rem' }}/>
 </Frame>
 
+### Hanko profile
 
-## Add `<hanko-profile>` component
+After setting up the HankoAuth lets Setup the `HankoProfile.jsx` file to create a interface where users can.
+manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys` and `Sessions`.
 
-The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
+
 
 <Tabs>
 <Tab title="App directory">
 ```jsx components/HankoProfile.jsx
-"use client"
+"use client" //Only for NextJS App Router
 
 import { useEffect } from "react";
 import { register } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
 
 export default function HankoProfile() {
   useEffect(() => {
@@ -203,7 +242,7 @@ return <hanko-profile />;
 import { useEffect } from "react";
 import { register } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
 
 export default function HankoProfile() {
   useEffect(() => {
@@ -218,7 +257,40 @@ export default function HankoProfile() {
 </Tab>
 </Tabs>
 
-It should look like this 👇
+After you created the `HankoProfile` component, simply import it into any page.\
+In our case we created a dashboard.tsx file to show the HankoProfile as our login page redirects to `/dashboard`.
+
+<Tabs>
+<Tab title="App directory">
+```jsx app/dashboard/page.tsx
+import HankoProfile from "@/components/HankoProfile";
+
+export default function Dashboard() {
+  return (
+    <div>
+      <HankoProfile/>
+    </div>
+  );
+}
+```
+</Tab>
+
+<Tab title="Pages directory">
+```jsx pages/dashboard.tsx
+import HankoProfile from "@/components/HankoProfile";
+
+export default function Dashboard() {
+  return (
+    <div>
+      <HankoProfile/>
+    </div>
+  );
+}
+```
+</Tab>
+</Tabs>
+
+It should look something like this 👇
 
 <Frame>
 <img
@@ -229,21 +301,42 @@ It should look like this 👇
 />
 </Frame>
 
+### JSX setup
+
+To get these elements to work in a build we need to add the element props to te JSX IntrinsicElements.
+You can do this by creating a file called `custom.d.ts` and placing this in your root or src folder
+<Tab>
+```jsx src/custom.d.ts
+  import { HankoAuthElementProps, HankoProfileElementProps } from "@teamhanko/hanko-elements";
+
+  declare module "react" {
+    namespace JSX {
+      interface IntrinsicElements {
+          'hanko-auth': HankoAuthElementProps;
+          'hanko-profile': HankoProfileElementProps;
+      }
+    }
+  }
+```
+</Tab>
+
 
 ## Implement logout functionality
 
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we make a logout button component that you can use anywhere.
+You can use `@teamhanko/hanko-elements` to easily manage user logouts. Here we will make a logout button component that you can use anywhere.
+
+For this QuickStart we will create a file at `components/LogoutButton.tsx` and insert the code below.
 
 <Tabs>
 <Tab title="App directory">
 ```jsx components/LogoutButton.tsx
-"use client";
+"use client"; //Only for NextJS App Router
  
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Hanko } from "@teamhanko/hanko-elements";
  
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
  
 export default function LogoutBtn() {
   const router = useRouter();
@@ -254,7 +347,7 @@ export default function LogoutBtn() {
   const logout = async () => {
     try {
       await hanko?.user.logout();
-      router.push("/login");
+      router.push("/");
       router.refresh();
       return;
     } catch (error) {
@@ -273,7 +366,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Hanko } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
 
 export default function LogoutBtn() {
   const router = useRouter();
@@ -284,7 +377,7 @@ export default function LogoutBtn() {
   const logout = async () => {
     try {
       await hanko?.user.logout();
-      router.push("/login");
+      router.push("/");
       router.reload();
       return;
     } catch (error) {
@@ -305,26 +398,51 @@ You can customize the appearance of `hanko-auth` and `hanko-profile` components 
 
 ## Securing routes with Middleware
 
-To add JWT verification middleware with Hanko in your Next.js application, we're using [jose library](https://www.npmjs.com/package/jose). However, you're free to choose any other suitable library. This middleware will ensure secure access to specific routes, like `/dashboard` here, by checking for valid JWT. Here we define the Hanko API URL, extract and verify the JWT from cookies, and redirect unauthorized users to the login page.
+To add JWT verification middleware with Hanko in your Next.js application, we're using our [session/validate API request](/api-reference/public/session-management/validate-a-session). By checking for a valid JWT this middleware will ensure secure access to specific routes, like `/dashboard` and `/protected` here.\
+In the middleware we define the Hanko API URL, extract and verify the JWT from cookies, and redirect unauthorized users back to the home or login page.
+
+For more info on middleware and where to put the `middleware.ts` file,\
+please refer to [NEXTJS Middleware](https://nextjs.org/docs/app/building-your-application/routing/middleware)
+
+<Note>
+  Middleware tends to not always work after creating it, If this is the case try restarting your next app.
+</Note>
 
 ```jsx middleware.ts
 import { NextResponse, NextRequest } from "next/server";
 
-import { jwtVerify, createRemoteJWKSet } from "jose";
-
 const hankoApiUrl = process.env.NEXT_PUBLIC_HANKO_API_URL;
 
 export async function middleware(req: NextRequest) {
-  const hanko = req.cookies.get("hanko")?.value;
+  const cookieToken = req.cookies.get("hanko")?.value;
 
-  const JWKS = createRemoteJWKSet(
-    new URL(`${hankoApiUrl}/.well-known/jwks.json`)
-  );
+  const validationOptions = {
+    method: 'GET',
+    headers: {
+      'Cookie': `hanko=${cookieToken}` // If using cookie
+      // 'Authorization': `Bearer ${token}` // If using Authorization header
+    }
+  }
 
   try {
-    const verifiedJWT = await jwtVerify(hanko ?? "", JWKS);
-  } catch {
-    return NextResponse.redirect(new URL("/login", req.url));
+    const validationResponse = await fetch(
+      new URL(`${hankoApiUrl}/sessions/validate`),//Hanko session validation
+      validationOptions
+    );
+
+    if (!validationResponse.ok) {
+      throw new Error('Session validation failed');
+    }
+    
+    const responseData = await validationResponse.json();
+
+    if(!responseData.is_valid){
+      throw new Error('JWT is not valid');
+    }
+
+  } catch (error) {
+    console.log(error)
+    return NextResponse.redirect(new URL("/", req.url));// URL to redirect the user to
   }
 }
 
@@ -333,13 +451,15 @@ export const config = {
 };
 ```
 
+To verify that it works, Logout on your app and go to /dashboard, you should get redirected back.
+
 ## Getting User and Session Data
 
 ### Client Side
 
 We will create two custom hooks to fetch the current user's data and session data using `@teamhanko/hanko-elements`. The `useUserData` hook leverages the `hanko.user.getCurrent()` method to retrieve the currently logged-in user's data. 
 
-On the other hand, the `useSessionData` hook uses the `hanko.session.isValid()` and `hanko.session.get()` methods to validate and fetch the current session data.
+On the other hand, the `useSessionData` hook uses the `hanko.sessionClient.isValid()` and `hanko.session.get()` methods to validate and fetch the current session data.
 
 <Tabs>
 <Tab title="useUserData">
@@ -412,26 +532,32 @@ export function useSessionData(): HankoSession {
 
   useEffect(() => {
     if (hanko) {
-      const isValid = hanko.session.isValid();
-      const session = hanko.session.get();
 
-      if (isValid && session) {
-        const { userID, jwt = "" } = session;
-        setSessionState({
-          userID,
-          jwt,
-          isValid,
-          loading: false,
-          error: null,
-        });
-      } else {
-        setSessionState((prevState) => ({
-          ...prevState,
-          isValid: false,
-          loading: false,
-          error: "Invalid session",
-        }));
+      const checkSession = async () => {
+
+        const isValid = await hanko.sessionClient.isValid();
+        const session = hanko.session.get();
+  
+        if (isValid && session) {
+          const { userID, jwt = "" } = session;
+          setSessionState({
+            userID,
+            jwt,
+            isValid,
+            loading: false,
+            error: null,
+          });
+        } else {
+          setSessionState((prevState) => ({
+            ...prevState,
+            isValid: false,
+            loading: false,
+            error: "Invalid session",
+          }));
+        }
       }
+
+      checkSession()
     }
   }, [hanko]);
 
@@ -441,62 +567,84 @@ export function useSessionData(): HankoSession {
 </Tab>
 </Tabs>
 
-This is how you can use them according to your needs.
-
+Lets update the `dashboard` page to show some of the information from the custom hooks.
 
 <Tabs>
 <Tab title="App directory">
-```tsx components/userData.tsx
-"use client"
+```jsx app/dashboard/page.tsx
+"use client" //Only for NextJS App Router
 
-import { useUserData } from "@/hooks/useUserData";
-import { useSessionData } from "@/hooks/useSessionData";
+import HankoProfile from "../components/HankoProfile";
+import LogoutButton from "../components/LogoutButton";
 
-const UserData = () => {
+import { useUserData } from "../hooks/useUserData";
+import { useSessionData } from "../hooks/useSessionData";
+
+export default function Dashboard() {
   const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
   const { userID, jwt, isValid, loading: sessionDataLoading, error: sessionDataError } = useSessionData();
 
-  if (userDataLoading) {
-    return <div>Loading...</div>;
+  if(userDataLoading || sessionDataLoading){
+    return(
+      <div>
+        <HankoProfile></HankoProfile>
+        <LogoutButton></LogoutButton>
+        Loading.....
+      </div>
+    )
   }
-
-  return (
-    <div>
-      <div>User id: {id}</div>
-      <div>User email: {email}</div>
-    </div>
-  );
-};
-
-export default UserData;
+  else if (isValid){
+    return (
+      <div>
+        <HankoProfile></HankoProfile>
+        <LogoutButton></LogoutButton>
+        <h2>Some user data:</h2>
+        <h2>Email: {email}</h2>
+        <h2>ID: {id}</h2>
+      </div>
+    );
+  }
+}
 ```
-
 </Tab>
+
 <Tab title="Pages directory">
-```tsx components/userData.tsx
+```jsx pages/dashboard.tsx
+import HankoProfile from "@/components/HankoProfile";
+import LogoutButton from "@/components/LogoutButton";
+
 import { useUserData } from "@/hooks/useUserData";
 import { useSessionData } from "@/hooks/useSessionData";
 
-const UserData = () => {
+export default function Dashboard() {
   const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
   const { userID, jwt, isValid, loading: sessionDataLoading, error: sessionDataError } = useSessionData();
 
-  if (userDataLoading) {
-    return <div>Loading...</div>;
+  if(userDataLoading || sessionDataLoading){
+    return(
+      <div>
+        <HankoProfile></HankoProfile>
+        <LogoutButton></LogoutButton>
+        Loading.....
+      </div>
+    )
   }
-
-  return (
-    <div>
-      <div>User id: {id}</div>
-      <div>User email: {email}</div>
-    </div>
-  );
-};
-
-export default UserData;
+  else if (isValid){
+    return (
+      <div>
+        <HankoProfile></HankoProfile>
+        <LogoutButton></LogoutButton>
+        <h2>Some user data:</h2>
+        <h2>Email: {email}</h2>
+        <h2>ID: {id}</h2>
+      </div>
+    );
+  }
+}
 ```
 </Tab>
 </Tabs>
+
 
 ### Server Side
 
@@ -504,28 +652,46 @@ On the server side, you can extract the `userID` from the JWT, which you can use
 
 ```ts
 import { cookies } from "next/headers";
-import * as jose from "jose";
 
-const hankoApiUrl = process.env.NEXT_PUBLIC_HANKO_API_URL;
+const hankoApiUrl = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
 
 export async function getUserData() {
-  const token = cookies().get("hanko")?.value;
-  const payload = jose.decodeJwt(token ?? "");
 
-  const userID = payload.sub;
+  try {
+    const cookieToken = (await cookies()).get("hanko")?.value;
 
-  const response = await fetch(`${hankoApiUrl}/users/${userID}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    const validationOptions = { 
+      method: 'GET',
+      headers: {
+        'Cookie': `hanko=${cookieToken}` // If using cookie
+        // 'Authorization': `Bearer ${token}` // If using Authorization header
+      }
+    }
 
-  if (!response.ok) {
-    return null;
-  }
+    const validationResponse = await fetch(hankoApiUrl + '/sessions/validate', validationOptions); //Get session data
+    if (!validationResponse.ok) {
+      throw new Error("validation was not succesfull");
+    }
+    const validationData = await validationResponse.json();
 
-  const userData = await response.json();
-  return userData;
+    if(!validationData.is_valid){ //Validate session data
+      throw new Error("validation was not succesfull");
+    }
+
+    const userid = validationData.user_id; //use user id to request data
+    const userResponse = await fetch(hankoApiUrl + '/users/' + userid, validationOptions);
+    if (!userResponse.ok) {
+      throw new Error("Could not get user data");
+    }
+    const userData = await userResponse.json();
+
+    return userData;
+
+    } catch (error) {
+      console.log(error)
+      return null;
+    }
+    return
 }
 ```
 
