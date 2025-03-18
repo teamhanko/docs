@@ -4,310 +4,367 @@ title: Integrate Hanko with React
 description: Learn how to quickly add authentication and user profile in your React app using Hanko.
 ---
 
+
+## Create a React application
+
+To setup our React Frontend we will use [vite](https://vite.dev/) as a build tool.
+
+Run the following command to [create a new Vite React application](https://vite.dev/guide/):
+
+<CodeGroup>
+```bash npm
+npm create vite@latest project-name -- --template react-ts
+```
+
+```bash pnpm
+pnpm create vite project-name --template react-ts
+```
+
+```bash bun
+bun create vite project-name --template react-ts
+```
+
+```bash yarn
+yarn create vite project-name --template react-ts
+``` 
+
+</CodeGroup>
+
+
+
 ## Install `@teamhanko/hanko-elements`
 
 Once you've initialized your React app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
 
+We will also install the `react-router-dom` , this will allow us to navigate trough pages / routes.
 <CodeGroup>
 ```bash npm
-npm install @teamhanko/hanko-elements
-```
+cd project-name
+npm install @teamhanko/hanko-elements react-router-dom
+``` 
 
 ```bash pnpm
-pnpm add @teamhanko/hanko-elements
+cd project-name
+pnpm add @teamhanko/hanko-elements react-router-dom
 ```
 
 ```bash bun
-bun add @teamhanko/hanko-elements
+cd project-name
+bun add @teamhanko/hanko-elements react-router-dom
 ```
 
 ```bash yarn
-yarn add @teamhanko/hanko-elements
+cd project-name
+yarn add @teamhanko/hanko-elements react-router-dom
 ```
 
 </CodeGroup>
 
+
+
+## Setup your Hanko project
+Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+
+<Note>
+  During creation make sure to input the URL you will be developing on as the `APP URL`.
+  (Most likely http://localhost:5173/) \
+\
+  If you already have a project you can change the URL at:\
+  `'your project' > Settings > URLs > App URL`.
+</Note>
+
+
+
 ## Add the Hanko API URL
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your [.env file](https://vite.dev/guide/env-and-mode).
 
-<Tabs>
-  <Tab title="Create React App">
-    ```sh .env
-    REACT_APP_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
-    ```
-  </Tab>
-  <Tab title="React with Vite">
-    ```sh .env
-    VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
-    ```
-  </Tab>
-</Tabs>
+```sh .env
+VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+```
 
 <Note>
   If you are self-hosting you need to provide the URL of your running Hanko
   backend.
 </Note>
 
-## Add `<hanko-auth>` component
+## Create Hanko components
+Lets create a folder called `components` and create two files, `HankoAuth.tsx` and `HankoProfile.tsx`.
 
-The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the `register` function from `@teamhanko/hanko-elements` into your React component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, include it in your JSX.
+Both of these components use the Hanko client from [@teamhanko/hanko-elements](/guides/hanko-elements/introduction), this allows you subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onSessionCreated` event in the hanko auth triggers when a user successfully logs in. You can use these event to perform any desired action.
 
-<Tabs>
-  <Tab title="Create React App">
-    ```jsx components/HankoAuth.tsx
-    import { useEffect } from "react";
-    import { register } from "@teamhanko/hanko-elements";
+### JSX setup
 
-    const hankoApi = process.env.REACT_APP_HANKO_API_URL;
+To get these elements to work in a build we first need to add the element props to the JSX IntrinsicElements.
+You can do this by creating a file called `custom.d.ts` and placing this in your apps root / src folder
+```jsx src/custom.d.ts
+import { HankoAuthElementProps, HankoProfileElementProps, HankoEventsElementProps } from "@teamhanko/hanko-elements";
 
-    export default function HankoAuth() {
-      useEffect(() => {
-        register(hankoApi).catch((error) => {
-          // handle error
-        });
-      }, []);
-
-      return <hanko-auth />;
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements {
+        "hanko-auth": HankoAuthElementProps;
+        "hanko-login": HankoAuthElementProps;
+        "hanko-registration": HankoAuthElementProps;
+        "hanko-profile": HankoProfileElementProps;
+        "hanko-events": HankoEventsElementProps;
     }
-    ```
-  </Tab>
-  <Tab title="React with Vite">
-    ```jsx components/HankoAuth.tsx
-    import { useEffect } from "react";
-    import { register } from "@teamhanko/hanko-elements";
-
-    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
-
-    export default function HankoAuth() {
-      useEffect(() => {
-        register(hankoApi).catch((error) => {
-          // handle error
-        });
-      }, []);
-
-      return <hanko-auth />;
-    }
-    ```
-  </Tab>
-</Tabs>
-
-
-
-## Define event callbacks
-
-The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific [events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events). It simplifies the process of subscribing to events, such as user logins.
-
-<Tabs>
-  <Tab title="Create React App">
-    ```jsx components/HankoAuth.tsx
-    import { useEffect, useCallback, useMemo } from "react";
-    import { useNavigate } from "react-router-dom";
-    import { register, Hanko } from "@teamhanko/hanko-elements";
-
-    const hankoApi = process.env.REACT_APP_HANKO_API_URL;
-
-    export default function HankoAuth() {
-      const navigate = useNavigate();
-      const hanko = useMemo(() => new Hanko(hankoApi), []);
-
-      const redirectAfterLogin = useCallback(() => {
-        navigate("/dashboard");
-      }, [navigate]);
-
-      useEffect(
-        () =>
-          hanko.onSessionCreated(() => {
-            redirectAfterLogin();
-          }),
-        [hanko, redirectAfterLogin]
-      );
-
-      useEffect(() => {
-        register(hankoApi).catch((error) => {
-          // handle error
-        });
-      }, []);
-
-      return <hanko-auth />;
-    }
-    ```
-  </Tab>
-  <Tab title="React with Vite">
-  ```jsx components/HankoAuth.tsx
-  import { useEffect, useCallback, useMemo } from "react";
-  import { useNavigate } from "react-router-dom";
-  import { register, Hanko } from "@teamhanko/hanko-elements";
-
-  const hankoApi = import.meta.env.VITE_HANKO_API_URL;
-
-  export default function HankoAuth() {
-    const navigate = useNavigate();
-    const hanko = useMemo(() => new Hanko(hankoApi), []);
-
-    const redirectAfterLogin = useCallback(() => {
-      navigate("/dashboard");
-    }, [navigate]);
-
-    useEffect(
-      () =>
-        hanko.onSessionCreated(() => {
-          redirectAfterLogin();
-        }),
-      [hanko, redirectAfterLogin]
-    );
-
-    useEffect(() => {
-      register(hankoApi).catch((error) => {
-        // handle error
-      });
-    }, []);
-
-    return <hanko-auth />;
   }
-  ```
-  </Tab>
-</Tabs>
+}
+```
+
+### Hanko Auth
+Now Lets Setup the `HankoAuth.tsx` file to create a functioning login page.
+
+[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
+
+```jsx components/HankoAuth.tsx
+import { useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from 'react-router-dom';
+import { register, Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+ 
+export default function HankoAuth() {
+  const navigate = useNavigate();
+ 
+  const hanko = useMemo(() => new Hanko(hankoApi), []);
+ 
+  const redirectAfterLogin = useCallback(() => {
+    // successfully logged in, redirect to a page in your application
+    navigate("/dashboard");
+  }, [navigate]);
+
+  useEffect(
+    () =>
+      hanko?.onSessionCreated(() => {
+        redirectAfterLogin();
+      }),
+    [hanko, redirectAfterLogin]
+  );
+ 
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      // handle error
+      console.log(error)
+    });
+  }, []);
+ 
+  return <hanko-auth/>;
+}
+```
+
+After you created the `HankoAuth` component, import and add it in any page.\
+Just like this.
+
+```jsx pages/loginPage.tsx
+import HankoAuth from "../components/HankoAuth";
+
+export default function LoginPage() {
+  return (
+      <HankoAuth/>
+  );
+}
+```
+
+### Hanko profile
+
+After setting up the HankoAuth lets Setup the `HankoProfile.jsx` file to create a interface where users can.\
+manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys` and `Sessions`.
+
+[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
+
+```jsx components/HankoProfile.tsx
+import { useEffect } from "react";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+export default function HankoProfile() {
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      // handle error
+      console.log(error)
+    });
+  }, []);
+
+  return <hanko-profile />;
+}
+
+```
+
+After you created the `HankoProfile` component, simply import it into any page.\
+In our case we created a dashboard.tsx file to show the HankoProfile as our login page redirects to `/dashboard`.
+
+```jsx pages/dashboardPage.tsx
+import HankoProfile from "../components/HankoProfile";
+
+export default function Dashboard() {
+  return (
+    <div>
+      <HankoProfile/>
+    </div>
+  );
+}
+```
 
 
+## Setup your routes
+
+After you created the `LoginPage.tsx` and `DashboardPage.tsx` you are able to import them into your react `App.tsx`.
+We will use `react-router-dom` to setup the routes of your app.
+
+```jsx App.tsx
+import './App.css'
+import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom';
+
+import LoginPage from './pages/loginPage';
+import Dashboard from './pages/dashboardPage';
 
 
-By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      {/* index route with Login page*/}
+      <Route index element={<LoginPage />} /> 
+       {/* dashboard route with Dashboard page*/}
+      <Route path="dashboard" element={<Dashboard />} />
+    </Route>
+  )
+)
 
+export default function App(){
+  return (
+    <RouterProvider router={router} />
+  )
+}
+```
+
+By now you should be able to go to `/` to see the `<HankoAuth>`, and to `/dashboard` to see the `<HankoProfile>`.
+
+They should look something like this👇
 <Frame>
-<img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500" style={{ borderRadius: '0.5rem' }}/>
+  <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex', backgroundColor: 'white'}}>
+    <img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500"/>
+    <img src="/images/fullstack-guide/next-two.png" alt="profile page" width="500" />
+  </div>
 </Frame>
 
-## Add `<hanko-profile>` component
-
-The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
-
-<Tabs>
-  <Tab title="Create React App">
-    ```jsx components/HankoProfile.tsx
-    import { useEffect } from "react";
-    import { register } from "@teamhanko/hanko-elements";
-
-    const hankoApi = process.env.REACT_APP_HANKO_API_URL;
-
-    export default function HankoProfile() {
-      useEffect(() => {
-        register(hankoApi).catch((error) => {
-          // handle error
-        });
-      }, []);
-
-      return <hanko-profile />;
-    }
-    ```
-  </Tab>
-  <Tab title="React with Vite">
-    ```jsx components/HankoProfile.tsx
-    import { useEffect } from "react";
-    import { register } from "@teamhanko/hanko-elements";
-
-    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
-
-    export default function HankoProfile() {
-      useEffect(() => {
-        register(hankoApi).catch((error) => {
-          // handle error
-        });
-      }, []);
-
-      return <hanko-profile />;
-    }
-    ```
-  </Tab>
-</Tabs>
-
-It should look like this 👇
-
-<Frame>
-<img
-  src="/images/fullstack-guide/next-two.png"
-  alt="profile page"
-  width="500"
-  style={{ borderRadius: '0.5rem' }}
-/>
-</Frame>
 
 ## Implement logout functionality
 
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we make a logout button component that you can use anywhere.
+You can use `@teamhanko/hanko-elements` to easily manage user logouts. Here we will make a logout button component that you can use anywhere.
 
-<Tabs>
-  <Tab title="Create React App">
-    ```jsx components/LogoutButton.tsx
-    import React, { useState, useEffect } from "react";
-    import { useNavigate } from "react-router-dom";
-    import { Hanko } from "@teamhanko/hanko-elements";
+For this QuickStart we will create a file at `components/LogoutButton.tsx` and insert the code below.
 
-    const hankoApi = process.env.REACT_APP_HANKO_API_URL;
+  ```jsx components/LogoutButton.tsx
+  import { useState, useEffect } from "react";
+  import { useNavigate } from "react-router-dom";
+  import { Hanko } from "@teamhanko/hanko-elements";
 
-    function LogoutBtn() {
-      const navigate = useNavigate();
-      const [hanko, setHanko] = useState<Hanko>();
+  const hankoApi = import.meta.env.VITE_HANKO_API_URL;
 
-      useEffect(() => {
-        import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-          setHanko(new Hanko(hankoApi ?? ""))
-        );
-      }, []);
+  function LogoutBtn() {
+    const navigate = useNavigate();
+    const [hanko, setHanko] = useState<Hanko>();
 
-      const logout = async () => {
-        try {
-          await hanko?.user.logout();
-          navigate("/login");
-        } catch (error) {
-          console.error("Error during logout:", error);
-        }
-      };
+    useEffect(() => {
+      import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+        setHanko(new Hanko(hankoApi ?? ""))
+      );
+    }, []);
 
-      return <button onClick={logout}>Logout</button>;
-    }
+    const logout = async () => {
+      try {
+        await hanko?.user.logout();
+        
+        navigate("/"); //Path to naviage to once the user logs out.
 
-    export default LogoutBtn;
-    ```
-  </Tab>
-  <Tab title="React with Vite">
-    ```jsx components/LogoutButton.tsx
-    import React, { useState, useEffect } from "react";
-    import { useNavigate } from "react-router-dom";
-    import { Hanko } from "@teamhanko/hanko-elements";
+      } catch (error) {
+        console.error("Error during logout:", error);
+      }
+    };
 
-    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+    return <button onClick={logout}>Logout</button>;
+  }
 
-    function LogoutBtn() {
-      const navigate = useNavigate();
-      const [hanko, setHanko] = useState<Hanko>();
-
-      useEffect(() => {
-        import("@teamhanko/hanko-elements").then(({ Hanko }) =>
-          setHanko(new Hanko(hankoApi ?? ""))
-        );
-      }, []);
-
-      const logout = async () => {
-        try {
-          await hanko?.user.logout();
-          navigate("/login");
-        } catch (error) {
-          console.error("Error during logout:", error);
-        }
-      };
-
-      return <button onClick={logout}>Logout</button>;
-    }
-
-    export default LogoutBtn;
-    ```
-  </Tab>
-</Tabs>
+  export default LogoutBtn;
+  ```
 
 ## Customize component styles
 
 You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](/guides/hanko-elements/customize-appearance).
+
+## Securing routes
+To secure our routes we can await a fetch request to a running [Hanko Backend](/quickstarts/backend/node) to validate our hanko cookie token.
+
+Lets set up a Private route to do this for us.
+Create a new React component at `components/PrivateRoute.tsx`.
+
+If the backend couldnt validate our token we get navigated back to `/`.
+Otherwise if the validation was successfull it will return the children inside the private route.
+
+```jsx components/PrivateRoute.tsx
+import { ReactNode, useEffect, useState } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+
+export default function PrivateRoute({ children }: { children: ReactNode }) {
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+    const location = useLocation();
+  
+    useEffect(() => {
+      fetch('http://localhost:5001/validate', {// Change this to the validation url of your running backend
+        credentials: 'include', // This is required to include the cookie in the request
+      })
+        .then((res) => {
+          setIsAuthenticated(res.ok);
+        })
+        .catch(() => {
+          setIsAuthenticated(false);
+        });
+    }, []);
+  
+    if (isAuthenticated === null) {
+      return null; // Or a loading spinner
+    }
+
+    if(isAuthenticated){ return <>{children}</> }
+
+    //Url to naviage user to if they arent authenticated
+    return <Navigate to="/" replace state={{ from: location }} />
+  }
+```
+
+Lets import this `PrivateRoute.tsx` to your `App.tsx` file.\
+To use the private route wrap your `Dashboard` in the Private Route;
+
+```jsx App.tsx
+import './App.css'
+import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom';
+
+import LoginPage from './pages/loginPage';
+import Dashboard from './pages/dashboardPage';
+
+import PrivateRoute from './components/PrivateRoute';
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      {/* index route with Login page*/}
+      <Route index element={ <LoginPage />} /> 
+       {/* secured dashboard route with Dashboard page*/}
+      <Route path="dashboard" element={<PrivateRoute> <Dashboard /> </PrivateRoute>} />
+    </Route>
+  )
+)
+
+export default function App(){
+  return (
+    <RouterProvider router={router} />
+  )
+}
+```
+
 
 ## Getting User and Session Data
 
@@ -319,7 +376,7 @@ On the other hand, the `useSessionData` hook uses the `hanko.session.isValid()` 
 
 <Tabs>
 <Tab title="useUserData">
-```tsx hooks/useUserData.ts
+```jsx hooks/useUserData.ts
 import { useState, useEffect, useMemo } from "react";
 import { Hanko } from "@teamhanko/hanko-elements";
 
@@ -359,7 +416,7 @@ export function useUserData(): HankoUser {
 </Tab>
 
 <Tab title="useSessionData">
-```tsx hooks/useSessionData.ts
+```jsx hooks/useSessionData.ts
 import { useState, useEffect, useMemo } from "react";
 import { Hanko } from "@teamhanko/hanko-elements";
 
@@ -417,7 +474,7 @@ export function useSessionData(): HankoSession {
 
 This is how you can use them according to your needs.
 
-```tsx components/userData.tsx
+```jsx components/userData.tsx
 import { useUserData } from "@/hooks/useUserData";
 import { useSessionData } from "@/hooks/useSessionData";
 
@@ -440,31 +497,6 @@ const UserData = () => {
 export default UserData;
 ```
 
-<Note>
-    You might get `"r" is read-only` error after you deploy a CRA (Create React App). To fix it you'll need to add `@babel/core`  as a dependency in your project. You can do this by running the following command:
-  <CodeGroup>
-```bash npm
-npm install @babel/core
-```
-
-```bash pnpm
-pnpm add @babel/core
-```
-
-```bash bun
-bun add @babel/core
-```
-
-```bash yarn
-yarn add @babel/core
-```
-
-</CodeGroup>
-</Note>
-
-## Authenticate backend requests
-
-To authenticate requests on your backend with Hanko, refer to our [backend guide](/quickstarts/backend).
 
 ## Try it yourself
 
