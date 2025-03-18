@@ -32,21 +32,26 @@ npx create-next-app@latest project-name
 
 
 ## Install `@teamhanko/hanko-elements`
-Open your Next.js project folder in a terminal and run the following command to install the [hanko-elements](/guides/hanko-elements/introduction): 
+Once you've initialized your NextJS app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+
 <CodeGroup> 
 ```bash npm
+cd project-name
 npm install @teamhanko/hanko-elements
 ```
 
 ```bash pnpm
+cd project-name
 pnpm add @teamhanko/hanko-elements
 ```
 
 ```bash bun
+cd project-name
 bun add @teamhanko/hanko-elements
 ```
 
 ```bash yarn
+cd project-name
 yarn add @teamhanko/hanko-elements
 ```
 </CodeGroup>
@@ -80,6 +85,26 @@ NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 Lets create a folder called `components` and create two files, `HankoAuth.tsx` and `HankoProfile.jsx`.
 
 Both of these components use the Hanko client from [@teamhanko/hanko-elements](/guides/hanko-elements/introduction), this allows you subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onSessionCreated` event in the hanko auth triggers when a user successfully logs in. You can use these event to perform any desired action.
+
+### JSX setup
+
+To get these elements to work in a build we first need to add the element props to the JSX IntrinsicElements.
+You can do this by creating a file called `custom.d.ts` and placing this in your apps root / src folder
+```jsx src/custom.d.ts
+import { HankoAuthElementProps, HankoProfileElementProps, HankoEventsElementProps } from "@teamhanko/hanko-elements";
+
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements {
+        "hanko-auth": HankoAuthElementProps;
+        "hanko-login": HankoAuthElementProps;
+        "hanko-registration": HankoAuthElementProps;
+        "hanko-profile": HankoProfileElementProps;
+        "hanko-events": HankoEventsElementProps;
+    }
+  }
+}
+```
 
 ### Hanko Auth
 
@@ -214,7 +239,6 @@ manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys` and `Se
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
-
 <Tabs>
 <Tab title="App directory">
 ```jsx components/HankoProfile.jsx
@@ -300,25 +324,6 @@ It should look something like this 👇
   style={{ borderRadius: '0.5rem' }}
 />
 </Frame>
-
-### JSX setup
-
-To get these elements to work in a build we need to add the element props to te JSX IntrinsicElements.
-You can do this by creating a file called `custom.d.ts` and placing this in your root or src folder
-<Tab>
-```jsx src/custom.d.ts
-  import { HankoAuthElementProps, HankoProfileElementProps } from "@teamhanko/hanko-elements";
-
-  declare module "react" {
-    namespace JSX {
-      interface IntrinsicElements {
-          'hanko-auth': HankoAuthElementProps;
-          'hanko-profile': HankoProfileElementProps;
-      }
-    }
-  }
-```
-</Tab>
 
 
 ## Implement logout functionality
