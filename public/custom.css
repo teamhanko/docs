@@ -1,0 +1,21 @@
+/* Custom css to add scrollbars to tabs */
+.tabs ul{
+    overflow-x: visible;
+    padding-bottom: 3px;
+}
+.tabs ul::-webkit-scrollbar{
+    height: 10px;
+    border: 1px solid rgba(139, 136, 136, 0.041);
+}
+.tabs ul::-webkit-scrollbar-track {
+    border-radius: 0;
+    background: #1212121e;
+} 
+.tabs ul::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    background: rgb(101,116,255);
+}
+.tabs ul::-webkit-scrollbar-track:hover ,  
+.tabs ul::-webkit-scrollbar-thumb:hover{
+    cursor: pointer;
+}
