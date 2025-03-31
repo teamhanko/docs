@@ -1210,12 +1210,12 @@ components:
                 description: Indicates whether the session is valid or not
                 type: boolean
               expiration_time:
-                description: Date-time indicating the expiration of the session
+                description: Date-time indicating the expiration of the session. Deprecated, please use `claims.expiration` instead.
                 type: string
                 format: date-time
                 deprecated: true
               user_id:
-                description: The ID of the user the session is associated with
+                description: The ID of the user the session is associated with. Deprecated, please use `claims.subject` instead.
                 type: string
                 format: uuid4
                 deprecated: true
@@ -1694,14 +1694,26 @@ components:
           format: date-time
         audience:
           description: "The intended audience of the token."
-          type: string
+          type: array
+          items:
+            type: string
         issuer:
           description: "The entity that issued the token."
           type: string
         email:
-          description: "The email address associated with the token's subject, if available."
-          type: string
-          format: email
+          description: "Data about the email address associated with the token's subject, if available."
+          type: object
+          properties:
+            address:
+              description: "The actual email address."
+              type: string
+              format: email
+            is_primary:
+              description: "Indicates whether the email address is the primary address."
+              type: boolean
+            is_verified:
+              description: "Indicates whether the email address is verified."
+              type: boolean
         session_id:
           description: "The unique identifier for the session associated with this token."
           allOf:
