@@ -1,0 +1,542 @@
+---
+title: Build a Custom Login Page with the FlowAPI
+description: A step-by-step guide to create a custom frontend for the Hanko FlowAPI login page using the hanko-frontend-sdk.
+---
+
+# Introductiion
+
+This guide walks you through building a custom login page for the Hanko FlowAPI using the `hanko-frontend-sdk`. The
+resulting page handles email and passcode login, supports passkey autofill, and includes session management (redirect
+after login and logout functionality). The FlowAPI is part of Hanko, a user authentication platform, and we'll use a
+Hanko Cloud project configured for simplicity.
+
+By the end, you'll have a working login page that:
+
+- Initializes the login flow via the `/login` endpoint.
+- Dynamically renders UI for the states: `error`, `login_init`, `login_method_chooser`, `onboarding_create_passkey`,
+  and `passcode_confirmation`.
+- Handles user inputs, errors, and session events.
+- Runs locally at `http://localhost:3000` and authenticates a test user.
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+- **Node.js** installed for running a local server and installing dependencies.
+- A modern browser (e.g., Chrome, Firefox) for testing passkey autofill.
+- A Hanko Cloud project set up with a test user (see Step 1).
+- Basic knowledge of JavaScript, HTML, and CSS.
+
+## Step 1: Set Up the Development Environment
+
+<Steps>
+
+<Step title="Create and Configure a Hanko Cloud Project">
+- Go to [cloud.hanko.io](https://cloud.hanko.io) and log in.
+- In the sidebar, select **All Projects**.
+- Click **Create Project** to open the setup wizard.
+- Choose **Hanko** ("Authentication and user management") as the project type and click **Create Project**.
+- Enter a project name (e.g., "Custom Login Page").
+- Set the App URL to `http://localhost:3000` (where the login page will run locally).
+- Click **Create Project** to complete the wizard.
+</Step>
+
+<Step title="Configure the Project">
+- In the sidebar, go to **Settings > Authentication**.
+    - Uncheck **Passwords**, to turn off password authentication.
+    - Click **Save**.
+- Go to **Settings > 2FA**.
+    - Uncheck the entire **2FA** section.
+    - Click **Save**.
+- Under **Device trust** (further down on the same page):
+    - Select **Never** as the "Device trust policy" from the dropdown.
+    - Click **Save**.
+</Step>
+
+<Step title="Create a Test User">
+- In the sidebar, select **Users**.
+- Click **Create User** to open the user creation wizard.
+- Enter your real email address (in order to receive passcodes).
+- Click **Create new User** to finish.
+</Step>
+
+
+<Step title="Obtain your API URL">
+1. In the sidebar, select **Dashboard**.
+2. Find your project's API URL (e.g., `https://<project-id>.hanko.io`).
+</Step>
+
+<Step title="Set Up the Project Structure">
+Create a project folder (e.g., `hanko-login-page`) and set up the following files:
+```
+hanko-login-page/
+├ index.html
+├ script.js
+├ style.css
+├ success.html
+├ package.json
+└ .babelrc
+```
+</Step>
+
+<Step title="Create 'package.json'">
+```json
+{
+  "name": "hanko-login-page",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "parcel index.html --port 3000",
+    "build": "parcel build index.html success.html"
+  },
+  "dependencies": {
+    "@teamhanko/hanko-frontend-sdk": "^2.0.0",
+    "parcel": "^2.14.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.26.0",
+    "@parcel/optimizer-terser": "^2.14.4"
+  }
+}
+```
+</Step>
+
+<Step title="Create '.babelrc'">
+```json
+{
+  "plugins": ["@babel/plugin-transform-runtime"]
+}
+```
+</Step>
+
+<Step title="Install Dependencies">
+Run in the project folder:
+
+```bash
+npm install
+```
+</Step>
+
+<Step title="Create 'index.html' (the login page)">
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hanko Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
+```
+</Step>
+
+<Step title="Create 'success.html' (shown after login)">
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Success</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <h1>Login Successful</h1>
+    <p>Welcome! You are now logged in.</p>
+    <button id="logout">Log Out</button>
+  </div>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
+```
+</Step>
+
+<Step title="Create 'style.css'">
+
+```css
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f4f4f4;
+}
+
+#app {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input {
+  width: -webkit-fill-available;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+```
+
+</Step>
+
+<Step title="Start the Local Server">
+Run the following to start the server at http://localhost:3000:
+
+```bash
+npm start
+```
+
+Open `http://localhost:3000` in your browser to verify the page loads (it will be empty until we add JavaScript).
+</Step>
+
+</Steps>
+
+## Step 2: Initialize the Login Flow
+
+In `script.js`, initialize the Hanko instance and start the login flow. If the user is on `success.html`, set up logout
+functionality instead.
+
+```js
+import { Hanko } from "@teamhanko/hanko-frontend-sdk";
+
+// Replace with your Hanko Cloud project's API endpoint
+const API_URL = "https://<your-project-id>.hanko.io";
+
+// Initialize Hanko instance
+const hanko = new Hanko(API_URL);
+
+// Check if we're on the success page
+const isSuccessPage = window.location.pathname.includes("success.html");
+
+if (isSuccessPage) {
+  // Handle logout on success page
+  const logoutButton = document.getElementById("logout");
+  if (logoutButton) {
+    logoutButton.addEventListener("click", async () => {
+      try {
+        await hanko.logout();
+      } catch (error) {
+        console.error("Logout failed:", error);
+        alert("Failed to log out. Please try again.");
+      }
+    });
+  }
+  // Redirect to login page on logout
+  hanko.onUserLoggedOut(() => {
+    window.location.href = "/index.html";
+  });
+} else {
+  // Listen for state changes
+  hanko.onAfterStateChange(({ state }) => {
+    handleState(state); // To be implemented in the next step of this guide
+  });
+
+  // Listen for successful login
+  hanko.onSessionCreated(() => {
+    window.location.href = "/success.html";
+  });
+
+  // Initialize login flow on index.html
+  await hanko.createState("login");
+}
+```
+<Tip>
+Replace `https://<your-project-id>.hanko.io` with your project's API endpoint from the Hanko Cloud dashboard.
+</Tip>
+
+## Step 3: Handle Flow States and Render UI
+
+Implement handler functions to process each state and render the appropriate UI. The `hanko.onAfterStateChange` event is
+used to update the UI after state transitions. We'll also create a `generateInput` function to dynamically generate input
+elements with validation attributes (e.g., minlength, maxlength, required) based on the FlowAPI's input metadata.
+
+Add the following code to the `script.js` file:
+
+```js
+function generateInput(input, options = {}) {
+  const { name, type, min_length, max_length, required, error } = input;
+  const { autocomplete } = options;
+
+  // Build attributes
+  const attributes = [
+    `type="${type}"`,
+    `id="${name}"`,
+    `name="${name}"`,
+    required ? "required" : "",
+    min_length ? `minlength="${min_length}"` : "",
+    max_length ? `maxlength="${max_length}"` : "",
+    autocomplete ? `autocomplete="${autocomplete}"` : ""
+  ].join(" ");
+
+  // Generate HTML for the input group
+  return `
+    <div class="form-group">
+      <label for="${name}">${name.charAt(0).toUpperCase() + name.slice(1)}</label>
+      <input ${attributes}>${error ? `<p class="error">${error.message}</p>` : ""}
+    </div>`;
+}
+
+function handleState(state) {
+  const app = document.getElementById("app");
+  app.innerHTML = ""; // Clear previous content
+
+  switch (state.name) {
+    case "login_init":
+      renderLoginInit(state);
+      state.passkeyAutofillActivation(); // Enable passkey autofill
+      break;
+    case "login_method_chooser":
+      renderLoginMethodChooser(state);
+      break;
+    case "onboarding_create_passkey":
+      renderOnboardingCreatePasskey(state);
+      break;
+    case "passcode_confirmation":
+      renderPasscodeConfirmation(state);
+      break;
+    case "error":
+      renderError(state.error || { message: "An unexpected error occurred." });
+      break;
+  }
+}
+
+function renderLoginInit(state) {
+  const app = document.getElementById("app");
+  const action = state.actions.continue_with_login_identifier;
+  const emailInput = action.inputs.email || action.inputs.identifier;
+  const inputHtml = generateInput(emailInput, { autocomplete: "username webauthn" });
+
+  app.innerHTML = `
+    <h1>Log In</h1>
+    <form id="login-form">
+      ${inputHtml}
+      <button type="submit">Continue</button>
+    </form>`;
+
+  const form = document.getElementById("login-form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = form.querySelector(`#${emailInput.name}`).value;
+    await action.run({[emailInput.name]: email });
+  });
+}
+
+function renderLoginMethodChooser(state) {
+  const app = document.getElementById("app");
+
+  app.innerHTML = `
+    <h1>Choose Login Method</h1>
+    <div id="methods"></div>`;
+
+  const methods = document.getElementById("methods");
+  const actions = state.actions;
+
+  if (actions.continue_to_password_login.enabled) {
+    methods.innerHTML += `<button data-action="continue_to_password_login">Use Password</button>`;
+  }
+
+  if (actions.continue_to_passcode_confirmation.enabled) {
+    methods.innerHTML += `<button data-action="continue_to_passcode_confirmation">Use Passcode</button>`;
+  }
+
+  if (actions.back.enabled) {
+    methods.innerHTML += `<button data-action="back">Back</button>`;
+  }
+
+  methods.querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const actionName = button.dataset.action;
+      await actions[actionName].run();
+    });
+  });
+ }
+
+function renderOnboardingCreatePasskey(state) {
+  const app = document.getElementById("app");
+
+  app.innerHTML = `
+    <h1>Create a Passkey</h1>
+    <p>Add a passkey for faster login (optional).</p>
+    <div id="actions"></div>`;
+
+  const actionsDiv = document.getElementById("actions");
+  const actions = state.actions;
+
+  if (actions.webauthn_generate_creation_options.enabled) {
+    actionsDiv.innerHTML += `<button data-action="webauthn_generate_creation_options">Create Passkey</button>`;
+  }
+  if (actions.skip.enabled) {
+    actionsDiv.innerHTML += `<button data-action="skip">Skip</button>`;
+  }
+  if (actions.back.enabled) {
+    actionsDiv.innerHTML += `<button data-action="back">Back</button>`;
+  }
+
+  actionsDiv.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", async () => {
+      const actionName = button.dataset.action;
+      await actions[actionName].run();
+    });
+  });
+}
+
+function renderPasscodeConfirmation(state) {
+  const app = document.getElementById("app");
+  const verifyAction = state.actions.verify_passcode;
+  const codeInput = verifyAction.inputs.code;
+  const inputHtml = generateInput(codeInput);
+
+  app.innerHTML = `
+    <h1>Enter Passcode</h1>
+    <p>Check your email for the passcode.</p>
+    <form id="passcode-form">
+      ${inputHtml}
+      <button type="submit">Verify</button>
+    </form>
+    <div id="actions"></div>`;
+
+    const form = document.getElementById("passcode-form");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const code = form.querySelector(`#${codeInput.name}`).value;
+      await verifyAction.run({ code });
+    });
+
+    const actionsDiv = document.getElementById("actions");
+
+    if (state.actions.resend_passcode.enabled) {
+      actionsDiv.innerHTML += `<button data-action="resend_passcode">Resend Passcode</button>`;
+    }
+    if (state.actions.back ? .enabled) {
+      actionsDiv.innerHTML += `<button data-action="back">Back</button>`;
+    }
+
+    actionsDiv.querySelectorAll("button").forEach(button => {
+      button.addEventListener("click", async () => {
+        const actionName = button.dataset.action;
+        await state.actions[actionName].run();
+    });
+  });
+}
+
+function renderError(error) {
+  const app = document.getElementById("app");
+
+  app.innerHTML = `
+    <h1>Error</h1>
+    <p class="error">${error.message}</p>
+    <button id="retry">Try Again</button>`;
+
+  document.getElementById("retry").addEventListener("click", () => {
+    initializeLoginFlow();
+  });
+}
+```
+<Note>
+- The action execution logic is embedded in each state's form or button handlers.
+- The `hanko.onAfterStateChange` event ensures the UI updates after each action, and `hanko.onSessionCreated` redirects
+  to `success.html` on successful login.
+- On `success.html`, the logout button calls `hanko.logout()`, and `hanko.onUserLoggedOut` redirects back to the
+  `index.html`.
+- Validation Errors: Each state renderer checks for `state.actions.<action>.inputs.<input>.error` and displays the
+  message (e.g., invalid passcode).
+- Technical Errors: The error state handler displays `state.error.message`.
+</Note>
+
+## Step 4: Run and Test the Login Page
+
+<Steps>
+<Step title="Run the Application">
+- Ensure the Hanko Cloud project is configured as described (App URL: `http://localhost:3000`, no passwords, no 2FA,
+  device trust "Never").
+- Update `API_URL` in `script.js` with your Hanko Cloud project's API endpoint.
+- Rebuild the App:
+  ```bash
+  npm run build
+  ```
+- Run the local server:
+  ```bash
+  npm start
+  ```
+- Open `http://localhost:3000` in your browser.
+</Step>
+
+<Step title="Test the Login Flow">
+- Enter the test user's email.
+- Check your email for the passcode, enter the code, and click submit.
+- If prompted, register a passkey.
+- On success, you'll be redirected to `success.html`.
+- Click Log Out to return to the login page.
+</Step>
+
+<Step title="Troubleshooting">
+- CORS Errors: Ensure the App URL in the Hanko Cloud dashboard matches `http://localhost:3000`.
+- Invalid API URL: Verify the `API_URL` in `script.js`.
+- No Passcode Received: Confirm the test user's email is correct and check your spam folder.
+- Passkey Autofill Not Working: Use a passkey-compatible browser (e.g., Chrome) and ensure the input has
+  `autocomplete="username webauthn"`.
+</Step>
+
+</Steps>
+
+## Conclusion
+
+You've built a working login page that:
+- Uses the FlowAPI and hanko-frontend-sdk to handle email/passcode login.
+- Supports passkey autofill in the `login_init` state.
+- Manages sessions with redirect after login and logout functionality.
+- Handles errors gracefully across all specified states.
+
+<Tip>
+Explore next steps like enhancing the UI with advanced CSS or a framework like Bootstrap, adding support for additional
+states or actions (e.g., password login), or integrating the login page into a larger application.
+</Tip>
+

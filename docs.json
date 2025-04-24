@@ -136,7 +136,8 @@
               {
                 "group": "FlowAPI",
                 "pages": [
-                  "guides/flow-api/understanding-the-flow-api"
+                  "guides/flow-api/understanding-the-flow-api",
+                  "guides/flow-api/build-a-custom-login-page"
                 ]
               },
               "guides/sessions/session-management",
