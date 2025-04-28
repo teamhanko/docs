@@ -1,6 +1,6 @@
 ---
 title: Build a Custom Login Page with the FlowAPI
-description: A step-by-step guide to create a custom frontend for the Hanko FlowAPI login page using the hanko-frontend-sdk.
+description: A step-by-step guide to create a custom login page using the Hanko FlowAPI.
 ---
 
 # Introduction
@@ -79,7 +79,7 @@ hanko-login-page/
 ```
 </Step>
 
-<Step title="Create 'package.json'">
+<Step title="Update 'package.json'">
 ```json
 {
   "name": "hanko-login-page",
@@ -100,7 +100,7 @@ hanko-login-page/
 ```
 </Step>
 
-<Step title="Create '.babelrc'">
+<Step title="Update '.babelrc'">
 ```json
 {
   "plugins": ["@babel/plugin-transform-runtime"]
@@ -116,7 +116,7 @@ npm install
 ```
 </Step>
 
-<Step title="Create 'index.html' (the login page)">
+<Step title="Update 'index.html' (the login page)">
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -134,7 +134,7 @@ npm install
 ```
 </Step>
 
-<Step title="Create 'success.html' (shown after login)">
+<Step title="Update 'success.html' (shown after login)">
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -156,9 +156,9 @@ npm install
 ```
 </Step>
 
-<Step title="Create 'style.css'">
+<Step title="Update 'style.css'">
 
-```css
+```css [expandable]
 body {
   font-family: Arial, sans-serif;
   display: flex;
@@ -241,7 +241,7 @@ Open `http://localhost:3000` in your browser to verify the page loads (it will b
 In `script.js`, initialize the Hanko instance and start the login flow. If the user is on `success.html`, set up logout
 functionality instead.
 
-```js
+```js [expandable]
 import { Hanko } from "@teamhanko/hanko-frontend-sdk";
 
 // Replace with your Hanko Cloud project's API endpoint
@@ -297,7 +297,7 @@ elements with validation attributes (e.g., minlength, maxlength, required) based
 
 Add the following code to the `script.js` file:
 
-```js
+```js [expandable]
 function generateInput(input, options = {}) {
   const { name, type, min_length, max_length, required, error } = input;
   const { autocomplete } = options;
@@ -541,6 +541,17 @@ You've built a working login page that:
 
 <Tip>
 Explore next steps like enhancing the UI with advanced CSS or a framework like Bootstrap, adding support for additional
-states or actions (e.g., password login), or integrating the login page into a larger application.
+states or actions (e.g., password login), or integrating the login page into a larger application. Additionally, the
+FlowAPI supports registration and user profile management flows.
 </Tip>
+
+## References
+
+<Card title="API Reference">
+    [https://docs.hanko.io/api-reference/flow/login](https://docs.hanko.io/api-reference/flow/login)
+</Card>
+<Card title="Frontend SDK">
+    [https://github.com/teamhanko/hanko/tree/main/frontend/frontend-sdk](https://github.com/teamhanko/hanko/tree/main/frontend/frontend-sdk)
+</Card>
+
 
