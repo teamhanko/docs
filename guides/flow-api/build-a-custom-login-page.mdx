@@ -455,7 +455,7 @@ function renderPasscodeConfirmation(state) {
     if (state.actions.resend_passcode.enabled) {
       actionsDiv.innerHTML += `<button data-action="resend_passcode">Resend Passcode</button>`;
     }
-    if (state.actions.back ? .enabled) {
+    if (state.actions.back.enabled) {
       actionsDiv.innerHTML += `<button data-action="back">Back</button>`;
     }
 
