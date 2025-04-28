@@ -74,8 +74,7 @@ hanko-login-page/
 ├ script.js
 ├ style.css
 ├ success.html
-├ package.json
-└ .babelrc
+└ package.json
 ```
 </Step>
 
@@ -90,20 +89,8 @@ hanko-login-page/
   },
   "dependencies": {
     "@teamhanko/hanko-frontend-sdk": "^2.0.0",
-    "parcel": "^2.14.0"
-  },
-  "devDependencies": {
-    "@babel/plugin-transform-runtime": "^7.26.0",
-    "@parcel/optimizer-terser": "^2.14.4"
+    "parcel": "^2.14.4"
   }
-}
-```
-</Step>
-
-<Step title="Update '.babelrc'">
-```json
-{
-  "plugins": ["@babel/plugin-transform-runtime"]
 }
 ```
 </Step>
@@ -282,7 +269,7 @@ if (isSuccessPage) {
   });
 
   // Initialize login flow on index.html
-  await hanko.createState("login");
+  hanko.createState("login");
 }
 ```
 <Tip>
