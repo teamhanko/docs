@@ -160,6 +160,64 @@ The [Admin API](/api-reference/admin/introduction#learn-how-to-use-the-hanko-adm
 [list active sessions](/api-reference/admin/session-management/list-sessions) and
 [delete sessions](/api-reference/admin/session-management/delete-session) for a specific user.
 
+## Session token customization
+
+Session tokens can be extended with custom claims by defining them using
+[Go's text/template syntax](https://pkg.go.dev/text/template). These claims are evaluated during JWT generation and
+may include static values, dynamic expressions, or nested structures.
+
+To define custom claims:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Locate the `Customize session token` section.
+4. Enter your custom claims in YAML format within the provided textarea.
+5. Click `Save` to apply your changes.
+
+### Accessing user data in templates
+
+Each template has access to user data via the `.User` field, which includes:
+- `.User.UserID`: The user's unique ID (string)
+- `.User.Email`: Email details (optional)
+    - `.User.Email.Address`: The email address (string)
+    - `.User.Email.IsPrimary`: Indicates if the email is the primary address (boolean)
+    - `.User.Email.IsVerified`: Indicates if the email is verified (boolean)
+- `.User.Username`: The user's username (string, optional)
+
+### Example configuration
+
+```yaml
+role: "user"                               # Static value
+user_email: "{{.User.Email.Address}}"      # Templated string
+is_verified: "{{.User.Email.IsVerified}}"  # Boolean from user data
+metadata:                                  # Nested map
+  source: "hanko"
+  greeting: "Hello {{.User.Username}}"
+scopes:                                    # Slice with templated value
+    - "read"
+    - "write"
+    - "{{if .User.Email.IsVerified}}admin{{else}}basic{{end}}"
+```
+
+### Important notes and limitations
+
+- Custom claims are added at the top level of the session token [payload](#jwt-payload).
+- Claims with the following keys will be ignored because they are currently added to the JWT by default:
+    - `sub`
+    - `iat`
+    - `exp`
+    - `aud`
+    - `iss`
+    - `email`
+    - `username`
+    - `session_id`
+- Templates must conform to valid [Go text/template syntax](https://pkg.go.dev/text/template). Invalid templates are
+logged and excluded from the generated token.
+- Boolean strings ("true" or "false") from templates are automatically converted to actual booleans.
+The `.User.Email` object itself currently does not serialize accurately as a JSON object in the JWT payload. It is
+recommended to access specific fields (Address, IsVerified, IsPrimary) or construct custom representations using Go
+template expressions.
+
 ## Session JWT structure
 
 The session JWT is a [compact](https://datatracker.ietf.org/doc/html/rfc7515#section-3.1) JWS. It is a string composed
@@ -247,4 +305,8 @@ dot (`.`). The JWT payload contains the claims about a user.
 <ResponseField name="username" type="string">
     The username of the user (if set).
 </ResponseField>
+
+<Note>
+The payload further contains any [custom claims](#session-token-customization) that you have defined.
+</Note>
 
