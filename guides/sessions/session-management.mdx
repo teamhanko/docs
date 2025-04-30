@@ -214,7 +214,7 @@ scopes:                                    # Slice with templated value
 - Templates must conform to valid [Go text/template syntax](https://pkg.go.dev/text/template). Invalid templates are
 logged and excluded from the generated token.
 - Boolean strings ("true" or "false") from templates are automatically converted to actual booleans.
-The `.User.Email` object itself currently does not serialize accurately as a JSON object in the JWT payload. It is
+- The `.User.Email` object itself currently does not serialize accurately as a JSON object in the JWT payload. It is
 recommended to access specific fields (Address, IsVerified, IsPrimary) or construct custom representations using Go
 template expressions.
 
