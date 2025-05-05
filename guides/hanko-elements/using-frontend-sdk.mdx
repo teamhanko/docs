@@ -59,9 +59,11 @@ hanko.onUserDeleted(() => {
 });
 ```
 
-## Sessions
+## Common Operations
 
-Check if the user has a valid session:
+The SDK provides functions to simplify interaction with the Hanko API. Here are some common operations:
+
+Get the session validity and JWT claims:
 
 ```js
 const session = await hanko.validateSession();
@@ -69,23 +71,20 @@ console.log("Session valid:", session.is_valid, "Claims:", session.claims);
 ```
 
 Retrieve the session token:
+
 ```js
 const token = hanko.getSessionToken();
 console.log("Session token:", token);
 ````
 
-## User Client 
-
-The SDK includes client classes to simplify communication with the Hanko API. Here are some common operations:
-
-### Getting the current user
+Get the user data:
 
 ```js
 const user = await hanko.getUser();
 console.log("User profile:", user.user_id, user.emails);
 ```
 
-### Log out a user
+Log out the user:
 
 ```js
 await hanko.logout();
