@@ -619,8 +619,8 @@ function renderLoginPasswordRecovery(state) {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const password = form.querySelector(`#${passwordInput.name}`).value;
-    await recoveryAction.run({ password });
+    const new_password = form.querySelector(`#${passwordInput.name}`).value;
+    await recoveryAction.run({ new_password });
   });
 }
 
