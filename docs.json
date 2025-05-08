@@ -7,6 +7,15 @@
     "light": "#6575FF",
     "dark": "#0D001D"
   },
+  "head": [
+    {
+      "tag": "link",
+      "attrs": {
+        "rel": "stylesheet",
+        "href": "/custom.css"
+      }
+    }
+  ],
   "favicon": "/favicon.png",
   "navigation": {
     "tabs": [
