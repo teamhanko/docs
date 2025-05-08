@@ -6,15 +6,14 @@ description: A step-by-step guide to create a custom login page using the Hanko 
 # Introduction
 
 This guide walks you through building a custom login page for the Hanko FlowAPI using the `hanko-frontend-sdk`. The
-resulting page handles email and passcode login, supports passkey autofill, and includes session management (redirect
-after login and logout functionality). The FlowAPI is part of Hanko, a user authentication platform, and we'll use a
-Hanko Cloud project configured for simplicity.
+resulting page supports email and passcode login, as well as passwords, passkeys, and passkey autofill. It also includes
+session management features, such as redirecting after login and handling logout functionality. The FlowAPI is part of
+Hanko, a user authentication platform, and we'll use a Hanko Cloud project configured for simplicity.
 
 By the end, you'll have a working login page that:
 
 - Initializes the login flow via the `/login` endpoint.
-- Dynamically renders UI for the states: `error`, `login_init`, `login_method_chooser`, `onboarding_create_passkey`,
-  and `passcode_confirmation`.
+- Dynamically renders the UI based on the current flow state.
 - Handles user inputs, errors, and session events.
 - Runs locally at `http://localhost:3000` and authenticates a test user.
 
@@ -42,10 +41,9 @@ Before starting, ensure you have:
 </Step>
 
 <Step title="Configure the Project">
-- In the sidebar, go to **Settings > Authentication**.
-    - Uncheck **Passwords**, to turn off password authentication.
-    - Click **Save**.
-- Go to **Settings > 2FA**.
+To reduce the complexity of this example, we disable certain login features:
+
+- In the sidebar, go to **Settings > 2FA**.
     - Uncheck the entire **2FA** section.
     - Click **Save**.
 - Under **Device trust** (further down on the same page):
@@ -58,8 +56,10 @@ Before starting, ensure you have:
 - Click **Create new** to open the user creation wizard.
 - Enter your real email address (in order to receive passcodes).
 - Click **Create new User** to finish.
+- From the list of users, click on the newly created entry.
+- Under "Passwords", click on **Set password**.
+- Enter a password and click **Create password**
 </Step>
-
 
 <Step title="Obtain your API URL">
 1. In the sidebar, select **Dashboard**.
@@ -114,7 +114,9 @@ npm install
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app">
+    <div class="loading"></div>
+  </div>
   <script type="module" src="script.js"></script>
 </body>
 </html>
@@ -198,8 +200,65 @@ button {
   margin: 5px;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: #0056b3;
+}
+
+button:disabled {
+  background-color: #90bdff;
+}
+
+button.loading {
+  position: relative;
+  padding-left: 35px;
+}
+
+button.loading::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+div.loading {
+  position: relative;
+}
+
+div.loading::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid #007bff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+#actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 15px;
+  margin-top: 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e7ff;
+  border-radius: 8px;
 }
 
 .error {
@@ -258,6 +317,23 @@ if (isSuccessPage) {
     window.location.href = "/index.html";
   });
 } else {
+  // Listen for state changes
+  hanko.onBeforeStateChange(({ state }) => {
+    const app = document.getElementById("app");
+
+    app.querySelectorAll("button").forEach(button => {
+      const actionName = button.dataset.action;
+
+      // Disable all buttons while loading
+      button.disabled = true;
+
+      // Display the loading spinner
+      if (state.invokedAction.name == actionName) {
+        button.classList.add("loading");
+      }
+    });
+  });
+
   // Listen for state changes
   hanko.onAfterStateChange(({ state }) => {
     handleState(state); // To be implemented in the next step of this guide
@@ -326,23 +402,33 @@ function handleState(state) {
     case "passcode_confirmation":
       renderPasscodeConfirmation(state);
       break;
-    case "error":
-      renderError(state.error || { message: "An unexpected error occurred." });
+    case "login_password":
+      renderLoginPassword(state);
       break;
+    case "login_password_recovery":
+      renderLoginPasswordRecovery(state);
+      break;
+    case "error":
+      renderError(state);
+      break;
+    default:
+      app.innerHTML = `<div class="loading"></div>`;
   }
 }
 
 function renderLoginInit(state) {
   const app = document.getElementById("app");
+  const error = state.error;
   const action = state.actions.continue_with_login_identifier;
   const emailInput = action.inputs.email || action.inputs.identifier;
   const inputHtml = generateInput(emailInput, { autocomplete: "username webauthn" });
 
   app.innerHTML = `
     <h1>Log In</h1>
+    ${error ? `<p class="error">${error.message}</p>` : ""}
     <form id="login-form">
       ${inputHtml}
-      <button type="submit">Continue</button>
+      <button data-action="continue_with_login_identifier" type="submit">Continue</button>
     </form>`;
 
   const form = document.getElementById("login-form");
@@ -356,40 +442,48 @@ function renderLoginInit(state) {
 
 function renderLoginMethodChooser(state) {
   const app = document.getElementById("app");
+  const error = state.error;
 
   app.innerHTML = `
     <h1>Choose Login Method</h1>
-    <div id="methods"></div>`;
+    ${error ? `<p class="error">${error.message}</p>` : ""}
+    <div id="actions"></div>`;
 
-  const methods = document.getElementById("methods");
+  const actionsDiv = document.getElementById("actions");
   const actions = state.actions;
 
   if (actions.continue_to_password_login.enabled) {
-    methods.innerHTML += `<button data-action="continue_to_password_login">Use Password</button>`;
+    actionsDiv.innerHTML += `<button data-action="continue_to_password_login">Use Password</button>`;
   }
 
   if (actions.continue_to_passcode_confirmation.enabled) {
-    methods.innerHTML += `<button data-action="continue_to_passcode_confirmation">Use Passcode</button>`;
+    actionsDiv.innerHTML += `<button data-action="continue_to_passcode_confirmation">Use Passcode</button>`;
+  }
+
+  if (actions.webauthn_generate_request_options.enabled) {
+    actionsDiv.innerHTML += `<button data-action="webauthn_generate_request_options">Use Passkey</button>`;
   }
 
   if (actions.back.enabled) {
-    methods.innerHTML += `<button data-action="back">Back</button>`;
+    actionsDiv.innerHTML += `<button data-action="back">Back</button>`;
   }
 
-  methods.querySelectorAll("button").forEach((button) => {
+  actionsDiv.querySelectorAll("button").forEach((button) => {
     button.addEventListener("click", async (e) => {
       e.preventDefault();
       const actionName = button.dataset.action;
       await actions[actionName].run();
     });
   });
- }
+}
 
 function renderOnboardingCreatePasskey(state) {
   const app = document.getElementById("app");
+  const error = state.error;
 
   app.innerHTML = `
     <h1>Create a Passkey</h1>
+    ${error ? `<p class="error">${error.message}</p>` : ""}
     <p>Add a passkey for faster login (optional).</p>
     <div id="actions"></div>`;
 
@@ -399,9 +493,11 @@ function renderOnboardingCreatePasskey(state) {
   if (actions.webauthn_generate_creation_options.enabled) {
     actionsDiv.innerHTML += `<button data-action="webauthn_generate_creation_options">Create Passkey</button>`;
   }
+
   if (actions.skip.enabled) {
     actionsDiv.innerHTML += `<button data-action="skip">Skip</button>`;
   }
+
   if (actions.back.enabled) {
     actionsDiv.innerHTML += `<button data-action="back">Back</button>`;
   }
@@ -416,46 +512,121 @@ function renderOnboardingCreatePasskey(state) {
 
 function renderPasscodeConfirmation(state) {
   const app = document.getElementById("app");
+  const error = state.error;
   const verifyAction = state.actions.verify_passcode;
   const codeInput = verifyAction.inputs.code;
   const inputHtml = generateInput(codeInput);
 
   app.innerHTML = `
     <h1>Enter Passcode</h1>
+    ${error ? `<p class="error">${error.message}</p>` : ""}
     <p>Check your email for the passcode.</p>
     <form id="passcode-form">
       ${inputHtml}
-      <button type="submit">Verify</button>
+      <button data-action="verify_passcode" type="submit">Verify</button>
     </form>
     <div id="actions"></div>`;
 
-    const form = document.getElementById("passcode-form");
+  const form = document.getElementById("passcode-form");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const code = form.querySelector(`#${codeInput.name}`).value;
-      await verifyAction.run({ code });
-    });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const code = form.querySelector(`#${codeInput.name}`).value;
+    await verifyAction.run({ code });
+  });
 
-    const actionsDiv = document.getElementById("actions");
+  const actionsDiv = document.getElementById("actions");
 
-    if (state.actions.resend_passcode.enabled) {
-      actionsDiv.innerHTML += `<button data-action="resend_passcode">Resend Passcode</button>`;
-    }
-    if (state.actions.back.enabled) {
-      actionsDiv.innerHTML += `<button data-action="back">Back</button>`;
-    }
+  if (state.actions.resend_passcode.enabled) {
+    actionsDiv.innerHTML += `<button data-action="resend_passcode">Resend Passcode</button>`;
+  }
 
-    actionsDiv.querySelectorAll("button").forEach(button => {
-      button.addEventListener("click", async () => {
-        const actionName = button.dataset.action;
-        await state.actions[actionName].run();
+  if (state.actions.back.enabled) {
+    actionsDiv.innerHTML += `<button data-action="back">Back</button>`;
+  }
+
+  actionsDiv.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", async () => {
+      const actionName = button.dataset.action;
+      await state.actions[actionName].run();
     });
   });
 }
 
-function renderError(error) {
+function renderLoginPassword(state) {
   const app = document.getElementById("app");
+  const error = state.error;
+  const loginAction = state.actions.password_login;
+  const passwordInput = loginAction.inputs.password;
+  const inputHtml = generateInput(passwordInput);
+
+  app.innerHTML = `
+    <h1>Enter Password</h1>
+    ${error ? `<p class="error">${error.message}</p>` : ""}
+    <form id="password-form">
+      ${inputHtml}
+      <button data-action="password_login" type="submit">Continue</button>
+    </form>
+    <div id="actions"></div>`;
+
+  const form = document.getElementById("password-form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const password = form.querySelector(`#${passwordInput.name}`).value;
+    await loginAction.run({ password });
+  });
+
+  const actionsDiv = document.getElementById("actions");
+
+  if (state.actions.continue_to_passcode_confirmation_recovery.enabled) {
+    actionsDiv.innerHTML += `<button data-action="continue_to_passcode_confirmation_recovery">Forgot your Password?</button>`;
+  }
+
+  if (state.actions.continue_to_login_method_chooser.enabled) {
+    actionsDiv.innerHTML += `<button data-action="continue_to_login_method_chooser">Choose another Method</button>`;
+  }
+
+  if (state.actions.back.enabled) {
+    actionsDiv.innerHTML += `<button data-action="back">Back</button>`;
+  }
+
+  actionsDiv.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", async () => {
+      const actionName = button.dataset.action;
+      await state.actions[actionName].run();
+    });
+  });
+}
+
+function renderLoginPasswordRecovery(state) {
+  const app = document.getElementById("app");
+  const error = state.error;
+  const recoveryAction = state.actions.password_recovery;
+  const passwordInput = recoveryAction.inputs.new_password;
+  const inputHtml = generateInput(passwordInput);
+
+  app.innerHTML = `
+    <h1>Enter a new Password</h1>
+    ${error ? `<p class="error">${error.message}</p>` : ""}
+    <form id="password-recovery-form">
+      ${inputHtml}
+      <button data-action="password_recovery" type="submit">Save</button>
+    </form>
+    <div id="actions"></div>`;
+
+  const form = document.getElementById("password-recovery-form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const new_password = form.querySelector(`#${passwordInput.name}`).value;
+    await recoveryAction.run({ new_password });
+  });
+}
+
+function renderError(state) {
+  const app = document.getElementById("app");
+  const error = state.error;
 
   app.innerHTML = `
     <h1>Error</h1>
@@ -486,8 +657,8 @@ Always **use your own email address** in the following steps. The Hanko API send
 
 <Steps>
 <Step title="Run the Application">
-- Ensure the Hanko Cloud project is configured as described (App URL: `http://localhost:3000`, no passwords, no 2FA,
-  device trust "Never").
+- Ensure the Hanko Cloud project is configured as described (App URL: `http://localhost:3000`, no 2FA, device trust
+  "Never").
 - Update `API_URL` in `script.js` with your Hanko Cloud project's API endpoint.
 - Rebuild the App:
   ```bash
@@ -521,8 +692,8 @@ Always **use your own email address** in the following steps. The Hanko API send
 ## Conclusion
 
 You've built a working login page that:
-- Uses the FlowAPI and hanko-frontend-sdk to handle email/passcode login.
-- Supports passkey autofill in the `login_init` state.
+- Uses the FlowAPI and `hanko-frontend-sdk` to handle email/passcode login.
+- Supports passwords, passkeys and passkey autofill in the `login_init` state.
 - Manages sessions with redirect after login and logout functionality.
 - Handles errors gracefully across all specified states.
 
