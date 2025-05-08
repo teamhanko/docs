@@ -21,11 +21,9 @@ registration or password recovery). It will also be triggered when the user logs
 event can be used to obtain the JWT.
 
 ```js
-hanko.onSessionCreated((sessionDetail) => {
-  // A new JWT has been issued.
-  console.info(
-    `Session created or updated (jwt: ${sessionDetail.jwt})`
-  );
+hanko.onSessionCreated(({ claims }) => {
+  console.info("Session created with JWT claims:", claims);
+    // Redirect to a protected page
 });
 ```
 
@@ -35,8 +33,8 @@ Will be triggered when the session has expired, or when the session has been rem
 
 ```js
 hanko.onSessionExpired(() => {
-  // You can redirect the user to a login page or show the `<hanko-auth>` element, or to prompt the user to log in again.
-  console.info("Session expired");
+  console.log("Session expired, redirecting to login");
+  // Redirect to a login page or show the `<hanko-auth>` element.
 });
 ```
 
@@ -46,8 +44,8 @@ Will be triggered, when the user actively logs out. In other browser windows, a 
 
 ```js
 hanko.onUserLoggedOut(() => {
-  // You can redirect the user to a login page or show the `<hanko-auth>` element.
-  console.info("User logged out");
+  console.log("User logged out successfully");
+  // Redirect to a login page or show the `<hanko-auth>` element.
 });
 ```
 ### User Deleted
@@ -56,44 +54,41 @@ Will be triggered when the user has deleted the account. In other browser window
 
 ```js
 hanko.onUserDeleted(() => {
-  // You can redirect the user to a login page or show the `<hanko-auth>` element.
-  console.info("User has been deleted");
+  console.log("User account deleted");
+  // Redirect to a login page or show the `<hanko-auth>` element.
 });
 ```
 
-## Sessions
+## Common Operations
 
-Determine whether the user is logged in
+The SDK provides functions to simplify interaction with the Hanko API. Here are some common operations:
+
+Get the session validity and JWT claims:
 
 ```js
-hanko.session.isValid();
+const session = await hanko.validateSession();
+console.log("Session valid:", session.is_valid, "Claims:", session.claims);
 ```
 
-Getting the session details
+Retrieve the session token:
 
 ```js
-const session = hanko.session.get();
+const token = hanko.getSessionToken();
+console.log("Session token:", token);
+````
 
-if (session) {
-  console.info(`userID: ${session.userID}, jwt: ${session.jwt}`);
-}
+Get the user data:
+
+```js
+const user = await hanko.getUser();
+console.log("User profile:", user.user_id, user.emails);
 ```
 
-## User Client 
-
-The SDK contains several client classes to make the communication with the Hanko-API easier. Here some examples of things you might want to do
-
-Getting the current user
+Log out the user:
 
 ```js
-const user = await hanko.user.getCurrent();
-console.info(`id: ${user.id}, email: ${user.email}`);
-```
-
-Log out a user
-
-```js
-await hanko.user.logout();
+await hanko.logout();
+console.log("User logged out");
 ```
 
 To learn how error handling works and what else you can do with SDK, take a look into the [frontend-sdk docs](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/).
