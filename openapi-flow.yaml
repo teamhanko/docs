@@ -490,6 +490,17 @@ components:
                 - "password_recovery"
             inputs:
               $ref: "#/components/schemas/InputsPasswordRecovery"
+    ActionPatchMetadata:
+      description: Patches the (unsafe) metadata of a user.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "patch_metadata"
+            inputs:
+              $ref: "#/components/schemas/InputsPatchMetadata"
     ActionRememberMe:
       description: |
         This action determines whether a session cookie or a persistent cookie is issued on flow success. 
@@ -876,6 +887,8 @@ components:
           $ref: "#/components/schemas/ActionPasswordUpdate"
         password_delete:
           $ref: "#/components/schemas/ActionPasswordDelete"
+        patch_metadata:
+          $ref: "#/components/schemas/ActionPatchMetadata"
         security_key_create:
           $ref: "#/components/schemas/ActionSecurityKeyCreate"
         security_key_delete:
@@ -916,6 +929,33 @@ components:
           $ref: "#/components/schemas/ActionBack"
     AnyValue:
       description: Can be any value - string, number, boolean, array or object.
+    Claims:
+      description: Contains the claims of a user as they appear in the payload of session JWTs.
+      type: object
+      properties:
+        subject:
+          type: string
+          format: uuid4
+        issued_at:
+          type: string
+          format: date-time
+        audience:
+          type: array
+          items:
+            type: string
+        issuer:
+          type: string
+        email:
+          type: object
+          properties:
+            address:
+              type: string
+            is_verified:
+              type: boolean
+            is_primary:
+              type: boolean
+      additionalProperties:
+        description: "Any additional claims defined through templates for customizing the session JWT"
     CSRFToken:
       description: |
         Not required on flow initialization, i.e. on requests without an `action`
@@ -1113,6 +1153,21 @@ components:
             type:
               enum:
                 - "string"
+            required:
+              default: true
+            hidden:
+              default: false
+    InputPatchMetadata:
+      allOf:
+        - $ref: "#/components/schemas/Input"
+        - type: object
+          properties:
+            name:
+              enum:
+                - "patch_metadata"
+            type:
+              enum:
+                - "json"
             required:
               default: true
             hidden:
@@ -1390,6 +1445,22 @@ components:
           format: email
       required:
         - email_id
+      additionalProperties: false
+    InputDataPatchMetadata:
+      title: PatchMetadata
+      description: Input data for the `patch_metadata` action.
+      type: object
+      properties:
+        patch_metadata:
+          type: object
+          description: |
+            Must be one of:
+              - `null`: unsets the entire (unsafe) metadata 
+              - an empty object `{}`: indicates an empty patch object, results in a noop
+              - a non-empty object: the current (unsafe) metadata is merged with this patch
+          additionalProperties: true
+      required:
+        - patch_metadata
       additionalProperties: false
     InputDataRegisterClientCapabilities:
       title: RegisterClientCapabilities
@@ -1699,6 +1770,11 @@ components:
       properties:
         password:
           $ref: "#/components/schemas/InputPassword"
+    InputsPatchMetadata:
+      type: object
+      properties:
+        patch_metadata:
+          $ref: "#/components/schemas/InputPatchMetadata"
     InputsRegisterClientCapabilities:
       type: object
       properties:
@@ -1957,6 +2033,39 @@ components:
                 type: boolean
               is_verified:
                 type: boolean
+              identity:
+                deprecated: true
+                description: Deprecated. See `identities` instead.
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Contains the ID of the user at the provider.
+                  provider:
+                    type: string
+                    description: |
+                      Contains the display name of the provider, if available. Otherwise contains the provider ID.
+              identities:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: ID of the user at the provider
+                    provider:
+                      type: string
+                      description: |
+                        Contains the display name of the provider, if available. Otherwise contains the provider ID.
+        metadata:
+          type: object
+          properties:
+            public_metadata:
+              type: object
+              additionalProperties: {}
+            unsafe_metadata:
+              type: object
+              additionalProperties: {}
         mfa_config:
           type: object
           properties:
@@ -2434,6 +2543,50 @@ components:
               type: integer
               enum:
                 - 200
+    StateSuccessLogin:
+      title: Success
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateSuccess"
+        - type: object
+          properties:
+            payload:
+              allOf:
+                - $ref: "#/components/schemas/PayloadProfileData"
+                - type: object
+                  properties:
+                    last_login:
+                      $ref: "#/components/schemas/LastLogin"
+                    claims:
+                      $ref: "#/components/schemas/Claims"
+    StateSuccessRegistration:
+      title: Success
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateSuccess"
+        - type: object
+          properties:
+            payload:
+              allOf:
+                - $ref: "#/components/schemas/PayloadProfileData"
+                - type: object
+                  properties:
+                    claims:
+                      $ref: "#/components/schemas/Claims"
+    StateSuccessTokenExchange:
+      title: Success
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/StateSuccess"
+        - type: object
+          properties:
+            payload:
+              allOf:
+                - $ref: "#/components/schemas/PayloadProfileData"
+                - type: object
+                  properties:
+                    claims:
+                      $ref: "#/components/schemas/Claims"
     StateThirdParty:
       title: ThirdParty
       type: object
@@ -2615,17 +2768,7 @@ components:
         - $ref: "#/components/schemas/StateOnboardingVerifyPasskeyAttestation"
         - $ref: "#/components/schemas/StateDeviceTrust"
         - $ref: "#/components/schemas/StateThirdParty"
-        - allOf:
-            - $ref: "#/components/schemas/StateSuccess"
-            - type: object
-              properties:
-                payload:
-                  allOf:
-                    - $ref: "#/components/schemas/PayloadProfileData"
-                    - type: object
-                      properties:
-                        last_login:
-                          $ref: "#/components/schemas/LastLogin"
+        - $ref: "#/components/schemas/StateSuccessLogin"
       discriminator:
         propertyName: name
         mapping:
@@ -2649,7 +2792,7 @@ components:
           onboarding_verify_passkey_attestation: "#/components/schemas/StateOnboardingVerifyPasskeyAttestation"
           device_trust: "#/components/schemas/StateDeviceTrust"
           thirdparty: "#/components/schemas/StateThirdParty"
-          success: "#/components/schemas/StateSuccess"
+          success: "#/components/schemas/StateSuccessLogin"
     StatesProfile:
       oneOf:
         - $ref: "#/components/schemas/StatePreflight"
@@ -2680,7 +2823,7 @@ components:
         - $ref: "#/components/schemas/StateOnboardingCreatePasskey"
         - $ref: "#/components/schemas/StateOnboardingVerifyPasskeyAttestation"
         - $ref: "#/components/schemas/StateThirdParty"
-        - $ref: "#/components/schemas/StateSuccess"
+        - $ref: "#/components/schemas/StateSuccessRegistration"
       discriminator:
         propertyName: name
         mapping:
@@ -2695,20 +2838,20 @@ components:
           mfa_otp_secret_creation: "#/components/schemas/StateMFAOTPSecretCreation"
           mfa_security_key_creation: "#/components/schemas/StateMFASecurityKeyCreation"
           thirdparty: "#/components/schemas/StateThirdParty"
-          success: "#/components/schemas/StateSuccess"
+          success: "#/components/schemas/StateSuccessRegistration"
     StatesTokenExchange:
       oneOf:
         - $ref: "#/components/schemas/StatePasscodeConfirmation"
         - $ref: "#/components/schemas/StateOnboardingUsername"
         - $ref: "#/components/schemas/StateThirdParty"
-        - $ref: "#/components/schemas/StateSuccess"
+        - $ref: "#/components/schemas/StateSuccessTokenExchange"
       discriminator:
         propertyName: name
         mapping:
           thirdparty: "#/components/schemas/StateThirdParty"
           passcode_confirmation: "#/components/schemas/StatePasscodeConfirmation"
           onboarding_username: "#/components/schemas/StateOnboardingUsername"
-          success: "#/components/schemas/StateSuccess"
+          success: "#/components/schemas/StateSuccessTokenExchange"
     WebauthnCredential:
       type: object
       properties:
@@ -3128,6 +3271,7 @@ components:
                   - $ref: "#/components/schemas/InputDataEmailVerify"
                   - $ref: "#/components/schemas/InputDataPasswordCreate"
                   - $ref: "#/components/schemas/InputDataPasswordUpdate"
+                  - $ref: "#/components/schemas/InputDataPatchMetadata"
                   - $ref: "#/components/schemas/InputDataOTPCodeVerify"
                   - $ref: "#/components/schemas/InputDataSecurityKeyDelete"
                   - $ref: "#/components/schemas/InputDataSessionDelete"
