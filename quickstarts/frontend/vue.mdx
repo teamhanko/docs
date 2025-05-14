@@ -304,7 +304,7 @@ For this QuickStart we will create a file at `components/LogoutButton.vue` and i
     const hanko = new Hanko(hankoApi);
 
     const logout = () => {
-      hanko.user.logout().catch((error) => {
+      hanko.logout().catch((error) => {
         // handle error
         console.log(error)
       })
