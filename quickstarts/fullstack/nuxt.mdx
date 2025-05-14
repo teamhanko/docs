@@ -212,7 +212,7 @@ To log users out, use the `@nuxtjs/hanko` module's built-in composable `useHanko
 <script setup lang="ts">
 const hanko = useHanko()
   function logout() {
-    hanko!.user.logout()
+    hanko?.logout();
   }
   definePageMeta({
     middleware: ["hanko-logged-in"],
