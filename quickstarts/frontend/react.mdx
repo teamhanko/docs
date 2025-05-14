@@ -276,8 +276,8 @@ For this QuickStart we will create a file at `components/LogoutButton.tsx` and i
 
     const logout = async () => {
       try {
-        await hanko?.user.logout();
-        
+        await hanko?.logout();
+
         navigate("/"); //Path to naviage to once the user logs out.
 
       } catch (error) {
@@ -370,131 +370,46 @@ export default function App(){
 
 ### Client Side
 
-We will create two custom hooks to fetch the current user's data and session data using `@teamhanko/hanko-elements`. The `useUserData` hook leverages the `hanko.user.getCurrent()` method to retrieve the currently logged-in user's data. 
+Lets use the Hanko SDK to Get User and Session Data to log to the console.
+For the User Information we will use [hanko.GetUser()](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/index.html#getting-the-user-object)
+For the Session Information we will use [hanko.validateSession()](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/index.html#getting-the-user-object)
 
-On the other hand, the `useSessionData` hook uses the `hanko.session.isValid()` and `hanko.session.get()` methods to validate and fetch the current session data.
+Lets update the `dashboard` page to log some of the information from the User And Session.
 
-<Tabs>
-<Tab title="useUserData">
-```jsx hooks/useUserData.ts
+
+```jsx pages/dashboardPage.tsx
 import { useState, useEffect, useMemo } from "react";
 import { Hanko } from "@teamhanko/hanko-elements";
 
-const hankoApi = process.env.REACT_APP_HANKO_API_URL;
-// const hankoApi = import.meta.env.VITE_HANKO_API_URL; // for Vite
-
-interface HankoUser {
-  id: string;
-  email: string;
-  loading: boolean;
-  error: string | null;
-}
-
-export function useUserData(): HankoUser {
-  const hanko = useMemo(() => new Hanko(hankoApi), []);
-  const [userState, setUserState] = useState<HankoUser>({
-    id: "",
-    email: "",
-    loading: true,
-    error: null,
-  });
-
-  useEffect(() => {
-    hanko?.user
-      .getCurrent()
-      .then(({ id, email }) => {
-        setUserState({ id, email, loading: false, error: null });
-      })
-      .catch((error) => {
-        setUserState((prevState) => ({ ...prevState, loading: false, error }));
-      });
-  }, [hanko]);
-
-  return userState;
-}
-```
-</Tab>
-
-<Tab title="useSessionData">
-```jsx hooks/useSessionData.ts
-import { useState, useEffect, useMemo } from "react";
-import { Hanko } from "@teamhanko/hanko-elements";
+import HankoProfile from "../components/HankoProfile";
 
 const hankoApi = process.env.REACT_APP_HANKO_API_URL;
-// const hankoApi = import.meta.env.VITE_HANKO_API_URL; // for Vite
 
-interface HankoSession {
-  userID: string;
-  jwt: string;
-  isValid: boolean;
-  loading: boolean;
-  error: string | null;
-}
-
-export function useSessionData(): HankoSession {
+export default function Dashboard() {
   const hanko = useMemo(() => new Hanko(hankoApi), []);
-  const [sessionState, setSessionState] = useState<HankoSession>({
-    userID: "",
-    jwt: "",
-    isValid: false,
-    loading: true,
-    error: null,
-  });
 
-  useEffect(() => {
-    if (hanko) {
-      const isValid = hanko.session.isValid();
-      const session = hanko.session.get();
+  useEffect(() => setHanko(new Hanko(hankoApi)), []);
+    useEffect(() => {
+      hanko?.getUser()
+        .then((user) => {
+          console.log("User profile:", user);// Log user Profile
+          console.log(user.emails?.[0]?.address);
+          console.log(user.user_id);
+        })
 
-      if (isValid && session) {
-        const { userID, jwt = "" } = session;
-        setSessionState({
-          userID,
-          jwt,
-          isValid,
-          loading: false,
-          error: null,
-        });
-      } else {
-        setSessionState((prevState) => ({
-          ...prevState,
-          isValid: false,
-          loading: false,
-          error: "Invalid session",
-        }));
-      }
-    }
-  }, [hanko]);
-
-  return sessionState;
-}
-```
-</Tab>
-</Tabs>
-
-This is how you can use them according to your needs.
-
-```jsx components/userData.tsx
-import { useUserData } from "@/hooks/useUserData";
-import { useSessionData } from "@/hooks/useSessionData";
-
-const UserData = () => {
-  const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
-  const { userID, jwt, isValid, loading: sessionDataLoading, error: sessionDataError } = useSessionData();
-
-  if (userDataLoading) {
-    return <div>Loading...</div>;
-  }
+      hanko?.validateSession()
+        .then((sessionStatus) => {
+          console.log("Session status:", sessionStatus);// Log session Status
+          console.log(sessionStatus.is_valid)
+        })
+    }, [hanko]);
 
   return (
     <div>
-      <div>User id: {id}</div>
-      <div>User email: {email}</div>
+      <HankoProfile/>
     </div>
   );
-};
-
-export default UserData;
+}
 ```
 
 
