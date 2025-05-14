@@ -351,7 +351,7 @@ export default function LogoutBtn() {
  
   const logout = async () => {
     try {
-      await hanko?.user.logout();
+      await hanko?.logout();
       router.push("/");
       router.refresh();
       return;
@@ -381,7 +381,7 @@ export default function LogoutBtn() {
 
   const logout = async () => {
     try {
-      await hanko?.user.logout();
+      await hanko?.logout();
       router.push("/");
       router.reload();
       return;
@@ -419,14 +419,12 @@ import { NextResponse, NextRequest } from "next/server";
 const hankoApiUrl = process.env.NEXT_PUBLIC_HANKO_API_URL;
 
 export async function middleware(req: NextRequest) {
-  const cookieToken = req.cookies.get("hanko")?.value;
+const token = req.cookies.get("hanko")?.value;
 
   const validationOptions = {
-    method: 'GET',
-    headers: {
-      'Cookie': `hanko=${cookieToken}` // If using cookie
-      // 'Authorization': `Bearer ${token}` // If using Authorization header
-    }
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: `{"session_token":"${token}"}`
   }
 
   try {
@@ -462,117 +460,11 @@ To verify that it works, Logout on your app and go to /dashboard, you should get
 
 ### Client Side
 
-We will create two custom hooks to fetch the current user's data and session data using `@teamhanko/hanko-elements`. The `useUserData` hook leverages the `hanko.user.getCurrent()` method to retrieve the currently logged-in user's data. 
+Lets use the Hanko SDK to Get User and Session Data to log to the console.
+For the User Information we will use [hanko.GetUser()](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/index.html#getting-the-user-object)
+For the Session Information we will use [hanko.validateSession()](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/index.html#getting-the-user-object)
 
-On the other hand, the `useSessionData` hook uses the `hanko.sessionClient.isValid()` and `hanko.session.get()` methods to validate and fetch the current session data.
-
-<Tabs>
-<Tab title="useUserData">
-```tsx hooks/useUserData.ts
-import { useState, useEffect } from "react";
-import { Hanko } from "@teamhanko/hanko-elements";
-
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || "";
-
-interface HankoUser {
-  id: string;
-  email: string;
-  loading: boolean;
-  error: string | null;
-}
-
-export function useUserData(): HankoUser {
-  const [hanko, setHanko] = useState<Hanko>();
-  const [userState, setUserState] = useState<HankoUser>({
-    id: "",
-    email: "",
-    loading: true,
-    error: null,
-  });
-
-  useEffect(() => setHanko(new Hanko(hankoApi)), []);
-
-  useEffect(() => {
-    hanko?.user
-      .getCurrent()
-      .then(({ id, email }) => {
-        setUserState({ id, email, loading: false, error: null });
-      })
-      .catch((error) => {
-        setUserState((prevState) => ({ ...prevState, loading: false, error }));
-      });
-  }, [hanko]);
-
-  return userState;
-}
-```
-</Tab>
-
-<Tab title="useSessionData">
-```tsx hooks/useSessionData.ts
-import { useState, useEffect } from "react";
-import { Hanko } from "@teamhanko/hanko-elements";
-
-const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || "";
-
-interface HankoSession {
-  userID: string;
-  jwt: string;
-  isValid: boolean;
-  loading: boolean;
-  error: string | null;
-}
-
-export function useSessionData(): HankoSession {
-  const [hanko, setHanko] = useState<Hanko>();
-  const [sessionState, setSessionState] = useState<HankoSession>({
-    userID: "",
-    jwt: "",
-    isValid: false,
-    loading: true,
-    error: null,
-  });
-
-  useEffect(() => setHanko(new Hanko(hankoApi)), []);
-
-  useEffect(() => {
-    if (hanko) {
-
-      const checkSession = async () => {
-
-        const isValid = await hanko.sessionClient.isValid();
-        const session = hanko.session.get();
-  
-        if (isValid && session) {
-          const { userID, jwt = "" } = session;
-          setSessionState({
-            userID,
-            jwt,
-            isValid,
-            loading: false,
-            error: null,
-          });
-        } else {
-          setSessionState((prevState) => ({
-            ...prevState,
-            isValid: false,
-            loading: false,
-            error: "Invalid session",
-          }));
-        }
-      }
-
-      checkSession()
-    }
-  }, [hanko]);
-
-  return sessionState;
-}
-```
-</Tab>
-</Tabs>
-
-Lets update the `dashboard` page to show some of the information from the custom hooks.
+Lets update the `dashboard` page to log some of the information from the User And Session.
 
 <Tabs>
 <Tab title="App directory">
@@ -582,33 +474,36 @@ Lets update the `dashboard` page to show some of the information from the custom
 import HankoProfile from "../components/HankoProfile";
 import LogoutButton from "../components/LogoutButton";
 
-import { useUserData } from "../hooks/useUserData";
-import { useSessionData } from "../hooks/useSessionData";
+import { Hanko } from "@teamhanko/hanko-elements";
+import { useState, useEffect } from "react";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || "";
 
 export default function Dashboard() {
-  const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
-  const { userID, jwt, isValid, loading: sessionDataLoading, error: sessionDataError } = useSessionData();
+    const [hanko, setHanko] = useState<Hanko>();
 
-  if(userDataLoading || sessionDataLoading){
-    return(
-      <div>
-        <HankoProfile></HankoProfile>
-        <LogoutButton></LogoutButton>
-        Loading.....
-      </div>
-    )
-  }
-  else if (isValid){
-    return (
-      <div>
-        <HankoProfile></HankoProfile>
-        <LogoutButton></LogoutButton>
-        <h2>Some user data:</h2>
-        <h2>Email: {email}</h2>
-        <h2>ID: {id}</h2>
-      </div>
-    );
-  }
+    useEffect(() => setHanko(new Hanko(hankoApi)), []);
+      useEffect(() => {
+        hanko?.getUser()
+          .then((user) => {
+            console.log("User profile:", user);// Log user Profile
+            console.log(user.emails?.[0]?.address);
+            console.log(user.user_id);
+          })
+
+        hanko?.validateSession()
+          .then((sessionStatus) => {
+            console.log("Session status:", sessionStatus);// Log session Status
+            console.log(sessionStatus.is_valid)
+          })
+      }, [hanko]);
+
+  return (
+    <div>
+      <HankoProfile/>
+      <LogoutButton/>
+    </div>
+  );
 }
 ```
 </Tab>
@@ -618,33 +513,36 @@ export default function Dashboard() {
 import HankoProfile from "@/components/HankoProfile";
 import LogoutButton from "@/components/LogoutButton";
 
-import { useUserData } from "@/hooks/useUserData";
-import { useSessionData } from "@/hooks/useSessionData";
+iimport { Hanko } from "@teamhanko/hanko-elements";
+import { useState, useEffect } from "react";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || "";
 
 export default function Dashboard() {
-  const { id, email, loading: userDataLoading, error: userDataError } = useUserData();
-  const { userID, jwt, isValid, loading: sessionDataLoading, error: sessionDataError } = useSessionData();
+    const [hanko, setHanko] = useState<Hanko>();
 
-  if(userDataLoading || sessionDataLoading){
-    return(
-      <div>
-        <HankoProfile></HankoProfile>
-        <LogoutButton></LogoutButton>
-        Loading.....
-      </div>
-    )
-  }
-  else if (isValid){
-    return (
-      <div>
-        <HankoProfile></HankoProfile>
-        <LogoutButton></LogoutButton>
-        <h2>Some user data:</h2>
-        <h2>Email: {email}</h2>
-        <h2>ID: {id}</h2>
-      </div>
-    );
-  }
+    useEffect(() => setHanko(new Hanko(hankoApi)), []);
+      useEffect(() => {
+        hanko?.getUser()
+          .then((user) => {
+            console.log("User profile:", user);// Log user Profile
+            console.log(user.emails?.[0]?.address);
+            console.log(user.user_id);
+          })
+
+        hanko?.validateSession()
+          .then((sessionStatus) => {
+            console.log("Session status:", sessionStatus);// Log session Status
+            console.log(sessionStatus.is_valid)
+          })
+      }, [hanko]);
+
+  return (
+    <div>
+      <HankoProfile/>
+      <LogoutButton/>
+    </div>
+  );
 }
 ```
 </Tab>
@@ -663,14 +561,12 @@ const hankoApiUrl = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
 export async function getUserData() {
 
   try {
-    const cookieToken = (await cookies()).get("hanko")?.value;
+    const token = (await cookies()).get("hanko")?.value;
 
-    const validationOptions = { 
-      method: 'GET',
-      headers: {
-        'Cookie': `hanko=${cookieToken}` // If using cookie
-        // 'Authorization': `Bearer ${token}` // If using Authorization header
-      }
+    const validationOptions = {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: `{"session_token":"${token}"}`
     }
 
     const validationResponse = await fetch(hankoApiUrl + '/sessions/validate', validationOptions); //Get session data
