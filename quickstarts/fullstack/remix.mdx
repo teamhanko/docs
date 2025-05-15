@@ -79,11 +79,12 @@ export { register, Hanko };
 ## Create Hanko components
 Lets create a folder called `components` and create two files, `HankoAuth.tsx` and `HankoProfile.jsx`.
 
-Both of these components use the Hanko client from [@teamhanko/hanko-elements](/guides/hanko-elements/introduction), this allows you subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onSessionCreated` event in the hanko auth triggers when a user successfully logs in. You can use these event to perform any desired action.
+Both of these components use the Hanko client from [@teamhanko/hanko-elements](/guides/hanko-elements/introduction).
 
 ### Hanko Auth
 
 Now Lets Setup the `HankoAuth.tsx` file to create a functioning login page.
+Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action.
 
 [For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
@@ -110,6 +111,7 @@ const HankoAuth = () => {
   useEffect(() => {
       if (hanko) {
           hanko.onSessionCreated(() => {
+              //Succesfully Logged In
               redirectAfterLogin();
           });
       }
@@ -143,8 +145,8 @@ export default HankoAuth;
 
 ### Hanko profile
 
-After setting up the HankoAuth lets Setup the `HankoProfile.jsx` file to create a interface where users can.\
-manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys` and `Sessions`.
+After setting up the HankoAuth lets Setup the `HankoProfile.jsx` file to create an interface where users can
+manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys`.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
@@ -235,9 +237,9 @@ They should look something like this👇
 
 ## Implement logout functionality
 
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Here we will make a logout button component that you can use anywhere.
+You can use `@teamhanko/hanko-elements` to easily logout users. Here we will make a logout button.
 
-For this example we will create a file at `components/LogoutButton.tsx` and insert the code below.
+Create `LogoutButton.tsx` and insert the code below.
 
 ```jsx components/LogoutButton.tsx
 import { useLoaderData, useNavigate } from "@remix-run/react";
