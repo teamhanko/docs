@@ -1755,6 +1755,22 @@ components:
                 type: string
                 format: base64url
                 example: Meprtysj5ZZrTlg0qiLbsZ168OtQMeGVAikVy2n1hvvG...
+        metadata:
+          $ref: "#/components/schemas/UserMetadata"
+    UserMetadata:
+      description: The public and unsafe metadata of a user
+      type: object
+      properties:
+        public_metadata:
+          type: object
+          additionalProperties: true
+          example:
+            role: admin
+        unsafe_metadata:
+          type: object
+          additionalProperties: true
+          example:
+            birthday: "2025-05-12"
     Emails:
       type: array
       items:

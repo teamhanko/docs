@@ -183,17 +183,64 @@ Each template has access to user data via the `.User` field, which includes:
     - `.User.Email.IsPrimary`: Indicates if the email is the primary address (boolean)
     - `.User.Email.IsVerified`: Indicates if the email is verified (boolean)
 - `.User.Username`: The user's username (string, optional)
+- `.User.Metadata`: The user's public and unsafe metadata (optional)
+    - `.User.Metadata.Public`: The user's public metadata (object)
+    - `.User.Metadata.Unsafe`: The user's unsafe metadata (object)
+
+#### Accessing user metadata
+
+`.User.Metadata.Public` and `.User.Metadata.Unsafe` can be accessed and queried using
+[GJSON Path Syntax](https://github.com/tidwall/gjson/blob/master/SYNTAX.md) (try it out in the
+[playground](https://gjson.dev/)).
+
+Assume that a user's public metadata consisted of the following data:
+
+```json
+{
+    "display_name": "GamerDude",
+    "favorite_games": [
+        {
+            "name": "Legends of Valor",
+            "genre": "RPG",
+            "playtime_hours": 142.3
+        },
+        {
+            "name": "Space Raiders",
+            "genre": "Sci-Fi Shooter",
+            "playtime_hours": 87.6
+        }
+    ]
+}
+```
+
+Then you could, for example, access this data in the following ways in your templates:
+
+```yaml
+display_name: '{{ .User.Metadata.Public "display_name" }}'
+favorite_games: '{{ .User.Metadata.Public "favorite_games" }}'
+favorite_games_with_playtime_over_100: '{{ .User.Metadata.Public "favorite_games.#(playtime_hours>100)" }}'
+favorite_genres: '{{ .User.Metadata.Public "favorite_games.#.genre" }}'
+```
+
+<Warning>
+    Ensure you use proper quoting when accessing metadata. `.User.Metadata.Public` and `.User.Metadata.Unsafe`
+    are function calls internally and and the given path argument must be a string, so it must be double quoted.
+    If you use use double quotes for your entire claim template then the path argument must be escaped, i.e.:
+
+    `"{{ .User.Metadata.Public \"display_name\" }}"`
+</Warning>
 
 ### Example configuration
 
 ```yaml
-role: "user"                               # Static value
-user_email: "{{.User.Email.Address}}"      # Templated string
-is_verified: "{{.User.Email.IsVerified}}"  # Boolean from user data
-metadata:                                  # Nested map
-  source: "hanko"
+role: "user"                                           # Static value
+user_email: "{{.User.Email.Address}}"                  # Templated string
+is_verified: "{{.User.Email.IsVerified}}"              # Boolean from user data
+metadata:                                              # Nested map
   greeting: "Hello {{.User.Username}}"
-scopes:                                    # Slice with templated value
+  source: '{{ .User.Metadata.Public "display_name" }}' # Data read from public metadata
+  ui_theme: '{{ .User.Metadata.Unsafe "ui_theme" }}'   # Data read from unsafe metadata
+scopes:                                                # Slice with templated value
     - "read"
     - "write"
     - "{{if .User.Email.IsVerified}}admin{{else}}basic{{end}}"
@@ -214,9 +261,6 @@ scopes:                                    # Slice with templated value
 - Templates must conform to valid [Go text/template syntax](https://pkg.go.dev/text/template). Invalid templates are
 logged and excluded from the generated token.
 - Boolean strings ("true" or "false") from templates are automatically converted to actual booleans.
-- The `.User.Email` object itself currently does not serialize accurately as a JSON object in the JWT payload. It is
-recommended to access specific fields (Address, IsVerified, IsPrimary) or construct custom representations using Go
-template expressions.
 
 ## Session JWT structure
 

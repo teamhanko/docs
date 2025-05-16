@@ -103,7 +103,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/UserBase"
           headers:
             X-Total-Count:
               $ref: "#/components/headers/X-Total-Count"
@@ -556,6 +556,78 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/users/{id}/metadata":
+    get:
+      summary: Get metadata of a user
+      tags:
+        - User Metadata Management
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: get-user-metadata
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserMetadata"
+        "204":
+          description: No content (user has no metadata)
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: Patch metadata of a user
+      description: |
+        Updates a users metadata by deep merging the metadata patch from
+        the request with existing metadata.
+        
+        Set the entire request to `null` to clear all metadata:
+        Set any of `public_metadata`, `private_metadata`, `unsafe_metadata` to null to
+        clear metadata for that category. 
+        
+        An empty object (`{}`) for the top level request object or an empty object for
+        `public_metadata`, `private_metadata` or the `unsafe_metadata` property represent
+        a noop patch. 
+        
+        Unknown top level keys besides `public_metadata`, `private_metadata` or `unsafe_metadata`
+        are ignored.
+        
+        All other top level request values (e.g. an empty string, a non-empty string, an array) result in a bad request.
+      tags:
+        - User Metadata Management
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: patch-user-metadata
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/UserMetadata"
+                - description: "The user metadata patch"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserMetadata"
+        "204":
+          description: No content (user has no metadata)
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/users/{id}/sessions":
     get:
       summary: Get users active sessions
@@ -891,6 +963,25 @@ components:
             code: 404
             message: Not found
   schemas:
+    UserMetadata:
+      description: User metadata
+      type: object
+      properties:
+        public_metadata:
+          type: object
+          additionalProperties: {}
+          example:
+            role: admin
+        private_metadata:
+          type: object
+          additionalProperties: {}
+          example:
+            internal_id: e6c19cfb-09a2-41e5-a908-e33193b7ca0a
+        unsafe_metadata:
+          type: object
+          additionalProperties: {}
+          example:
+            birthday: "2025-05-12"
     Identity:
       description: A third party provider identity
       type: object
@@ -945,7 +1036,7 @@ components:
       type: string
       format: uuid4
       example: c339547d-e17d-4ba7-8a1d-b3d5a4d17c1c
-    User:
+    UserBase:
       type: object
       required:
         - id
@@ -976,10 +1067,19 @@ components:
             $ref: "#/components/schemas/Email"
         username:
           $ref: "#/components/schemas/Username"
-        password:
-          $ref: "#/components/schemas/Password"
-        identities:
-          $ref: "#/components/schemas/Identities"
+    User:
+      allOf:
+        - $ref: "#/components/schemas/UserBase"
+        - type: object
+          properties:
+            otp:
+              $ref: "#/components/schemas/OTP"
+            password:
+              $ref: "#/components/schemas/Password"
+            identities:
+              $ref: "#/components/schemas/Identities"
+            metadata:
+              $ref: "#/components/schemas/UserMetadata"
     Username:
       description: The username of the user
       type: object
