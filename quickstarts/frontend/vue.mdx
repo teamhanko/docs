@@ -99,7 +99,7 @@ export default defineConfig({
 })
 ```
 
-## Enable TS support for Vue components
+## Setup TS support for Vue components
 TypeScript doesn't understand .vue files by default, which can cause IDE errors or issues during development.
 
 To fix this we will create a new file `shims-vue.d.ts` in our `src/` directory.
@@ -149,7 +149,8 @@ Now Lets Setup the `HankoAuth.vue` file to create a functioning login component.
 </script>
 
 <template>
-  <hanko-auth @onSessionCreated="redirectAfterLogin" />
+<!-- The onSessionCreated event gets called when the user succesfully logs in -->
+<hanko-auth @onSessionCreated="redirectAfterLogin" />
 </template>
 ```
 
@@ -289,9 +290,9 @@ They should look something like this👇
 
 ## Implement logout functionality
 
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Here we will make a logout button component that you can use anywhere.
+You can use `@teamhanko/hanko-elements` to easily logout users. Here we will make a logout button.
 
-For this QuickStart we will create a file at `components/LogoutButton.vue` and insert the code below.
+Create `LogoutButton.vue` and insert the code below.
 
 ```jsx src/components/LogoutButton.vue
   <script setup lang="ts">
