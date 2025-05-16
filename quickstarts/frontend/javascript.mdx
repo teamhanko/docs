@@ -4,53 +4,59 @@ title: Integrate Hanko with JavaScript
 description: Learn how to quickly add authentication and user profile in your vanilla Javascript app using Hanko.
 ---
 
+
+## Setup your Hanko project
+Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+
+<Note>
+  During creation make sure to input the URL you will be developing on as the `APP URL`.
+
+  Keep in mind that during development the url you are working on cant include an ip.
+  If you use the Live Server extention make sure you are testing at `localhost:PORT` instead of `ip:PORT`.
+
+  (Most likely your URL will be http://localhost:5000/) \
+\
+  If you already have a project you can change the URL at:\
+  `'your project' > Settings > URLs > App URL`.
+</Note>
+
+
 ## Add the Hanko API URL
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your `.env` file.
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in a config file..
 
-```sh .env
-HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+```js config.js
+  export const config = {
+      HANKO_API_URL: 'https://45449ca9-9bc5-4304-81dd-fa31e06b4190.hanko.io'
+  }
 ```
 
 <Note>
-  If you are self-hosting, you need to provide the URL of your running Hanko
+  If you are self-hosting you need to provide the URL of your running Hanko
   backend.
 </Note>
+
 
 ## Add `<hanko-auth>` component
 
 The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the `register` function from `@teamhanko/hanko-elements`. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, use it in your markup.
 
-```html login.html
+```html index.html
 <body>
-  <hanko-auth />
+  <hanko-auth> </hanko-auth>
 
   <script type="module">
-    import { register } from "https://esm.run/@teamhanko/hanko-elements";
-
-    await register(process.env.HANKO_API_URL);
-  </script>
-</body>
-```
-
-## Define event callbacks
-
-The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific [events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events). It simplifies the process of subscribing to events, such as user logins.
-
-```html login.html
-<body>
-  <hanko-auth />
-
-  <script type="module">
-    import { register } from "https://esm.run/@teamhanko/hanko-elements";
-
-    const { hanko } = await register(process.env.HANKO_API_URL);
-
-    hanko.onSessionCreated(() => {
-      // successfully logged in, redirect to a page in your application
-      document.location.href = "...";
-    });
-  </script>
+      import { config } from './config.js';
+      import { register } from "https://esm.run/@teamhanko/hanko-elements";
+  
+      const { hanko } = await register(config.HANKO_API_URL);
+  
+      hanko.onSessionCreated(() => {
+        // successfully logged in, redirect to a page in your application
+        document.location.href = "/dashboard.html";
+      });
+    </script>
+    
 </body>
 ```
 
@@ -63,15 +69,17 @@ By now, your sign-up and sign-in features should be working. You should see an i
 
 The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
 
-```html profile.html
+```html dashboard.html
 <body>
-  <hanko-profile />
 
-  <script type="module">
-    import { register } from "https://esm.run/@teamhanko/hanko-elements";
+    <hanko-profile> </hanko-profile> 
 
-    await register(process.env.HANKO_API_URL);
-  </script>
+    <script type="module">
+        import { config } from './config.js';
+        import { register } from "https://esm.run/@teamhanko/hanko-elements";
+    
+        const { hanko } = await register(config.HANKO_API_URL);
+    </script>
 </body>
 ```
 
@@ -90,30 +98,30 @@ It should look like this 👇
 Use the Hanko client provided by `@teamhanko/hanko-elements` to log out users. On logout a custom event is
 dispatched that you can subscribe to:
 
-```html profile.html
+```html dashboard.html
 <body>
-  <nav>
-    <a href="#" id="logout-link">Logout</a>
-  </nav>
 
-  <hanko-profile />
+    <hanko-profile> </hanko-profile> 
+    <button id="logout-button">Log Out</button>
 
-  <script type="module">
-    import { register } from 'https://esm.run/@teamhanko/hanko-elements';
+    <script type="module">
+        import { config } from './config.js';
+        import { register } from "https://esm.run/@teamhanko/hanko-elements";
+    
+        const { hanko } = await register(config.HANKO_API_URL);
 
-    const { hanko } = await register(process.env.HANKO_API_URL);
+        document.getElementById("logout-button")
+        .addEventListener("click", () => {
+            console.log("test");
+            hanko.user.logout();
+        });
 
-    document.getElementById("logout-link")
-      .addEventListener("click", (event) => {
-          event.preventDefault();
-          hanko.user.logout();
-      });
-
-    hanko.onUserLoggedOut(() => {
-        // successfully logged out, redirect to a page in your application
-        document.location.href = "..."
-    })
-  </script>
+        hanko.onUserLoggedOut(() => {
+            // successfully logged out, redirect to a page in your application
+            document.location.href = "/"
+            console.log("test");
+        })
+    </script>
 </body>
 ```
 
