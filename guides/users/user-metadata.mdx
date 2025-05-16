@@ -11,7 +11,9 @@ three types that differ as to how they can be accessed and modified:
 | Public        | Read access                  | Read and write access |
 | Unsafe        | Read access and write access | Read and write access |
 
-Each metadata type is currently limited to 3000 characters.
+Each metadata type supports a maximum of 3,000 characters. Metadata is stored as compact JSON (whitespace is ignored).
+JSON syntax characters (`{`, `:`, `"`, `}`) count toward the character limit.
+Multibyte UTF-8 characters (like emojis or non-Latin characters) count as 1 character each.
 
 ## Private metadata
 
@@ -21,13 +23,13 @@ configuration, or access control details).
 ### Accessing private Metadata
 
 Private metadata can be read through the Admin API only using the
-[Get metadata of a user](/api-reference/admin/user-management/get-metadata-of-a-user)
+[Get metadata of a user](/api-reference/admin/user-metadata-management/get-metadata-of-a-user)
 endpoint.
 
 ### Setting private metadata
 
 Private metadata can be set and modified through the Admin API only by using the
-[Patch metadata of a user](/api-reference/admin/user-management/patch-metadata-of-a-user) endpoint.
+[Patch metadata of a user](/api-reference/admin/user-metadata-management/patch-metadata-of-a-user) endpoint.
 
 ## Public metadata
 
@@ -59,7 +61,7 @@ the session JWT:
 ### Setting public metadata
 
 Public metadata can be set and modified through the Admin API only by using the
-[Patch metadata of a user](/api-reference/admin/user-management/patch-metadata-of-a-user) endpoint.
+[Patch metadata of a user](/api-reference/admin/user-metadata-management/patch-metadata-of-a-user) endpoint.
 
 ## Unsafe metadata
 
@@ -98,6 +100,6 @@ Unsafe metadata can be set and modified through the Public API and the Admin API
 
 - `Admin API`:
     - Unsafe metadata can be set using the
-      [Patch metadata of a user](/api-reference/admin/user-management/patch-metadata-of-a-user)
+      [Patch metadata of a user](/api-reference/admin/user-metadata-management/patch-metadata-of-a-user)
         endpoint.
 
