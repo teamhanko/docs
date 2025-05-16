@@ -250,8 +250,8 @@ Use the `hanko-logged-in` middleware to secure any route and force unauthenticat
 </script>
 ```
 
-A global server middleware is added by `@nuxtjs/hanko`. After decoding and validating the JWT for the request, a new `hanko` property is added to the event context.
-You can check the value of `event.context.hanko` to see if the request was authenticated and the decoded JWT payload. The user's id is accessible though the `sub` claim/property.
+A global server middleware is added by `@nuxtjs/hanko`. After decoding and validating the session token for the request, a new `hanko` property is added to the event context.
+You can check the value of `event.context.hanko` to see if the request was authenticated. The user's id is accessible though the `sub` claim/property.
 
 ```jsx /server/api/endpoint.ts
 export default defineEventHandler(async (event) => {
