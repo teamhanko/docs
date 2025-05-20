@@ -4,27 +4,75 @@ title: Integrate Hanko with Svelte
 description: Learn how to quickly add authentication and user profile in your Svelte app using Hanko.
 ---
 
-## Install `@teamhanko/hanko-elements`
+## Create a Svelte application
 
-Once you've initialized your Svelte app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth`, `hanko-profile` and `hanko-events`.
+To setup our Svelte Frontend we will use [vite](https://vite.dev/) as a build tool.
+
+Run the following command to [create a new Vite Svelte application](https://vite.dev/guide/):
 
 <CodeGroup>
 ```bash npm
-npm install @teamhanko/hanko-elements
+npm create vite@latest project-name -- --template svelte-ts
 ```
 
 ```bash pnpm
-pnpm add @teamhanko/hanko-elements
+pnpm create vite project-name --template svelte-ts
 ```
 
 ```bash bun
-bun add @teamhanko/hanko-elements
+bun create vite project-name --template svelte-ts
 ```
 
 ```bash yarn
-yarn add @teamhanko/hanko-elements
-```
+yarn create vite project-name --template svelte-ts
+``` 
+
 </CodeGroup>
+
+
+## Install `@teamhanko/hanko-elements`
+
+Once you've initialized your svelte app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+
+We will also install the `svelte-routing` package to handle routing and navigation.
+<CodeGroup>
+```bash npm
+cd project-name
+npm install @teamhanko/hanko-elements svelte-routing
+``` 
+
+```bash pnpm
+cd project-name
+pnpm add @teamhanko/hanko-elements svelte-routing
+```
+
+```bash bun
+cd project-name
+bun add @teamhanko/hanko-elements svelte-routing
+```
+
+```bash yarn
+cd project-name
+yarn add @teamhanko/hanko-elements svelte-routing
+```
+
+</CodeGroup>
+
+
+
+## Setup your Hanko project
+Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+
+<Note>
+  During creation make sure to input the URL you will be developing on as the `APP URL`.
+  (Most likely http://localhost:5173/) \
+\
+  If you already have a project you can change the URL at:\
+  `'your project' > Settings > URLs > App URL`.
+</Note>
+
+
+
 
 ## Add the Hanko API URL
 
@@ -39,22 +87,27 @@ VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
   backend.
 </Note>
 
-## Add `<hanko-auth>` component
+## Create Hanko components
+Lets create a folder called `components` and create two files, `HankoAuth.svelte` and `HankoProfile.svelte`.
 
-The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the register function from `@teamhanko/hanko-elements` into your Svelte component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Then use the `<hanko-auth>` element in your component.
+Both of these components use the Hanko client from [@teamhanko/hanko-elements](/guides/hanko-elements/introduction), this allows you subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onSessionCreated` event in the hanko auth triggers when a user successfully logs in. You can use these event to perform any desired action.
 
+### Hanko Auth
+Now Lets Setup the `HankoAuth.svelte` file to create a functioning login page.
 
-```html components/HankoAuth.svelte
-<script lang="ts">
+[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
+
+```jsx components/HankoAuth.svelte
+<script>
   import { onMount } from "svelte";
-  import { navigate } from "svelte-routing";
+	import { navigate } from 'svelte-routing';
   import { register } from "@teamhanko/hanko-elements";
 
   const hankoApi = import.meta.env.VITE_HANKO_API_URL;
 
   const redirectAfterLogin = () => {
-    // successfully logged in, redirect to a page in your application
-    navigate("/dashboard");
+    //User logged in
+    navigate("/dashboard");//url to navigate to once logged in
   };
 
   onMount(async () => {
@@ -67,73 +120,209 @@ The `<hanko-auth>` web component adds a login interface to your app. Begin by im
 <hanko-auth on:onSessionCreated={redirectAfterLogin} />
 ```
 
-By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
-<Frame>
-<img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500" style={{ borderRadius: '0.5rem' }}/>
-</Frame>
+After you created the `HankoAuth` component, import and add it in any page.\
+Just like this.
 
-## Add `<hanko-profile>` component
+```tsx pages/HomePage.svelte
+  <script>
+    import HankoAuth from "../components/HankoAuth.svelte";
+  </script>
 
-The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+  <HankoAuth/>
+```
 
-```html components/HankoProfile.svelte
-<script lang="ts">
-  import { onMount } from "svelte";
-  import { register } from "@teamhanko/hanko-elements";
 
-  const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+### Hanko profile
 
-  onMount(async () => {
-    register(hankoApi).catch((error) => {
-      // handle error
+After setting up the HankoAuth lets Setup the `HankoProfile.svelte` file to create a interface where users can.\
+manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys` and `Sessions`.
+
+[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
+
+```jsx components/HankoAuth.svelte
+<script>
+    import { register } from "@teamhanko/hanko-elements";
+    import { onMount } from "svelte";
+
+    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+  
+    onMount(async () => {
+      register(hankoApi).catch((error) => {
+        // handle error
+      });
     });
-  });
 </script>
-
+  
 <hanko-profile />
 ```
 
-It should look like this 👇
-<Frame>
-<img
-  src="/images/fullstack-guide/next-two.png"
-  alt="profile page"
-  width="500"
-  style={{ borderRadius: '0.5rem' }}
-/>
-</Frame>
+After you created the `HankoProfile` component, simply import it into any page.\
+In our case we created a dashboardPage.svelte file to show the HankoProfile as our Hanko Auth redirects to `/dashboard`.
 
-## Implement logout
 
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we make a logout button component that you can use anywhere.
-
-```html components/LogoutButton.svelte
+```jsx pages/dashboardPage.svelte
 <script>
-  import { navigate } from "svelte-routing";
-  import { Hanko } from "@teamhanko/hanko-elements";
-
-  const hankoApi = import.meta.env.VITE_HANKO_API_URL;
-
-  const hanko = new Hanko(hankoApi);
-
-  const logout = () => {
-    hanko.user.logout().catch((error) => {
-      // handle error
-    });
-    navigate("/");
-  };
+	  import HankoProfile from './../components/HankoProfile.svelte';
 </script>
 
-<button on:click={logout}>Logout</button>
+<HankoProfile/>
+```
+
+## Setup your routes
+
+After you created the `HomePage.svelte` and `DashboardPage.svelte` you are able to import them into your svelte `App.svelte`.
+We will use `svelte-router` to setup the routes of your app.
+
+```jsx App.svelte
+
+<script>
+  import { Router, Route } from "svelte-routing";
+  import HomePage from "./pages/HomePage.svelte";
+  import DashboardPage from "./pages/DashboardPage.svelte";
+</script>
+
+<Router>
+    <Route path="/"><HomePage/></Route>
+    <Route path="/dashboard"><DashboardPage/></Route>
+</Router>
+
+```
+
+By now you should be able to go to `/` to see the `<HankoAuth>`, and to `/dashboard` to see the `<HankoProfile>`.
+
+They should look something like this👇
+<Frame>
+  <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex', backgroundColor: 'white'}}>
+    <img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500"/>
+    <img src="/images/fullstack-guide/next-two.png" alt="profile page" width="500" />
+  </div>
+</Frame>
+
+
+## Implement logout functionality
+
+You can use `@teamhanko/hanko-elements` to easily manage user logouts. Here we will make a logout button component that you can use anywhere.
+
+For this QuickStart we will create a file at `components/LogoutButton.svelte` and insert the code below.
+
+```jsx components/LogoutButton.svelte
+<script>
+    import { Hanko } from "@teamhanko/hanko-elements";
+    import { navigate } from 'svelte-routing';
+
+    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+  
+    const hanko = new Hanko(hankoApi);
+    const logout = () => {
+      hanko.logout().catch((error) => {
+        //Handle Error
+        console.log("Error during logging out : " + error);
+      });
+      navigate("/");//Url to redirect to
+    };
+  </script>
+  
+  <button on:click={logout}>Logout</button>
 ```
 
 ## Customize component styles
 
 You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](/guides/hanko-elements/customize-appearance).
 
-## Authenticate backend requests
+## Securing routes
+To secure our routes we can await a fetch request to a running [Hanko Backend](/quickstarts/backend/node) to validate our hanko cookie token.
 
-To authenticate requests on your backend with Hanko, refer to our [backend guide](/quickstarts/backend).
+Lets set up a Protected route to do this for us.
+Create a new Svelte component at `components/ProtectedRoute.svelte`.
+
+```jsx components/ProtectedRoute.svelte
+<script>
+    import { onMount } from "svelte";
+    import { navigate } from "svelte-routing";
+
+    async function validateSession() {
+        try {
+            const response = await fetch("http://localhost:5001/validate", {
+            credentials: "include",
+            });
+            return response.ok;
+
+        } catch (error) {
+            return false;
+        }
+    }
+
+    onMount(async () => {
+        if(!await validateSession()){
+            navigate("/");
+        }
+    })
+</script>
+
+<slot/>
+```
+
+Lets import this `ProtectedRoute.svelte` to your `App.svelte` file.\
+To use the Protected route wrap your `Dashboard` in the Protected Route;
+
+
+```jsx App.svelte
+<script>
+  import { Router, Route } from "svelte-routing";
+  import HomePage from "./pages/HomePage.svelte";
+  import DashboardPage from "./pages/DashboardPage.svelte";
+  import ProtectedRoute from "./components/ProtectedRoute.svelte";
+</script>
+
+<Router>
+    <Route path="/"><HomePage/></Route>
+    <Route path="/dashboard">
+      <ProtectedRoute>
+        <DashboardPage/>
+      </ProtectedRoute>
+    </Route>
+</Router>
+```
+
+## Getting User and Session Data
+
+Lets use the Hanko SDK to Get User Data to display on the dashboard.
+For the User Information we will use [hanko.GetUser()](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/index.html#getting-the-user-object)
+
+Lets update the `dashboard` page to log some of the information from the User And Session.
+
+```jsx pages/DashboardPage.svelte
+<script>
+	  import HankoProfile from './../components/HankoProfile.svelte';
+    import LogoutButton from './../components/LogoutButton.svelte';
+    import { onMount } from 'svelte';
+    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+    let email = '';
+    let id = '';
+
+    async function fetchUserData() {
+      const hanko = new Hanko(hankoApi);
+      const _email = (await hanko.getUser()).emails?.[0]?.address;
+      const _id = (await hanko.getUser()).user_id;
+      return { email: _email, id: _id };
+    }
+
+    onMount(async () => {
+      const data = await fetchUserData();
+      email = data.email;
+      id = data.id;
+    });
+
+</script>
+
+<div>
+    <HankoProfile/>
+    <LogoutButton/>
+    <h2>{email}</h2>
+    <h2>{id}</h2>
+</div>
+```
 
 ## Try it yourself
 
