@@ -7,15 +7,27 @@ sidebarTitle: Google
 
 <Step title="Obtain Google OAuth Credentials">
 
-- Let's get the redirect url first from [Hanko console](https://cloud.hanko.io/), as you'll need it in a moment. To do so, sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
+- To start out lets get the redirect url from the [Hanko console](https://cloud.hanko.io/), We will need this in a moment.
+  To do so, sign in to hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Social connections'.
+  Copy the Redirect URL.
 
     <img
-      src="/images/oauth-providers/hanko-callback-url.png"
+      src="/images/oauth-providers/google/socialConnections.png"
       alt="Hanko Callback URL"
       width={500}
     />
 
-- Navigate to [Google cloud console](https://console.cloud.google.com/) and click on 'Select a project' at the top left.
+- Let's also double check that our allowed redirect URL is set to the same URL as our App.
+  To do this, navigate to the 'URLs' tab in the left sidebar.
+  Scroll down and make sure that Allowed redirect URLs includes your App URL + '**'.
+
+    <img
+      src="/images/oauth-providers/google/allowedRedirectURL.png"
+      alt="Hanko allowed redirect url"
+      width={500}
+    />
+
+- Navigate to [Google cloud console](https://console.cloud.google.com/), login and click on 'Select a project' at the top left.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -51,52 +63,50 @@ sidebarTitle: Google
       width={500}
     />
 
-- Select 'User Type' depending on your requirements and click 'Create'
+- Configure your Google Auth Platform, press on Get started to set it up.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
-      src="/images/oauth-providers/google/five.png"
-      alt="Google settings option"
+      src="/images/oauth-providers/google/googleAuthConfig.png"
+      alt="Google auth configuration"
       width={500}
     />
 
-- Next provide 'App Information', 'App logo (optional)', and 'App Domain'. You do not need to add an Authorised domain at this point. An entry will be added automatically once you set up your credentials. Scroll down and click 'Save and continue'.
-
+- Name your App and select a User support Email.
     <img
       className="border-[1px] border-black rounded-[10px]"
-      src="/images/oauth-providers/google/six.png"
-      alt="Google settings option"
+      src="/images/oauth-providers/google/configurationOne.png"
+      alt="Google App Information"
       width={500}
     />
 
-- On the 'Scopes' view, click 'Add or remove scopes' and select the `./auth/userinfo.email` scope. Click 'Update', then 'Save and continue'.
-
+- Select 'User Type' depending on your requirements
     <img
       className="border-[1px] border-black rounded-[10px]"
-      src="/images/oauth-providers/google/seven.png"
-      alt="Google settings option"
-      width={600}
-    />
-
-- (Optional, only available for an External project user type): On the 'Test users' view, click 'Add users' to set up test users as long as your project is unpublished. Click 'Save and continue'. Now, review your data in the 'Summary view', then click 'Back to dashboard'.
-
-    <img
-      className="border-[1px] border-black rounded-[10px]"
-      src="/images/oauth-providers/google/eight.png"
-      alt="Google settings option"
-      width={600}
-    />
-
-- Click 'Credentials' in the left sidebar, then click 'Create credentials' and select 'OAuth client ID'
-
-    <img
-      className="border-[1px] border-black rounded-[10px]"
-      src="/images/oauth-providers/google/nine.png"
-      alt="Google settings option"
+      src="/images/oauth-providers/google/configurationTwo.png"
+      alt="Google Project Audience"
       width={500}
     />
 
-- On the 'Create OAuth client' ID view, select 'Web application' as application type.
+- Go to Google Auth Platform > AudiencePublish and your app or add test users.
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/Test Users.png"
+      alt="Google test users"
+      width={500}
+    />
+
+
+- Click 'Clients' in the left sidebar, then click 'Create client'.
+
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/createClient.png"
+      alt="Create oauth client"
+      width={500}
+    />
+
+- select 'Web application' as application type.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -105,12 +115,12 @@ sidebarTitle: Google
       width={500}
     />
 
-- Now add your 'App name' and under 'Authorized redirect URIs' click Add URI and add your the Hanko redirect URL that you obtained in the start. Then click 'Create'.
+- Select your name and paste the previous Redirect URL (that you got from the hanko console), as an Authorized redirect URL.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
-      src="/images/oauth-providers/google/eleven.png"
-      alt="Google settings option"
+      src="/images/oauth-providers/google/clientSetup.png"
+      alt="Google auth client setup"
       width={500}
     />
 
@@ -124,25 +134,7 @@ sidebarTitle: Google
 </Step>
 <Step title="Configure Google OAuth Credentials with Hanko">
 
-- Head back to Identity providers in Hanko and under 'Identity provider settings' configure the following:
-
-    <img
-      src="/images/oauth-providers/hanko-callback-url.png"
-      alt="Hanko Callback URL"
-      width={500}
-    />
-
-    - **Error Redirect URL**: This URL, on your frontend, is where the Hanko API redirects if an error occurs during third-party sign-in. With hanko-elements web components, it should link to the page embedding the web component to process errors correctly.
-    - **Allowed Redirect URL**: A URL on your frontend that the Hanko API can redirect to after a successful third-party authentication. Using hanko-elements web components? Make it the URL of the embedding page.
-
-              <Note>
-              Supports wildcard matching through globbing:
-               - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
-               - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
-               -  Use ** to act as a super-wildcard/match-all.
-              </Note>
-
-- In the 'Providers' section, select Google and enable its toggle switch.
+- In the 'Social connections' section, select Google and enable its toggle switch.
 - Input the earlier noted 'Client ID' and 'Client Secret', then click 'Save'.
 
     <img
