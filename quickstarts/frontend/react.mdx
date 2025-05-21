@@ -293,7 +293,7 @@ Create `LogoutButton.tsx` and insert the code below.
 You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](/guides/hanko-elements/customize-appearance).
 
 ## Securing routes
-To secure our routes we can await a fetch request to a running [Hanko Backend](/quickstarts/backend/node) to validate our session token.
+To secure our routes we should validate the session token at the backend. Please refer to our [backend guides](/quickstarts/backend).
 
 Lets set up a Private route to do this for us.
 Create a new React component at `components/PrivateRoute.tsx`.
