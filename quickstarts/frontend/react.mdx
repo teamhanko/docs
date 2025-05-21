@@ -67,10 +67,7 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 <Note>
   During creation make sure to input the URL you will be developing on as the `APP URL`.
-  (Most likely http://localhost:5173/) \
-\
-  If you already have a project you can change the URL at:\
-  `'your project' > Settings > URLs > App URL`.
+  (Most likely http://localhost:5173/) 
 </Note>
 
 
@@ -91,11 +88,10 @@ VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 ## Create Hanko components
 Create a folder called `components` and create two files in it, `HankoAuth.tsx` and `HankoProfile.tsx`.
 
-
 ### Typescript
 
 To get these elements to work with typescript, currently we must add the types to the project.
-You can do this by creating a file called `custom.d.ts` and placing this in your apps root / src folder.
+To do do this, create a file called `custom.d.ts` and place it in your apps root / src folder.
 
 ```jsx src/custom.d.ts
 import { HankoAuthElementProps, HankoProfileElementProps, HankoEventsElementProps } from "@teamhanko/hanko-elements";
@@ -172,8 +168,8 @@ export default function LoginPage() {
 
 ### Hanko profile
 
-After setting up the HankoAuth lets Setup the `HankoProfile.jsx` file to create an interface where users can
-manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys`.
+After setting up the HankoAuth let's set up the `HankoProfile.jsx` file to create an interface where users can
+manage their `Email Addresses` and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
