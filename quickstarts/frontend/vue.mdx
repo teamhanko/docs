@@ -57,10 +57,7 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 <Note>
   During creation make sure to input the URL you will be developing on as the `APP URL`.\
-  (Most likely http://localhost:5173/) \
- \
-  If you already have a project you can change the URL at:\
-  `'your project' > Settings > URLs > App URL`.
+  (Most likely http://localhost:5173/) 
 </Note>
 
 ## Add the Hanko API URL
@@ -115,13 +112,13 @@ declare module '*.vue' {
 
 
 ## Create Hanko components
-Lets create a folder called `components` and create two files, `HankoAuth.vue` and `HankoProfile.vue`.
-
-Both of these components use the Hanko client from [@teamhanko/hanko-elements](/guides/hanko-elements/introduction), this allows you subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onSessionCreated` event in the hanko auth triggers when a user successfully logs in. You can use these event to perform any desired action.
+Create a folder called `components` and create two in it, `HankoAuth.vue` and `HankoProfile.vue`.
 
 ### Hanko Auth
 
-Now Lets Setup the `HankoAuth.vue` file to create a functioning login component.
+Now lets setup the `HankoAuth.vue` file to create a functioning login component.
+
+Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action (e.g. redirect to your dashboard).
 
 [For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
@@ -156,8 +153,8 @@ Now Lets Setup the `HankoAuth.vue` file to create a functioning login component.
 
 ### Hanko profile
 
-After setting up the HankoAuth lets Setup the `HankoProfile.vue` file to create a interface where users can.\
-manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys` and `Sessions`.
+After setting up the HankoAuth let's set up the `HankoProfile.vue` file to create a interface where users can.\
+manage their `Email Addresses` and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
@@ -184,7 +181,7 @@ manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys` and `Se
 ## Setup routes and views
 
 To route our app we will use the `RouterView` component from the vue-router.
-First lets set up our views which will be used by the router.
+First let's set up our views which will be used by the router.
 
 
 ### Create Views
