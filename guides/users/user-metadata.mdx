@@ -1,0 +1,105 @@
+---
+title: User Metadata
+---
+
+Hanko allows for defining arbitrary user metadata. Metadata can be categorized into
+three types that differ as to how they can be accessed and modified:
+
+| Metadata type | Public API                   | Admin API             |
+|---------------|------------------------------|-----------------------|
+| Private       | No read or write access      | Read and write access |
+| Public        | Read access                  | Read and write access |
+| Unsafe        | Read access and write access | Read and write access |
+
+Each metadata type supports a maximum of 3,000 characters. Metadata is stored as compact JSON (whitespace is ignored).
+JSON syntax characters (`{`, `:`, `"`, `}`) count toward the character limit.
+Multibyte UTF-8 characters (like emojis or non-Latin characters) count as 1 character each.
+
+## Private metadata
+
+Private metadata should be used for sensitive data that should not be exposed to the client (e.g., internal flags/ids,
+configuration, or access control details).
+
+### Accessing private Metadata
+
+Private metadata can be read through the Admin API only using the
+[Get metadata of a user](/api-reference/admin/user-metadata-management/get-metadata-of-a-user)
+endpoint.
+
+### Setting private metadata
+
+Private metadata can be set and modified through the Admin API only by using the
+[Patch metadata of a user](/api-reference/admin/user-metadata-management/patch-metadata-of-a-user) endpoint.
+
+## Public metadata
+
+Public metadata should be used for non-sensitive information that you want accessible but not modifiable by the client
+(e.g., certain user roles, UI preferences, display options).
+
+### Accessing public metadata
+
+Public metadata can be read through the Public API, the Admin API and in JWT templates for customizing
+the session JWT:
+
+- `Public API`:
+    - Public metadata is returned in the `user` object in the payload on the `success` state in a
+      [Login](/api-reference/flow/login) and [Registration](/api-reference/flow/registration) flow as well
+      as in the payload on the `profile_init` state in a [Profile](/api-reference/flow/profile) flow.
+    - Public metadata is returned as part of the response of the
+      [Get a user by ID](/api-reference/public/user-management/get-a-user-by-id) endpoint.
+- `Admin API`:
+    - Public metadata is returned as part of the response of the
+      [Get metadata of a user](/api-reference/admin/user-metadata-management/get-metadata-of-a-user)
+      endpoint.
+    - Public metadata is returned as part of the response of the
+      [Get a user by ID](/api-reference/admin/user-management/get-a-user-by-id) endpoint.
+- `JWT Templates`:
+    - Public metadata can be accessed through the `User` context object available on session JWT customization.
+      See [Session token customization](/guides/sessions/session-management#session-token-customization) for more
+      details.
+
+### Setting public metadata
+
+Public metadata can be set and modified through the Admin API only by using the
+[Patch metadata of a user](/api-reference/admin/user-metadata-management/patch-metadata-of-a-user) endpoint.
+
+## Unsafe metadata
+
+Unsafe metadata should be used for non-sensitive, temporary or experimental data that doesn't need strong safety
+guarantees.
+
+### Accessing unsafe metadata
+
+Unsafe metadata can be read through the Public API, the Admin API and in JWT templates for customizing
+the session JWT:
+
+- `Public API`:
+  - Unsafe metadata is returned in the `user` object in the payload on the `success` state in a `Login` and `Registration` flow as well
+    as in the payload on the `profile_init` state in a `Profile` flow.
+  - Unsafe metadata is returned as part of the response of the
+    [Get a user by ID](/api-reference/public/user-management/get-a-user-by-id) endpoint.
+- `Admin API`:
+  - Unsafe metadata is returned as part of the response of the
+    [Get metadata of a user](/api-reference/admin/user-metadata-management/get-metadata-of-a-user)
+    endpoint.
+  - Unsafe metadata is returned as part of the response of the
+    [Get a user by ID](/api-reference/admin/user-management/get-a-user-by-id) endpoint.
+- `JWT Templates`:
+  - Unsafe metadata can be accessed through the `User` context object available on session JWT customization.
+    See [Session token customization](/guides/sessions/session-management#session-token-customization) for more
+    details.
+
+
+### Setting unsafe metadata
+
+Unsafe metadata can be set and modified through the Public API and the Admin API:
+
+- `Public API`:
+    - Unsafe metadata can be set using the `patch_metadata` action in the
+      [Profile](/api-reference/flow/profile) flow.
+
+- `Admin API`:
+    - Unsafe metadata can be set using the
+      [Patch metadata of a user](/api-reference/admin/user-metadata-management/patch-metadata-of-a-user)
+        endpoint.
+

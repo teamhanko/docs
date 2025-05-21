@@ -64,7 +64,8 @@
               {
                 "group": "Users",
                 "pages": [
-                  "guides/users/get-user-data"
+                  "guides/users/get-user-data",
+                  "guides/users/user-metadata"
                 ]
               },
               {
@@ -290,6 +291,13 @@
                   "api-reference/admin/user-management/create-a-new-user",
                   "api-reference/admin/user-management/get-a-user-by-id",
                   "api-reference/admin/user-management/delete-a-user-by-id"
+                ]
+              },
+              {
+                "group": "User Metadata Management",
+                "pages": [
+                  "api-reference/admin/user-metadata-management/get-metadata-of-a-user",
+                  "api-reference/admin/user-metadata-management/patch-metadata-of-a-user"
                 ]
               },
               {
