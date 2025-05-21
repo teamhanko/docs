@@ -65,10 +65,7 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 <Note>
   During creation make sure to input the URL you will be developing on as the `APP URL`.
-  (Most likely http://localhost:5173/) \
-\
-  If you already have a project you can change the URL at:\
-  `'your project' > Settings > URLs > App URL`.
+  (Most likely http://localhost:5173/) 
 </Note>
 
 
@@ -88,12 +85,10 @@ VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 </Note>
 
 ## Create Hanko components
-Lets create a folder called `components` and create two files, `HankoAuth.svelte` and `HankoProfile.svelte`.
-
-Both of these components use the Hanko client from [@teamhanko/hanko-elements](/guides/hanko-elements/introduction), this allows you subscribe to specific [events](/guides/hanko-elements/using-frontend-sdk#events). For instance, the `onSessionCreated` event in the hanko auth triggers when a user successfully logs in. You can use these event to perform any desired action.
+Create a folder called `components` and create two files in it, `HankoAuth.svelte` and `HankoProfile.svelte`.
 
 ### Hanko Auth
-Now Lets Setup the `HankoAuth.svelte` file to create a functioning login page.
+Now let's set up the `HankoAuth.svelte` file to create a functioning login page.
 
 [For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
@@ -134,8 +129,8 @@ Just like this.
 
 ### Hanko profile
 
-After setting up the HankoAuth lets Setup the `HankoProfile.svelte` file to create a interface where users can.\
-manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys` and `Sessions`.
+After setting up the HankoAuth let's set up the `HankoProfile.svelte` file to create a interface where users can.\
+manage their `Email Addresses` and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
@@ -201,7 +196,7 @@ They should look something like this👇
 
 ## Implement logout functionality
 
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Here we will make a logout button component that you can use anywhere.
+You can use `@teamhanko/hanko-elements` to easily log users out. Here we will make a logout button component that you can use anywhere.
 
 For this QuickStart we will create a file at `components/LogoutButton.svelte` and insert the code below.
 
@@ -232,7 +227,7 @@ You can customize the appearance of `hanko-auth` and `hanko-profile` components 
 ## Securing routes
 To secure our routes we can await a fetch request to a running [Hanko Backend](/quickstarts/backend/node) to validate our hanko cookie token.
 
-Lets set up a Protected route to do this for us.
+Let's set up a Protected route to do this for us.
 Create a new Svelte component at `components/ProtectedRoute.svelte`.
 
 ```jsx components/ProtectedRoute.svelte
@@ -262,7 +257,7 @@ Create a new Svelte component at `components/ProtectedRoute.svelte`.
 <slot/>
 ```
 
-Lets import this `ProtectedRoute.svelte` to your `App.svelte` file.\
+Let's import this `ProtectedRoute.svelte` to your `App.svelte` file.\
 To use the Protected route wrap your `Dashboard` in the Protected Route;
 
 
