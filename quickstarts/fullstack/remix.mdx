@@ -45,10 +45,7 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 <Note>
   During creation make sure to input the URL you will be developing on as the `APP URL`.\
-  (Most likely http://localhost:5173/) \
- \
-  If you already have a project you can change the URL at:\
-  `'your project' > Settings > URLs > App URL`.
+  (Most likely http://localhost:5173/) 
 </Note>
 
 
@@ -77,14 +74,12 @@ export { register, Hanko };
 ```
 
 ## Create Hanko components
-Lets create a folder called `components` and create two files, `HankoAuth.tsx` and `HankoProfile.jsx`.
-
-Both of these components use the Hanko client from [@teamhanko/hanko-elements](/guides/hanko-elements/introduction).
+Create a folder called `components` and create two files in it, `HankoAuth.tsx` and `HankoProfile.jsx`.
 
 ### Hanko Auth
 
-Now Lets Setup the `HankoAuth.tsx` file to create a functioning login page.
-Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action.
+Now lets setup the `HankoAuth.tsx` file to create a functioning login page.
+Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action (e.g. redirect to your dashboard).
 
 [For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
@@ -145,8 +140,8 @@ export default HankoAuth;
 
 ### Hanko profile
 
-After setting up the HankoAuth lets Setup the `HankoProfile.jsx` file to create an interface where users can
-manage their `Password` , `Email Addresses`, `Passkeys`, `Security Keys`.
+After setting up the HankoAuth let's set up the `HankoProfile.jsx` file to create an interface where users can
+manage their `Email Addresses` and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
@@ -182,7 +177,7 @@ export default HankoProfile;
 
 ## Setup your routes
 
-Lets setup our routes in the `/routes` folder.\
+Let's setup our routes in the `/routes` folder.\
 For our example we will create `_index.tsx` and `dashboard.tsx`
 
 ```jsx routes/_index.tsx
