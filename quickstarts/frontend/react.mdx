@@ -299,7 +299,7 @@ To secure our routes we can await a fetch request to a running [Hanko Backend](/
 Lets set up a Private route to do this for us.
 Create a new React component at `components/PrivateRoute.tsx`.
 
-If the backend couldnt validate our token we get navigated back to `/`.
+If the backend couldn't validate our token we get navigated back to `/`.
 Otherwise if the validation was successfull it will return the children inside the private route.
 
 ```jsx components/PrivateRoute.tsx
