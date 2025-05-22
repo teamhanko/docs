@@ -238,7 +238,7 @@ The styles can be scoped to the login/profile page to ensure they dont affect ot
 ## Securing routes with Middleware
 
 Use the `hanko-logged-in` middleware to secure any route and force unauthenticated users to redirect back to the `login` redirect we set in the `nuxt.config.ts`.
-```vue
+```jsx
 <script setup lang="ts">
   definePageMeta({
     middleware: ["hanko-logged-in"],
