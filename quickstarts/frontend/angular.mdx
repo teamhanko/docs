@@ -4,36 +4,85 @@ title: Integrate Hanko with Angular
 description: Learn how to quickly add authentication and user profile in your Angular app using Hanko.
 ---
 
-## Install `@teamhanko/hanko-elements`
+## Create an Angular application
 
-Once you've initialized your Next app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth`, `hanko-profile` and `hanko-events`.
+Run the following command to [create a new Angular application](https://v17.angular.io/tutorial/tour-of-heroes/toh-pt0):
 
 <CodeGroup>
 ```bash npm
-npm install @teamhanko/hanko-elements
+npm install -g @angular/cli
+ng new project-name --style=css --routing --standalone --defaults
 ```
 
 ```bash pnpm
+pnpm install -g @angular/cli
+ng new project-name --style=css --routing --standalone --defaults
+```
+
+```bash bun
+bun install -g @angular/cli
+ng new project-name --style=css --routing --standalone --defaults
+```
+
+```bash yarn
+yarn global add @angular/cli
+ng new project-name --style=css --routing --standalone --defaults
+``` 
+
+</CodeGroup>
+
+<Note>
+  This quickstarts examples are based on the Server Routing and App Engine APIs.
+  Make sure while creating your angular project you accept (press 'y') the routing and App Engine.
+</Note>
+
+## Install `@teamhanko/hanko-elements`
+
+Once you've initialized your Angular app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+
+<CodeGroup>
+```bash npm
+cd project-name
+npm install @teamhanko/hanko-elements
+``` 
+
+```bash pnpm
+cd project-name
 pnpm add @teamhanko/hanko-elements
 ```
 
 ```bash bun
+cd project-name
 bun add @teamhanko/hanko-elements
 ```
 
 ```bash yarn
+cd project-name
 yarn add @teamhanko/hanko-elements
 ```
 </CodeGroup>
 
-## Add the Hanko API URL
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your `environment.ts` file.
+## Setup your Hanko project
+Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
 
-```js environment.ts
+<Note>
+  During creation make sure to input the URL you will be developing on as the `APP URL`.
+  (Most likely http://localhost:5173/) 
+</Note>
+
+
+
+## Setup your environments Variables
+
+Create a new file `environments.ts` within your `/src` folder.
+
+Retrieve your API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+
+```ts environments.ts
 export const environment = {
   production: false,
-  HANKO_API_URL: 'https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io'
+  HANKO_API_URL: 'YOUR_HANKO_URL',
 };
 ```
 
@@ -42,224 +91,301 @@ export const environment = {
   backend.
 </Note>
 
-## Define custom elements schema
 
-Angular requires you to explicitly declare that you are using custom elements inside your Angular modules, otherwise
-it will fail during build complaining about unknown elements. To do so, import the
-[`CUSTOM_ELEMENTS_SCHEMA`](https://angular.io/api/core/CUSTOM_ELEMENTS_SCHEMA), and add it to the `schemas` in your
-module:
 
-```js app.module.ts
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { BrowserModule } from "@angular/platform-browser";
-import { AppComponent } from "./app.component";
+## Create Hanko components
 
-@NgModule({
-  declarations: [AppComponent],
-  imports: [BrowserModule],
-  providers: [],
-  bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-})
-export class AppModule {}
+Let's Create our `HankoAuth` and `HankoProfile` components.
+Run these commands in the terminal.
+
+```bash
+ng generate component HankoAuth --standalone
+ng generate component HankoProfile --standalone
 ```
 
-## Add `<hanko-auth>` component
+Also generate two pages with these commands, we will add the components in here.
+```bash
+ng generate component Home --standalone --type=page
+ng generate component Dashboard --standalone --type=page
+```
 
-The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the register function from `@teamhanko/hanko-elements` into your Angular component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, include it in your component template.
+### Hanko Auth
+Now let's set up the `HankoAuth` component.
+
+[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
 <Tabs>
-<Tab title='login.component.html'>
-```html
-<hanko-auth />
-```
-
-</Tab>
-<Tab title='login.component.ts'>
-
-```js
-import { Component } from "@angular/core";
-import { register } from "@teamhanko/hanko-elements";
-import { environment } from '../environments/environment';
-
-@Component({
-  selector: "app-login",
-  templateUrl: "./login.component.html",
-  styleUrls: ["./login.component.css"],
-})
-export class LoginComponent {
-  hankoApi = environment.HANKO_API_URL;
-
-  constructor() {
-    register(hankoApi).catch((error) => {
-      // handle error
-    });
-  }
-}
-```
-</Tab>
-</Tabs>
-
-## Add `<hanko-events>` component
-
-The `<hanko-events>` component provides a convenient way to subscribe to specific
-[events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events) without displaying any UI elements.
-The other hanko-elements will also dispatch these events.
-
-To utilize this functionality in your Angular application, you can leverage Angular's event binding mechanism and define
-callback functions within your component. This allows you to respond to the dispatched events accordingly.
-
-<Tabs>
-<Tab title='login.component.html'>
-
-```html
-<hanko-auth /> <hanko-events (onSessionCreated)="redirectAfterLogin()" />
-```
-
-The lines above can be combined to:
-
+<Tab title='hanko-auth/hanko-auth.component.html'>
 ```html
 <hanko-auth (onSessionCreated)="redirectAfterLogin()" />
 ```
 
 </Tab>
-
-<Tab title='login.component.ts'>
-
-```js 
-import { Component } from '@angular/core';
+<Tab title='hanko-auth/hanko-auth.component.ts'>
+```ts
+//CUSTOM_ELEMENTS_SCHEMA lets you use the Hanko Elements
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
-import { register } from '@teamhanko/hanko-elements';
-import { environment } from '../environments/environment';
+//function to register hanko element
+import { register } from "@teamhanko/hanko-elements";
 
+import { environment } from '../../environments';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  //Selector you will use in the pages html files
+  selector: 'app-hanko-auth',
+  imports: [],
+  templateUrl: './hanko-auth.component.html',
+  styleUrl: './hanko-auth.component.css',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class LoginComponent {
+export class HankoAuthComponent {
   hankoApi = environment.HANKO_API_URL;
 
   constructor(private router: Router) {
-    register(hankoApi)
-      .catch((error) => {
-        // handle error
-      })
+    register(this.hankoApi).catch((error) => {
+      // handle error
+    });
   }
 
   redirectAfterLogin() {
-    // successfully logged in, redirect to a page in your application
-    this.router.navigate('...');
+    //Succesfully logged in, redirect to any path you want.
+    this.router.navigate(['/dashboard']);
   }
 }
 ```
-
 </Tab>
 </Tabs>
 
-By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
-<Frame>
-<img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500" style={{ borderRadius: '0.5rem' }}/>
-</Frame>
 
-## Add `<hanko-profile>` component
-
-The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+Now Import the HankoAuth component into the Home Page you previously made.
 
 <Tabs>
+<Tab title='home/home.page.html'>
+```html
+<!-- This is the selector from the hanko-auth.component.ts file -->
+<app-hanko-auth/>
+```
 
-<Tab title='profile.component.html'>
-```html 
-<hanko-profile />
+</Tab>
+<Tab title='home/home.page.ts'>
+```ts
+  import { Component } from '@angular/core';
+
+  import { HankoAuthComponent } from '../hanko-auth/hanko-auth.component';
+
+  @Component({
+    selector: 'app-home',
+    imports: [HankoAuthComponent],//Import the component into your page
+    templateUrl: './home.page.html',
+    styleUrl: './home.page.css'
+  })
+  export class HomePage {
+
+  }
+```
+</Tab>
+</Tabs>
+
+
+### Hanko profile
+
+After setting up the HankoAuth let's set up the `HankoProfile` component to create a interface where users can.\
+manage their `Email Addresses` and credentials.
+
+[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
+
+<Tabs>
+<Tab title='hanko-profile/hanko-profile.component.html'>
+```html
+<hanko-profile/>
 ```
 </Tab>
 
-<Tab title='profile.component.ts'>
-```js
-import { Component } from "@angular/core";
-import { register } from "@teamhanko/hanko-elements";
-import { environment } from '../environments/environment';
+<Tab title='hanko-profile/hanko-profile.component.ts'>
+```ts
+//CUSTOM_ELEMENTS_SCHEMA lets you use the Hanko Elements
+import { Component , CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+//function to register hanko element
+import { register } from '@teamhanko/hanko-elements';
+
+import { environment } from '../../environments';
 
 @Component({
-  selector: "app-profile",
-  templateUrl: "./profile.component.html",
-  styleUrls: ["./profile.component.css"],
+  //Selector you will use in the pages html files
+  selector: 'app-hanko-profile',
+  imports: [],
+  templateUrl: './hanko-profile.component.html',
+  styleUrl: './hanko-profile.component.css',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ProfileComponent {
+export class HankoProfileComponent {
   hankoApi = environment.HANKO_API_URL;
 
   constructor() {
-    register(hankoApi).catch((error) => {
+    register(this.hankoApi).catch((error) => {
       // handle error
     });
   }
 }
 ```
-
-
 </Tab>
 </Tabs>
 
-It should look like this 👇
-<Frame>
-<img
-  src="/images/fullstack-guide/next-two.png"
-  alt="profile page"
-  width="500"
-  style={{ borderRadius: '0.5rem' }}
-/>
-</Frame>
 
-## Implement logout functionality
 
-You can use the Hanko client provided by `@teamhanko/hanko-elements` to log out users. On logout a custom event is
-dispatched that you can subscribe to.
+Now Import the HankoAuth component into the Dashboard Page you previously made.
 
 <Tabs>
-<Tab title='profile.component.html'>
-
+<Tab title='dashboard/dashboard.page.html'>
 ```html
-<button (click)="logout()" class="button">Logout</button>
-<hanko-profile (onUserLoggedOut)="redirectAfterLogout()" />
+<!-- This is the selector from the hanko-profile.component.ts file -->
+<app-hanko-profile/>
 ```
 
 </Tab>
-<Tab title='profile.component.ts'>
+<Tab title='dashboard/dashboard.page.ts'>
+```ts
+  import { Component } from '@angular/core';
 
-```js
+  import { HankoProfileComponent } from '../hanko-profile/hanko-profile.component';
+
+  @Component({
+    selector: 'app-dashboard',
+    imports: [HankoProfileComponent],//Import the component into your page
+    templateUrl: './dashboard.page.html',
+    styleUrl: './dashboard.page.css'
+  })
+  export class DashboardPage {
+
+  }
+```
+</Tab>
+</Tabs>
+
+
+### Setting up routes
+
+Remove everything in the `app.component.html` file and add a router outlet.
+
+```html app.component.html
+<router-outlet></router-outlet>
+```
+
+Now inport both pages into the `app.routes.ts` file and setup your routes.
+```ts app.routes.ts
+import { Routes } from '@angular/router';
+
+import { HomePage } from './home/home.page';
+import { DashboardPage } from './dashboard/dashboard.page';
+
+export const routes: Routes = [
+  {
+    path: '',
+    component: HomePage,
+  },
+  {
+    path: 'dashboard',
+    component: DashboardPage,
+  },
+];
+```
+
+By now you should be able to go to `/` to see the `<HankoAuth>`, and to `/dashboard` to see the `<HankoProfile>`.
+
+They should look something like this👇
+<Frame>
+  <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex', backgroundColor: 'white'}}>
+    <img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500"/>
+    <img src="/images/fullstack-guide/next-two.png" alt="profile page" width="500" />
+  </div>
+</Frame>
+
+<Note>
+  use the command `ng serve` to start the server.
+</Note>
+
+
+## Implement logout functionality
+
+You can use `@teamhanko/hanko-elements` to easily log users out. Here we will make a logout button component that you can use anywhere.
+
+Create the LogoutButton component with this command.
+```bash
+ng generate component LogoutButton --standalone
+```
+
+Now let's set up the HTML and TS of the LogoutButton component.
+
+<Tabs>
+<Tab title='LogoutButton/LogoutButton.component.html'>
+```html
+<button (click)="logout()">Logout</button>
+```
+
+</Tab>
+<Tab title='LogoutButton/LogoutButton.component.ts'>
+```ts
 import { Component } from '@angular/core';
-import { environment } from '../environments/environment';
 import { Router } from '@angular/router';
-import { register, Hanko } from '@teamhanko/hanko-elements';
+import { Hanko } from '@teamhanko/hanko-elements';
+import { environment } from '../../environments';
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  selector: 'app-logout-button',
+  imports: [],
+  templateUrl: './logout-button.component.html',
+  styleUrl: './logout-button.component.css'
 })
-export class ProfileComponent {
+export class LogoutButtonComponent {
   hankoApi = environment.HANKO_API_URL;
-  hanko = new Hanko(hankoApi);
 
-  logout() {
-    this.hanko.user.logout().catch((error) => {
-      // handle error
+  constructor(private router: Router){};
+
+  logout(){
+    new Hanko(this.hankoApi).logout().catch((error) => {
+      console.log(error);
+    }).then(()=>{
+      //Url to navigate to once logged out
+      this.router.navigate(["/"]);
     });
   }
-
-  constructor(private router: Router) {
-    register(hankoApi)
-      .catch((error) => {
-        // handle error
-      });
-  }
-
-  redirectAfterLogout() {
-    // successfully logged out, redirect to a login page
-    this.router.navigate('...');
-  }
 }
+```
+</Tab>
+</Tabs>
+
+
+Let's import this into our dashboard page.
+
+<Tabs>
+<Tab title='dashboard/dashboard.page.html'>
+```html
+<!-- This is the selector from the hanko-profile.component.ts file -->
+<app-hanko-profile/>
+<app-logout-button/>
+```
+
+</Tab>
+<Tab title='dashboard/dashboard.page.ts'>
+```ts
+  import { Component } from '@angular/core';
+
+  import { HankoProfileComponent } from '../hanko-profile/hanko-profile.component';
+  import { LogoutButtonComponent } from '../logout-button/logout-button.component';
+
+  @Component({
+    selector: 'app-dashboard',
+    imports: [
+      HankoProfileComponent, 
+      LogoutButtonComponent//add the logout button
+      ],
+    templateUrl: './dashboard.page.html',
+    styleUrl: './dashboard.page.css'
+  })
+  export class DashboardPage {
+
+  }
 ```
 </Tab>
 </Tabs>
@@ -269,6 +395,134 @@ export class ProfileComponent {
 
 You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](/guides/hanko-elements/customize-appearance).
 
-## Authenticate backend requests
 
-To authenticate requests on your backend with Hanko, refer to our [backend guide](/quickstarts/backend).
+## Securing routes
+To secure our routes we should validate the session token at the backend. Please refer to our [backend guides](/quickstarts/backend).
+
+Let's setup a `guard` that will check for authentication before the router activates the pages.
+
+Create the authentication guard with this command.
+```bash
+ng generate guard auth --implements CanActivate
+```
+
+Then in `auth.guard.ts`, insert this code.
+This will grab the hanko session token and send it to the backend for validation.
+
+```ts 
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+
+export const authGuard: CanActivateFn = async (route, state) => {
+  const router = inject(Router);
+  const backendUrl = "http://localhost:5001";//change this to the url of your running hanko backend
+
+  const sessionToken = isBrowser() ? getCookie('hanko') : null;
+  if (!sessionToken) throw new Error('No session token found.');
+
+  try {
+    const response = await fetch(`${backendUrl}/validate`, {
+      credentials: "include",
+    });
+
+    if (!response.ok) throw new Error('Session validation failed');
+
+    return true;
+  } catch (error) {
+    console.error('AuthGuard error:', error);
+    return router.parseUrl('/');// url to return the user to if they are not authenticated
+  }
+};
+
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  return match ? match[2] : null;
+}
+
+function isBrowser(): boolean {
+  return typeof window !== 'undefined' && typeof document !== 'undefined';
+}
+```
+
+Now to use this authentication guard you have to add it to your `app.routes.ts` file.
+
+```ts app.routes.ts
+import { Routes } from '@angular/router';
+
+import { HomePage } from './home/home.page';
+import { DashboardPage } from './dashboard/dashboard.page';
+
+//Import the auth guard
+import { authGuard } from './auth.guard';
+
+export const routes: Routes = [
+  {
+    path: '',
+    component: HomePage,
+  },
+  {
+    path: 'dashboard',
+    component: DashboardPage,
+    canActivate: [authGuard]//secure the /dashboard path with the guard
+  },
+];
+```
+
+To verify that it works, Logout on your app and go to /dashboard, you should get redirected back!
+
+## Getting user data
+
+Let's use the Hanko SDK to get user data to display on our dashboard page.
+For the User Information we will use [hanko.GetUser()](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/index.html#getting-the-user-object)
+
+Lets update our dashboard page html and ts files.
+
+<Tabs>
+<Tab title='dashboard/dashboard.page.html'>
+```html
+<app-hanko-profile/>
+<app-logout-button/>
+
+<h2>Email: {{email}}</h2>
+<h2>Id: {{id}}</h2>
+```
+
+</Tab>
+<Tab title='dashboard/dashboard.page.ts'>
+```ts
+  import { Component } from '@angular/core';
+
+  import { HankoProfileComponent } from '../hanko-profile/hanko-profile.component';
+  import { LogoutButtonComponent } from '../logout-button/logout-button.component';
+
+  import { Hanko } from '@teamhanko/hanko-elements';
+  import { environment } from '../../environments';
+
+  @Component({
+    selector: 'app-dashboard',
+    imports: [
+      HankoProfileComponent, 
+      LogoutButtonComponent//add the logout button
+      ],
+    templateUrl: './dashboard.page.html',
+    styleUrl: './dashboard.page.css'
+  })
+  export class DashboardPage {
+    hankoApi = environment.HANKO_API_URL;
+
+    email : string = '';
+    id : string = '';
+
+    ngOnInit(): void {
+      const hanko = new Hanko(this.hankoApi);
+      //Get user to get the user information
+      hanko.getUser().then((user: any) => {
+        this.email = user.emails?.[0]?.address || 'Unknown';
+        this.id = user.user_id || 'Unknown';
+      }).catch(err => console.error('Failed to fetch user', err));
+    }
+  }
+```
+</Tab>
+</Tabs>
