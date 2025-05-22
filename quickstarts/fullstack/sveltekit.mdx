@@ -209,7 +209,7 @@ For more info on middlewares / hooks in SvelteKit and where to put the `hooks.se
 please refer to [SvelteKid Hooks](https://svelte.dev/docs/kit/hooks).
 
 What happens here is that during each request the handle function will be called.
-It then authenticates the user and redirects the user back if you are on a private route and not verified.
+It then verifies the session token and redirects the user back if he is on a private route and the session token is not valid.
 
 <Note>
   Hooks like these tends to not always work after creating it, if this is the case try restarting your SvelteKit app.
