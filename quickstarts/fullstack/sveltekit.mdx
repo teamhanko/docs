@@ -208,7 +208,7 @@ The middleware hook extracts and verifies the session token, and redirect unauth
 For more info on middlewares / hooks in SvelteKit and where to put the `hooks.server.ts` file,\
 please refer to [SvelteKid Hooks](https://svelte.dev/docs/kit/hooks).
 
-What happens here is that during each RequestEvent the handle function will be called.
+What happens here is that during each request the handle function will be called.
 It then authenticates the user and redirects the user back if you are on a private route and not verified.
 
 <Note>
