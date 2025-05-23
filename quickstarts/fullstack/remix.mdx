@@ -4,27 +4,50 @@ title: Integrate Hanko with Remix
 description: Learn how to quickly add authentication and user profile in your Remix app using Hanko.
 ---
 
-## Install `@teamhanko/hanko-elements`
+## Create a Remix application
+Run the following command to [create a new Remix application](https://remix.run/docs/en/main/start/quickstart):
 
+<CodeGroup> 
+```bash terminal
+npx create-remix@latest
+```
+</CodeGroup>
+
+
+## Install `@teamhanko/hanko-elements`
 Once you've initialized your Remix app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
 
-<CodeGroup>
+<CodeGroup> 
 ```bash npm
+cd project-name
 npm install @teamhanko/hanko-elements
 ```
 
 ```bash pnpm
+cd project-name
 pnpm add @teamhanko/hanko-elements
 ```
 
 ```bash bun
+cd project-name
 bun add @teamhanko/hanko-elements
 ```
 
 ```bash yarn
+cd project-name
 yarn add @teamhanko/hanko-elements
 ```
 </CodeGroup>
+
+
+## Setup your Hanko project
+Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+
+<Note>
+  During creation make sure to input the URL you will be developing on as the `APP URL`.\
+  (Most likely http://localhost:5173/) 
+</Note>
+
 
 ## Add the Hanko API URL
 
@@ -39,6 +62,7 @@ HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
   backend.
 </Note>
 
+
 ## Importing and exporting Hanko functions in a `.client.ts` file
 
 Since the `@teamhanko/hanko-elements` package is designed to work on the client side, you'll need to import the Hanko functions into a `.client.ts` file. This file will then export them, making them available for use throughout your application.
@@ -49,220 +73,211 @@ import { register, Hanko } from "@teamhanko/hanko-elements";
 export { register, Hanko };
 ```
 
+## Create Hanko components
+Create a folder called `components` and create two files in it, `HankoAuth.tsx` and `HankoProfile.jsx`.
 
-## Add `<hanko-auth>` component
+### Hanko Auth
 
-The `<hanko-auth>` web component adds a login interface to your app. The following code example defines a `HankoAuth` component in the `login` route. 
+Now lets setup the `HankoAuth.tsx` file to create a functioning login page.
+Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action (e.g. redirect to your dashboard).
 
-It uses the register function from `hanko.client.ts` to register `<hanko-auth>` component with the brower's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). When the authentication flow is completed, a callback is set up to redirect the user to the dashboard.
+[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
-```tsx routes/login.tsx
+```jsx components/HankoAuth.tsx
 import { useNavigate, useLoaderData } from "@remix-run/react";
-
 import { Suspense, useCallback, useEffect, useState } from "react";
-
-import { register, type Hanko } from "~/utils/hanko.client";
+import { register, type Hanko } from "../utils/hanko.client";
 
 export const loader = () => {
     return { hankoUrl: process.env.HANKO_API_URL }; 
 };
 
-
 const HankoAuth = () => {
-    const [hanko, setHanko] = useState<Hanko>();
-    const navigate = useNavigate();
+  const [hanko, setHanko] = useState<Hanko>();
+  const navigate = useNavigate();
+
+  const data = useLoaderData<typeof loader>();
+  const hankoUrl = data.hankoUrl || '';
+
+  const redirectAfterLogin = useCallback(() => {
+      navigate("/dashboard");//Path user gets navigated to once they log in
+  }, [navigate]);
+
+  useEffect(() => {
+      if (hanko) {
+          hanko.onSessionCreated(() => {
+              //Succesfully Logged In
+              redirectAfterLogin();
+          });
+      }
+  }, [hanko, redirectAfterLogin]);
+
+  useEffect(() => {
+      register(hankoUrl)
+          .catch((error: Error) => {
+              console.error(error.message);
+          })
+          .then((result) => {
+              if (result) {
+                  setHanko(result.hanko);
+              }
+          });
+  }, [hankoUrl]);
+
+  return (
+      <div className="">
+          <Suspense fallback={"Loading..."}>
+              <hanko-auth />
+          </Suspense>
+      </div>
+  );
+};
+
+export default HankoAuth;
+
+```
+
+
+### Hanko profile
+
+After setting up the HankoAuth let's set up the `HankoProfile.jsx` file to create an interface where users can
+manage their `Email Addresses` and credentials.
+
+[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
+
+```jsx components/HankoProfile.tsx
+import { useLoaderData } from "@remix-run/react";
+import { Suspense, useEffect, } from "react";
+import { register } from "../utils/hanko.client";
+
+export const loader = () => {
+    return { hankoUrl: process.env.HANKO_API_URL };
+};
+
+const HankoProfile = () => {
+    const data = useLoaderData<typeof loader>();
+    const hankoUrl = data.hankoUrl || '';
+
+    useEffect(() => {
+        register(hankoUrl).catch((error) => {
+            // handle error
+            console.log(error);
+          });
+    });
+
+    return(
+        <Suspense fallback={"Loading..."}>
+            <hanko-profile />
+        </Suspense>
+    )
+}
+  
+export default HankoProfile;
+```
+
+## Setup your routes
+
+Let's setup our routes in the `/routes` folder.\
+For our example we will create `_index.tsx` and `dashboard.tsx`
+
+```jsx routes/_index.tsx
+import HankoAuth from "../components/HankoAuth";
+
+export const loader = () => {
+  return { hankoUrl: process.env.HANKO_API_URL }; 
+};
+
+export default function Index() {
+  return (
+    <>
+      <HankoAuth></HankoAuth>
+    </>
+  );
+}
+```
+
+and
+
+```jsx routes/dashboard.tsx
+import HankoProfile from "../components/HankoProfile";
+
+export const loader = () => {
+  return { hankoUrl: process.env.HANKO_API_URL }; 
+};
+
+export default function Dashboard() {
+  return (
+    <>
+      <HankoProfile></HankoProfile>
+    </>
+  );
+}
+```
+
+By now you should be able to go to `/` to see the `<HankoAuth>`, and to `/dashboard` to see the `<HankoProfile>`.
+
+They should look something like this👇
+<Frame>
+  <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex', backgroundColor: 'white'}}>
+    <img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500"/>
+    <img src="/images/fullstack-guide/next-two.png" alt="profile page" width="500" />
+  </div>
+</Frame>
+
+<Note>
+  If `HankoAuth` is not loading please restart the application as it might've not loaded the .env correctly the first time.\
+  \
+  `HankoProfile` will only look like the picture while you are logged in.
+</Note>
+
+## Implement logout functionality
+
+You can use `@teamhanko/hanko-elements` to easily logout users. Here we will make a logout button.
+
+Create `LogoutButton.tsx` and insert the code below.
+
+```jsx components/LogoutButton.tsx
+import { useLoaderData, useNavigate } from "@remix-run/react";
+import { useEffect, useState, } from "react";
+import { type Hanko, } from "../utils/hanko.client";
+
+
+export const loader = () => {
+    return { hankoUrl: process.env.HANKO_API_URL };
+};
+
+const LogoutButton = () => {
 
     const data = useLoaderData<typeof loader>();
     const hankoUrl = data.hankoUrl || '';
 
-    const redirectAfterLogin = useCallback(() => {
-        navigate("/dashboard");
-    }, [navigate]);
-
-    useEffect(() => {
-        if (hanko) {
-            hanko.onSessionCreated(() => {
-                redirectAfterLogin();
-            });
-        }
-    }, [hanko, redirectAfterLogin]);
-
-
-    useEffect(() => {
-        register(hankoUrl)
-            .catch((error: Error) => {
-                console.error(error.message);
-            })
-            .then((result) => {
-                if (result) {
-                    setHanko(result.hanko);
-                }
-            });
-    }, [hankoUrl]);
-
-    return (
-        <div className="">
-            <Suspense fallback={"Loading..."}>
-                <hanko-auth />
-            </Suspense>
-        </div>
-    );
-};
-
-const Login = () => {
-    return (
-        <div>
-            <HankoAuth />
-        </div>
-    )
-}
-
-export default Login
-```
-
-By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
-
-<Frame>
-<img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500" style={{ borderRadius: '0.5rem' }}/>
-</Frame>
-
-
-## Add `<hanko-profile>` component
-
-The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
-
-
-```tsx app/routes/dashboard.tsx
-import { useLoaderData, useNavigate } from "@remix-run/react";
-
-import { Suspense, useEffect, useState } from "react";
-import { type Hanko, register } from "~/utils/hanko.client";
-
-export const loader = () => {
-    return { hankoUrl: process.env.HANKO_API_URL };
-};
-
-function HankoProfile() {
-    let data = useLoaderData<typeof loader>();
-    let hankoUrl = data.hankoUrl || '';
-
-    const [hanko, setHanko] = useState<Hanko>();
     const navigate = useNavigate();
-
-
-    useEffect(() => {
-        register(hankoUrl)
-            .catch((error: Error) => {
-                console.error(error.message);
-            })
-            .then((result) => {
-                if (result) {
-                    setHanko(result.hanko);
-                }
-            });
-    }, [hankoUrl]);
-
-    return (
-        <div className="">
-            <Suspense fallback={"Loading..."}>
-                <hanko-profile />
-            </Suspense>
-        </div>
-    )
-}
-
-const Dashboard = () => {
-    return (
-        <div>
-            <HankoProfile />
-        </div>
-    )
-}
-
-export default Dashboard
-```
-
-It should look like this 👇
-
-<Frame>
-<img
-  src="/images/fullstack-guide/next-two.png"
-  alt="profile page"
-  width="500"
-  style={{ borderRadius: '0.5rem' }}
-/>
-</Frame>
-
-
-## Implement logout functionality
-
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below we add a logout button to the dashboard page.
-
-
-```tsx app/routes/dashboard.tsx
-import { useLoaderData, useNavigate } from "@remix-run/react";
-
-import { Suspense, useEffect, useState } from "react";
-import { type Hanko, register } from "~/utils/hanko.client";
-
-
-export const loader = () => {
-    return { hankoUrl: process.env.HANKO_API_URL };
-};
-
-function HankoProfile() {
-    let data = useLoaderData<typeof loader>();
-    let hankoUrl = data.hankoUrl || '';
-
     const [hanko, setHanko] = useState<Hanko>();
-    const navigate = useNavigate();
-
-
+  
     useEffect(() => {
-        register(hankoUrl)
-            .catch((error: Error) => {
-                console.error(error.message);
-            })
-            .then((result) => {
-                if (result) {
-                    setHanko(result.hanko);
-                }
-            });
-    }, [hankoUrl]);
+      import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+        setHanko(new Hanko(hankoUrl ?? ""))
+      );
+    }, []);
 
-    // here we define the logout function
     const logout = async () => {
         try {
-            await hanko?.user.logout();
-            navigate("/login");
+            await hanko?.logout();
+
+            navigate("/");//Path the user will be redirected to once logged out
+            
             return;
         } catch (error) {
             console.error("Error during logout:", error);
         }
     };
 
-    return (
-        <div className="">
-            <Suspense fallback={"Loading..."}>
-                <hanko-profile />
-            </Suspense>
-            <div>
-                <button onClick={logout}>Logout</button>
-            </div>
-        </div>
-    )
+    return <button onClick={logout}>Logout</button>;
 }
-
-const Dashboard = () => {
-    return (
-        <div>
-            <HankoProfile />
-        </div>
-    )
-}
-
-export default Dashboard
+  
+export default LogoutButton;
 ```
+
 
 ## Customize component styles
 
@@ -270,68 +285,66 @@ You can customize the appearance of `hanko-auth` and `hanko-profile` components 
 
 ## Securing routes
 
-To add JWT verification with Hanko in your Remix application, we're using the [jose](https://www.npmjs.com/package/jose) library. However, you're free to choose any other suitable library. 
-
-Below we define a `validateJwtAndFetchUserId` function which validates the JWT and fetches the user ID. This will also be used to protect routes and ensure only authenticated users can access certain parts of the application.
+To secure our routes we can validate our cookie token using `hankoAPI/sessions/validate`.
+Create a file called `auth.server.ts` in `/services` and add this code.
 
 ```jsx app/services/auth.server.ts
 import { parse } from "cookie";
-import { jwtVerify, createRemoteJWKSet } from "jose";
 
-const hankoApiUrl = process.env.HANKO_API_URL;
+export async function ValidateCurrentSession(request: Request, hankoUrl: string){
 
-export async function validateJwtAndFetchUserId(request: Request) {
-  const cookies = parse(request.headers.get("Cookie") || "");
-  const token = cookies.hanko;
+    const cookies = parse(request.headers.get("Cookie") || "");
+    const token = cookies.hanko;
 
-  if (!token) {
-    return null;
-  }
+    const validationOptions = { 
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: `{"session_token":"${token}"}`
+    }
+    try {
+    const response = await fetch(hankoUrl + '/sessions/validate', validationOptions);
 
-  const JWKS = createRemoteJWKSet(
-    new URL(`${hankoApiUrl}/.well-known/jwks.json`)
-  );
-  let payload;
+    if (!response.ok) throw new Error('Session validation failed');
+    
+    const verifiedResponse = await response.json();
 
-  try {
-    const verifiedJWT = await jwtVerify(token, JWKS);
-    payload = verifiedJWT.payload;
-  } catch {
-    return null;
-  }
-
-  const userID = payload.sub;
-
-  if (!userID) {
-    return null;
-  }
-
-  return userID;
+    return verifiedResponse.is_valid
+    
+    } catch (error) {
+    console.log(error)
+    return false;
+    }
 }
+
 ```
 
-This is how you can use it in your routes:
+To protect a route using this we can validate it in the loader function.
 
-```tsx app/routes/protected.tsx
-import { type LoaderFunction, json, redirect } from '@remix-run/node';
-import { validateJwtAndFetchUserId } from '../services/auth.server';
+```tsx app/routes/dashboard.tsx
+import HankoProfile from "../components/HankoProfile";
+import LogoutButton from "../components/LogoutButton";
 
-export let loader: LoaderFunction = async ({ request }) => {
-    const userID = await validateJwtAndFetchUserId(request);
+import { type LoaderFunction, redirect } from "@remix-run/node";
+import { ValidateCurrentSession } from "../services/auth.server";
 
-    if (!userID) {
-        return redirect('/login');
-    }
+export const loader: LoaderFunction = async ({request}) => {
+  const hankoUrl = process.env.HANKO_API_URL || "";
+  const validated = await ValidateCurrentSession(request , hankoUrl);
 
-    return json({ userID });
+  if(!validated){
+    return redirect("/");//Path to redirect to if user is not authenticated
+  }
+
+  return { hankoUrl: hankoUrl }; 
 };
 
-export default function Protected() {
-    return (
-        <div>
-            <h1>Protected</h1>
-        </div>
-    );
+export default function Dashboard() {
+  return (
+    <>
+      <HankoProfile></HankoProfile>
+      <LogoutButton></LogoutButton>
+    </>
+  );
 }
 ```
 
