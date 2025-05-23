@@ -4,10 +4,26 @@ title: Integrate Hanko with Nuxt
 description: Learn how to quickly add authentication and user profile in your Nuxt app using Hanko.
 ---
 
-<Callout>
-  This guide and the `@nuxtjs/hanko` module are only compatible with [Nuxt
-  3](https://nuxt.com).
-</Callout>
+## Create a Nuxt application
+Run the following command to [create a new Nuxt application](https://nuxt.com/docs/getting-started/installation):
+
+<CodeGroup> 
+```bash npm
+npm create nuxt project-name
+```
+
+```bash pnpm
+pnpm create nuxt project-name
+```
+
+```bash bun
+bun create nuxt project-name
+```
+
+```bash yarn
+yarn create nuxt project-name
+```
+</CodeGroup>
 
 ## Install `@nuxtjs/hanko`
 
@@ -15,22 +31,35 @@ Once you've initialized your Nuxt app, installing `@nuxtjs/hanko` module provide
 
 <CodeGroup>
 ```bash npm
+cd project-name
 npm install -D @nuxtjs/hanko
 ```
 
 ```bash pnpm
+cd project-name
 pnpm add -D @nuxtjs/hanko
 ```
 
 ```bash bun
+cd project-name
 bun add @teamhanko/hanko-elements
 ```
 
 ```bash yarn
+cd project-name
 yarn add --dev @nuxtjs/hanko
 ```
 
 </CodeGroup>
+
+## Setup your Hanko project
+Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+
+<Note>
+  During creation make sure to input the URL you will be developing on as the `APP URL`.\
+  (Most likely http://localhost:3000/) 
+</Note>
+
 
 ## Add the Hanko API URL
 
@@ -54,8 +83,14 @@ export default defineNuxtConfig({
   modules: ["@nuxtjs/hanko"],
   hanko: {
     apiURL: process.env.NUXT_PUBLIC_HANKO_API_URL,
+    cookieName: 'hanko',
+    redirects:{
+      login: '/',//Path to redirect to when unauthenticated / logged out
+      success: '/dashboard',//Path to redirect to once logged in
+    }
   },
-});
+})
+
 ```
 
 While the module comes pre-configured with the options for most common use cases, you have the flexibility to override them by adding a `hanko` section to your `nuxt.config.ts` file. For all overrides please refer to [module's repository](https://github.com/nuxt-modules/hanko).
@@ -75,19 +110,29 @@ hanko: {
 
 </Info>
 
-## Add `<hanko-auth>` component
+## Setup Nuxt pages
 
-The `<hanko-auth>` web component adds a login interface to your app.
+Lets add the `NuxtPage` component to `app.vue` to use the Nuxt Page Router.
 
-```jsx login.vue
+```vue app.vue
 <template>
-  <hanko-auth />
+  <div>
+    <NuxtPage />
+  </div>
 </template>
 ```
 
-By default no action is taken after a successful login. When you add the `hanko-logged-out` middleware to the login page it will automatically redirect the user to the page they were on before logging in, or to the optional `redirects.success` value in the module config.
+After that lets create a folder called `/pages` and in there we will create `index.vue` and `dashboard.vue`.
 
-```jsx login.vue
+
+## Add `<hanko-auth>` component
+
+The `<hanko-auth>` web component adds a login interface to your app.
+By default no action is taken after a successful login. But when you add the `hanko-logged-out` middleware to the login page it will automatically redirect the user to the page they were on before logging in, or to the optional `redirects.success` value in the module config.
+
+Lets try this out in the `index.vue` page.
+
+```jsx pages/index.vue
 <script setup lang="ts">
 definePageMeta({
   middleware: ['hanko-logged-out']
@@ -100,7 +145,7 @@ definePageMeta({
 
 Alternatively you can redirect the user to a page of your choice by adding the `<hanko-events>` component to your page and listening for the `onSessionCreated` event.
 
-```jsx login.vue
+```jsx pages/index.vue
 <script setup lang="ts">
 function afterLogin() {
  navigateTo("/user");
@@ -112,11 +157,10 @@ function afterLogin() {
 </template>
 ```
 
-## Define event callbacks
-
+## Define event callbacks 
 To subscribe to [events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events) emitted by Hanko, you can add the `<hanko-events>` component to your page and listen for the events you are interested in.
 
-```jsx page.vue
+```jsx pages/index.vue
 <script setup lang="ts">
 function updateSession() {
  // do something
@@ -137,7 +181,9 @@ By now, your sign-up and sign-in features should be working. You should see an i
 
 The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
 
-```jsx profile.vue
+Lets try this out in the `dashboard.vue` page.
+
+```jsx pages/dashboard.vue
 <template>
   <hanko-profile />
 </template>
@@ -158,14 +204,18 @@ It should look like this 👇
 
 To log users out, use the `@nuxtjs/hanko` module's built-in composable `useHanko` and call the `logout` method.
 
-```jsx logout.vue
+```jsx pages/dashboard.vue
 <script setup lang="ts">
 const hanko = useHanko()
-function logout() {
-  hanko!.user.logout()
-}
+  function logout() {
+    hanko?.logout();
+  }
+  definePageMeta({
+    middleware: ["hanko-logged-in"],
+  });
 </script>
 <template>
+  <hanko-profile />
   <button @click="logout">
       Log me out
   </button>
@@ -187,8 +237,17 @@ The styles can be scoped to the login/profile page to ensure they dont affect ot
 
 ## Securing routes with Middleware
 
-A global server middleware is added by `@nuxtjs/hanko`. After decoding and validating the JWT for the request, a new `hanko` property to is added to the event context.
-You can check the value of `event.context.hanko` to see if the request was authenticated and the decoded JWT payload. The user's id is accessible though the `sub` claim/property.
+Use the `hanko-logged-in` middleware to secure any route and force unauthenticated users to redirect back to the `login` redirect we set in the `nuxt.config.ts`.
+```jsx
+<script setup lang="ts">
+  definePageMeta({
+    middleware: ["hanko-logged-in"],
+  });
+</script>
+```
+
+A global server middleware is added by `@nuxtjs/hanko`. After decoding and validating the session token for the request, a new `hanko` property is added to the event context.
+You can check the value of `event.context.hanko` to see if the request was authenticated. The user's id is accessible though the `sub` claim/property.
 
 ```jsx /server/api/endpoint.ts
 export default defineEventHandler(async (event) => {
