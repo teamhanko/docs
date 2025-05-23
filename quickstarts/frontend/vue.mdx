@@ -4,40 +4,72 @@ title: Integrate Hanko with Vue
 description: Learn how to quickly add authentication and user profile in your Vue app using Hanko.
 ---
 
-## Install `@teamhanko/hanko-elements`
+## Create a Vue application
+Run the following command to [create a new Vue application with vite](https://vite.dev/guide/):
 
-Once you've initialized your Vue app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth`, `hanko-profile` and `hanko-events`.
-
-<CodeGroup>
+<CodeGroup> 
 ```bash npm
-npm install @teamhanko/hanko-elements
+npm create vite@latest project-name -- --template vue-ts
 ```
 
 ```bash pnpm
-pnpm add @teamhanko/hanko-elements
+pnpm create vite project-name --template vue-ts
 ```
 
 ```bash bun
-bun add @teamhanko/hanko-elements
+bun create vite project-name --template vue-ts
 ```
 
 ```bash yarn
-yarn add @teamhanko/hanko-elements
+yarn create vite project-name --template vue-ts
+```
+</CodeGroup>
+
+## Install `@teamhanko/hanko-elements`
+Once you've initialized your Vue app, installing `hanko-elements` provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.\
+\
+We will also install `vue-router` to setup our routes and pages with.
+
+<CodeGroup> 
+```bash npm
+cd project-name
+npm install @teamhanko/hanko-elements vue-router
 ```
 
+```bash pnpm
+cd project-name
+pnpm add @teamhanko/hanko-elements vue-router
+```
+
+```bash bun
+cd project-name
+bun add @teamhanko/hanko-elements vue-router
+```
+
+```bash yarn
+cd project-name
+yarn add @teamhanko/hanko-elements vue-router
+```
 </CodeGroup>
+
+## Setup your Hanko project
+Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+
+<Note>
+  During creation make sure to input the URL you will be developing on as the `APP URL`.\
+  (Most likely http://localhost:5173/) 
+</Note>
 
 ## Add the Hanko API URL
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+Retrieve your API URL from the [Hanko console](https://cloud.hanko.io/), and paste this in a `.env` file.
 
 ```sh .env
 VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 ```
 
 <Note>
-  If you are self-hosting you need to provide the URL of your running Hanko
-  backend.
+  If you are self-hosting you need to provide the URL of your running Hanko backend.
 </Note>
 
 ## Configure component resolution
@@ -45,127 +77,257 @@ VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 Vue needs to know which elements to treat as custom elements, otherwise it will issue a warning regarding component
 resolution. To do so, provide a predicate function that determines which elements are to be considered custom elements
 to [`compilerOptions.isCustomElement`](https://vuejs.org/guide/extras/web-components.html#using-custom-elements-in-vue)
-in your configuration:
+in your configuration.\
+\
+To do this update your `vite.config.js` file to:
 
-    ```js vite.config.js
-    import vue from '@vitejs/plugin-vue'
+```js src/vite.config.js
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
 
-    export default {
-    plugins: [
-        vue({
-        template: {
-            compilerOptions: {
-              isCustomElement: (tag) => tag.startsWith("hanko-")
-            }
+export default defineConfig({
+  plugins: [vue({
+    template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith("hanko-")
         }
-        })
-     ]
     }
-    ```
-
-## Add `<hanko-auth>` component
-
-The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the register function from `@teamhanko/hanko-elements` into your Vue component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Then use the element in your component template.
-
-```html components/HankoAuth.vue
-<script setup lang="ts">
-import { useRouter } from "vue-router";
-import { onMounted } from "vue";
-import { register } from "@teamhanko/hanko-elements";
-
-const hankoApi = import.meta.env.VITE_HANKO_API_URL;
-
-const router = useRouter();
-
-const redirectAfterLogin = () => {
-  // successfully logged in, redirect to a page in your application
-  router.push("/dashboard");
-};
-
-onMounted(() => {
-  register(hankoApi)
-    .catch((error) => {
-      // handle error
-    });
-});
-</script>
-
-<template>
-  <hanko-auth @onSessionCreated="redirectAfterLogin" />
-</template>
+    })],
+})
 ```
 
-By now, your sign-up and sign-in features should be working. You should see an interface similar to this 👇
+## Setup TS support for Vue components
+TypeScript doesn't understand .vue files by default, which can cause IDE errors or issues during development.
 
-<Frame>
-  <img
-    src="/images/fullstack-guide/next-one.png"
-    alt="sign up"
-    width="500"
-    style={{ borderRadius: "0.5rem" }}
-  />
-</Frame>
+To fix this we will create a new file `shims-vue.d.ts` in our `src/` directory.
+Add the following content to make TS understand .vue files:
+```jsx src/shims-vue.d.ts
+declare module '*.vue' {
+  import type { DefineComponent } from 'vue'
+  const component: DefineComponent<{}, {}, any>
+  export default component
+}
 
-## Add `<hanko-profile>` component
+```
 
-The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
 
-```html components/HankoProfile.vue
+## Create Hanko components
+Create a folder called `components` and create two in it, `HankoAuth.vue` and `HankoProfile.vue`.
+
+### Hanko Auth
+
+Now lets setup the `HankoAuth.vue` file to create a functioning login component.
+
+Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action (e.g. redirect to your dashboard).
+
+[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
+
+```jsx src/components/HankoAuth.vue 
 <script setup lang="ts">
+  import { useRouter } from "vue-router";
   import { onMounted } from "vue";
   import { register } from "@teamhanko/hanko-elements";
 
   const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+  const router = useRouter();
+
+  const redirectAfterLogin = () => {
+    // successfully logged in, redirect to a page in your application
+    router.push("/dashboard");
+  };
 
   onMounted(() => {
-    register(hankoApi).catch((error) => {
-      // handle error
-    });
+    register(hankoApi)
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
   });
 </script>
 
 <template>
-  <hanko-profile />
+<!-- The onSessionCreated event gets called when the user succesfully logs in -->
+<hanko-auth @onSessionCreated="redirectAfterLogin" />
 </template>
 ```
 
-It should look like this 👇
+### Hanko profile
 
-<br />
-<Frame>
-  <img
-    src="/images/fullstack-guide/next-two.png"
-    alt="profile page"
-    width="500"
-    style={{ borderRadius: "0.5rem" }}
-  />
-</Frame>
+After setting up the HankoAuth let's set up the `HankoProfile.vue` file to create a interface where users can.\
+manage their `Email Addresses` and credentials.
 
-## Implement logout functionality
+[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we make a logout button component that you can use anywhere.
+```jsx src/components/HankoProfile.vue
+  <script setup lang="ts">
+    import { onMounted } from "vue";
+    import { register } from "@teamhanko/hanko-elements";
 
-```html components/LogoutButton.vue
+    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+    onMounted(() => {
+      register(hankoApi).catch((error) => {
+        // handle error
+        console.log(error)
+      });
+    });
+  </script>
+
+  <template>
+    <hanko-profile />
+  </template>
+```
+
+## Setup routes and views
+
+To route our app we will use the `RouterView` component from the vue-router.
+First let's set up our views which will be used by the router.
+
+
+### Create Views
+
+Create two files, `HomeView.vue` and `DashboardView.vue` in a new directory `/views`.
+These Views will be the content that will be shown on a page.\
+\
+Setup your views like this:
+```jsx src/views/HomeView.vue
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-import { Hanko } from "@teamhanko/hanko-elements";
-
-const hankoApi = import.meta.env.VITE_HANKO_API_URL;
-
-const router = useRouter();
-const hanko = new Hanko(hankoApi);
-
-const logout = () => {
-  hanko.user.logout().catch((error) => {
-    // handle error
-  })
-  router.push("/login")
-}
-
+  import HankoAuth from '../components/HankoAuth.vue'
 </script>
 
 <template>
-  <button @click="logout">Logout</button>
+  <main>
+    <HankoAuth/>
+  </main>
+</template>
+```
+
+And:
+
+```jsx src/views/DashboardView.vue
+<script setup lang="ts">
+  import HankoProfile from '../components/HankoProfile.vue'
+</script>
+
+<template>
+  <main>
+    <HankoProfile/>
+  </main>
+</template>
+```
+
+### Setup Router
+
+Create a file `index.ts` in a new directory `/router`.
+In here we can set up the `vue-router` just like this:
+
+```jsx router/index.ts
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue';
+import DashboardView from '../views/DashboardView.vue';
+
+const router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: [
+      {
+        path: '/', // <- path
+        name: 'home',
+        component: HomeView // <- view
+      },
+      {
+        path: '/dashboard', // <- path
+        name: 'dashboard',
+       component: DashboardView // <- view
+      }
+    ]
+  })
+
+export default router
+```
+
+Add the `<RouterView>` component to your `App.vue` file like this:
+
+```jsx src/App.vue
+  <script setup lang="ts">
+    import { RouterView } from 'vue-router'
+  </script>
+
+  <template>
+      <RouterView />
+  </template>
+```
+
+Finally intergrate the router with the app in `main.ts` just like this:
+```jsx src/main.ts
+  import { createApp } from 'vue'
+  import App from './App.vue'
+  import router from './router/index'
+
+  const app = createApp(App)
+
+  app.use(router)
+  app.mount('#app')
+```
+
+By now you should be able to go to `/` to see the `<HankoAuth>`, and to `/dashboard` to see the `<HankoProfile>`.
+
+They should look something like this👇
+<Frame>
+  <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex', backgroundColor: 'white'}}>
+    <img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500"/>
+    <img src="/images/fullstack-guide/next-two.png" alt="profile page" width="500" />
+  </div>
+</Frame>
+
+<Note>
+  If `HankoAuth` is not loading please restart the application as it might've not loaded the .env correctly the first time.\
+  \
+  `HankoProfile` will only look like the picture while you are logged in.
+</Note>
+
+## Implement logout functionality
+
+You can use `@teamhanko/hanko-elements` to easily logout users. Here we will make a logout button.
+
+Create `LogoutButton.vue` and insert the code below.
+
+```jsx src/components/LogoutButton.vue
+  <script setup lang="ts">
+    import { useRouter } from "vue-router";
+    import { Hanko } from "@teamhanko/hanko-elements";
+
+    const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+    const router = useRouter();
+    const hanko = new Hanko(hankoApi);
+
+    const logout = () => {
+      hanko.logout().catch((error) => {
+        // handle error
+        console.log(error)
+      })
+      router.push("/")//Path user will be redirected to after logging out
+    }
+  </script>
+
+  <template>
+    <button @click="logout">Logout</button>
+  </template>
+```
+
+Lets add this component to our `DashboardView` just like this:
+
+```jsx src/views/DashboardView.vue
+<script setup lang="ts">
+  import HankoProfile from '../components/HankoProfile.vue'
+  import LogoutButton from '../components/LogoutButton.vue'
+</script>
+
+<template>
+  <main>
+    <HankoProfile/>
+    <LogoutButton/>
+  </main>
 </template>
 ```
 
@@ -173,9 +335,67 @@ const logout = () => {
 
 You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](/guides/hanko-elements/customize-appearance).
 
-## Authenticate backend requests
 
-To authenticate requests on your backend with Hanko, refer to our [backend guide](/quickstarts/backend/).
+## Securing routes
+
+To secure our routes we should validate the session token at the backend. Please refer to our [backend guides](/quickstarts/backend).
+
+To do this we can implement middleware to our `router/index.ts` file.
+For this example we created a `isUserAuthenticated` function which validates our cookie using our Backend.
+
+Here we use `router.beforeEach` to validate our route if our route is added to the secureRoutes variable:
+
+```jsx src/router/index.ts
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue';
+import DashboardView from '../views/DashboardView.vue';
+
+//Routes we want to only be accesible to authenticated users
+const securedRoutes = ["dashboard"];
+
+async function isUserAuthenticated() {
+  try {
+    //Change this url to the url of your running hanko backend
+    const response = await fetch('http://localhost:5001/validate', {
+      credentials: 'include',
+    });
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/', // <- path
+      name: 'home',
+      component: HomeView // <- view
+    },
+    {
+      path: '/dashboard', // <- path
+      name: 'dashboard',
+      component: DashboardView // <- view
+    }
+  ]
+})
+
+//Middleware that runs before each navigation
+router.beforeEach(async (to, from, next) => {
+  //Check if you are on a secure route
+  if (typeof to.name === "string" && securedRoutes.includes(to.name) && !(await isUserAuthenticated())) {
+    next({ name: 'home' }); //Name of the route to redirect to if user is not authenticated
+  } else {
+    next();
+  }
+});
+
+export default router
+```
+
+To verify that it works, Logout on your app and go to /dashboard, you should get redirected back!
+
 
 ## Try it yourself
 
