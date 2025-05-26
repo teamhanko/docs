@@ -11,265 +11,245 @@ Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
   If you are self-hosting Hanko you need to provide your own URL.
 </Note>
 
-## Hanko Authentication with JWT
+## Hanko Authentication with session token
 
-Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT](https://datatracker.ietf.org/doc/html/rfc7519)). You can use this JWT to authenticate requests on your backend.
+Upon a succesful login, Hanko sends a cookie containing a session token. You can use this session token to authenticate requests on your backend.
 
 ### Steps to Authenticate Requests
 
-1. **Retrieve the JSON Web Key Set ([JWKS](https://datatracker.ietf.org/doc/html/rfc7517)):** The JWKS has the public keys to verify the JWT. Fetch it from the Hanko API's `.well-known/jwks.json` endpoint.
+1. **Retrieve the Session Token.**
 
-2. **Verify the JWT:** Use the JWKS to verify the JWT.
+3. **Verify the Session token using the Hanko [Validate]("/api-reference/public/session-management/validate-a-session-1") API endpoint.**
 
 ### Python-based Backend Examples
-Below we show examples of using a custom middleware in [FastAPI](https://fastapi.tiangolo.com/), [Django](https://www.djangoproject.com/) and [Flask](https://flask.palletsprojects.com/en/3.0.x/), based backend using the [PyJWT](https://pyjwt.readthedocs.io/en/stable/) package.
+Below we show examples of using a custom middleware in [FastAPI](https://fastapi.tiangolo.com/), [Django](https://www.djangoproject.com/) and [Flask](https://flask.palletsprojects.com/en/3.0.x/).
 
-Since you will be decoding the token using the RSA digital signature algorithm, you will need to install the [cryptography](https://cryptography.io) library. You can install this library either directly or as an additional requirement within the PyJWT package.
-
-```bash
-pip install pyjwt[crypto]
-```
-
-The `pyjwt[crypto]` format is recommended in requirements files in projects using PyJWT, as a separate cryptography requirement line may later be mistaken for an unused requirement and removed.
+Add your API Url you got from the Hanko Console previously.
 
 <Tabs>
 <Tab title="FastAPI">
-```python 
-from typing import Any
-import os
-import ssl
-import jwt
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+```bash install command
+pip install "fastapi[standard]" httpx
+```
+```python main.py
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 
-HANKO_API_URL = os.environ.get("HANKO_API_URL")
-
-
-def deny():
-    return JSONResponse(content={"error": "Unauthorized"}, status_code=401)
-
-
-def extract_token_from_header(header: str) -> str:
-    parts = header.split()
-    return parts[1] if len(parts) == 2 and parts[0].lower() == "bearer" else None
-
+import httpx
 
 app = FastAPI()
 
+# Change this to your hanko api url from the cloud console
+HANKO_API_URL = "YOUR_HANKO_API_URL"
 
-@app.middleware("http")
-async def auth(request: Request, call_next: Any):
-    authorization = request.headers.get("authorization")
+origins = [
+    # Add your frontend url here
+    "http://localhost:5173",
+]
 
-    if not authorization:
-        return deny()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    token = extract_token_from_header(authorization)
+# validate endpoint
+@app.get("/validate")
+async def validate(request: Request):
+    token = None
+    auth_header = request.headers.get("authorization")
+    if auth_header and auth_header.lower().startswith("bearer "):
+        token = auth_header.split(" ")[1]
+    elif request.cookies.get("hanko"):
+        token = request.cookies.get("hanko")
 
     if not token:
-        return deny()
+        print("No token found")
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
-    try:
-         # Disable SSL certificate verification while in development. 
-         # Don't forget to remove this when in prod.
+    validation_payload = {"session_token": token}
 
-        ssl_context = ssl.create_default_context()
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
+    async with httpx.AsyncClient() as client:
+        # Use the hanko /sessions/validate api endpoint 
+        response = await client.post(f"{HANKO_API_URL}/sessions/validate", json=validation_payload)
 
-        jwks_client = jwt.PyJWKClient(
-            HANKO_API_URL + "/.well-known/jwks.json", ssl_context=ssl_context
-        )
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
-        data = jwt.decode(
-            token,
-            signing_key.key,
-            algorithms=["RS256"],
-            audience="localhost",
-        )
+    if response.status_code != 200:
+        print("Token validation request failed")
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
-        if not data:
-            return deny()
+    validation_data = response.json()
+    if not validation_data.get("is_valid", False):
+        print("Token was invalid")
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
-        return await call_next(request)
-
-    except (jwt.DecodeError, Exception) as e:
-        print(f"Authentication error: {e}")
-        return deny()
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/protected")
-async def protected():
-    return {"message": "Hello World"}
+    print("Token is valid")
+    return {"status": "ok"}
+```
+```bash run command
+fastapi dev main.py --port 5001
 ```
 </Tab>
 <Tab title="Django">
-
-```python yourApp/middleware.py
-import ssl
-import jwt
-from django.conf import settings
-from django.http import JsonResponse
-
-
-class AuthenticationMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-        # One-time configuration and initialization.
-
-    
-    def __deny(self):
-        return JsonResponse({"error": "Unauthorized"},safe=False)
-
-
-    def __extract_token_from_header(self,header: str) -> str:
-        parts = header.split()
-        return parts[1] if len(parts) == 2 and parts[0].lower() == "bearer" else None
-
-
-    def __call__(self, request):
-        # Code to be executed for each request before
-        # the view (and later middleware) are called.
-        authorization = request.headers.get("authorization")
-
-        if not authorization:
-            return self.__deny()
-
-        token = self.__extract_token_from_header(authorization)               
-        if not token:
-            return self.__deny()
-
-        try:
-            # Disable SSL certificate verification while in development. Don't forget to remove this when in prod
-            ssl_context = ssl.create_default_context()
-            if settings.DEBUG:  
-                ssl_context.check_hostname = False
-                ssl_context.verify_mode = ssl.CERT_NONE        
-            jwks_client = jwt.PyJWKClient(
-                settings.HANKO_API_URL + "/.well-known/jwks.json",
-                ssl_context=ssl_context
-            )                      
-            signing_key = jwks_client.get_signing_key_from_jwt(token)        
-            data = jwt.decode(
-                token,
-                signing_key.key,
-                algorithms=["RS256"],
-                audience="localhost",
-            )
-
-            if not data:
-                return self.__deny()           
-
-        except (jwt.DecodeError, Exception) as e:
-            print(f"Authentication error: {e}")
-            return self.__deny()
-
-        response = self.get_response(request)
-
-        # Code to be executed for each request/response after
-        # the view is called.
-
-        return response
+```bash install command
+pip install django requests django-cors-headers
 ```
+```python main.py
+import sys
+import django
+from django.conf import settings
+from django.http import JsonResponse, HttpResponse
+from django.urls import path
+from django.core.management import execute_from_command_line
+import requests
 
-```python yourProject/settings.py
-#other settings
-...
+settings.configure(
+    DEBUG=True,
+    SECRET_KEY='your-secret-key',
+    ROOT_URLCONF=__name__,
+    ALLOWED_HOSTS=['*'],
+    INSTALLED_APPS=[
+        "corsheaders",
+    ],
+    MIDDLEWARE=[
+        "corsheaders.middleware.CorsMiddleware",
+        "django.middleware.common.CommonMiddleware", 
+    ],
+    CORS_ALLOWED_ORIGINS=[
+        # Add your frontend url here
+        "http://localhost:5173",
+    ],
+    CORS_ALLOW_CREDENTIALS=True, 
+)
 
-MIDDLEWARE = [
-    ... 
-    #other middleware
-    ...
+django.setup()
 
-    'yourApp.middleware.AuthenticationMiddleware' #add this 
+# Change this to your hanko api url from the cloud console
+HANKO_API_URL = "YOUR_HANKO_API_URL"
+
+def validate(request):
+    token = None
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.lower().startswith("bearer "):
+        token = auth_header.split(" ")[1]
+    elif "hanko" in request.COOKIES:
+        token = request.COOKIES.get("hanko")
+
+    if not token:
+        print("No token found")
+        return HttpResponse("Unauthorized", status=401)
+
+    validation_payload = {"session_token": token}
+
+    try:
+        # Use the hanko /sessions/validate api endpoint 
+        response = requests.post(f"{HANKO_API_URL}/sessions/validate", json=validation_payload)
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+        return HttpResponse("Unauthorized", status=401)
+
+    if response.status_code != 200:
+        print("Token validation request failed")
+        return HttpResponse("Unauthorized", status=401)
+
+    validation_data = response.json()
+    if not validation_data.get("is_valid", False):
+        print("Token was invalid")
+        return HttpResponse("Unauthorized", status=401)
+
+    print("Token is valid")
+    return JsonResponse({"status": "ok"})
+
+urlpatterns = [
+    path('validate/', validate),
 ]
-...
 
-HANKO_API_URL = 'Your Hanko API URL'
+if __name__ == '__main__':
+    execute_from_command_line(sys.argv)
 
+```
+```bash run command
+python main.py runserver 5001
 ```
 </Tab>
 <Tab title="Flask">
-```python example.py
-from flask import Flask, render_template, request, jsonify, redirect
-import jwt #upm package(pyjwt)
+```bash install command
+pip install flask flask-cors requests
+```
+```python main.py
+from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
 import requests
-
-from pprint import pprint
 
 app = Flask(__name__)
 
-#constants 
-API_URL = "HANKO_URL_HERE" #change this to your url from cloud.hanko.io
-AUDIENCE = "localhost" # change this to the domain you're hosting on, and make sure it matches the URL on cloud.hanko.io
+# Enable CORS for your frontend origin
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
-# Retrieve the JWKS from the Hanko API
-jwks_url = f"{API_URL}/.well-known/jwks.json"
-jwks_response = requests.get(jwks_url)
-jwks_data = jwks_response.json()
-public_keys = {}
-for jwk in jwks_data["keys"]:
-    kid = jwk["kid"]
-    public_keys[kid] = jwt.algorithms.RSAAlgorithm.from_jwk(jwk)
+HANKO_API_URL = "YOUR_HANKO_API_URL"
 
-@app.route("/protected") 
-def protected():
-    # Retrieve the JWT from the cookie
-    jwt_cookie = request.cookies.get("hanko")
-    # print(jwt_cookie)
-    if not jwt_cookie: #check that the cookie exists
-        return redirect("/")
+# validate endpoint
+@app.route('/validate', methods=['GET', 'OPTIONS'])
+def validate():
+    # Handle preflight OPTIONS request (CORS)
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        response.headers.add("Access-Control-Allow-Headers", "Authorization, Content-Type")
+        response.headers.add("Access-Control-Allow-Methods", "GET, OPTIONS")
+        return response
+
+    token = None
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.lower().startswith("bearer "):
+        token = auth_header.split(" ")[1]
+    elif request.cookies.get('hanko'):
+        token = request.cookies.get('hanko')
+
+    if not token:
+        print("No token found")
+        return jsonify({"detail": "Unauthorized"}), 401
+
+    validation_payload = {"session_token": token}
+
     try:
-        kid = jwt.get_unverified_header(jwt_cookie)["kid"]
-        payload = jwt.decode(
-            str(jwt_cookie), 
-            public_keys[kid],
-            algorithms=["RS256"],
-            audience=AUDIENCE,
-        )
-        pprint(payload)
-    except Exception as e:
-        # The JWT is invalid
-        print(e)
-        return jsonify({"message": "unauthorised"})
-    return jsonify({"message": "authorised"})
+        # Use the hanko /sessions/validate api endpoint 
+        resp = requests.post(f"{HANKO_API_URL}/sessions/validate", json=validation_payload)
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+        return jsonify({"detail": "Unauthorized"}), 401
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80) 
-    #80 is the default port for http, so you won't need to specify the port in the browser
-    #open http://localhost in a browser to see it in action
+    if resp.status_code != 200:
+        print("Token validation request failed")
+        return jsonify({"detail": "Unauthorized"}), 401
+
+    validation_data = resp.json()
+    if not validation_data.get("is_valid", False):
+        print("Token was invalid")
+        return jsonify({"detail": "Unauthorized"}), 401
+
+    print("Token is valid")
+    return jsonify({"status": "ok"})
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5001)
+
+```
+```bash run command
+python main.py
 ```
 </Tab>
 </Tabs>
 
-<Warning>
-
-While using PyJWT to decode JWTs, you might encounter errors such as `binascii.Error: Incorrect padding` and `jwt.exceptions.DecodeError: Invalid crypto padding`. These errors often occur due to insufficient `base64` padding at the end of the token.
-
-To resolve this, you might need to manually add the necessary padding to the token before attempting to decode it. You can read the token as a string and append the required padding characters to ensure successful decoding.
-
-```python
-token = token + "===="
+## Frontend request example
+```tsx example.ts
+fetch('http://localhost:5001/validate', {
+    credentials: 'include', // This is required to include the cookie in the request
+}).then((res) => {
+    console.log(res.ok);
+}).catch(() => {
+    console.log(False);
+});
 ```
-
-<AccordionGroup>
-<Accordion title="Tip for adding padding dynamically">
-While a fixed padding like "====" can work, it might be more efficient to dynamically adjust the padding based on the actual needs of the token. Here’s how you can do it.
-
-```python
-def add_padding(token):
-    padding_needed = len(token) % 4
-    if padding_needed:
-        padding_needed = 4 - padding_needed
-    return token + ('=' * padding_needed)
-```
-This method calculates the exact amount of padding needed and adds it, ensuring that the token is correctly formatted for decoding.
-</Accordion>
-</AccordionGroup>
-
-</Warning>
