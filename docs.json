@@ -27,8 +27,7 @@
                       "quickstarts/fullstack/next",
                       "quickstarts/fullstack/remix",
                       "quickstarts/fullstack/nuxt",
-                      "quickstarts/fullstack/sveltekit",
-                      "quickstarts/fullstack/fresh"
+                      "quickstarts/fullstack/sveltekit"
                     ]
                   },
                   {
@@ -49,8 +48,7 @@
                       "quickstarts/backend/bun",
                       "quickstarts/backend/go",
                       "quickstarts/backend/python",
-                      "quickstarts/backend/rust",
-                      "quickstarts/backend/deno"
+                      "quickstarts/backend/rust"
                     ]
                   },
                   "quickstarts/mobile"
