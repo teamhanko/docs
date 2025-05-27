@@ -13,17 +13,18 @@ Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
 
 ## Hanko Authentication with JWT
 
-Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT](https://datatracker.ietf.org/doc/html/rfc7519)). You can use this JWT to authenticate requests on your backend.
+Upon a succesful login, Hanko sends a cookie containing a session token. You can use this session token to authenticate requests on your backend.
 
 ### Steps to Authenticate Requests
 
-1. **Retrieve the JSON Web Key Set ([JWKS](https://datatracker.ietf.org/doc/html/rfc7517)):** The JWKS has the public keys to verify the JWT. Fetch it from the Hanko API's `.well-known/jwks.json` endpoint.
 
-2. **Verify the JWT:** Use the JWKS to verify the JWT.
+1. **Retrieve the Session Token.**
+
+2. **Verify the Session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.**
 
 ### Go-based Backend Example
 
-Below is a sample middleware for a Go-based backend using the [Echo framework](https://echo.labstack.com/) and the [`lestrrat-go/jwx`](https://github.com/lestrrat-go/jwx) package:
+Below is a sample middleware for a Go-based backend using the [Echo framework](https://echo.labstack.com/):
 
 ```bash setup commands
 go mod init go-backend
@@ -40,6 +41,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -84,13 +86,16 @@ func SessionValidationMiddleware() echo.MiddlewareFunc {
 				return handleError(c, err, "Could not retrieve cookie")
 			}
 
-			// Send validation request to the hanko sessions/validate endpoint
+			payload := strings.NewReader(`{"session_token":"` + cookie.Value + `"}`)
+
+      //Create a post request to the hanko sessions validate endpoint
 			url := hanko_api_url + "/sessions/validate"
-			req, err := http.NewRequest("GET", url, nil)
+			req, err := http.NewRequest("POST", url, payload)
 			if err != nil {
-				return handleError(c, err, "Failed to create request")
+				return handleError(c, err, "Failed to create POST request")
 			}
-			req.Header.Add("Cookie", "hanko="+cookie.Value)
+
+			req.Header.Add("Content-Type", "application/json")
 
 			res, err := http.DefaultClient.Do(req)
 			if err != nil {
@@ -126,9 +131,19 @@ func handleError(c echo.Context, err error, msg string) error {
 	}
 	return c.String(http.StatusUnauthorized, "Validation unsuccessful")
 }
-
 ```
 
 ```bash run command
 go run main.go
 ``` 
+
+## Frontend request example
+```tsx example.ts
+fetch('http://localhost:5001/validate', {
+    credentials: 'include', // This is required to include the cookie in the request
+}).then((res) => {
+    console.log(res.ok);
+}).catch(() => {
+    console.log(False);
+});
+```
