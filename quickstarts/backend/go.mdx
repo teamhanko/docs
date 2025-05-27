@@ -25,48 +25,110 @@ Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT]
 
 Below is a sample middleware for a Go-based backend using the [Echo framework](https://echo.labstack.com/) and the [`lestrrat-go/jwx`](https://github.com/lestrrat-go/jwx) package:
 
-```go
+```bash setup commands
+go mod init go-backend
+go get github.com/labstack/echo/v4
+go get github.com/labstack/echo/v4/middleware
+echo > main.go
+```
+
+```go main.go
+package main
+
 import (
-	"context"
-	"fmt"
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
+
 	"github.com/labstack/echo/v4"
-	"github.com/lestrrat-go/jwx/v2/jwk"
-	"github.com/lestrrat-go/jwx/v2/jwt"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func SessionMiddleware() echo.MiddlewareFunc {
-  return func(next echo.HandlerFunc) echo.HandlerFunc {
-    return func(c echo.Context) error {
-      cookie, err := c.Cookie("hanko")
-      if err == http.ErrNoCookie {
-        return c.Redirect(http.StatusTemporaryRedirect, "/unauthorized")
-      }
-      if err != nil {
-        return err
-      }
-      // replace "hankoApiURL" with your API URL
-      set, err := jwk.Fetch(
-        context.Background(),
-        fmt.Sprintf("%v/.well-known/jwks.json", hankoApiURL)
-      )
-      if err != nil {
-        return err
-      }
+// Change to your Hanko API URL
+var hanko_api_url = "YOUR_HANKO_API_URL"
 
-      token, err := jwt.Parse([]byte(cookie.Value), jwt.WithKeySet(set))
-      if err != nil {
-        return c.Redirect(http.StatusTemporaryRedirect, "/unauthorized")
-      }
+// Change to the url of your frontend (origin)
+var origins = []string{"http://localhost:5173"}
+var port = "5001"
 
-      log.Printf("session for user '%s' verified successfully", token.Subject())
+func main() {
+	e := echo.New()
 
-      c.Set("token", cookie.Value)
-      c.Set("user", token.Subject())
+	//Cors middleware to allow requests from our frontend
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     origins,
+		AllowCredentials: true,
+	}))
 
-      return next(c)
-    }
-  }
+	//Validation page that has to go trough our session validation middleware
+	e.GET("/validate", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Validation successful")
+	}, SessionValidationMiddleware())
+
+	e.Logger.Fatal(e.Start(":" + port))
 }
+
+// Middleware function to authenticate the hanko session
+func SessionValidationMiddleware() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Println("Recovered from panic:", r)
+				}
+			}()
+
+			cookie, err := c.Cookie("hanko")
+			if err != nil {
+				return handleError(c, err, "Could not retrieve cookie")
+			}
+
+			// Send validation request to the hanko sessions/validate endpoint
+			url := hanko_api_url + "/sessions/validate"
+			req, err := http.NewRequest("GET", url, nil)
+			if err != nil {
+				return handleError(c, err, "Failed to create request")
+			}
+			req.Header.Add("Cookie", "hanko="+cookie.Value)
+
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				return handleError(c, err, "Failed to send request")
+			}
+			defer res.Body.Close()
+
+			body, err := io.ReadAll(res.Body)
+			if err != nil {
+				return handleError(c, err, "Failed to read response body")
+			}
+
+			var jsonRes map[string]interface{}
+			if err := json.Unmarshal(body, &jsonRes); err != nil {
+				return handleError(c, err, "Failed to parse JSON response")
+			}
+
+			if isValid, ok := jsonRes["is_valid"].(bool); !ok || !isValid {
+				return handleError(c, nil, `"is_valid" field missing or false`)
+			}
+
+			log.Println("Validation successful")
+			return next(c)
+		}
+	}
+}
+
+func handleError(c echo.Context, err error, msg string) error {
+	if err != nil {
+		log.Println("ERROR:", msg, "-", err)
+	} else {
+		log.Println("ERROR:", msg)
+	}
+	return c.String(http.StatusUnauthorized, "Validation unsuccessful")
+}
+
 ```
+
+```bash run command
+go run main.go
+``` 
