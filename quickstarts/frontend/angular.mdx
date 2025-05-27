@@ -444,7 +444,7 @@ function isBrowser(): boolean {
 }
 ```
 
-Now to use this authentication guard you have to add it to your `app.routes.ts` file.
+Add this authentication guard to the routes, in the `app.routes.ts`, which should only be accessible when the user is logged in.
 
 ```ts app.routes.ts
 import { Routes } from '@angular/router';
