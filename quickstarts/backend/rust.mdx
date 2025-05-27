@@ -11,130 +11,166 @@ Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
 
 ## Hanko Authentication with JWT
 
-Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT](https://datatracker.ietf.org/doc/html/rfc7519)). You can use this JWT to authenticate requests on your backend.
+Upon a succesful login, Hanko sends a cookie containing a session token. You can use this session token to authenticate requests on your backend.
 
 ### Steps to Authenticate Requests
 
-1. **Recover the [kid](https://datatracker.ietf.org/doc/html/rfc7517#section-4.5) from the user JWT** The kid tells us which key was used to sign the JWT.
+1. **Retrieve the Session Token.**
 
-2. **Retrieve the JSON Web Key Set ([JWKS](https://datatracker.ietf.org/doc/html/rfc7517)):** The JWKS has the public keys to verify the JWT. Fetch it from the Hanko API's `.well-known/jwks.json` endpoint.
+2. **Verify the Session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.**
 
-3. **Find the matching JWK from the JWKS retrieved at step 2** The matching JWK is the one that has the same kid found at step 1.
-
-4. **Verify the JWT:** Use the matching JWK to verify the JWT.
-
-<Warning>
-  The JWKS should be cached in the backend to avoid querying the endpoint every
-  time a token needs to be validated. It is recommended to retrieve the JWKS
-  when no JWK matches the JWT kid (step 3).
-</Warning>
 
 ### Rust-based Backend Example
 
-Below is a sample code in rust validating the user JWT using [reqwest](https://github.com/seanmonstar/reqwest) and [jsonwebtoken](https://github.com/Keats/jsonwebtoken) packages:
+Below is a sample code in rust validating the user session token.
 
-```toml Cargo.toml
-[dependencies]
-jsonwebtoken = "9.3.0"
-reqwest = { version = "0.12.4", features = ["json"]}
-serde = { version = "1.0", features = ["derive"] }
-tokio = { version = "1", features = ["full"] }
+```bash setup commands
+cargo new rust-backend
+cd rust-backend
 ```
 
+Setup your dependencies
+```toml Cargo.toml
+[dependencies]
+actix-web = "4"
+actix-cors = "0.6"
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+log = "0.4"
+```
+
+Create a server with a /validate endpoint that validates a token.
 ```rust main.rs
-use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
-use reqwest;
+use actix_cors::Cors;
+use actix_web::{
+    http::header,
+    middleware::Logger,
+    web, App, HttpRequest, HttpResponse, HttpServer, Responder,
+};
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 
-const HANKO_API_URL: &str = "https://XXXXX.hanko.io";
-const JWT_AUDIENCE_DOMAIN: &str = "example.com";
+//Change to your Hanko API URL
+const HANKO_API_URL: &str = "YOUR_HANKO_API_URL";
+//Change to your frontend url
+const ALLOWED_ORIGINS: &[&str] = &[
+    "http://localhost:5173",
+];
+const SERVER_PORT: u16 = 5001;
 
-#[derive(Debug, Deserialize)]
-struct Jwk {
-    kty: String,
-    kid: String,
-    n: String,
-    e: String,
-    alg: String,
+
+#[derive(Serialize)]
+struct ValidationPayload<'a> {
+    session_token: &'a str,
 }
 
-#[derive(Debug, Deserialize)]
-struct Jwks {
-    keys: Vec<Jwk>,
+#[derive(Deserialize)]
+struct ValidationResponse {
+    is_valid: bool,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct EmailInfo {
-    pub address: String,
-    pub is_primary: bool,
-    pub is_verified: bool,
-}
+async fn validate(
+    req: HttpRequest,
+    client: web::Data<Client>,
+) -> impl Responder {
+    let token = req
+        .headers()
+        .get(header::AUTHORIZATION)
+        .and_then(|header_value| header_value.to_str().ok())
+        .and_then(|auth| {
+            if auth.to_lowercase().starts_with("bearer ") {
+                Some(auth[7..].trim())
+            } else {
+                None
+            }
+        })
+        .map(|s| s.to_string())
+        .or_else(|| req.cookie("hanko").map(|cookie| cookie.value().to_string()));
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct UserDecodedJwtInfo {
-    pub aud: Vec<String>,
-    pub email: EmailInfo,
-    pub exp: i64,
-    pub iat: i64,
-    pub sub: String,
-}
-
-async fn fetch_jwks() -> Result<Jwks, Box<dyn Error>> {
-    let response = reqwest::get(format!("{}/.well-known/jwks.json", HANKO_API_URL)).await?;
-    let jwks = response.json::<Jwks>().await?;
-    Ok(jwks)
-}
-
-fn get_jwt_kid(token: &str) -> Result<String, Box<dyn Error>> {
-    let header = decode_header(token)?;
-    header.kid.ok_or_else(|| "Missing kid in header".into())
-}
-
-fn decode_token(jwk: &Jwk, token: &str) -> Result<UserDecodedJwtInfo, Box<dyn Error>> {
-    // Decode the token to return its information.
-    let decoding_key = DecodingKey::from_rsa_components(&jwk.n, &jwk.e)?;
-
-    let mut validation = Validation::new(Algorithm::RS256);
-    validation.set_audience(&[JWT_AUDIENCE_DOMAIN.to_string()]);
-
-    let token_data = decode::<UserDecodedJwtInfo>(token, &decoding_key, &validation)?;
-    Ok(token_data.claims)
-}
-
-async fn validate_hanko_token(token: &str) -> Result<UserDecodedJwtInfo, Box<dyn Error>> {
-    // 1) Recover the kid from the user JWT.
-    let jwt_kid = get_jwt_kid(token)?;
-
-    // 2) Retrieve the JSON Web Key Set (JWKS).
-    let jwks = fetch_jwks().await?;
-
-    // 3) Find the matching JWK from the JWKS retrieved at step 2*
-    let matching_jwk = jwks.keys.iter().find(|jwk| jwk.kid == jwt_kid);
-
-    // 4) Verify the JWT.
-    match matching_jwk {
-        Some(jwk) => {
-            let token_data = decode_token(jwk, token)?;
-
-            // More validations related to the decoded token...
-
-            Ok(token_data)
+    let token = match token {
+        Some(t) if !t.is_empty() => t,
+        _ => {
+            println!("No token found");
+            return HttpResponse::Unauthorized().body("Unauthorized");
         }
-        None => Err(format!("No matching JWK found matching token kid: {}", jwt_kid).into()),
+    };
+
+    let payload = ValidationPayload { session_token: &token };
+
+    // use the hanko sessions/validate endpoint to verify session token
+    let url = format!("{}/sessions/validate", HANKO_API_URL);
+    let resp = client.post(&url).json(&payload).send().await;
+
+    let resp = match resp {
+        Ok(r) => r,
+        Err(e) => {
+            println!("Request failed: {}", e);
+            return HttpResponse::Unauthorized().body("Unauthorized");
+        }
+    };
+
+    if !resp.status().is_success() {
+        println!("Token validation failed with status: {}", resp.status());
+        return HttpResponse::Unauthorized().body("Unauthorized");
     }
+
+    let validation_data: ValidationResponse = match resp.json().await {
+        Ok(data) => data,
+        Err(e) => {
+            println!("Failed to parse JSON response: {}", e);
+            return HttpResponse::Unauthorized().body("Unauthorized");
+        }
+    };
+
+    if !validation_data.is_valid {
+        println!("Token was invalid");
+        return HttpResponse::Unauthorized().body("Unauthorized");
+    }
+
+    println!("Token is valid");
+    HttpResponse::Ok().json(serde_json::json!({ "status": "ok" }))
 }
 
-#[tokio::main]
-async fn main() {
-    // Depending on the rust backend framework used (axum, artix-web, rocket...),
-    // recover the hanko token from the request.
-    let jwt_hanko_token = "some-hanko-jwt-token".to_string();
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
 
-    match validate_hanko_token(&jwt_hanko_token).await {
-        Ok(payload) => println!("Token is valid. Payload: {:?}", payload),
-        Err(err) => eprintln!("Token validation failed: {}", err),
-    }
+    println!("Starting server on port {}", SERVER_PORT);
+
+    HttpServer::new(|| {
+        let cors = Cors::default()
+            .allowed_origin_fn(|origin, _req_head| {
+                ALLOWED_ORIGINS.iter().any(|allowed| origin.as_bytes() == allowed.as_bytes())
+            })
+            .supports_credentials()
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![header::AUTHORIZATION, header::CONTENT_TYPE, header::COOKIE]);
+    
+        App::new()
+            .wrap(Logger::default())
+            .wrap(cors)
+            .app_data(web::Data::new(Client::new()))
+            .route("/validate", web::get().to(validate))
+            .route("/validate", web::post().to(validate))
+    })
+    .bind(("127.0.0.1", SERVER_PORT))?
+    .run()
+    .await
 }
+```
 
+run the server
+```bash run command
+cargo run
+```
+
+## Frontend request example
+```tsx example.ts
+fetch('http://localhost:5001/validate', {
+    credentials: 'include', // This is required to include the cookie in the request
+}).then((res) => {
+    console.log(res.ok);
+}).catch(() => {
+    console.log(False);
+});
 ```
