@@ -13,25 +13,18 @@ Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
 
 ## Hanko Authentication with JWT
 
-Upon a succesful login, Hanko sends a cookie containing a session token. You can use this session token to authenticate requests on your backend.
+When a user successfully logs in, Hanko issues a cookie containing a session token. This token can be utilized for request authentication in your backend implementation.
 
 ### Steps to Authenticate Requests
 
 
-1. **Retrieve the Session Token.**
+1. Retrieve the Session Token.
 
-2. **Verify the Session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.**
+2. Verify the Session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.
 
 ### Go-based Backend Example
 
 Below is a sample middleware for a Go-based backend using the [Echo framework](https://echo.labstack.com/):
-
-```bash setup commands
-go mod init go-backend
-go get github.com/labstack/echo/v4
-go get github.com/labstack/echo/v4/middleware
-echo > main.go
-```
 
 ```go main.go
 package main
@@ -88,7 +81,7 @@ func SessionValidationMiddleware() echo.MiddlewareFunc {
 
 			payload := strings.NewReader(`{"session_token":"` + cookie.Value + `"}`)
 
-      //Create a post request to the hanko sessions validate endpoint
+            //Create a post request to the hanko sessions validate endpoint
 			url := hanko_api_url + "/sessions/validate"
 			req, err := http.NewRequest("POST", url, payload)
 			if err != nil {
