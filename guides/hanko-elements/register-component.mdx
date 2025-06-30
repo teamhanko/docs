@@ -15,13 +15,12 @@ If you want to create a dedicated Login page: \
 ## Features
 |  |  |
 | --- | --- |
-|  **- Register** | allows users to create new accounts.
-|  **- Passkeys** | Enables passwordless login with modern device credentials.
-|  **- Passcodes** | Useful for email-based login and verification workflows.
-|  **- Mobile biometrics** | Supports biometric login via mobile devices.
-|  **- FIDO Security Keys** | Offers the highest level of hardware-based authentication.
-|  **- OAuth SSO** | 	Allows users to log in using third-party identity providers (e.g., Google, Apple).
-|  **- Passwords** | Supports traditional password-based login for broader accessibility.
+|  **Register** | allows users to create new accounts.
+|  **Passkeys** | Enables passwordless login with modern device credentials.
+|  **Passcodes** | Useful for email-based login and verification workflows.
+|  **2FA** | Users can use a TOTP app or security keys.
+|  **OAuth SSO** | 	Allows users to log in using third-party identity providers (e.g., Google, Apple).
+|  **Passwords** | Supports traditional password-based login for broader accessibility.
 
 ## Usage
 
@@ -35,9 +34,9 @@ If you want to create a dedicated Login page: \
 
 | Name | Description |
 | --- | --- |
-| `prefilled-email` | Used to prefill the email input field |
+| `prefilledEmail` | Used to prefill the email input field |
+| `prefilledUsername` | Used to prefill the username input field |
 | `lang` | Used to specify the language of the content within the element |
-| `experimental` | A space-separated list of experimental features to be enabled |
 
 
 ### Adding `<hanko-register>` component
@@ -195,7 +194,7 @@ export default function HankoRegister() {
   </Tab>
 
 <Tab title="Vue">
-```js HankoRegister.vue
+```html HankoRegister.vue
 <script setup>
 import { onMounted } from "vue";
 import { register } from "@teamhanko/hanko-elements";
@@ -217,7 +216,7 @@ onMounted(() => {
 </Tab>
 
 <Tab title="Svelte">
-```js HankoRegister.svelte
+```html HankoRegister.svelte
 <script>
   import { register } from "@teamhanko/hanko-elements";
   import { onMount } from "svelte";

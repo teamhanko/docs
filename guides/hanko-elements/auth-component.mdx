@@ -4,9 +4,9 @@ description: A web component that handles user login and user registration.
 ---
 
 ## Use Case
-The `<hanko-auth>` component is an all-in-one solution for handling both login and registration in a single interface. It's perfect for apps that want to keep the user experience simple by combining authentication flows without needing separate routes or pages.
+The `<hanko-auth>` component serves as a comprehensive authentication solution, seamlessly integrating both login and registration functionality within a unified interface. This component is specifically designed for applications seeking to streamline their authentication process by consolidating multiple authentication flows without requiring separate routes or pages.
 
-It automatically toggles between the login and registration views, making it easy to support both sign-in and sign-up from one place.
+The component intelligently manages state transitions between login and registration views, enabling effortless user authentication while maintaining a cohesive experience throughout the sign-in and registration process.
 
 If you want to create a dedicated Login page: \
 [try out the`<hanko-login>` component](/guides/hanko-elements/login-component).
@@ -18,13 +18,12 @@ If you want to create a dedicated Registration page:  \
 ## Features
 |  |  |
 | --- | --- |
-|  **- Login + Register** | Seamlessly handles both authentication flows in one component.
-|  **- Passkeys** | Enables passwordless login with modern device credentials.
-|  **- Passcodes** | Useful for email-based login and verification workflows.
-|  **- Mobile biometrics** | Supports biometric login via mobile devices.
-|  **- FIDO Security Keys** | Offers the highest level of hardware-based authentication.
-|  **- OAuth SSO** | 	Allows users to log in using third-party identity providers (e.g., Google, Apple).
-|  **- Passwords** | Supports traditional password-based login for broader accessibility.
+|  **Login + Register** | Seamlessly handles both flows in one component.
+|  **Passkeys** | Enables passwordless login with modern device credentials.
+|  **Passcodes** | Useful for email-based login and verification workflows.
+|  **2FA** | Users can use a TOTP app or security keys.
+|  **OAuth SSO** | 	Allows users to log in using third-party identity providers (e.g., Google, Apple).
+|  **Passwords** | Supports traditional password-based login for broader accessibility.
 
 ## Usage
 
@@ -38,9 +37,10 @@ If you want to create a dedicated Registration page:  \
 
 | Name | Description |
 | --- | --- |
-| `prefilled-email` | Used to prefill the email input field |
+| `prefilledEmail` | Used to prefill the email input field |
+| `prefilledUsername` | Used to prefill the username input field |
 | `lang` | Used to specify the language of the content within the element |
-| `experimental` | A space-separated list of experimental features to be enabled |
+| `mode` | Speficy the starting flow, either `registration`or `login`  |
 
 
 ### Adding `<hanko-auth>` component
@@ -198,7 +198,7 @@ export default function HankoAuth() {
   </Tab>
 
 <Tab title="Vue">
-```js HankoAuth.vue
+```html HankoAuth.vue
 <script setup>
 import { onMounted } from "vue";
 import { register } from "@teamhanko/hanko-elements";
@@ -220,7 +220,7 @@ onMounted(() => {
 </Tab>
 
 <Tab title="Svelte">
-```js HankoProfile.svelte
+```html HankoProfile.svelte
 <script>
   import { register } from "@teamhanko/hanko-elements";
   import { onMount } from "svelte";
@@ -235,7 +235,7 @@ onMounted(() => {
   });
 </script>
 
-<hanko-profile />
+<hanko-auth />
 ```
 </Tab>
 
