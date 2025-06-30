@@ -98,29 +98,6 @@ export default function HankoProfile() {
 <hanko-profile />
 ```
 </Tab>
-
-<Tab title="Fresh">
-```js HankoProfile.tsx
-const endpoint = "HANKO_API_URL";
-
-const code = `
-  import { register } from 'https://esm.sh/@teamhanko/hanko-elements@0.5.5-beta';
-
-  register('${endpoint}', { shadow: true });
-`;
-
-export default function Profile() {
-  return (
-    <div class="profile">
-      <hanko-profile api={endpoint}></hanko-profile>
-      <script type="module">
-        {code}
-      </script>
-    </div>
-  );
-}
-```
-</Tab>
 </Tabs>
 
 #### Frontend

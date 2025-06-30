@@ -127,32 +127,6 @@ return (
 <hanko-login on:onSessionCreated={redirectAfterLogin} />
 ```
 </Tab>
-
-<Tab title="Fresh">
-```js Login.tsx
-const endpoint = "HANKO_API_URL";
-
-const code = `
-  import { register } from 'https://esm.sh/@teamhanko/hanko-elements@0.5.5-beta';
-
-  register('${endpoint}', { shadow: true });
-  document.addEventListener('hankoAuthSuccess', (event) => {
-    document.location.href = '/protected';
-  });
-`;
-
-export default function Login() {
-  return (
-    <div class="auth-container">
-      <hanko-login api={endpoint}></hanko-login>
-      <script type="module">
-        {code}
-      </script>
-    </div>
-  );
-}
-```
-</Tab>
 </Tabs>
 
 #### Frontend 
