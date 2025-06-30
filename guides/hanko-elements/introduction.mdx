@@ -213,6 +213,8 @@ const defaultOptions = {
   cookieDomain: undefined, // The domain where the cookie set from the SDK is available. When undefined,
   // defaults to the domain of the page where the cookie was created.
   cookieSameSite: "lax", // Specify whether/when cookies are sent with cross-site requests.
+  sessionCheckInterval: 30000, // Interval for session validity checks in milliseconds. Must be greater than 3000 (3s).
+  sessionTokenLocation: "cookie", // Specify where the session token should be stored. Either `cookie` or `sessionStorage`.
 };
 
 const { hanko } = await register("YOUR_HANKO_API_URL", defaultOptions);
