@@ -88,6 +88,7 @@ paths:
       operationId: passcodeInit
       tags:
         - Passcode
+      deprecated: true
       requestBody:
         content:
           application/json:
@@ -125,6 +126,7 @@ paths:
       operationId: passcodeFinal
       tags:
         - Passcode
+      deprecated: true
       requestBody:
         content:
           application/json:
@@ -190,6 +192,7 @@ paths:
       operationId: passwordLogin
       tags:
         - Password
+      deprecated: true
       requestBody:
         content:
           application/json:
@@ -244,6 +247,7 @@ paths:
       operationId: password
       tags:
         - Password
+      deprecated: true
       security:
         - CookieAuth: [ ]
         - BearerTokenAuth: [ ]
@@ -294,6 +298,7 @@ paths:
       operationId: webauthnLoginInit
       tags:
         - WebAuthn
+      deprecated: true
       requestBody:
         content:
           application/json:
@@ -347,6 +352,7 @@ paths:
       operationId: webauthnLoginFinal
       tags:
         - WebAuthn
+      deprecated: true
       requestBody:
         content:
           application/json:
@@ -397,6 +403,7 @@ paths:
       operationId: webauthnRegInit
       tags:
         - WebAuthn
+      deprecated: true
       security:
         - CookieAuth: [ ]
         - BearerTokenAuth: [ ]
@@ -426,6 +433,7 @@ paths:
       operationId: webauthnRegFinal
       tags:
         - WebAuthn
+      deprecated: true
       security:
         - CookieAuth: [ ]
         - BearerTokenAuth: [ ]
@@ -463,6 +471,7 @@ paths:
       operationId: listCredentials
       tags:
         - WebAuthn
+      deprecated: true
       security:
         - CookieAuth: [ ]
         - BearerTokenAuth: [ ]
@@ -485,6 +494,7 @@ paths:
       operationId: updateCredential
       tags:
         - WebAuthn
+      deprecated: true
       security:
         - CookieAuth: [ ]
         - BearerTokenAuth: [ ]
@@ -522,6 +532,7 @@ paths:
       operationId: deleteCredential
       tags:
         - WebAuthn
+      deprecated: true
       security:
         - CookieAuth: [ ]
         - BearerTokenAuth: [ ]
@@ -778,6 +789,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /thirdparty/auth:
     get:
+      deprecated: true
       summary: 'Initialize third party login'
       description: |
         Initialize an OAuth-backed (authorization code grant type) login with a third party provider by redirecting to
@@ -939,6 +951,7 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
   /user:
     post:
+      deprecated: true
       summary: 'Get user details by email'
       description: Retrieve details for user corresponding to the given `email`.
       operationId: getUserId
@@ -976,6 +989,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     delete:
+      deprecated: true
       summary: 'Deletes the current user'
       description: Used to delete the current user. Note that `config.account.allow_deletion` must be set to true.
       operationId: deleteUser
@@ -1038,6 +1052,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /users:
     post:
+      deprecated: true
       summary: 'Create a user'
       description: Used to create a new user. To disable this endpoint, `config.account.allow_signup` must be set to false.
       operationId: createUser
@@ -1106,6 +1121,7 @@ paths:
       operationId: listEmails
       tags:
         - Email Management
+      deprecated: true
       security:
         - CookieAuth: [ ]
         - BearerTokenAuth: [ ]
@@ -1121,6 +1137,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
+      deprecated: true
       summary: 'Add a new email address to the current user.'
       operationId: createEmail
       tags:
@@ -1150,6 +1167,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /emails/{id}/set_primary:
     post:
+      deprecated: true
       summary: 'Marks the email address as primary email'
       operationId: setPrimaryEmail
       tags:
@@ -1175,6 +1193,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /emails/{id}:
     delete:
+      deprecated: true
       summary: 'Delete an email address'
       operationId: deleteEmail
       tags:
