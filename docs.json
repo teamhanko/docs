@@ -107,6 +107,8 @@
                 "pages": [
                   "guides/hanko-elements/introduction",
                   "guides/hanko-elements/auth-component",
+                  "guides/hanko-elements/login-component",
+                  "guides/hanko-elements/register-component",
                   "guides/hanko-elements/profile-component",
                   "guides/hanko-elements/events-component",
                   "guides/hanko-elements/using-frontend-sdk",

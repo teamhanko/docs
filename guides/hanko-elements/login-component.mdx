@@ -1,15 +1,14 @@
 ---
-title: Auth Component
-description: A web component that handles user login and user registration.
+title: Login Component
+description: A web component that handles user login.
 ---
 
+
 ## Use Case
-The `<hanko-auth>` component serves as a comprehensive authentication solution, seamlessly integrating both login and registration functionality within a unified interface. This component is specifically designed for applications seeking to streamline their authentication process by consolidating multiple authentication flows without requiring separate routes or pages.
+Specifically designed for dedicated login interfaces, this component intentionally omits registration functionality unlike `<hanko-auth>`. This makes it the optimal choice for controlled-access applications such as enterprise systems, internal tools, or invitation-based platforms where user registration needs to be restricted.
 
-The component intelligently manages state transitions between login and registration views, enabling effortless user authentication while maintaining a cohesive experience throughout the sign-in and registration process.
-
-If you want to create a dedicated Login page: \
-[try out the`<hanko-login>` component](/guides/hanko-elements/login-component).
+If you want to Combine Login and Register on the same page: \
+[try out the`<hanko-auth>` component](/guides/hanko-elements/auth-component).
 
 If you want to create a dedicated Registration page:  \
 [try out the `<hanko-register>` component](/guides/hanko-elements/register-component) .
@@ -18,19 +17,20 @@ If you want to create a dedicated Registration page:  \
 ## Features
 |  |  |
 | --- | --- |
-|  **Login + Register** | Seamlessly handles both flows in one component.
+|  **Login** | Allows users to securely log in to their existing accounts.
 |  **Passkeys** | Enables passwordless login with modern device credentials.
 |  **Passcodes** | Useful for email-based login and verification workflows.
 |  **2FA** | Users can use a TOTP app or security keys.
 |  **OAuth SSO** | 	Allows users to log in using third-party identity providers (e.g., Google, Apple).
 |  **Passwords** | Supports traditional password-based login for broader accessibility.
 
+
 ## Usage
 
 ### Markup
 
 ```html 
-<hanko-auth></hanko-auth>
+<hanko-login></hanko-login>
 ```
 
 ### Attributes
@@ -40,18 +40,17 @@ If you want to create a dedicated Registration page:  \
 | `prefilledEmail` | Used to prefill the email input field |
 | `prefilledUsername` | Used to prefill the username input field |
 | `lang` | Used to specify the language of the content within the element |
-| `mode` | Speficy the starting flow, either `registration`or `login`  |
 
 
-### Adding `<hanko-auth>` component
+### Adding `<hanko-login>` component
 
-Examples showcasing how to add `<hanko-auth>` component in different full stack and frontend frameworks.
+Examples showcasing how to add `<hanko-login>` component in different full stack and frontend frameworks.
 
 #### Full Stack
 
 <Tabs>
 <Tab title="Nextjs (App directory)">
-```jsx components/HankoAuth.tsx
+```jsx components/HankoLogin.tsx
 "use client"
 
 import { useEffect } from "react";
@@ -59,7 +58,7 @@ import { register } from "@teamhanko/hanko-elements";
 
 const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
 
-export default function HankoAuth() {
+export default function HankoLogin() {
   useEffect(() => {
    register(hankoApi)
       .catch((error) => {
@@ -68,20 +67,20 @@ export default function HankoAuth() {
   }, []);
 
 return (
-<hanko-auth />
+<hanko-login />
 );
 }
 ```
 </Tab>
 
 <Tab title="Nextjs (Pages directory)">
-```jsx components/HankoAuth.tsx
+```jsx components/HankoLogin.tsx
 import { useEffect } from "react";
 import { register } from "@teamhanko/hanko-elements";
 
 const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
 
-export default function HankoAuth() {
+export default function HankoLogin() {
   useEffect(() => {
    register(hankoApi)
       .catch((error) => {
@@ -90,7 +89,7 @@ export default function HankoAuth() {
 }, []);
 
 return (
-  <hanko-auth />
+  <hanko-login />
   );
 }
 ```
@@ -99,14 +98,14 @@ return (
 <Tab title="Nuxt">
 ```html login.vue
 <template>
-  <hanko-auth />
+  <hanko-login />
 </template>
 ```
 </Tab>
 
 
 <Tab title="SvelteKit">
-```html HankoAuth.svelte
+```html HankoLogin.svelte
 <script>
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
@@ -125,7 +124,7 @@ return (
   });
 </script>
 
-<hanko-auth on:onSessionCreated={redirectAfterLogin} />
+<hanko-login on:onSessionCreated={redirectAfterLogin} />
 ```
 </Tab>
 </Tabs>
@@ -135,38 +134,38 @@ return (
 
 <Tabs>
 <Tab title="Create React App">
-```jsx components/HankoAuth.tsx
+```jsx components/HankoLogin.tsx
 import { useEffect } from "react";
 import { register } from "@teamhanko/hanko-elements";
 
 const hankoApi = process.env.REACT_APP_HANKO_API_URL;
 
-export default function HankoAuth() {
+export default function HankoLogin() {
   useEffect(() => {
     register(hankoApi).catch((error) => {
       // handle error
     });
   }, []);
 
-  return <hanko-auth />;
+  return <hanko-login />;
 }
 ```
 </Tab>
 <Tab title="React with Vite">
-    ```jsx components/HankoAuth.tsx
+    ```jsx components/HankoLogin.tsx
     import { useEffect } from "react";
     import { register } from "@teamhanko/hanko-elements";
 
     const hankoApi = import.meta.env.VITE_HANKO_API_URL;
 
-    export default function HankoAuth() {
+    export default function HankoLogin() {
       useEffect(() => {
         register(hankoApi).catch((error) => {
           // handle error
         });
       }, []);
 
-      return <hanko-auth />;
+      return <hanko-login />;
     }
     ```
   </Tab>
@@ -188,13 +187,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <hanko-auth />
+  <hanko-login />
 </template>
 ```
 </Tab>
 
 <Tab title="Svelte">
-```html HankoProfile.svelte
+```html HankoLogin.svelte
 <script>
   import { register } from "@teamhanko/hanko-elements";
   import { onMount } from "svelte";
@@ -209,14 +208,14 @@ onMounted(() => {
   });
 </script>
 
-<hanko-auth />
+<hanko-login />
 ```
 </Tab>
 
 <Tab title="JavaScript">
 ```html login.html
 <body>
-  <hanko-auth />
+  <hanko-login />
 
   <script type="module">
     import { register } from "https://esm.run/@teamhanko/hanko-elements";
@@ -234,7 +233,7 @@ You should see an interface similar to this 👇
 </Frame>
 
 
-For more detailed instructions on integrating `<hanko-auth>` component with your favorite frameworks, navigate to [quickstart guides](/quickstarts/fullstack). 
+For more detailed instructions on integrating `<hanko-login>` component with your favorite frameworks, navigate to [quickstart guides](/quickstarts/fullstack). 
 
 
 

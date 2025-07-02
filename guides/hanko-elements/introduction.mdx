@@ -3,6 +3,35 @@ title: Hanko Elements
 sidebarTitle: Introduction
 description: Hanko Elements provide web components that add a modern login and registration experience for your users.
 ---
+## Web Components
+<CardGroup cols={2}>
+  <Card
+    title="<hanko-login/>"
+    href="/guides/hanko-elements/login-component"
+  >
+    A web component that handles user login.
+  </Card>
+  <Card
+    title="<hanko-register/>"
+    href="/guides/hanko-elements/register-component"
+  >
+    A web component that handles user registration.
+  </Card>
+  <Card
+    title="<hanko-auth/>"
+    href="/guides/hanko-elements/auth-component"
+  >
+    A web component that handles user login and registration.
+  </Card>
+  <Card
+    title="<hanko-profile/>"
+    href="/guides/hanko-elements/profile-component"
+  >
+    Allows Users to 
+    manage their login methods.
+  </Card>
+</CardGroup>
+
 
 ## Features
 
@@ -31,7 +60,7 @@ description: Hanko Elements provide web components that add a modern login and r
     }
     href="/guides/hanko-elements/auth-component"
   >
-    Pre-built components to give you a fully-functional auth and user management in minutes.
+    Pre-built components to give you fully-functional authentication and user management in minutes.
   </Card>
   <Card
     title="Customization"
@@ -114,9 +143,10 @@ description: Hanko Elements provide web components that add a modern login and r
   </Card>
 </CardGroup>
 
-## Installation
 
-To use the Hanko Elements module in your project, you can install it via `npm`, `pnpm`, or `yarn`. Alternatively, you can also import the module directly via a CDN.
+
+## Installation
+Integrate Hanko Elements into your project using your preferred package manager or CDN implementation:
 
 <CodeGroup>
 ```bash npm
@@ -135,24 +165,22 @@ yarn add @teamhanko/hanko-elements
 
 ## Usage
 
-To integrate Hanko, you need to import and call the `register()` function from the `hanko-elements` module. Once this is done, you can use the web
-components in your code.
+To implement Hanko, import and invoke the `register()` function from the `hanko-elements` module. This enables the use of web components throughout your application.
 
 <Info>
-For a functioning page, at least the `<hanko-auth>` element should be placed, so the users can sign-in, and also,
-a handler for the "onSessionCreated" event should be added, to customize the behaviour after the authentication flow has been completed
-(e.g. redirect to another page). These steps will be described in the below sections.
+    For proper functionality, implement the `<hanko-auth />` element to enable user authentication, and configure the "onSessionCreated" event handler to specify
+    post-authentication behavior, such as page redirection. Detailed implementation steps are provided in subsequent sections.
 </Info>
 
 ### Importing the module
 
-If you're using a module bundler like webpack or Parcel, you can import the `register()` function from the `@teamhanko/hanko-elements` package in your TypeScript or JavaScript file
+If installed through a package manager, you can import the `register()` function from the `@teamhanko/hanko-elements` package in your TypeScript or JavaScript file
 
 ```js
 import { register } from "@teamhanko/hanko-elements";
 ```
 
-If you prefer using a CDN, you can include a `script` tag with the import statement pointing to the CDN URL where the `hanko-elements` package is hosted.
+For CDN implementation, include a `script` tag with the import statement referencing the CDN-hosted `hanko-elements` package URL.
 
 ```html
 <script type="module">
@@ -168,7 +196,7 @@ After importing the `register()` function, call it with your Hanko API URL as an
 const { hanko } = await register("YOUR_HANKO_API_URL");
 ```
 
-You can also pass certain default options.
+Configuration options can be provided to customize the behavior and appearance of the components.
 
 ```js
 const defaultOptions = {
@@ -185,6 +213,8 @@ const defaultOptions = {
   cookieDomain: undefined, // The domain where the cookie set from the SDK is available. When undefined,
   // defaults to the domain of the page where the cookie was created.
   cookieSameSite: "lax", // Specify whether/when cookies are sent with cross-site requests.
+  sessionCheckInterval: 30000, // Interval for session validity checks in milliseconds. Must be greater than 3000 (3s).
+  sessionTokenLocation: "cookie", // Specify where the session token should be stored. Either `cookie` or `sessionStorage`.
 };
 
 const { hanko } = await register("YOUR_HANKO_API_URL", defaultOptions);
@@ -192,17 +222,19 @@ const { hanko } = await register("YOUR_HANKO_API_URL", defaultOptions);
 
 #### Cookie options
 
-- If you set `cookieSameSite` to `none` then your application must use HTTPS. The `Secure` attribute is automatically set to true
-if your application uses HTTPS. 
+- If `cookieSameSite` is set to `none` then your application must be served through HTTPS. The `Secure` attribute is automatically set to true
+if your application uses HTTPS.
 - If you want cookies to be available on subdomains, you must set your `cookieDomain` to your domain prefixed with a `.`. For example, 
 if your frontend application is running on `myapp.com` and you want cookies to be available on `api.myapp.com`, then the `cookieDomain` value should be `.myapp.com`. 
 
 ### Embedding the Web Components
 
-If you have followed the steps mentioned above, you should now be able to place the web components anywhere in the body of your code. A minimal example would look like this
+After implementing the above steps, you can incorporate the web components into your application's markup. Here's a basic implementation example:
 
 ```html
+<body>
 <hanko-auth id="authComponent"></hanko-auth>
+</body>
 
 <script type="module">
   import { register } from "https://cdn.jsdelivr.net/npm/@teamhanko/hanko-elements/dist/elements.js";
@@ -214,26 +246,3 @@ If you have followed the steps mentioned above, you should now be able to place 
     // redirect to a different page
   });
 </script>
-```
-
-To know more about individual components, refer to these.
-
-<CardGroup cols={3}>
-  <Card title="Auth Component" href="/guides/hanko-elements/auth-component">
-    Handles user login and user registration.
-  </Card>
-  <Card title="Profile Component" href="/guides/hanko-elements/profile-component">
-    Allows to manage emails, passwords and passkeys.
-  </Card>
-  <Card title="Events Component" href="/guides/hanko-elements/events-component">
-    Binds event handler to certain events, without displaying UI elements.
-  </Card>
-</CardGroup>
-
-
-
-
-
-
-
-
