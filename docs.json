@@ -44,8 +44,7 @@
                   {
                     "group": "Backend",
                     "pages": [
-                      "quickstarts/backend/node",
-                      "quickstarts/backend/bun",
+                      "quickstarts/backend/javascript",
                       "quickstarts/backend/go",
                       "quickstarts/backend/python",
                       "quickstarts/backend/rust"
