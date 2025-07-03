@@ -3,7 +3,9 @@ sidebarTitle: "Python"
 title: Integrate Hanko with Python backend
 ---
 
-## Get the Hanko API URL
+After successful authentication, Hanko generates a session token that is stored as a cookie. Use the session token to authenticate requests to your backend. This guide demonstrates how to implement session token validation in Python to ensure that only properly authenticated users can access your application’s protected resources.
+
+### Get the Hanko API URL
 
 Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
 
@@ -11,245 +13,38 @@ Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
   If you are self-hosting Hanko you need to provide your own URL.
 </Note>
 
-## Hanko Authentication with session token
-
-Upon a succesful login, Hanko sends a cookie containing a session token. You can use this session token to authenticate requests on your backend.
-
 ### Steps to Authenticate Requests
 
-1. **Retrieve the Session Token.**
+1. Retrieve the Session Token.
 
-2. **Verify the Session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.**
+2. Verify the Session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.
 
-### Python-based Backend Examples
-Below we show examples of using a custom middleware in [FastAPI](https://fastapi.tiangolo.com/), [Django](https://www.djangoproject.com/) and [Flask](https://flask.palletsprojects.com/en/3.0.x/).
+### Example function
+The following section demonstrates how to validate session tokens against the Hanko backend. The specific implementation for retrieving the session token cookie will vary depending on your framework.
 
-Add your API Url you got from the Hanko Console previously.
-
-<Tabs>
-<Tab title="FastAPI">
-```bash install command
-pip install "fastapi[standard]" httpx
-```
-```python main.py
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-
-import httpx
-
-app = FastAPI()
-
-# Change this to your hanko api url from the cloud console
-HANKO_API_URL = "YOUR_HANKO_API_URL"
-
-origins = [
-    # Add your frontend url here
-    "http://localhost:5173",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# validate endpoint
-@app.get("/validate")
-async def validate(request: Request):
-    token = None
-    auth_header = request.headers.get("authorization")
-    if auth_header and auth_header.lower().startswith("bearer "):
-        token = auth_header.split(" ")[1]
-    elif request.cookies.get("hanko"):
-        token = request.cookies.get("hanko")
-
-    if not token:
-        print("No token found")
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    validation_payload = {"session_token": token}
-
-    async with httpx.AsyncClient() as client:
-        # Use the hanko /sessions/validate api endpoint 
-        response = await client.post(f"{HANKO_API_URL}/sessions/validate", json=validation_payload)
-
-    if response.status_code != 200:
-        print("Token validation request failed")
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    validation_data = response.json()
-    if not validation_data.get("is_valid", False):
-        print("Token was invalid")
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    print("Token is valid")
-    return {"status": "ok"}
-```
-```bash run command
-fastapi dev main.py --port 5001
-```
-</Tab>
-<Tab title="Django">
-```bash install command
-pip install django requests django-cors-headers
-```
-```python main.py
-import sys
-import django
-from django.conf import settings
-from django.http import JsonResponse, HttpResponse
-from django.urls import path
-from django.core.management import execute_from_command_line
-import requests
-
-settings.configure(
-    DEBUG=True,
-    SECRET_KEY='your-secret-key',
-    ROOT_URLCONF=__name__,
-    ALLOWED_HOSTS=['*'],
-    INSTALLED_APPS=[
-        "corsheaders",
-    ],
-    MIDDLEWARE=[
-        "corsheaders.middleware.CorsMiddleware",
-        "django.middleware.common.CommonMiddleware", 
-    ],
-    CORS_ALLOWED_ORIGINS=[
-        # Add your frontend url here
-        "http://localhost:5173",
-    ],
-    CORS_ALLOW_CREDENTIALS=True, 
-)
-
-django.setup()
-
-# Change this to your hanko api url from the cloud console
-HANKO_API_URL = "YOUR_HANKO_API_URL"
-
-def validate(request):
-    token = None
-    auth_header = request.headers.get("Authorization")
-    if auth_header and auth_header.lower().startswith("bearer "):
-        token = auth_header.split(" ")[1]
-    elif "hanko" in request.COOKIES:
-        token = request.COOKIES.get("hanko")
-
-    if not token:
-        print("No token found")
-        return HttpResponse("Unauthorized", status=401)
-
-    validation_payload = {"session_token": token}
-
+```python
+def validate_session_token(token: str) -> Tuple[bool, Optional[str]]:
+    """
+    Validates a session token with the Hanko API.
+    Returns a tuple of (is_valid: bool, error_message: Optional[str])
+    """
     try:
-        # Use the hanko /sessions/validate api endpoint 
-        response = requests.post(f"{HANKO_API_URL}/sessions/validate", json=validation_payload)
-    except requests.RequestException as e:
-        print(f"Request failed: {e}")
-        return HttpResponse("Unauthorized", status=401)
+        response = requests.post(
+            f"{HANKO_API_URL}/sessions/validate",
+            json={"session_token": token}
+        )
 
-    if response.status_code != 200:
-        print("Token validation request failed")
-        return HttpResponse("Unauthorized", status=401)
+        if response.status_code != 200:
+            return False, "Invalid token"
 
-    validation_data = response.json()
-    if not validation_data.get("is_valid", False):
-        print("Token was invalid")
-        return HttpResponse("Unauthorized", status=401)
+        validation_data = response.json()
+        if not validation_data.get("is_valid", False):
+            return False, "Invalid token"
 
-    print("Token is valid")
-    return JsonResponse({"status": "ok"})
+        return True, None
 
-urlpatterns = [
-    path('validate/', validate),
-]
-
-if __name__ == '__main__':
-    execute_from_command_line(sys.argv)
-
-```
-```bash run command
-python main.py runserver 5001
-```
-</Tab>
-<Tab title="Flask">
-```bash install command
-pip install flask flask-cors requests
-```
-```python main.py
-from flask import Flask, request, jsonify, make_response
-from flask_cors import CORS
-import requests
-
-app = Flask(__name__)
-
-# Enable CORS for your frontend origin
-CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
-
-HANKO_API_URL = "YOUR_HANKO_API_URL"
-
-# validate endpoint
-@app.route('/validate', methods=['GET', 'OPTIONS'])
-def validate():
-    # Handle preflight OPTIONS request (CORS)
-    if request.method == 'OPTIONS':
-        response = make_response()
-        response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
-        response.headers.add("Access-Control-Allow-Credentials", "true")
-        response.headers.add("Access-Control-Allow-Headers", "Authorization, Content-Type")
-        response.headers.add("Access-Control-Allow-Methods", "GET, OPTIONS")
-        return response
-
-    token = None
-    auth_header = request.headers.get('Authorization')
-    if auth_header and auth_header.lower().startswith("bearer "):
-        token = auth_header.split(" ")[1]
-    elif request.cookies.get('hanko'):
-        token = request.cookies.get('hanko')
-
-    if not token:
-        print("No token found")
-        return jsonify({"detail": "Unauthorized"}), 401
-
-    validation_payload = {"session_token": token}
-
-    try:
-        # Use the hanko /sessions/validate api endpoint 
-        resp = requests.post(f"{HANKO_API_URL}/sessions/validate", json=validation_payload)
-    except requests.RequestException as e:
-        print(f"Request failed: {e}")
-        return jsonify({"detail": "Unauthorized"}), 401
-
-    if resp.status_code != 200:
-        print("Token validation request failed")
-        return jsonify({"detail": "Unauthorized"}), 401
-
-    validation_data = resp.json()
-    if not validation_data.get("is_valid", False):
-        print("Token was invalid")
-        return jsonify({"detail": "Unauthorized"}), 401
-
-    print("Token is valid")
-    return jsonify({"status": "ok"})
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5001)
-
-```
-```bash run command
-python main.py
-```
-</Tab>
-</Tabs>
-
-## Frontend request example
-```tsx example.ts
-fetch('http://localhost:5001/validate', {
-    credentials: 'include', // This is required to include the cookie in the request
-}).then((res) => {
-    console.log(res.ok);
-}).catch(() => {
-    console.log(False);
-});
+    except requests.Timeout:
+        return False, "Authentication service timeout"
+    except requests.RequestException:
+        return False, "Authentication service unavailable"
 ```
