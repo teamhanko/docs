@@ -3,63 +3,42 @@ sidebarTitle: "Rust"
 title: Integrate Hanko with Rust backend
 ---
 
-## Get the Hanko API URL
+After successful authentication, Hanko generates a session token that is stored as a cookie. Use the session token to authenticate requests to your backend. This guide demonstrates how to implement session token validation in Rust to ensure that only properly authenticated users can access your application’s protected resources.
+
+### Get the Hanko API URL
 
 Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
 
 <Note>If you are self-hosting Hanko you need to provide your own URL.</Note>
 
-## Hanko Authentication with JWT
-
-Upon a succesful login, Hanko sends a cookie containing a session token. You can use this session token to authenticate requests on your backend.
-
 ### Steps to Authenticate Requests
 
-1. **Retrieve the Session Token.**
+1. Retrieve the Session Token.
 
-2. **Verify the Session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.**
+2. Verify the Session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.
 
+### Example function
+The following section demonstrates how to validate session tokens against the Hanko backend. The specific implementation for retrieving the session token cookie will vary depending on your framework.
 
-### Rust-based Backend Example
-
-Below is a sample code in rust validating the user session token.
-
-```bash setup commands
-cargo new rust-backend
-cd rust-backend
-```
-
-Setup your dependencies
-```toml Cargo.toml
-[dependencies]
-actix-web = "4"
-actix-cors = "0.6"
-reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-log = "0.4"
-```
-
-Create a server with a /validate endpoint that validates a token.
-```rust main.rs
-use actix_cors::Cors;
-use actix_web::{
-    http::header,
-    middleware::Logger,
-    web, App, HttpRequest, HttpResponse, HttpServer, Responder,
-};
+```rust
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
-//Change to your Hanko API URL
-const HANKO_API_URL: &str = "YOUR_HANKO_API_URL";
-//Change to your frontend url
-const ALLOWED_ORIGINS: &[&str] = &[
-    "http://localhost:5173",
-];
-const SERVER_PORT: u16 = 5001;
+// Configuration constants
+struct Config {
+    hanko_api_url: String,
+}
 
+impl Config {
+    fn new() -> Self {
+        Self {
+            hanko_api_url: std::env::var("HANKO_API_URL")
+                .unwrap_or_else(|_| "YOUR_HANKO_API_URL".to_string()),
+        }
+    }
+}
 
+// Types
 #[derive(Serialize)]
 struct ValidationPayload<'a> {
     session_token: &'a str,
@@ -70,107 +49,17 @@ struct ValidationResponse {
     is_valid: bool,
 }
 
-async fn validate(
-    req: HttpRequest,
-    client: web::Data<Client>,
-) -> impl Responder {
-    let token = req
-        .headers()
-        .get(header::AUTHORIZATION)
-        .and_then(|header_value| header_value.to_str().ok())
-        .and_then(|auth| {
-            if auth.to_lowercase().starts_with("bearer ") {
-                Some(auth[7..].trim())
-            } else {
-                None
-            }
-        })
-        .map(|s| s.to_string())
-        .or_else(|| req.cookie("hanko").map(|cookie| cookie.value().to_string()));
+async fn validate_token(token: &str, client: &Client, config: &Config) -> Result<bool, reqwest::Error> {
+    let payload = ValidationPayload { session_token: token };
+    let url = format!("{}/sessions/validate", config.hanko_api_url);
 
-    let token = match token {
-        Some(t) if !t.is_empty() => t,
-        _ => {
-            println!("No token found");
-            return HttpResponse::Unauthorized().body("Unauthorized");
-        }
-    };
-
-    let payload = ValidationPayload { session_token: &token };
-
-    // use the hanko sessions/validate endpoint to verify session token
-    let url = format!("{}/sessions/validate", HANKO_API_URL);
-    let resp = client.post(&url).json(&payload).send().await;
-
-    let resp = match resp {
-        Ok(r) => r,
-        Err(e) => {
-            println!("Request failed: {}", e);
-            return HttpResponse::Unauthorized().body("Unauthorized");
-        }
-    };
+    let resp = client.post(&url).json(&payload).send().await?;
 
     if !resp.status().is_success() {
-        println!("Token validation failed with status: {}", resp.status());
-        return HttpResponse::Unauthorized().body("Unauthorized");
+        return Ok(false);
     }
 
-    let validation_data: ValidationResponse = match resp.json().await {
-        Ok(data) => data,
-        Err(e) => {
-            println!("Failed to parse JSON response: {}", e);
-            return HttpResponse::Unauthorized().body("Unauthorized");
-        }
-    };
-
-    if !validation_data.is_valid {
-        println!("Token was invalid");
-        return HttpResponse::Unauthorized().body("Unauthorized");
-    }
-
-    println!("Token is valid");
-    HttpResponse::Ok().json(serde_json::json!({ "status": "ok" }))
+    let validation_data: ValidationResponse = resp.json().await?;
+    Ok(validation_data.is_valid)
 }
-
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-
-    println!("Starting server on port {}", SERVER_PORT);
-
-    HttpServer::new(|| {
-        let cors = Cors::default()
-            .allowed_origin_fn(|origin, _req_head| {
-                ALLOWED_ORIGINS.iter().any(|allowed| origin.as_bytes() == allowed.as_bytes())
-            })
-            .supports_credentials()
-            .allowed_methods(vec!["GET", "POST"])
-            .allowed_headers(vec![header::AUTHORIZATION, header::CONTENT_TYPE, header::COOKIE]);
-    
-        App::new()
-            .wrap(Logger::default())
-            .wrap(cors)
-            .app_data(web::Data::new(Client::new()))
-            .route("/validate", web::get().to(validate))
-            .route("/validate", web::post().to(validate))
-    })
-    .bind(("127.0.0.1", SERVER_PORT))?
-    .run()
-    .await
-}
-```
-
-run the server
-```bash run command
-cargo run
-```
-
-## Frontend request example
-```tsx example.ts
-fetch('http://localhost:5001/validate', {
-    credentials: 'include', // This is required to include the cookie in the request
-}).then((res) => {
-    console.log(res.ok);
-}).catch(() => {
-    console.log(False);
-});
 ```
