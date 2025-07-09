@@ -3,33 +3,33 @@ sidebarTitle: Custom domain
 title: Custom domain
 description: Configure a custom domain to enhance your users experience.
 ---
-### Setting Up a custom domain for your Hanko integration
+### Setting up a custom domain for your Hanko project
 
 This guide explains the benefits of using a custom domain with Hanko and walks you through the configuration process.
 
 ---
 
-#### Why Use a Custom Domain?
+#### Why use a custom domain?
 
 Using a custom domain for your Hanko authentication system provides several important advantages:
 
-- **Better Compatibility with 3rd-Party OAuth Providers**
+- **Better compatibility with 3rd-Party OAuth providers**
 
     With OAuth providers, the redirect URL or redirect domain is displayed on the user's consent screen. Using a custom domain means that your own domain/URL (e.g., `auth.yourapp.com`) will be shown instead of the default Hanko domain (`hanko.io`).
 
-- **3rd-Party Cookie Tracking Prevention**
+- **3rd-Party cookie tracking prevention**
 
     Some modern browsers block 3rd-party cookies by default. A custom domain allows cookies to belong to your domain and work reliably in these browsers.
 
-- **Google Verified App Features:**
+- **Google verified app features:**
 
     If using Google OAuth, having a custom domain allows your application to display your app’s logo and leverage other branding features (e.g., custom scopes). (See [Google Documentation](https://support.google.com/cloud/answer/13463073?hl=en) for more info)
 
-#### How to Set Up a Custom Domain
+#### How to set up a custom domain
 
 To set up your custom domain for authentication, follow these steps:
 
-1. **Create a CNAME Record in Your DNS Configuration:**
+1. **Create a CNAME record in your DNS configuration:**
 
     Configure a CNAME record in your domain's DNS settings to point to `cname.hanko.io`
 
@@ -46,9 +46,9 @@ To set up your custom domain for authentication, follow these steps:
 </Note>
 
 
-2. **Configure the Custom Domain in Hanko Console:**
-    - Log in to the [Hanko Console](https://cloud.hanko.io).
-    - Navigate to **Project Settings > Custom Domain**.
+2. **Configure the custom domain in the Hanko console:**
+    - Log in to the [Hanko console](https://cloud.hanko.io).
+    - Navigate to **Project settings > Custom domain**.
     - Enter your custom domain (e.g., `auth.yourapp.com`) in the input field and save.
 
 <Note>
@@ -58,15 +58,15 @@ To set up your custom domain for authentication, follow these steps:
     When the custom domain is set up, your project will no longer be reachable through the previous API URL.
 </Note>
 
-#### Updating Your Application for the Custom Domain
+#### Updating Your application for the custom domain
 
 After setting up the custom domain, you'll need to update your application's configuration to use the new URLs across various places:
 
-1. **Change Your API URL:**
+1. **Change your API URL:**
 
     After setting up the custom domain, update the API URL in your Hanko Elements configuration or frontend-sdk initialization, and in your backend code.
 
-2. **Update Redirect URLs:**
+2. **Update redirect URLs:**
     - If you're using 3rd-party connections (e.g., Google, SAML), ensure that all redirect URL configurations are updated.
-    - Retrieve the new redirect URL from the **Project Settings > Social connections** and **Project Settings > Enterprise connections**
+    - Retrieve the new redirect URL from the **Project Settings > Social connections** and **Project settings > Enterprise connections**
     - Update these URLs in your 3rd-party provider configurations (e.g., Google, Azure AD).
