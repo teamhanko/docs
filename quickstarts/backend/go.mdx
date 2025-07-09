@@ -3,6 +3,10 @@ sidebarTitle: "Go"
 title: Integrate Hanko with Go backend
 ---
 
+
+After successful authentication, Hanko generates a session token that is stored as a cookie. Use the session token to authenticate requests to your backend.
+This guide demonstrates how to implement session token validation in Go to ensure that only properly authenticated users can access your application's protected resources.
+
 ## Get the Hanko API URL
 
 Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
@@ -11,62 +15,63 @@ Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
   If you are self-hosting Hanko you need to provide your own URL.
 </Note>
 
-## Hanko Authentication with JWT
-
-Upon a successful login, Hanko sends a cookie containing a JSON Web Token ([JWT](https://datatracker.ietf.org/doc/html/rfc7519)). You can use this JWT to authenticate requests on your backend.
-
 ### Steps to Authenticate Requests
 
-1. **Retrieve the JSON Web Key Set ([JWKS](https://datatracker.ietf.org/doc/html/rfc7517)):** The JWKS has the public keys to verify the JWT. Fetch it from the Hanko API's `.well-known/jwks.json` endpoint.
+1. Retrieve the session token.
 
-2. **Verify the JWT:** Use the JWKS to verify the JWT.
+2. Verify the session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.
 
-### Go-based Backend Example
+### Example implementation
 
-Below is a sample middleware for a Go-based backend using the [Echo framework](https://echo.labstack.com/) and the [`lestrrat-go/jwx`](https://github.com/lestrrat-go/jwx) package:
+The following section demonstrates how to validate session tokens against the Hanko backend.
+To retrieve the session token cookie, use the `http.Request.Cookie()` function provided by the Go standard HTTP library.
 
 ```go
-import (
-	"context"
-	"fmt"
-	"log"
-	"net/http"
-	"github.com/labstack/echo/v4"
-	"github.com/lestrrat-go/jwx/v2/jwk"
-	"github.com/lestrrat-go/jwx/v2/jwt"
-)
+// SessionValidator defines the interface for session validation
+type SessionValidator interface {
+	ValidateSession(token string) (bool, error)
+}
 
-func SessionMiddleware() echo.MiddlewareFunc {
-  return func(next echo.HandlerFunc) echo.HandlerFunc {
-    return func(c echo.Context) error {
-      cookie, err := c.Cookie("hanko")
-      if err == http.ErrNoCookie {
-        return c.Redirect(http.StatusTemporaryRedirect, "/unauthorized")
-      }
-      if err != nil {
-        return err
-      }
-      // replace "hankoApiURL" with your API URL
-      set, err := jwk.Fetch(
-        context.Background(),
-        fmt.Sprintf("%v/.well-known/jwks.json", hankoApiURL)
-      )
-      if err != nil {
-        return err
-      }
+// HankoSessionValidator implements SessionValidator
+type HankoSessionValidator struct {
+	apiURL string
+}
 
-      token, err := jwt.Parse([]byte(cookie.Value), jwt.WithKeySet(set))
-      if err != nil {
-        return c.Redirect(http.StatusTemporaryRedirect, "/unauthorized")
-      }
+// ValidationResponse represents the Hanko API response
+type ValidationResponse struct {
+	IsValid bool `json:"is_valid"`
+}
 
-      log.Printf("session for user '%s' verified successfully", token.Subject())
+func NewHankoSessionValidator(apiURL string) *HankoSessionValidator {
+	return &HankoSessionValidator{apiURL: apiURL}
+}
 
-      c.Set("token", cookie.Value)
-      c.Set("user", token.Subject())
+func (v *HankoSessionValidator) ValidateSession(token string) (bool, error) {
+	payload := strings.NewReader(fmt.Sprintf(`{"session_token":"%s"}`, token))
 
-      return next(c)
-    }
-  }
+	req, err := http.NewRequest(http.MethodPost, v.apiURL+"/sessions/validate", payload)
+	if err != nil {
+		return false, &fmt.Errorf("Failed to create request: %w", err)
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return false, fmt.Errorf("Failed to send request: %w", err)
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return false, fmt.Errorf("Failed to read response: %w", err)
+	}
+
+	var validationRes ValidationResponse
+	if err := json.Unmarshal(body, &validationRes); err != nil {
+		return false, fmt.Errorf("Failed to parse response: %w", err)
+	}
+
+	return validationRes.IsValid, nil
 }
 ```
