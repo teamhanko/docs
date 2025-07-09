@@ -142,7 +142,8 @@
               },
               "guides/sessions/session-management",
               "guides/webhooks/introduction",
-              "guides/custom-emails/email-delivery"
+              "guides/custom-emails/email-delivery",
+              "guides/custom-domain/custom-domain"
             ]
           },
           {
