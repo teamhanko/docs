@@ -1,7 +1,7 @@
 ---
 sidebarTitle: Custom domain
 title: Custom domain
-description: Configure a custom domain to enhance your users experience.
+description: Configure a custom domain to improve compatibility and your users’ experience.
 ---
 ### Setting up a custom domain for your Hanko project
 
@@ -11,11 +11,11 @@ This guide explains the benefits of using a custom domain with Hanko and walks y
 
 #### Why use a custom domain?
 
-Using a custom domain for your Hanko authentication system provides several important advantages:
+Using a custom domain for your Hanko authentication project provides several important advantages:
 
 - **Better compatibility with 3rd-Party OAuth providers**
 
-    With OAuth providers, the redirect URL or redirect domain is displayed on the user's consent screen. Using a custom domain means that your own domain/URL (e.g., `auth.yourapp.com`) will be shown instead of the default Hanko domain (`hanko.io`).
+    With OAuth providers, the redirect URL or redirect domain is displayed on the user’s consent screen. Using a custom domain means that your own domain/URL (e.g., `auth.yourapp.com`) will be shown instead of the default Hanko domain (`hanko.io`).
 
 - **3rd-Party cookie tracking prevention**
 
@@ -46,16 +46,15 @@ To set up your custom domain for authentication, follow these steps:
 </Note>
 
 
-2. **Configure the custom domain in the Hanko console:**
-    - Log in to the [Hanko console](https://cloud.hanko.io).
+2. **Configure the custom domain in the Hanko Console:**
+    - Log in to the [Hanko Console](https://cloud.hanko.io).
     - Navigate to **Project settings > Custom domain**.
     - Enter your custom domain (e.g., `auth.yourapp.com`) in the input field and save.
 
 <Note>
-    After setting up the custom domain, please allow a few minutes for the changes to propagate through the DNS system
-    before they take effect.
+After setting up the custom domain, please allow a few minutes for the changes to propagate through the DNS system before they take effect.
 
-    When the custom domain is set up, your project will no longer be reachable through the previous API URL.
+When the custom domain is set up, your project will no longer be reachable through the previous API URL.
 </Note>
 
 #### Updating Your application for the custom domain
