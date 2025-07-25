@@ -1,0 +1,1293 @@
+# Hanko Documentation - LLM Reference
+
+Hanko is a lightweight, open-source user authentication solution that takes you on the journey beyond passwords. This comprehensive documentation provides everything you need to integrate modern authentication methods including passkeys, passcodes, OAuth, SAML, and more.
+
+**Reference Links:**
+- [Main Documentation](https://docs.hanko.io)
+- [Getting Started Guide](https://docs.hanko.io/setup-hanko-cloud)  
+- [GitHub Repository](https://github.com/teamhanko/hanko)
+- [Frontend SDK Documentation](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/)
+- [API Reference](https://docs.hanko.io/api-reference/introduction)
+- [Community Support](https://docs.hanko.io/community-support/get-help)
+- [Examples Repository](https://docs.hanko.io/resources/examples)
+
+## What is Hanko?
+
+Hanko is a modern authentication platform that provides:
+
+- **Passwordless Authentication**: Uses modern web standards like WebAuthn to enable authentication without traditional passwords. Instead of remembering passwords, users authenticate using:
+  - **Passkeys**: Cryptographic credentials stored on devices, using biometrics (fingerprint, face recognition) or device PINs
+  - **WebAuthn**: Web Authentication API standard that enables strong, hardware-backed authentication
+  - **Biometric Authentication**: Touch ID, Face ID, Windows Hello, or fingerprint scanners
+
+- **Multi-Factor Authentication (MFA)**: Security approach requiring multiple verification methods:
+  - Something you know (password/PIN)
+  - Something you have (device/security key) 
+  - Something you are (biometrics)
+  - Hanko supports combining passkeys with other factors for enhanced security
+
+- **Enterprise Single Sign-On (SSO)**: Allows users to authenticate once and access multiple applications:
+  - **SAML 2.0**: Security Assertion Markup Language - XML-based standard for exchanging authentication data
+  - **OAuth 2.0**: Authorization framework allowing third-party access without sharing passwords
+  - Supports major identity providers like Okta, Auth0, Microsoft Entra, Google Workspace
+
+- **Developer-Friendly APIs**: RESTful (Representational State Transfer) web services following HTTP conventions:
+  - Clear endpoint structure (/users, /sessions, etc.)
+  - Standard HTTP methods (GET, POST, PUT, DELETE)
+  - JSON request/response format
+  - Comprehensive OpenAPI specifications
+
+- **Deployment Options**: 
+  - **Hanko Cloud**: Managed SaaS solution with automatic updates and scaling
+  - **Self-Hosted**: Deploy on your own infrastructure using Docker containers or Kubernetes
+
+## Core Products
+
+### Hanko Auth
+**Reference**: [Complete Authentication Solution](https://docs.hanko.io/introduction)
+
+Complete authentication solution providing:
+- **Web Components**: Pre-built UI elements (login forms, registration, profile management) that can be embedded in any web application
+- **Authentication APIs**: Backend services handling user registration, login validation, session management
+- **User Management**: Full user lifecycle including registration, profile updates, account deletion
+- **Session Handling**: Secure JWT (JSON Web Token) based sessions with configurable expiration
+
+**Key Features**:
+- Drop-in authentication components for quick integration
+- Customizable UI themes and styling
+- Multi-language support with internationalization
+- Event-driven architecture for custom business logic
+
+### Passkey API  
+**Reference**: https://docs.hanko.io/passkey-api/introduction
+
+Specialized API for adding passkey authentication to existing systems:
+- **Retrofit Existing Auth**: Add passkey support without replacing your current authentication system
+- **Gradual Migration**: Allow users to upgrade from passwords to passkeys at their own pace
+- **MFA Enhancement**: Use passkeys as a second factor alongside existing authentication methods
+- **Transaction Signing**: Secure high-value transactions with cryptographic proof
+
+**Use Cases**:
+- Adding passwordless login to apps already using Auth.js/NextAuth
+- Implementing step-up authentication for sensitive operations
+- Providing enterprise-grade security without full system replacement
+
+## API Reference
+
+### Admin API
+**Reference**: https://docs.hanko.io/api-reference/admin/introduction  
+**Base URL**: `https://[project-id].hanko.io/admin` (Hanko Cloud) or `http://localhost:8001/admin` (self-hosted)
+
+The Hanko Admin API provides server-side user management, audit logs, and metrics. Requires API key authentication.
+
+**User Management**
+**Reference**: [Admin User Management API](https://docs.hanko.io/api-reference/admin/user-management/)
+- **Create User**: `POST /users` - [Programmatically create new user accounts](https://docs.hanko.io/api-reference/admin/user-management/create-a-new-user)
+- **Get User**: `GET /users/{user_id}` - [Retrieve user details by ID](https://docs.hanko.io/api-reference/admin/user-management/get-a-user-by-id)
+- **List Users**: `GET /users` - [Paginated list of all users with filtering options](https://docs.hanko.io/api-reference/admin/user-management/get-a-list-of-users)
+- **Delete User**: `DELETE /users/{user_id}` - [Permanently remove user account](https://docs.hanko.io/api-reference/admin/user-management/delete-a-user-by-id)
+
+**User Metadata Management**  
+**Reference**: [Admin User Metadata API](https://docs.hanko.io/api-reference/admin/user-metadata-management/)
+- **Get Metadata**: [Retrieve user metadata](https://docs.hanko.io/api-reference/admin/user-metadata-management/get-metadata-of-a-user)
+- **Patch Metadata**: [Update user metadata with deep merge](https://docs.hanko.io/api-reference/admin/user-metadata-management/patch-metadata-of-a-user)
+- **Public Metadata**: User-visible information (profile data, preferences)
+- **Private Metadata**: Server-side only data (internal IDs, admin notes)  
+- **Unsafe Metadata**: Client-modifiable data (user-controlled settings)
+- **Deep Merge Updates**: Partial updates preserve existing metadata fields
+
+**Authentication Methods**
+- **Password Management**: [Admin Password API](https://docs.hanko.io/api-reference/admin/password-management/)
+  - [Create Password](https://docs.hanko.io/api-reference/admin/password-management/create-password): Create user passwords
+  - [Update Password](https://docs.hanko.io/api-reference/admin/password-management/update-password): Update existing passwords
+  - [Delete Password](https://docs.hanko.io/api-reference/admin/password-management/delete-password): Remove user passwords
+  - [Get Password Metadata](https://docs.hanko.io/api-reference/admin/password-management/get-password): Retrieve password metadata
+  - Only available when passwords are enabled in configuration
+- **WebAuthn Management**: [Admin WebAuthn API](https://docs.hanko.io/api-reference/admin/webauthn-credential-management/)
+  - [List Credentials](https://docs.hanko.io/api-reference/admin/webauthn-credential-management/list-webauthn-credentials): List all passkey/security key credentials
+  - [Get Credential](https://docs.hanko.io/api-reference/admin/webauthn-credential-management/get-webauthn-credential): Retrieve specific credential details
+  - [Delete Credential](https://docs.hanko.io/api-reference/admin/webauthn-credential-management/delete-webauthn-credential): Remove credentials from user account
+  - Manage device nicknames and credential metadata
+- **OTP Management**: [Admin OTP API](https://docs.hanko.io/api-reference/admin/otp-management/)
+  - [Get OTP](https://docs.hanko.io/api-reference/admin/otp-management/get-otp): Get OTP secret metadata
+  - [Delete OTP](https://docs.hanko.io/api-reference/admin/otp-management/delete-otp): Delete OTP secrets for account recovery
+  - Handle TOTP authenticator app secrets
+
+**Session Management**
+**Reference**: [Admin Session API](https://docs.hanko.io/api-reference/admin/session-management/)
+- **Create Session**: [Generate session tokens for users programmatically](https://docs.hanko.io/api-reference/admin/session-management/create-session)
+- **List Sessions**: [View active sessions for any user](https://docs.hanko.io/api-reference/admin/session-management/list-sessions)
+- **Delete Session**: [Force logout by invalidating specific sessions](https://docs.hanko.io/api-reference/admin/session-management/delete-session)
+
+**Email Management**
+**Reference**: [Admin Email API](https://docs.hanko.io/api-reference/admin/email-management/)
+- **Create Email**: [Associate additional email addresses with user accounts](https://docs.hanko.io/api-reference/admin/email-management/create-an-email-for-a-user)
+- **Get Email**: [Retrieve specific email details](https://docs.hanko.io/api-reference/admin/email-management/get-a-email-by-id)
+- **List Emails**: [View all emails associated with a user](https://docs.hanko.io/api-reference/admin/email-management/get-a-list-of-emails)
+- **Set Primary Email**: [Designate which email receives authentication codes](https://docs.hanko.io/api-reference/admin/email-management/set-an-email-as-primary)
+- **Remove Email**: [Delete email addresses from user profiles](https://docs.hanko.io/api-reference/admin/email-management/remove-a-email-by-id)
+
+**System Management**
+- **Audit Logs**: [Admin Audit API](https://docs.hanko.io/api-reference/admin/audit-logs/)
+  - [Get Audit Logs](https://docs.hanko.io/api-reference/admin/audit-logs/get-a-list-of-audit-logs): Comprehensive logging of authentication events
+  - Filterable by user, action type, date range
+  - Includes IP addresses, user agents, success/failure status
+- **Metrics**: [Admin Metrics API](https://docs.hanko.io/api-reference/admin/metrics/)
+  - [Get Prometheus Metrics](https://docs.hanko.io/api-reference/admin/metrics/get-prometheus-metrics): Prometheus-compatible metrics endpoint
+  - Authentication rates, error counts, performance data
+- **Webhooks**: [Admin Webhooks API](https://docs.hanko.io/api-reference/admin/webhooks/)
+  - [Create Webhook](https://docs.hanko.io/api-reference/admin/webhooks/create-a-webhook): Set up real-time notifications
+  - [List Webhooks](https://docs.hanko.io/api-reference/admin/webhooks/get-a-list-of-webhooks): View configured webhooks
+  - [Get Webhook](https://docs.hanko.io/api-reference/admin/webhooks/get-a-webhook-by-id): Retrieve webhook details
+  - [Update Webhook](https://docs.hanko.io/api-reference/admin/webhooks/update-a-webhook): Modify webhook configuration
+  - [Delete Webhook](https://docs.hanko.io/api-reference/admin/webhooks/delete-a-webhook): Remove webhook
+  - Real-time notifications for user lifecycle events
+  - Retry logic and failure handling
+- **Health Status**: [Admin Status API](https://docs.hanko.io/api-reference/admin/status/)
+  - [Status Page](https://docs.hanko.io/api-reference/admin/status/status-page): API health checks and database connectivity monitoring
+  - Returns HTTP 200 for healthy, HTTP 500 for issues
+
+### Public API
+**Reference**: https://docs.hanko.io/api-reference/public/introduction  
+**Base URL**: `https://[project-id].hanko.io` (Hanko Cloud) or `http://localhost:8000` (self-hosted)
+
+Client-facing APIs for authentication flows. No API key required - uses session cookies or JWT tokens for authentication.
+
+**User Management**
+**Reference**: https://docs.hanko.io/api-reference/public/user-management/
+- **Create User**: `POST /users` - User registration endpoint (can be disabled)
+- **Get User**: `GET /users/{user_id}` - Retrieve user details  
+- **Get Current User**: `GET /me` - Get authenticated user's information
+- **Delete User**: `DELETE /me` - Self-service account deletion (configurable)
+- **Get User by Email**: `POST /user` - Find user account by email address
+- **Logout**: `DELETE /logout` - Terminate current session
+
+**Authentication Flows**
+- **Password Authentication**: https://docs.hanko.io/api-reference/public/password/
+  - `POST /password` - Create or update user password
+  - `POST /password/login` - Authenticate with email and password
+  - Only available when `passwords.enabled = true` in configuration
+
+- **Passcode Authentication**: https://docs.hanko.io/api-reference/public/passcode/
+  - `POST /passcode/login/initialize` - Request email with one-time code
+  - `POST /passcode/login/finalize` - Verify passcode and create session
+  - Email-based passwordless authentication for any device
+
+- **WebAuthn/Passkey Authentication**: https://docs.hanko.io/api-reference/public/webauthn/
+  - `POST /webauthn/registration/initialize` - Start passkey registration
+  - `POST /webauthn/registration/finalize` - Complete passkey registration
+  - `POST /webauthn/login/initialize` - Start passkey login
+  - `POST /webauthn/login/finalize` - Complete passkey login
+  - `GET /webauthn/credentials` - List user's registered passkeys
+  - `PATCH /webauthn/credentials/{id}` - Update passkey nickname
+  - `DELETE /webauthn/credentials/{id}` - Remove passkey
+
+- **OAuth Third-Party Authentication**: https://docs.hanko.io/api-reference/public/third-party/
+  - `GET /thirdparty/{provider}` - Initiate OAuth flow (Google, GitHub, Apple, etc.)
+  - `GET /thirdparty/callback` - Handle OAuth provider callback
+  - Supports major social login providers
+
+- **SAML SSO Authentication**: https://docs.hanko.io/api-reference/public/saml/
+  - `GET /saml/sso` - Initiate SAML authentication
+  - `POST /saml/acs` - SAML Assertion Consumer Service callback
+  - `GET /saml/metadata` - SAML service provider metadata
+  - Enterprise single sign-on integration
+
+**Session Management**
+**Reference**: https://docs.hanko.io/api-reference/public/session-management/
+- **Session Validation**: 
+  - `GET /me` - Validate session via Authorization header
+  - `POST /session` - Validate session via request body
+- **Token Exchange**: https://docs.hanko.io/api-reference/public/token/
+  - `POST /token` - Exchange one-time token for session JWT
+  - Used after third-party OAuth or SAML authentication
+
+**Email Management**  
+**Reference**: https://docs.hanko.io/api-reference/public/email-management/
+- `POST /emails` - Add new email to current user
+- `GET /emails` - List user's email addresses  
+- `PUT /emails/{id}/set_primary` - Set email as primary
+- `DELETE /emails/{id}` - Remove email from account
+
+**Configuration**
+**Reference**: https://docs.hanko.io/api-reference/public/well-known/
+- `GET /.well-known/config` - Public configuration (enabled auth methods, UI settings)
+- `GET /.well-known/jwks` - JSON Web Key Set for JWT signature verification
+
+### Flow API
+**Reference**: https://docs.hanko.io/api-reference/flow/  
+**Base URL**: `https://[project-id].hanko.io/flow` (Hanko Cloud)
+
+Low-level state machine API for building completely custom authentication experiences:
+
+**Concept**: Instead of fixed authentication endpoints, the Flow API uses a state machine approach where:
+1. Initialize a flow (login, registration, profile update)
+2. Receive current state and available actions
+3. Submit action to advance to next state
+4. Repeat until flow completion
+
+**Flow Types**:
+- **Login Flow**: https://docs.hanko.io/api-reference/flow/login
+  - `POST /login/initialize` - Start login flow
+  - `POST /login/finalize` - Advance login flow state
+  - Handles method selection, credential submission, multi-step authentication
+
+- **Registration Flow**: https://docs.hanko.io/api-reference/flow/registration
+  - `POST /registration/initialize` - Start registration flow
+  - `POST /registration/finalize` - Advance registration flow state
+  - Supports conditional registration steps based on configuration
+
+- **Profile Flow**: https://docs.hanko.io/api-reference/flow/profile
+  - `POST /profile/initialize` - Start profile management flow
+  - `POST /profile/finalize` - Advance profile flow state
+  - Email management, passkey registration, password updates
+
+- **Token Exchange Flow**: https://docs.hanko.io/api-reference/flow/token-exchange
+  - `POST /token_exchange/initialize` - Start token exchange (SAML only)
+  - `POST /token_exchange/finalize` - Complete token exchange
+  - Convert SAML assertions to Hanko sessions
+
+**Use Cases**:
+- Building custom authentication UIs with full control over user experience
+- Complex multi-step authentication workflows
+- Mobile applications requiring native UI integration
+- Progressive enhancement based on user capabilities
+
+### Passkey API  
+**Reference**: https://docs.hanko.io/passkey-api/introduction  
+**Base URL**: `https://passkeys.hanko.io` (managed service)
+
+Specialized API for adding passkey authentication to existing systems without replacing current authentication:
+
+**Core Endpoints**:
+- **Registration**: https://docs.hanko.io/passkey-api/reference/credentials/start-passkey-registration
+  - `POST /credentials/register/initialize` - Start passkey registration
+  - `POST /credentials/register/finalize` - Complete passkey registration
+
+- **Authentication**: https://docs.hanko.io/passkey-api/reference/start-login
+  - `POST /credentials/login/initialize` - Start passkey login  
+  - `POST /credentials/login/finalize` - Complete passkey login
+
+- **MFA Support**: https://docs.hanko.io/passkey-api/mfa
+  - `POST /credentials/mfa/register/initialize` - Register passkey for MFA
+  - `POST /credentials/mfa/login/initialize` - Use passkey as second factor
+
+- **Transaction Signing**: https://docs.hanko.io/passkey-api/example-transaction
+  - `POST /transaction/initialize` - Create transaction for signing
+  - `POST /transaction/finalize` - Verify transaction signature
+
+**Key Features**:
+- **Tenant Isolation**: Each API key represents a separate tenant with isolated users
+- **JWT Integration**: Returns signed JWTs for easy integration with existing auth systems  
+- **FIDO2/WebAuthn Compliant**: Full compliance with WebAuthn standards
+- **Cross-Platform**: Works on iOS, Android, Windows, macOS, and web browsers
+
+## Authentication Methods
+
+### Passwordless Authentication
+**Reference**: https://docs.hanko.io/guides/authentication-methods/
+
+**Passkeys** https://docs.hanko.io/guides/authentication-methods/passkeys
+- **Technology**: Based on WebAuthn (Web Authentication) API and FIDO2 standards
+- **Storage**: Cryptographic key pairs stored securely on user's device or hardware security key
+- **Authentication**: Uses device biometrics (Touch ID, Face ID, Windows Hello) or device PIN
+- **Security**: Phishing-resistant, no shared secrets, replay attack protection
+- **Synchronization**: iCloud Keychain (Apple), Password Manager (Google), etc. sync across devices
+- **Browser Support**: Chrome 67+, Safari 14+, Firefox 60+, Edge 18+
+
+**Passcodes** https://docs.hanko.io/guides/authentication-methods/passcodes  
+- **Delivery**: One-time codes sent via email
+- **Expiration**: Configurable time-based expiration (typically 5-15 minutes)
+- **Use Cases**: Device enrollment, account recovery, temporary access
+- **Security**: Time-limited, single-use, delivered through separate channel
+- **Implementation**: No app installation required, works on any device with email
+
+**Mobile App Biometrics** https://docs.hanko.io/guides/authentication-methods/mobile-app
+- **Touch ID**: Capacitive fingerprint sensor authentication (Apple devices)
+- **Face ID**: 3D facial recognition using TrueDepth camera (Apple devices)  
+- **Fingerprint**: Android fingerprint authentication via BiometricPrompt API
+- **Voice Recognition**: Some devices support voice-based authentication
+- **Integration**: Platform-specific WebAuthn implementations for native apps
+
+**FIDO Security Keys** https://docs.hanko.io/guides/authentication-methods/fido
+- **Hardware**: USB, NFC, or Bluetooth security keys (YubiKey, Google Titan, etc.)
+- **Standards**: FIDO U2F and FIDO2/WebAuthn compatible
+- **Benefits**: Offline capable, tamper-resistant, enterprise-grade security
+- **Use Cases**: High-security environments, shared computers, backup authentication
+
+### Traditional Authentication
+
+**Passwords** 
+- **Configuration**: Optional, can be disabled entirely via `passwords.enabled = false`
+- **Requirements**: Configurable complexity requirements, length minimums
+- **Storage**: Securely hashed using bcrypt or similar algorithms
+- **Recovery**: Password reset via email when enabled
+- **Migration Path**: Can be used alongside passwordless methods during transition
+
+**Multi-Factor Authentication (MFA)**
+**Reference**: https://docs.hanko.io/passkey-api/mfa
+- **Factors**: 
+  - Knowledge: Something you know (password, PIN)
+  - Possession: Something you have (phone, hardware token, passkey)
+  - Inherence: Something you are (biometrics)
+- **Implementation**: Combine any supported authentication methods
+- **Step-Up Authentication**: Require additional factors for sensitive operations
+- **Risk-Based**: Conditional MFA based on device, location, behavior patterns
+
+### Social & Enterprise Authentication
+
+**OAuth 2.0 Providers**
+Supported social login providers with setup guides:
+- **Google**: https://docs.hanko.io/guides/authentication-methods/oauth/google
+- **GitHub**: https://docs.hanko.io/guides/authentication-methods/oauth/github  
+- **Apple**: https://docs.hanko.io/guides/authentication-methods/oauth/apple
+- **Microsoft**: https://docs.hanko.io/guides/authentication-methods/oauth/microsoft
+- **Discord**: https://docs.hanko.io/guides/authentication-methods/oauth/discord
+- **Facebook**: https://docs.hanko.io/guides/authentication-methods/oauth/facebook
+- **LinkedIn**: https://docs.hanko.io/guides/authentication-methods/oauth/linkedin
+
+**OAuth Flow Process**:
+1. User clicks social login button
+2. Redirect to provider's authorization server
+3. User authenticates with provider
+4. Provider redirects back with authorization code
+5. Hanko exchanges code for access token
+6. User profile retrieved and Hanko session created
+
+**SAML SSO (Security Assertion Markup Language)**
+**Reference**: https://docs.hanko.io/guides/authentication-methods/saml/introduction
+
+Enterprise identity provider integrations:
+- **Auth0**: https://docs.hanko.io/guides/authentication-methods/saml/auth0
+- **Microsoft Entra** (formerly Azure AD): https://docs.hanko.io/guides/authentication-methods/saml/entra  
+- **Google Workspace**: https://docs.hanko.io/guides/authentication-methods/saml/google
+- **Okta**: https://docs.hanko.io/guides/authentication-methods/saml/okta
+
+**SAML Concepts**:
+- **Identity Provider (IdP)**: Enterprise system that authenticates users (Okta, Active Directory)
+- **Service Provider (SP)**: Application requesting authentication (your app via Hanko)
+- **Assertions**: XML documents containing user identity and attributes
+- **Single Sign-On**: Authenticate once with IdP, access multiple applications
+- **Domain Routing**: Automatically redirect users based on email domain (@company.com → company IdP)
+
+## SDKs and Integration
+**Reference**: https://docs.hanko.io/resources/sdks
+
+### Frontend SDKs
+
+**JavaScript/TypeScript SDK**
+**Reference**: https://docs.hanko.io/guides/hanko-elements/using-frontend-sdk
+- **Installation**: `npm install @teamhanko/hanko-elements`
+- **Browser Support**: All modern browsers with ES2019+ support
+- **Features**: WebAuthn API wrapper, session management, event handling
+- **Usage**: `import { register } from '@teamhanko/hanko-elements'`
+
+**Framework-Specific Integrations**:
+
+**React** https://docs.hanko.io/quickstarts/frontend/react
+- **Hooks**: `useHanko()`, `useUser()`, `useSession()`
+- **Components**: `<HankoAuth />`, `<HankoProfile />`
+- **Installation**: `npm install @teamhanko/hanko-elements`
+- **TypeScript**: Full TypeScript support with type definitions
+
+**Vue** https://docs.hanko.io/quickstarts/frontend/vue  
+- **Composition API**: Hanko composables for Vue 3
+- **Options API**: Compatible with Vue 2 and Vue 3 Options API
+- **Reactivity**: Reactive user state and session management
+
+**Angular** https://docs.hanko.io/quickstarts/frontend/angular
+- **Services**: `HankoService` for authentication logic
+- **Guards**: Route guards for protected pages
+- **Interceptors**: HTTP interceptors for JWT token handling
+
+**Svelte** https://docs.hanko.io/quickstarts/frontend/svelte
+- **Stores**: Svelte stores for reactive authentication state  
+- **Actions**: Svelte actions for element enhancement
+- **SvelteKit Integration**: SSR and hydration support
+
+**Solid** https://docs.hanko.io/quickstarts/frontend/solid
+- **Signals**: SolidJS reactive primitives for auth state
+- **Resources**: Async data loading for user information
+
+### Backend SDKs
+
+**Go SDK** https://docs.hanko.io/quickstarts/backend/go
+- **Repository**: https://github.com/teamhanko/hanko/tree/main/backend/sdk/golang
+- **Installation**: `go get github.com/teamhanko/hanko-sdk-golang`
+- **Features**: JWT validation, user management, session verification
+- **Usage**: 
+```go
+import "github.com/teamhanko/hanko-sdk-golang/hanko"
+client := hanko.NewClient("your-api-url")
+```
+
+**Python SDK** https://docs.hanko.io/quickstarts/backend/python  
+- **Installation**: `pip install hanko-sdk`
+- **Async Support**: Full asyncio support for non-blocking operations
+- **Type Hints**: Complete type annotations for better IDE support
+- **Features**: JWT validation, Admin API client, WebAuthn helpers
+
+**JavaScript/Node.js SDK** https://docs.hanko.io/quickstarts/backend/javascript
+- **Installation**: `npm install @teamhanko/hanko-node`
+- **Features**: JWT verification, Admin API client, middleware for Express/Fastify
+- **TypeScript**: Native TypeScript support
+
+**Rust SDK** https://docs.hanko.io/quickstarts/backend/rust
+- **Repository**: Community-maintained Rust SDK
+- **Features**: JWT validation, HTTP client for Hanko APIs
+- **Performance**: Zero-cost abstractions, memory-safe
+
+### Full-Stack Framework Integrations
+
+**Next.js** https://docs.hanko.io/quickstarts/fullstack/next
+- **App Router**: Support for Next.js 13+ App Router architecture
+- **Pages Router**: Compatible with traditional pages directory
+- **Middleware**: Route protection and JWT validation
+- **Server Components**: SSR-compatible authentication checks
+- **API Routes**: Backend integration examples
+
+**Nuxt** https://docs.hanko.io/quickstarts/fullstack/nuxt
+- **Server-Side Rendering**: SSR-compatible authentication
+- **Middleware**: Route protection and user state management
+- **Plugins**: Global Hanko client availability
+- **Composables**: `useHanko()`, `useUser()` for Nuxt 3
+
+**Remix** https://docs.hanko.io/quickstarts/fullstack/remix
+- **Loaders**: Server-side authentication checks
+- **Actions**: Server-side form handling with auth
+- **Session Management**: Remix session integration
+
+**SvelteKit** https://docs.hanko.io/quickstarts/fullstack/sveltekit
+- **Hooks**: Server-side authentication in `hooks.server.js`
+- **Load Functions**: Page-level authentication checks
+- **Actions**: Form actions with authentication
+- **Stores**: Cross-page authentication state
+
+### Mobile SDKs
+
+**Mobile Guide** https://docs.hanko.io/quickstarts/mobile
+- **iOS**: Native WebAuthn support via ASAuthorizationController
+- **Android**: WebAuthn via FIDO2 API and BiometricPrompt
+- **React Native**: Web view integration with passkey support
+- **Flutter**: Platform channel integration for native authentication
+- **Capacitor**: Ionic/Capacitor plugin for hybrid apps
+
+## Hanko Elements (Web Components)
+**Reference**: https://docs.hanko.io/guides/hanko-elements/introduction
+
+Pre-built, framework-agnostic web components that work with any frontend technology (React, Vue, Angular, vanilla JS, etc.):
+
+### Components
+
+**hanko-auth** https://docs.hanko.io/guides/hanko-elements/auth-component
+- **Purpose**: Complete authentication interface with registration and login
+- **Features**: Automatic method detection, progressive enhancement, responsive design
+- **Usage**: `<hanko-auth api="https://your-hanko-api.com" />`
+- **Flows**: Handles user registration → email verification → login seamlessly
+
+**hanko-login** https://docs.hanko.io/guides/hanko-elements/login-component
+- **Purpose**: Login-only interface (no registration option)
+- **Use Cases**: Existing user base, separate registration flow, admin interfaces
+- **Features**: Method selection (passkey, passcode, password, social login)
+
+**hanko-register** https://docs.hanko.io/guides/hanko-elements/register-component  
+- **Purpose**: Registration-only interface
+- **Features**: Email collection, passkey enrollment, profile setup
+- **Validation**: Client-side and server-side validation
+
+**hanko-profile** https://docs.hanko.io/guides/hanko-elements/profile-component
+- **Purpose**: User profile and account management
+- **Features**: 
+  - Email management (add, remove, set primary)
+  - Passkey management (register, rename, delete)
+  - Password management (set, change, remove)
+  - Account deletion (if enabled)
+
+**hanko-events** https://docs.hanko.io/guides/hanko-elements/events-component
+- **Purpose**: Event handling without rendering any UI
+- **Use Cases**: Custom UI implementations, analytics tracking, business logic triggers
+- **Events**: Login, logout, registration, error, session expiry
+
+### Customization Features
+
+**Styling and Theming** https://docs.hanko.io/guides/hanko-elements/customize-appearance
+- **CSS Custom Properties**: Override colors, fonts, spacing, borders
+- **Shadow DOM**: Encapsulated styles prevent global CSS conflicts
+- **Responsive Design**: Mobile-first design with configurable breakpoints
+- **Dark Mode**: Built-in dark mode support with system preference detection
+
+**Internationalization** https://docs.hanko.io/guides/hanko-elements/translations
+- **Languages**: 30+ languages supported including RTL languages
+- **Custom Translations**: Override any text or add new languages
+- **Dynamic Loading**: Language resources loaded on-demand
+- **Pluralization**: Proper plural forms for different languages
+
+**Event System**
+- **DOM Events**: Standard DOM event bubbling for framework integration
+- **Custom Events**: `hanko-auth-success`, `hanko-auth-error`, etc.
+- **Event Data**: Detailed event payloads with user information and context
+- **Error Handling**: Granular error events for different failure scenarios
+
+### Integration Examples
+
+**Vanilla JavaScript**:
+```html
+<script type="module" src="https://cdn.hanko.io/hanko-elements@latest/dist/elements.js"></script>
+<hanko-auth api="https://your-api.hanko.io"></hanko-auth>
+```
+
+**React**:
+```jsx
+import '@teamhanko/hanko-elements/auth'
+function LoginPage() {
+  return <hanko-auth api="https://your-api.hanko.io" />
+}
+```
+
+**Vue**:
+```vue
+<template>
+  <hanko-auth :api="hankoApi" />
+</template>
+```
+
+## Setup and Configuration
+
+### Hanko Cloud
+**Reference**: https://docs.hanko.io/setup-hanko-cloud
+
+Fully managed SaaS solution providing:
+
+**Getting Started**:
+1. Sign up at https://cloud.hanko.io
+2. Create a new project
+3. Configure authentication methods
+4. Get your project ID and API URLs
+5. Integrate with your application
+
+**Features**:
+- **Automatic Scaling**: Handles traffic spikes automatically
+- **Global CDN**: Low-latency access worldwide via CloudFlare
+- **High Availability**: 99.9% uptime SLA with multi-region deployment
+- **Built-in Monitoring**: Real-time dashboards and alerting
+- **Security Updates**: Automatic security patches and updates
+- **Compliance**: SOC 2 Type II, GDPR, CCPA compliance
+- **Enterprise Support**: Priority support with SLA guarantees
+
+**Pricing Tiers**:
+- **Free Tier**: 1,000 monthly active users
+- **Pro Tier**: Unlimited users, advanced features
+- **Enterprise**: Custom pricing, dedicated support, on-premise options
+
+### Self-Hosted Deployment
+**Reference**: https://github.com/teamhanko/hanko/tree/main/deploy
+
+Deploy Hanko on your own infrastructure for full control:
+
+**Docker Deployment**:
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  hanko:
+    image: ghcr.io/teamhanko/hanko:latest
+    ports:
+      - "8000:8000"  # Public API
+      - "8001:8001"  # Admin API
+    environment:
+      - DATABASE_URL=postgres://user:pass@db:5432/hanko
+    volumes:
+      - ./config.yaml:/etc/hanko/config.yaml
+```
+
+**Kubernetes Deployment**:
+- **Helm Chart**: Official Helm chart available
+- **Resource Requirements**: Minimum 1 CPU, 2GB RAM
+- **Persistent Storage**: Required for database and configuration
+- **Load Balancing**: Ingress controller configuration included
+
+**Database Support**:
+- **PostgreSQL**: Recommended for production (versions 12+)
+- **MySQL**: Full compatibility (versions 8+)  
+- **SQLite**: Development only, not recommended for production
+- **Migrations**: Automatic schema migrations on startup
+
+**Configuration Options**:
+- **YAML Configuration**: `config.yaml` file with comprehensive options
+- **Environment Variables**: Override any configuration via env vars
+- **Runtime Configuration**: Some settings configurable via Admin API
+
+**SMTP Configuration** https://docs.hanko.io/guides/cloud-console/custom-smtp-server
+- **Email Providers**: Support for SendGrid, Mailgun, AWS SES, etc.
+- **Custom SMTP**: Configure any SMTP server
+- **Email Templates**: Customizable HTML/text email templates
+- **Localization**: Multi-language email support
+
+**Security Configuration**:
+- **JWT Settings**: Configurable signing algorithms, key rotation
+- **CORS Settings**: Fine-grained cross-origin request control
+- **Rate Limiting**: Configurable per-endpoint rate limits
+- **Session Settings**: Session duration, renewal policies
+- **Password Policies**: Complexity requirements, breach detection
+
+**Environment Examples**:
+
+**Development**:
+```yaml
+server:
+  public:
+    address: "0.0.0.0:8000"
+  admin:
+    address: "0.0.0.0:8001"
+database:
+  url: "sqlite:./hanko.db"
+```
+
+**Production**:
+```yaml
+server:
+  public:
+    address: "0.0.0.0:8000"
+    cors:
+      allow_origins: ["https://your-app.com"]
+  admin:
+    address: "0.0.0.0:8001"
+database:
+  url: "postgres://hanko:password@db:5432/hanko"
+smtp:
+  host: "smtp.sendgrid.net"
+  port: 587
+  user: "apikey"
+  password: "your-api-key"
+jwt:
+  signing_key: "your-secret-signing-key"
+```
+
+## Advanced Features
+
+### Customization
+
+**Custom Domains** https://docs.hanko.io/guides/custom-domain/custom-domain
+- **Purpose**: Use your own domain instead of `*.hanko.io` URLs
+- **Benefits**: Better user trust, consistent branding, avoid third-party cookies
+- **Setup**: DNS CNAME configuration, SSL certificate management
+- **Example**: `auth.yourcompany.com` instead of `your-project.hanko.io`
+- **Requirements**: Domain ownership verification, DNS access
+
+**Custom Emails** https://docs.hanko.io/guides/custom-emails/email-delivery
+- **Email Templates**: Fully customizable HTML/text templates
+- **Branding**: Company logo, colors, fonts, custom styling
+- **Content**: Customize all email text, subject lines, call-to-action buttons
+- **Multi-language**: Different templates for different languages
+- **Email Types**: Registration, login codes, password reset, account notifications
+
+**SMTP Server Configuration** https://docs.hanko.io/guides/cloud-console/custom-smtp-server
+- **Providers**: SendGrid, Mailgun, Amazon SES, Postmark, etc.
+- **Authentication**: Username/password, API key, OAuth2
+- **Security**: TLS/SSL encryption, SPF/DKIM/DMARC configuration
+- **Deliverability**: Reputation management, bounce handling
+
+**UI Customization** https://docs.hanko.io/guides/hanko-elements/customize-appearance
+- **CSS Custom Properties**: Override colors, fonts, spacing, borders
+- **Component Layout**: Rearrange form elements, hide/show features
+- **Responsive Design**: Mobile-first approach with custom breakpoints
+- **Dark Mode**: System preference detection and manual toggle
+
+**Custom Login Pages** https://docs.hanko.io/guides/flow-api/build-a-custom-login-page
+- **Flow API Integration**: Build completely custom UIs
+- **State Management**: Handle complex multi-step authentication flows
+- **Progressive Enhancement**: Graceful degradation for older browsers
+- **Framework Integration**: Works with any frontend framework
+
+### Security
+
+**JWT Token Security**
+- **Algorithm**: RS256 (RSA signature with SHA-256) by default
+- **Key Rotation**: Automatic key rotation with JWKS endpoint
+- **Claims**: Standard JWT claims (iss, aud, exp, sub) plus custom claims
+- **Expiration**: Configurable token lifetime (default 1 hour)
+- **Refresh**: Sliding session renewal on activity
+
+**JWKS (JSON Web Key Set)** https://docs.hanko.io/api-reference/public/well-known/get-json-web-key-set
+- **Endpoint**: `/.well-known/jwks` for public key retrieval
+- **Key Rotation**: Multiple active keys during rotation periods
+- **Caching**: Recommended cache TTL for performance
+- **Verification**: Libraries available for all major languages
+
+**Session Security**
+- **HttpOnly Cookies**: Prevent XSS attacks via document.cookie access
+- **Secure Flag**: HTTPS-only transmission
+- **SameSite**: CSRF protection via SameSite=Strict/Lax
+- **Domain/Path**: Scoped to specific domains and paths
+- **Session Fixation**: New session ID on privilege escalation
+
+**CORS (Cross-Origin Resource Sharing)**
+- **Origin Whitelisting**: Specific domain restrictions
+- **Credential Support**: Include cookies in cross-origin requests
+- **Preflight Handling**: Automatic OPTIONS request handling
+- **Method/Header Restrictions**: Control allowed HTTP methods and headers
+
+**Rate Limiting**
+- **Per-IP Limits**: Prevent brute force attacks from single sources
+- **Per-User Limits**: Prevent credential stuffing on specific accounts
+- **Endpoint-Specific**: Different limits for login vs. registration
+- **Adaptive**: Increase limits based on successful authentication history
+- **Bypass**: Whitelist trusted IP ranges or authenticated requests
+
+**Additional Security Features**:
+- **Input Validation**: Comprehensive input sanitization and validation
+- **SQL Injection Protection**: Parameterized queries, ORM safety
+- **Password Security**: bcrypt hashing, breach detection, complexity requirements
+- **Account Lockout**: Temporary locks after repeated failed attempts
+- **Audit Trail**: Immutable logs of all authentication events
+
+### Monitoring & Analytics
+
+**Audit Logs** https://docs.hanko.io/api-reference/admin/audit-logs/get-a-list-of-audit-logs
+- **Event Types**: Login, logout, registration, profile changes, admin actions
+- **Metadata**: IP address, user agent, geolocation, device fingerprint
+- **Retention**: Configurable log retention policies
+- **Export**: JSON/CSV export for compliance and analysis
+- **Search/Filter**: Query logs by user, date range, event type, IP
+
+**Prometheus Metrics** https://docs.hanko.io/api-reference/admin/metrics/get-prometheus-metrics
+- **Authentication Metrics**: Success/failure rates, method distribution
+- **Performance Metrics**: Response times, throughput, concurrent users
+- **System Metrics**: Memory usage, database connections, queue depth
+- **Business Metrics**: Registration rates, user growth, feature adoption
+- **Custom Metrics**: Define application-specific metrics via webhooks
+
+**Webhooks** https://docs.hanko.io/guides/webhooks/introduction
+- **Event Types**: `user.created`, `user.login`, `user.logout`, etc.
+- **Payload**: Rich event data including user information and context
+- **Retry Logic**: Exponential backoff on webhook delivery failures  
+- **Security**: HMAC signature verification for webhook authenticity
+- **Filtering**: Subscribe to specific events or user segments
+
+**Health Monitoring**
+- **Health Endpoints**: `/livez` for liveness, `/readyz` for readiness
+- **Database Health**: Connection pool status, query performance
+- **External Dependencies**: SMTP server, OAuth provider connectivity
+- **Resource Usage**: Memory, CPU, disk space monitoring
+- **Alerting**: Integration with monitoring systems (Datadog, New Relic, etc.)
+
+**Analytics Dashboard** (Hanko Cloud):
+- **User Analytics**: Active users, registration trends, authentication methods
+- **Security Analytics**: Failed attempts, suspicious activity, geographic distribution
+- **Performance Analytics**: API response times, error rates, availability metrics
+- **Business Intelligence**: Conversion funnels, user journey analysis
+
+## Migration and Data Management
+
+### User Migration
+**Reference**: https://docs.hanko.io/guides/migrations/import-export-users
+
+**Import from Other Providers**:
+- **Supported Sources**: Auth0, Firebase, Cognito, custom systems
+- **Data Mapping**: Email addresses, user IDs, profile information
+- **Password Migration**: Hash migration or forced reset flows
+- **Bulk Import**: CSV upload or Admin API batch operations
+- **Validation**: Pre-import validation and conflict resolution
+
+**Export Capabilities**:
+- **Full Export**: All user data including metadata and credentials
+- **Selective Export**: Filter by date range, user attributes, activity
+- **Format Options**: JSON, CSV, SQL dumps
+- **GDPR Compliance**: Support for right to data portability
+- **Scheduled Exports**: Automated backups on schedule
+
+**Migration Strategies**:
+- **Big Bang**: Complete migration in maintenance window
+- **Gradual Migration**: Dual authentication during transition
+- **Shadow Mode**: Test migration without affecting users
+- **Rollback Plans**: Revert capabilities in case of issues
+
+### Database Integration
+
+**Direct Database Integration**
+**Supabase Integration** https://docs.hanko.io/guides/databases/supabase
+- **Row Level Security**: Hanko user ID integration with RLS policies
+- **Real-time Sync**: User creation triggers automatic database records
+- **Profile Enrichment**: Sync user metadata to custom profile tables
+- **Code Examples**: Complete Next.js + Supabase + Hanko setup
+
+**Custom Database Sync**:
+- **Webhooks**: Real-time user event notifications
+- **Event Types**: User creation, profile updates, authentication events
+- **Payload Structure**: Standardized JSON with user and event data
+- **Retry Logic**: Guaranteed delivery with exponential backoff
+- **Idempotency**: Handle duplicate webhook deliveries gracefully
+
+**User Metadata Management** https://docs.hanko.io/guides/users/user-metadata
+- **Public Metadata**: User-visible profile information
+  - Display name, avatar URL, preferences
+  - Accessible via Public API and JWT tokens
+- **Private Metadata**: Server-only sensitive data  
+  - Internal user IDs, admin notes, system flags
+  - Only accessible via Admin API
+- **Unsafe Metadata**: Client-modifiable user preferences
+  - Theme settings, notification preferences
+  - Can be updated by authenticated users
+
+**Metadata Operations**:
+- **Deep Merge**: Partial updates preserve existing fields
+- **Null Handling**: Clear specific metadata categories
+- **Validation**: Schema validation for metadata structure
+- **Indexing**: Search users by metadata fields
+
+## Common Use Cases
+
+### Add Authentication to New App
+**Quick Start Guide**: Choose your framework and follow the step-by-step guide
+
+**React with Vite Example** [Complete Guide](https://docs.hanko.io/quickstarts/frontend/react):
+
+1. **Create React Application**
+   ```bash
+   npm create vite@latest project-name -- --template react-ts
+   cd project-name
+   npm install @teamhanko/hanko-elements react-router-dom
+   ```
+
+2. **Environment Configuration**
+   ```sh
+   # .env
+   VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+   ```
+
+3. **TypeScript Declarations**
+   ```typescript
+   // src/custom.d.ts
+   import { HankoAuthElementProps, HankoProfileElementProps, HankoEventsElementProps } from "@teamhanko/hanko-elements";
+
+   declare module "react" {
+     namespace JSX {
+       interface IntrinsicElements {
+           "hanko-auth": HankoAuthElementProps;
+           "hanko-login": HankoAuthElementProps;
+           "hanko-registration": HankoAuthElementProps;
+           "hanko-profile": HankoProfileElementProps;
+           "hanko-events": HankoEventsElementProps;
+       }
+     }
+   }
+   ```
+
+4. **Authentication Component**
+   ```jsx
+   // components/HankoAuth.tsx
+   import { useEffect, useCallback, useMemo } from "react";
+   import { useNavigate } from 'react-router-dom';
+   import { register, Hanko } from "@teamhanko/hanko-elements";
+
+   const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+    
+   export default function HankoAuth() {
+     const navigate = useNavigate();
+    
+     const hanko = useMemo(() => new Hanko(hankoApi), []);
+    
+     const redirectAfterLogin = useCallback(() => {
+       navigate("/dashboard");
+     }, [navigate]);
+
+     useEffect(
+       () =>
+         hanko?.onSessionCreated(() => {
+           redirectAfterLogin();
+         }),
+       [hanko, redirectAfterLogin]
+     );
+    
+     useEffect(() => {
+       register(hankoApi).catch((error) => {
+         console.log(error)
+       });
+     }, []);
+    
+     return <hanko-auth />;
+   }
+   ```
+
+**Next.js Example** [Complete Guide](https://docs.hanko.io/quickstarts/fullstack/next):
+
+1. **Create Next.js Application**
+   ```bash
+   npx create-next-app@latest project-name
+   cd project-name
+   npm install @teamhanko/hanko-elements
+   ```
+
+2. **Environment Configuration**
+   ```sh
+   # .env.local
+   NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
+   ```
+
+3. **App Router Authentication Component**
+   ```jsx
+   // components/HankoAuth.tsx
+   "use client";
+    
+   import { useEffect, useCallback, useState } from "react";
+   import { useRouter } from "next/navigation";
+   import { register, Hanko } from "@teamhanko/hanko-elements";
+    
+   const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
+    
+   export default function HankoAuth() {
+     const router = useRouter();
+     const [hanko, setHanko] = useState<Hanko>();
+    
+     useEffect(() => setHanko(new Hanko(hankoApi)), []);
+    
+     const redirectAfterLogin = useCallback(() => {
+       router.replace("/dashboard");
+     }, [router]);
+    
+     useEffect(
+       () =>
+         hanko?.onSessionCreated(() => {
+           redirectAfterLogin();
+         }),
+       [hanko, redirectAfterLogin]
+     );
+    
+     useEffect(() => {
+       register(hankoApi).catch((error) => {
+         console.log(error);
+       });
+     }, []);
+    
+     return <hanko-auth />;
+   }
+   ```
+
+4. **Login Page**
+   ```jsx
+   // app/login/page.tsx
+   import HankoAuth from "@/components/HankoAuth";
+
+   export default function LoginPage() {
+     return (
+         <HankoAuth/>
+     );
+   }
+   ```
+
+5. **Route Protection Middleware**
+   ```typescript
+   // middleware.ts
+   import { NextResponse, NextRequest } from "next/server";
+
+   const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+
+   export async function middleware(req: NextRequest) {
+   const token = req.cookies.get("hanko")?.value;
+
+     const validationOptions = {
+       method: 'POST',
+       headers: {'Content-Type': 'application/json'},
+       body: `{"session_token":"${token}"}`
+     }
+
+     try {
+       const validationResponse = await fetch(
+         new URL(`${hankoApi}/sessions/validate`),
+         validationOptions
+       );
+
+       if (!validationResponse.ok) {
+         throw new Error('Session validation failed');
+       }
+       
+       const responseData = await validationResponse.json();
+
+       if(!responseData.is_valid){
+         throw new Error('Session token not valid');
+       }
+
+     } catch (error) {
+       return NextResponse.redirect(new URL("/", req.url));
+     }
+   }
+
+   export const config = {
+     matcher: ["/dashboard"],
+   };
+   ```
+
+**Backend Session Validation Examples**:
+
+**JavaScript/Node.js** [Complete Guide](https://docs.hanko.io/quickstarts/backend/javascript):
+```typescript
+// Token validator implementation
+class HankoTokenValidator implements TokenValidator {
+  constructor(private readonly hankoApiUrl: string) {}
+
+  async validateToken(token: string): Promise<boolean> {
+    if (!token || token.length === 0) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${this.hankoApiUrl}/sessions/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ session_token: token }),
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const validationData = await response.json();
+      return validationData.is_valid;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      return false;
+    }
+  }
+}
+```
+
+**Python Backend** [Complete Guide](https://docs.hanko.io/quickstarts/backend/python):
+```python
+def validate_session_token(token: str) -> Tuple[bool, Optional[str]]:
+    """
+    Validates a session token with the Hanko API.
+    Returns a tuple of (is_valid: bool, error_message: Optional[str])
+    """
+    try:
+        response = requests.post(
+            f"{HANKO_API_URL}/sessions/validate",
+            json={"session_token": token}
+        )
+
+        if response.status_code != 200:
+            return False, "Invalid token"
+
+        validation_data = response.json()
+        if not validation_data.get("is_valid", False):
+            return False, "Invalid token"
+
+        return True, None
+
+    except requests.Timeout:
+        return False, "Authentication service timeout"
+    except requests.RequestException:
+        return False, "Authentication service unavailable"
+```
+
+### Upgrade Existing Authentication  
+**Migration Strategy**: Add passkeys without disrupting current users
+
+**Implementation Steps**:
+1. **Set up Passkey API** https://docs.hanko.io/passkey-api/setup-passkey-project
+   - Create Passkey API project (separate from main auth)
+   - Get tenant ID and API keys
+   - Configure allowed origins
+
+2. **Add Passkey Registration**
+   - Add "Register Passkey" option to user profile/settings
+   - Implement registration flow using Passkey API
+   - Store passkey credentials alongside existing user data
+
+3. **Implement Alternative Login**
+   - Add "Sign in with Passkey" button to login page
+   - Implement passkey authentication flow
+   - Fall back to existing auth method if passkeys unavailable
+
+4. **Progressive Migration**
+   - Encourage passkey adoption through UI prompts
+   - Offer incentives for passwordless upgrade
+   - Gradually deprecate password-based authentication
+
+**NextAuth.js Integration Example**: https://docs.hanko.io/passkey-api/next-auth
+```javascript
+// Add passkey provider to NextAuth configuration
+providers: [
+  // existing providers
+  PasskeyProvider({
+    apiUrl: 'https://passkeys.hanko.io',
+    tenantId: 'your-tenant-id'
+  })
+]
+```
+
+### Enterprise SSO Implementation
+**Enterprise-Grade Authentication**: SAML and OAuth provider integration
+
+**SAML SSO Setup**:
+1. **Configure Identity Provider**
+   - Okta: https://docs.hanko.io/guides/authentication-methods/saml/okta
+   - Microsoft Entra: https://docs.hanko.io/guides/authentication-methods/saml/entra  
+   - Auth0: https://docs.hanko.io/guides/authentication-methods/saml/auth0
+   - Google Workspace: https://docs.hanko.io/guides/authentication-methods/saml/google
+
+2. **Domain-Based Routing**
+   ```javascript
+   // Automatically redirect based on email domain
+   if (email.endsWith('@company.com')) {
+     redirectToSAMLProvider('company-saml-config');
+   }
+   ```
+
+3. **User Provisioning**
+   - Configure webhooks to sync user data
+   - Map SAML attributes to user profile fields
+   - Handle group/role assignments from IdP
+
+4. **Enterprise Features**
+   - Just-in-time (JIT) user provisioning
+   - Attribute mapping and transformation
+   - Session timeout policies
+   - Audit logging and compliance reporting
+
+### Mobile App Integration
+**Native Mobile Authentication**: Biometrics and cross-platform support
+
+**iOS Implementation**:
+```swift
+import AuthenticationServices
+
+// Passkey registration
+let authController = ASAuthorizationController(authorizationRequests: [request])
+authController.delegate = self
+authController.presentationContextProvider = self
+authController.performRequests()
+```
+
+**Android Implementation**:
+```kotlin
+import androidx.biometric.BiometricPrompt
+
+// Biometric authentication
+val biometricPrompt = BiometricPrompt(this, ContextCompat.getMainExecutor(this), authCallback)
+biometricPrompt.authenticate(promptInfo, cryptoObject)
+```
+
+**React Native Integration**:
+- Use WebView with passkey support
+- Native bridge for biometric APIs
+- Secure keychain storage for tokens
+
+**Deep Link Handling**:
+- OAuth redirect URL schemes
+- Universal links for seamless auth flow
+- Token exchange in mobile app context
+
+## Tutorials and Examples
+**Reference**: https://docs.hanko.io/resources/examples
+
+### Real-World Applications
+**Todo App Tutorial** https://docs.hanko.io/tutorials/nextjs-todo
+- **Stack**: Next.js 13, Prisma, PostgreSQL, Hanko Auth
+- **Features**: User registration, protected routes, data isolation
+- **Concepts**: Server-side authentication, database integration, user metadata
+
+**Authorization Integration** https://docs.hanko.io/tutorials/authorization-with-permit
+- **Stack**: Hanko + Permit.io for role-based access control
+- **Features**: User roles, permissions, policy enforcement
+- **Use Cases**: Multi-tenant applications, admin panels, feature flags
+
+### Framework Examples
+**Complete Working Examples** [All Examples](https://docs.hanko.io/resources/examples):
+
+**Frontend Framework Quickstarts**:
+- **React**: [Quickstart Guide](https://docs.hanko.io/quickstarts/frontend/react) | [GitHub Example](https://github.com/teamhanko/hanko-react-express-starter)
+- **Vue**: [Quickstart Guide](https://docs.hanko.io/quickstarts/frontend/vue) | [GitHub Example](https://github.com/teamhanko/hanko-vue-express-starter)
+- **Angular**: [Quickstart Guide](https://docs.hanko.io/quickstarts/frontend/angular)
+- **Svelte**: [Quickstart Guide](https://docs.hanko.io/quickstarts/frontend/svelte) | [GitHub Example](https://github.com/teamhanko/hanko-svelte-express-starter)
+- **Solid**: [Quickstart Guide](https://docs.hanko.io/quickstarts/frontend/solid) | [GitHub Example](https://github.com/teamhanko/hanko-solid-express-starter)
+- **Vanilla JavaScript**: [Quickstart Guide](https://docs.hanko.io/quickstarts/frontend/javascript)
+
+**Full-Stack Framework Examples**:
+- **Next.js (App Router)**: [Quickstart Guide](https://docs.hanko.io/quickstarts/fullstack/next) | [GitHub Example](https://github.com/teamhanko/hanko-nextjs-starter)
+- **Next.js (Pages Router)**: [GitHub Example](https://github.com/teamhanko/hanko-nextjs-starter-pages-router)
+- **Nuxt**: [Quickstart Guide](https://docs.hanko.io/quickstarts/fullstack/nuxt) | [GitHub Example](https://github.com/teamhanko/hanko-nuxt-starter)
+- **SvelteKit**: [Quickstart Guide](https://docs.hanko.io/quickstarts/fullstack/sveltekit) | [GitHub Example](https://github.com/teamhanko/hanko-sveltekit-starter)
+- **Remix**: [Quickstart Guide](https://docs.hanko.io/quickstarts/fullstack/remix) | [GitHub Example](https://github.com/teamhanko/hanko-remix-starter)
+
+**Backend Integration Examples**:
+- **Go**: [Quickstart Guide](https://docs.hanko.io/quickstarts/backend/go)
+- **Python**: [Quickstart Guide](https://docs.hanko.io/quickstarts/backend/python)
+- **Node.js/Express**: [Quickstart Guide](https://docs.hanko.io/quickstarts/backend/javascript) | [GitHub Example](https://github.com/teamhanko/hanko-react-express-starter)
+- **Rust**: [Quickstart Guide](https://docs.hanko.io/quickstarts/backend/rust)
+- **Hono.js**: [GitHub Example](https://github.com/teamhanko/hanko-hono-react-starter)
+- **Elysia**: [GitHub Example](https://github.com/teamhanko/hanko-elysia-react-starter)
+- **Symfony (PHP)**: [GitHub Example](https://github.com/teamhanko/symfony-example)
+
+## Troubleshooting
+**Reference**: https://docs.hanko.io/community-support/troubleshoot
+
+### Common Issues
+
+**Authentication Flow Errors**:
+- **WebAuthn Not Supported**: Fallback to passcode/password authentication
+- **Cross-Origin Issues**: CORS configuration and domain whitelist
+- **Session Expiry**: Token refresh and re-authentication flows
+- **Email Delivery**: SMTP configuration and deliverability issues
+
+**Integration Problems**:
+- **Framework Compatibility**: SSR/hydration issues with web components
+- **Build Tool Issues**: Module resolution and bundling problems
+- **TypeScript Errors**: Type definitions and declaration files
+- **State Management**: Reactive authentication state across components
+
+**Configuration Issues**:
+- **Environment Variables**: Development vs production settings
+- **API URLs**: Correct endpoint configuration for different environments
+- **Feature Toggles**: Authentication method availability
+- **Rate Limiting**: Threshold configuration and bypass rules
+
+**Performance Optimization**:
+- **Bundle Size**: Tree shaking and code splitting
+- **API Response Times**: Database optimization and caching
+- **UI Responsiveness**: Async loading and progressive enhancement
+- **Mobile Performance**: Network optimization and offline handling
+
+### Getting Help
+
+**Community Support**:
+- **GitHub Issues**: https://github.com/teamhanko/hanko/issues
+- **Discord Community**: Real-time chat with developers and community
+- **Stack Overflow**: Tag questions with `hanko` for community answers
+
+**Documentation**:
+- **FAQ**: https://docs.hanko.io/community-support/faq
+- **API Reference**: Complete endpoint documentation with examples
+- **Video Tutorials**: Step-by-step implementation guides
+- **Blog Posts**: Best practices and advanced use cases
+
+**Enterprise Support**:
+- **Priority Support**: Dedicated support team with SLA guarantees
+- **Architecture Review**: Best practice guidance for large-scale deployments
+- **Custom Integration**: Assistance with complex enterprise requirements
+- **Training Sessions**: Team training and onboarding assistance
+
+## Key Concepts Glossary
+
+**WebAuthn**: Web Authentication API standard enabling hardware-backed authentication using biometrics or security keys.
+
+**Passkeys**: Cryptographic credentials stored on user devices, providing phishing-resistant passwordless authentication.
+
+**FIDO2**: Set of standards (WebAuthn + CTAP) for strong authentication using public key cryptography.
+
+**JWT (JSON Web Token)**: Compact, URL-safe token format for representing claims securely between parties.
+
+**JWKS (JSON Web Key Set)**: Standard for publishing cryptographic keys in JSON format for JWT signature verification.
+
+**SAML (Security Assertion Markup Language)**: XML-based standard for exchanging authentication and authorization data.
+
+**OAuth 2.0**: Authorization framework enabling third-party applications to obtain limited access to user accounts.
+
+**CORS (Cross-Origin Resource Sharing)**: Mechanism allowing web pages to access resources from different domains.
+
+**CSP (Content Security Policy)**: Security standard helping prevent XSS attacks by controlling resource loading.
+
+**MFA (Multi-Factor Authentication)**: Security process requiring multiple verification methods for user authentication.
+
+For the most up-to-date information and detailed implementation guides, visit https://docs.hanko.io.

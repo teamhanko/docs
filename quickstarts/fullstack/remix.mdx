@@ -4,8 +4,20 @@ title: Integrate Hanko with Remix
 description: Learn how to quickly add authentication and user profile in your Remix app using Hanko.
 ---
 
+<di class="hidden">
+Overview: This guide shows how to integrate Hanko authentication into a Remix application. You'll create client-side components, implement server-side session validation, and handle route protection using Remix loaders.
+
+Key tasks: Install Hanko Elements, create client-side wrapper utilities, build authentication and profile components, implement logout functionality, create server-side auth validation, and protect routes with loader functions.
+
+Note: Elements like <Tabs> are from Mintlify documentation. Use only code snippets inside markdown formatting '```'
+</di>
+
 ## Create a Remix application
 Run the following command to [create a new Remix application](https://remix.run/docs/en/main/start/quickstart):
+
+<di class="hidden">
+Creates a new Remix application using the latest Remix starter template
+</di>
 
 <CodeGroup> 
 ```bash terminal
@@ -16,6 +28,10 @@ npx create-remix@latest
 
 ## Install `@teamhanko/hanko-elements`
 Once you've initialized your Remix app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+
+<di class="hidden">
+Installs Hanko Elements package for client-side authentication components
+</di>
 
 <CodeGroup> 
 ```bash npm
@@ -53,6 +69,10 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your `.env` file.
 
+<di class="hidden">
+Environment variable for Hanko API URL used in server-side operations
+</di>
+
 ```sh .env
 HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 ```
@@ -66,6 +86,10 @@ HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 ## Importing and exporting Hanko functions in a `.client.ts` file
 
 Since the `@teamhanko/hanko-elements` package is designed to work on the client side, you'll need to import the Hanko functions into a `.client.ts` file. This file will then export them, making them available for use throughout your application.
+
+<di class="hidden">
+Client-side utility file that re-exports Hanko functions for use in Remix components
+</di>
 
 ```tsx utils/hanko.client.ts
 import { register, Hanko } from "@teamhanko/hanko-elements";
@@ -82,6 +106,10 @@ Now lets setup the `HankoAuth.tsx` file to create a functioning login page.
 Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action (e.g. redirect to your dashboard).
 
 [For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
+
+<di class="hidden">
+Remix authentication component with loader function, session handling, and redirect logic
+</di>
 
 ```jsx components/HankoAuth.tsx
 import { useNavigate, useLoaderData } from "@remix-run/react";
@@ -145,6 +173,10 @@ manage their `Email Addresses` and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
+<di class="hidden">
+Remix profile component for managing user credentials and email addresses
+</di>
+
 ```jsx components/HankoProfile.tsx
 import { useLoaderData } from "@remix-run/react";
 import { Suspense, useEffect, } from "react";
@@ -180,6 +212,10 @@ export default HankoProfile;
 Let's setup our routes in the `/routes` folder.\
 For our example we will create `_index.tsx` and `dashboard.tsx`
 
+<di class="hidden">
+Main index route that renders the authentication component
+</di>
+
 ```jsx routes/_index.tsx
 import HankoAuth from "../components/HankoAuth";
 
@@ -197,6 +233,10 @@ export default function Index() {
 ```
 
 and
+
+<di class="hidden">
+Dashboard route that displays the user profile management interface
+</di>
 
 ```jsx routes/dashboard.tsx
 import HankoProfile from "../components/HankoProfile";
@@ -235,6 +275,10 @@ They should look something like this👇
 You can use `@teamhanko/hanko-elements` to easily logout users. Here we will make a logout button.
 
 Create `LogoutButton.tsx` and insert the code below.
+
+<di class="hidden">
+Logout button component that handles session cleanup and navigation in Remix
+</di>
 
 ```jsx components/LogoutButton.tsx
 import { useLoaderData, useNavigate } from "@remix-run/react";
@@ -288,6 +332,10 @@ You can customize the appearance of `hanko-auth` and `hanko-profile` components 
 To secure our routes we can validate our cookie token using `hankoAPI/sessions/validate`.
 Create a file called `auth.server.ts` in `/services` and add this code.
 
+<di class="hidden">
+Server-side authentication validation service for checking Hanko session tokens
+</di>
+
 ```jsx app/services/auth.server.ts
 import { parse } from "cookie";
 
@@ -319,6 +367,10 @@ export async function ValidateCurrentSession(request: Request, hankoUrl: string)
 ```
 
 To protect a route using this we can validate it in the loader function.
+
+<di class="hidden">
+Protected dashboard route using loader function to validate authentication before rendering
+</di>
 
 ```tsx app/routes/dashboard.tsx
 import HankoProfile from "../components/HankoProfile";
