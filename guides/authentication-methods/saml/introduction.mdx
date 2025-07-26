@@ -4,6 +4,26 @@ title: Introduction
 description: Learn how SAML SSO enterprise connections work.
 ---
 
+<div style={{ display: 'none' }}>
+# Hanko SAML Integration Overview
+
+**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user login experiences through passkeys, SAML SSO, and other advanced authentication methods. This guide provides a comprehensive overview of SAML integration concepts and workflows with Hanko.
+
+**What This Guide Covers**: This guide provides a comprehensive overview of SAML SSO enterprise connections, including setup concepts, authentication flows, security considerations, and account provisioning strategies.
+
+**Key Technologies**: SAML 2.0, XML digital signatures, identity providers (IdP), service providers (SP), SSO workflows, enterprise connections, metadata configuration.
+
+**Prerequisites**: Basic understanding of authentication concepts, Hanko Cloud account, familiarity with identity provider terminology, understanding of enterprise authentication requirements.
+
+**Tasks You'll Complete**: 
+- Understand SAML authentication flow types
+- Learn enterprise connection configuration
+- Explore SP-initiated vs IdP-initiated SSO flows
+- Configure account provisioning and linking
+- Review security considerations and limitations
+- Access provider-specific integration guides
+</div>
+
 Security Assertion Markup Language (SAML) is an open standard for authentication and authorization that enables secure,
 single sign-on (SSO) access to applications and services. By allowing identity providers (IdPs) to authenticate users
 and pass authorization credentials to service providers (SPs), SAML enhances security, reduces password fatigue, and
@@ -52,8 +72,7 @@ To add an enterprise connection to your project:
 
 ### Configuring SAML Identity Providers
 
-The configuration required at an IdP may vary from provider to provider. While Hanko allows configuring any SAML 2.0
-provider, the following providers have been officially tested:
+The configuration required at an IdP varies by provider. While Hanko supports any SAML 2.0-compatible provider, the following providers have been officially tested:
 
 - [Auth0](/guides/authentication-methods/saml/auth0)
 - [Microsoft Entra ID](/guides/authentication-methods/saml/entra)

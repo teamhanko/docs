@@ -4,6 +4,38 @@ title: Webhooks
 description: Learn more about Webhooks
 ---
 
+<div style={{display: 'none'}}>
+# Hanko Webhooks Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that provides modern, secure authentication flows including passkeys, email-based logins, and social authentication. It offers both hosted (Hanko Cloud) and self-hosted options, with comprehensive SDKs for seamless integration.
+
+**What This Guide Covers**: This guide demonstrates how to implement webhooks with Hanko to receive real-time notifications about authentication events. You'll learn to create webhook endpoints, validate payloads, and process user lifecycle and email events for data synchronization and custom workflows.
+
+**Key Technologies**: 
+- HTTP Webhooks
+- JSON Web Tokens (JWT)
+- Webhook Signature Verification
+- Event Processing
+- RESTful APIs
+- Hanko Cloud Console
+
+**Prerequisites**: 
+- Hanko Pro or Enterprise plan subscription
+- Public HTTPS endpoint for webhook delivery
+- Understanding of HTTP request handling
+- JWT verification knowledge
+- Server-side development capabilities
+
+**Tasks You'll Complete**:
+1. Create webhook subscriptions in Hanko Cloud
+2. Build webhook endpoint for event processing
+3. Validate JWT signatures for security
+4. Parse and process different event types
+5. Handle user lifecycle events (create, update, delete)
+6. Process email send events for custom delivery
+7. Implement error handling and retry logic
+</div>
+
 import WebhookUserPayloadExample from '/snippets/webhooks/user-payload-example.mdx';
 import WebhookUserPayloadProperties from '/snippets/webhooks/user-payload-properties.mdx';
 import WebhookEmailSendExample from '/snippets/webhooks/email-send-example.mdx';
@@ -14,14 +46,9 @@ import ProFeatureNote from '/snippets/pro-feature-note.mdx'
 
 ## About webhooks
 
-Webhooks allow you to subscribe to events within a Hanko project and automatically receive data deliveries to your
-server/application whenever those events take place. This allows you to, for example, synchronize user data between your
-application(s) and Hanko.
+Webhooks enable real-time event subscriptions within your Hanko project, automatically delivering event data to your server whenever authentication events occur. This facilitates user data synchronization and custom workflow automation.
 
-To create a webhook you specify a callback URL and subscribe to events that occur in your Hanko project. Once an
-event that your webhook is subscribed to occurs, Hanko will send an HTTP POST request with data about the event to the
-URL that you specified. If your application provides a publicly available HTTP endpoint listening for webhook deliveries
-at the configured callback URL, it can react and process webhook data.
+Create webhooks by specifying a callback URL and selecting events to monitor. When subscribed events occur, Hanko sends HTTP POST requests with event data to your specified endpoint. Your application can then process this data through a publicly accessible HTTPS endpoint.
 
 <Frame caption={"High level overview of creating webhooks and handling webhook deliveries"}>
     ```mermaid
@@ -42,48 +69,40 @@ at the configured callback URL, it can react and process webhook data.
 
 ## Creating webhooks
 
-To create a webhook:
+Set up webhooks through these steps:
 
 <Steps>
-    <Step title={"Access your project's webhook settings"}>
-        Log in to the [Hanko Cloud Console](https://cloud.hanko.io), select your organization and project and navigate to
+    <Step title={"Access webhook settings"}>
+        Log in to [Hanko Cloud Console](https://cloud.hanko.io), select your organization and project, then navigate to
         `Settings > Webhooks`.
     </Step>
-    <Step title={"Create a webhook"}>
-        Click `Create webhook`. Enter a callback URL and select the events that you want to subscribe to.
-        See [Events](#events) for more information on the events you can subscribe to.
+    <Step title={"Configure your webhook"}>
+        Click `Create webhook`, enter your callback URL, and select events for subscription.
+        Review [Events](#events) for complete event type information.
     </Step>
 </Steps>
 
-You are free to choose whether you create a single webhook with one HTTP endpoint processing multiple events or
-multiple webhooks with more than one HTTP endpoint handling specific events or event groups.
+You can implement either a single webhook endpoint handling multiple events or separate webhooks for specific event types, depending on your architecture preferences.
 
 ## Handling webhook deliveries
 
-To handle webhook deliveries:
+Process webhook deliveries through these steps:
 
 <Steps>
-    <Step title={"Create callback URL endpoint"}>
-        In order to handle webhook deliveries, your application must provide a publicly available HTTP POST endpoint
-        listening for webhook deliveries at the configured callback URL.
+    <Step title={"Create callback endpoint"}>
+        Implement a publicly accessible HTTP POST endpoint at your configured callback URL to receive webhook deliveries.
     </Step>
     <Step title={"Parse webhook payload"}>
-        Once you have an endpoint set up you need to extract the webhook [event payload](#event-payload). It
-        contains information about which event occurred and the actual event data encoded in a JSON Web Token (JWT).
+        Extract the webhook [event payload](#event-payload) containing event information and JWT-encoded event data.
     </Step>
-    <Step title={"Validate webhook payload"}>
-        To ensure that your application only processes webhook deliveries that were sent by Hanko and to ensure that
-        the delivery has not been tampered with, you should validate the JWT's signature before processing the delivery
-        further. You can use the JSON Web Key Set available through your tenant's
-        [.well-known](/api-reference/public/well-known/get-json-web-key-set) endpoint to do so.
+    <Step title={"Validate payload authenticity"}>
+        Verify JWT signatures using your tenant's [.well-known](/api-reference/public/well-known/get-json-web-key-set) endpoint to ensure deliveries originate from Hanko and remain uncompromised.
     </Step>
-    <Step title={"Parse webhook payload token"}>
-        The JWT contained in the webhook payload must be parsed to obtain the event
-        data from the token payload. The structure of the event data may differ from event type to event type.
-        For more information, see [Event types and token payloads](#event-types-and-token-payloads).
+    <Step title={"Decode JWT token"}>
+        Parse the JWT to extract event data from the token payload. Event data structures vary by event type - see [Event types and token payloads](#event-types-and-token-payloads).
     </Step>
     <Step title={"Process event data"}>
-        Once you have extracted the event data from the token you can process it according to your application's needs.
+        Handle the extracted event data according to your application's specific requirements.
     </Step>
 </Steps>
 <Accordion title={"Example (Javascript)"}>
@@ -170,25 +189,23 @@ app.listen(PORT, () => {
     Your server **must** return the complete certificate chain otherwise the request will fail.
 </Warning>
 
-## Editing/removing webhooks
+## Editing and removing webhooks
 
-You can edit or remove configured webhooks. To do so:
+Manage existing webhooks through these steps:
 
 <Steps>
-    <Step title={`Access your project's webhook settings`}>
-        Log in to [Hanko Cloud](https://cloud.hanko.io), select your organization and project and navigate to
+    <Step title={"Access webhook settings"}>
+        Log in to [Hanko Cloud](https://cloud.hanko.io), select your organization and project, then navigate to
         `Settings > Webhooks`.
     </Step>
-    <Step title={"Edit/delete a webhook"}>
-        Locate the desired webhook and click on the three dots (`...`). Select `Edit` to change either the callback URL
-        of the webhook or the events to subscribe to. Select `Delete` to remove the webhook entirely.
+    <Step title={"Modify or delete webhooks"}>
+        Find your webhook and click the three dots (`...`). Choose `Edit` to modify the callback URL or event subscriptions, or `Delete` to remove the webhook completely.
     </Step>
 </Steps>
 
 ## Events
 
-There are different types of events you can subscribe to. The event type determines the contents of the event payload
-(i.e. the body content of the request to your callback URL in response to an event occurrence).
+Hanko offers various event types for subscription. Each event type determines the structure and content of the payload delivered to your callback URL.
 
 ### Event payload
 

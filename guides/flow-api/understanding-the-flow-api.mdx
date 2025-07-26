@@ -4,15 +4,33 @@ title: Understanding the FlowAPI
 description: A brief introduction in how the FlowAPI works.
 ---
 
+<div style={{display: 'none'}}>
+# Hanko Flow API Understanding Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that enables secure, modern user authentication experiences. The Flow API is a state-driven system that simplifies frontend development by managing authentication flow logic on the backend, reducing frontend complexity and making flows more maintainable.
+
+**What This Guide Covers**: This guide explains the fundamental concepts behind the Hanko Flow API, including how states and actions work, how to initialize and interact with flows, handle validation and technical errors, and configure flow behavior for your applications.
+
+**Key Technologies**: Hanko Flow API, REST endpoints, JavaScript/TypeScript, state-driven architecture, JSON request/response handling, CSRF protection, client-server communication
+
+**Prerequisites**: Basic understanding of REST APIs, HTTP requests and responses, JSON data format, client-side JavaScript development, authentication flow concepts
+
+**Tasks You'll Complete**:
+- Understand the Flow API's state-driven architecture
+- Learn about states, actions, and input validation system
+- Master flow initialization with POST requests
+- Implement proper action execution with input data
+- Handle validation errors and user feedback
+- Manage technical errors and flow recovery
+- Configure flows for different authentication scenarios
+- Apply best practices for Flow API integration
+</div>
+
 ## Introduction
 
-The FlowAPI was introduced to streamline the development of frontend applications. Since Hanko version 1.0, the backend
-provides extensive options to configure authentication or profile flows. These options, combined with dynamic user inputs
-that can alter the flow and available actions, increase the complexity of the frontend logic and changes to the flow
-configuration may require major adjustments.
+The Flow API simplifies frontend development by moving authentication flow logic to the backend. Traditional authentication implementations require frontends to manage complex state transitions, predict next steps, and handle various configuration options. This complexity increases maintenance overhead and makes configuration changes difficult.
 
-The Hanko API aims to address this issue by maintaining the user state, thus eliminating the need for the frontend to
-remember specific user inputs or predict subsequent actions.
+The Flow API solves this by maintaining all authentication state on the backend. Your frontend only needs to render the current state and execute available actions, without tracking user inputs or predicting what comes next.
 
 Key takeaways include:
 
@@ -22,19 +40,18 @@ Key takeaways include:
 
 ## **Understanding States and Actions**
 
-Every FlowAPI response contains the necessary information, to render a matching UI. A flow response represents a `state`
-within the flow. A state contains `actions`, that specify what actions can be performed at that point.
+Every Flow API response contains all information needed to render the appropriate UI. Each response represents a specific `state` in the authentication flow, and each state defines available `actions` that users can perform.
 
-To build a frontend application, you would implement a handler function for each possible state in the flow. When a new
-response is received from the backend, the corresponding handler processes it, typically rendering a new page based on
-the available actions.
+Your frontend implementation requires a handler function for each possible state. When you receive a new response from the backend, the corresponding handler processes it and renders the UI based on the available actions.
 
-Each action includes `inputs`, which defines the data to be collected, as well as validation rules for the input values.
-To execute an action, the frontend sends a new request to the backend using the URL provided by the action object, along
-with the collected input data. This is described in the following sections.
+Each action includes:
+- **inputs**: Defines what data to collect from the user
+- **validation rules**: Specifies requirements for input values  
+- **execution URL**: The endpoint to send the action request to
 
-Additionally, a response may include a `payload` depending on the specific `state`. This payload could, for example,
-contain a user object or other information useful for constructing the UI.
+To execute an action, send a POST request to the action's URL with the collected input data. The backend processes the action and returns the next state.
+
+Some responses include a `payload` with additional data specific to that state, such as user information or configuration details needed for UI rendering.
 
 The diagram shows the structure of a flow response:
 
@@ -91,11 +108,14 @@ classDiagram
 
 ## Initializing Flows
 
-Currently, three different flows can be initialized by sending an empty `POST` request to one of the following endpoints:
-`/login`, `/registration`, or `/profile`. Refer to the [documentation](https://docs.hanko.io/api-reference/flow) to learn about the states and actions available in each flow.
+The Flow API supports three main flows, each initialized with an empty `POST` request:
+- `/login` - User authentication flow
+- `/registration` - User registration flow  
+- `/profile` - User profile management flow
 
-For this guide, we’ll assume there is a fourth flow available at the `/example-flow` endpoint. To initialize this flow,
-send a `POST` request to `/example-flow`. The response will look as follows:
+Refer to the [Flow API documentation](https://docs.hanko.io/api-reference/flow) for complete details on available states and actions in each flow.
+
+This guide uses an example `/example-flow` endpoint to demonstrate the concepts. Here's how to initialize and work with any flow:
 
 <Steps>
   <Step title={"Initialize a New Flow"}>
@@ -135,8 +155,7 @@ send a `POST` request to `/example-flow`. The response will look as follows:
 
 ## Interacting with Flows
 
-When a new flow response has been received, you would call a handler to process the current state, that renders a UI
-containing a form with an input field 'example-input-field'.
+After receiving a flow response, you process the current state by calling the appropriate handler function. This handler renders the UI based on the state and available actions.
 
 ```js
   const state = await fetch(...)
@@ -153,8 +172,7 @@ containing a form with an input field 'example-input-field'.
   }
 ```
 
-To submit the form or perform the action respectively, we need
-to obtain the value of the input field and generate a request body that looks as shown in the diagram:
+To execute an action, collect the input values from your form and create a request body with the structure shown in the diagram:
 
 <Frame>
   ```mermaid
@@ -204,9 +222,7 @@ According to the example reponse object, we would proceed as follows to execute 
 
 ## Handling Validation Errors
 
-The API provides validation details, such as ensuring that the value is between 16 and 32 characters long (`min_length`
-and `max_length`). You can validate the input data client-side before sending it, but backend validation will handle any
-errors if necessary:
+The Flow API includes detailed validation metadata for each input field, such as minimum and maximum length requirements (`min_length` and `max_length`). While you can implement client-side validation using this metadata, the backend always performs final validation and returns detailed error information when validation fails:
 
 <Steps>
   <Step title={"Send Invalid Input Values"}>
@@ -270,8 +286,7 @@ errors if necessary:
 
 ## Handling Technical Errors
 
-Other (non-4xx) errors may result in an error state, indicating that the flow cannot proceed any further, such as in the
-case of a technical issue. A response in such a scenario might look like this:
+Technical errors (non-4xx HTTP errors) result in an error state that indicates the flow cannot continue. These typically occur due to server issues, network problems, or system failures. Here's how such responses appear:
 
 ```json
 {
@@ -284,29 +299,31 @@ case of a technical issue. A response in such a scenario might look like this:
 }
 ```
 
-In this situation, an error message should be displayed in the UI, providing the user with the option to initialize a
-new flow.
+When you encounter an error state, display the error message to the user and provide an option to restart the authentication process by initializing a new flow.
 
 ## Configuring Flows
 
-If you are a Hanko Cloud user, you can configure the behavior of the flows via the [Hanko Console](https://cloud.hanko.io/).
-Self-hosted users are advised to consult the [configuration reference](https://github.com/teamhanko/hanko/wiki/config).
+Flow behavior is highly configurable to match your application's requirements:
 
-Depending on the flow configuration, the individual flows can traverse various states, and certain actions or action inputs
-may be available or unavailable.
+- **Hanko Cloud users**: Configure flows through the [Hanko Console](https://cloud.hanko.io/)
+- **Self-hosted users**: Use the [configuration reference](https://github.com/teamhanko/hanko/wiki/config)
 
-If you're building your own UI and aim to support every feature of the currently available flows, your implementation
-must include a handler for each possible state and action. If you only want to support specific states or actions, ensure
-that you configure your Hanko project to disable any features you don't need. After making configuration changes, verify
-that your application remains functional and add missing handlers as needed.
+Your configuration determines which states and actions are available in each flow. Different configurations can enable or disable specific authentication methods, require additional verification steps, or change the overall flow structure.
+
+When building custom UIs, you have two approaches:
+1. **Full support**: Implement handlers for all possible states and actions to support every available feature
+2. **Selective support**: Configure your Hanko project to disable unused features and implement only the handlers you need
+
+After making configuration changes, always test your application thoroughly and add any missing state handlers to ensure proper functionality.
 
 ## Conclusion and Outlook
 
-This guide has demonstrated, with examples, how to:
+This guide has shown you the core concepts of the Flow API through practical examples:
 
-- initialize a new flow
-- interpret the flow response
-- execute a flow action
-- handle errors
+- **Initialize flows** with empty POST requests to flow endpoints
+- **Interpret responses** by understanding states, actions, and input requirements  
+- **Execute actions** by collecting user input and sending proper request payloads
+- **Handle validation errors** with detailed field-level error information
+- **Manage technical errors** by implementing proper error recovery flows
 
-For details on how different "states" in the flows look, please refer to the [documentation](https://docs.hanko.io/api-reference/flow). Also note that a cross-platform SDK designed to simplify frontend integration will be released soon.
+For complete details on available states and actions in each flow, consult the [Flow API documentation](https://docs.hanko.io/api-reference/flow). The Flow API continues to evolve with additional features and improved tooling to make authentication integration even simpler.

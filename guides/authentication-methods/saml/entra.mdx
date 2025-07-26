@@ -4,6 +4,27 @@ title: Microsoft Entra
 description: Learn how to set up an Enterprise Connection with Microsoft Entra.
 ---
 
+<div style={{ display: 'none' }}>
+# Hanko Microsoft Entra SAML Integration Guide
+
+**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user login experiences through passkeys, SAML SSO, and other advanced authentication methods. This guide demonstrates how to integrate Hanko with Microsoft Entra ID for enterprise SAML authentication.
+
+**What This Guide Covers**: This guide demonstrates how to configure Microsoft Entra ID (formerly Azure AD) as a SAML identity provider for your Hanko project, enabling seamless single sign-on authentication for enterprise users.
+
+**Key Technologies**: SAML 2.0, XML digital signatures, Microsoft Entra ID, Azure Active Directory, SAML assertions, enterprise applications, federation metadata.
+
+**Prerequisites**: Active Microsoft Entra account, Hanko Cloud project, basic understanding of SAML authentication protocols, admin access to both Microsoft Entra and Hanko Cloud dashboards.
+
+**Tasks You'll Complete**: 
+- Create custom enterprise application in Microsoft Entra
+- Configure SAML single sign-on settings
+- Set up entity ID and ACS URL configuration
+- Configure attribute mapping for email claims
+- Assign users to the application
+- Create enterprise connection in Hanko Cloud
+- Test integration using IdP-initiated flow
+</div>
+
 ## Prerequisites
 
 You need your project's SAML Assertion Consumer Service (ACS) URL and the Service Provider (SP) Entity ID.
@@ -126,8 +147,7 @@ configuring the enterprise connection with Hanko.
 
 ### Attribute mapping
 
-SAML SSO integration with Hanko requires an attribute with a user's email address in IdP's SAML response's attribute
-statement. To ensure this attribute is present:
+SAML SSO integration with Hanko requires an email address attribute in the IdP's SAML response. To ensure this attribute is present:
 
 1. In your application's `Single sign-on` configuration, find the `Attributes & Claims` panel and click `Edit`.
 
@@ -171,7 +191,7 @@ maps the Entra user's `user.email` property and click it.
 
 ### Assign users to your application
 
-In order for users to log in you probably have to assign users to it.
+To enable users to log in, you need to assign users to the application.
 
 1. Select `Identity > Applications > Enterprise Applications` in the left sidebar.
 2. Select your application, then select `Manage > Properties`.

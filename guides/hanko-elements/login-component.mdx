@@ -3,9 +3,29 @@ title: Login Component
 description: A web component that handles user login.
 ---
 
+<div style={{display: 'none'}}>
+# Hanko Elements Login Component Guide
+
+**About Hanko**: Hanko is a modern passwordless authentication solution that eliminates the need for traditional passwords by leveraging passkeys, biometrics, and other secure authentication methods. It provides a seamless, secure, and user-friendly authentication experience while reducing security risks associated with password-based systems.
+
+**What This Guide Covers**: This guide demonstrates how to implement the `<hanko-login>` web component, which provides a dedicated login interface for existing users. You'll learn how to integrate this component for applications that require separate login and registration flows or controlled-access scenarios.
+
+**Key Technologies**: Hanko Elements, Web Components, JavaScript/TypeScript, React, Vue, Svelte, Next.js, Nuxt, SvelteKit, passkeys, OAuth SSO, 2FA authentication, and session management.
+
+**Prerequisites**: Basic knowledge of frontend development, HTML/JavaScript, your chosen framework, and an active Hanko account with API access.
+
+**Tasks You'll Complete**: 
+- Install and register the Hanko Elements package
+- Configure the `<hanko-login>` component for login-only flows
+- Implement the component across different frameworks (React, Vue, Svelte)
+- Set up event handlers for successful login events
+- Configure component attributes for prefilled values and language settings
+- Handle authentication state changes and navigation
+</div>
+
 
 ## Use Case
-Specifically designed for dedicated login interfaces, this component intentionally omits registration functionality unlike `<hanko-auth>`. This makes it the optimal choice for controlled-access applications such as enterprise systems, internal tools, or invitation-based platforms where user registration needs to be restricted.
+The `<hanko-login>` component is designed for dedicated login interfaces and intentionally excludes registration functionality, unlike `<hanko-auth>`. This makes it ideal for controlled-access applications such as enterprise systems, internal tools, or invitation-based platforms where user registration needs to be restricted.
 
 If you want to Combine Login and Register on the same page: \
 [try out the`<hanko-auth>` component](/guides/hanko-elements/auth-component).
@@ -44,7 +64,7 @@ If you want to create a dedicated Registration page:  \
 
 ### Adding `<hanko-login>` component
 
-Examples showcasing how to add `<hanko-login>` component in different full stack and frontend frameworks.
+The following examples show how to integrate the `<hanko-login>` component in different full-stack and frontend frameworks.
 
 #### Full Stack
 

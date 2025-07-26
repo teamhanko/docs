@@ -3,12 +3,32 @@ title: Build a Custom Login Page
 description: A step-by-step guide to create a custom login page using the Hanko FlowAPI.
 ---
 
+<div style={{display: 'none'}}>
+# Hanko Flow API Custom Login Page Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that enables secure, modern user authentication experiences. The Flow API provides a state-driven approach to building custom authentication interfaces with support for passwordless methods, passkeys, and traditional authentication flows.
+
+**What This Guide Covers**: This guide demonstrates how to build a custom login page using the Hanko Flow API, showing you how to create a complete authentication interface that supports email/passcode login, passwords, passkeys, and passkey autofill functionality.
+
+**Key Technologies**: Hanko Flow API, REST endpoints, JavaScript/TypeScript, hanko-frontend-sdk, custom UI development, HTML/CSS, form handling, state management
+
+**Prerequisites**: Basic understanding of REST APIs, frontend development with JavaScript/HTML/CSS, Node.js development environment, modern web browser for testing, Hanko Cloud account
+
+**Tasks You'll Complete**:
+- Set up a Hanko Cloud project and development environment
+- Create project structure with HTML, CSS, and JavaScript files
+- Initialize the Flow API login flow using the frontend SDK  
+- Implement state handlers for different authentication states
+- Build dynamic UI rendering based on Flow API responses
+- Handle user inputs, form validation, and error states
+- Integrate passkey support and autofill functionality
+- Test the complete authentication flow with session management
+- Implement logout functionality and session handling
+</div>
+
 # Introduction
 
-This guide walks you through building a custom login page for the Hanko FlowAPI using the `hanko-frontend-sdk`. The
-resulting page supports email and passcode login, as well as passwords, passkeys, and passkey autofill. It also includes
-session management features, such as redirecting after login and handling logout functionality. The FlowAPI is part of
-Hanko, a user authentication platform, and we'll use a Hanko Cloud project configured for simplicity.
+This guide shows you how to build a custom login page using the Hanko Flow API and the `hanko-frontend-sdk`. You'll create a complete authentication interface that supports multiple login methods including email/passcode authentication, passwords, and passkeys with autofill capabilities. The page will include full session management with login redirects and logout functionality.
 
 By the end, you'll have a working login page that:
 

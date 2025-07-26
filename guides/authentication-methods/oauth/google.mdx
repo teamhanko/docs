@@ -3,12 +3,40 @@ title: Add Google Login
 sidebarTitle: Google
 ---
 
+<div style={{display: 'none'}}>
+# Hanko Google OAuth Integration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that provides secure, user-friendly login experiences. It eliminates the need for traditional passwords by supporting modern authentication methods including biometrics, passkeys, and OAuth providers.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Google OAuth authentication with Hanko, allowing users to sign in using their Google accounts. You'll learn to set up a Google Cloud Console project, configure OAuth consent, and implement Google login in your application.
+
+**Key Technologies**: 
+- OAuth 2.0 and OpenID Connect protocols
+- Google Cloud Console and Google Auth Platform
+- JWT (JSON Web Tokens) for secure session management
+- Google OAuth 2.0 authorization server
+- RESTful API integration
+
+**Prerequisites**: 
+- Active Hanko Cloud account with a configured project
+- Google account for Cloud Console access
+- Basic understanding of OAuth 2.0 authentication flow
+- Frontend application ready for integration
+
+**Tasks You'll Complete**:
+1. Create a Google Cloud Console project and configure OAuth consent
+2. Set up OAuth 2.0 credentials and redirect URLs
+3. Configure Google OAuth settings in Hanko Console
+4. Implement Google authentication in your frontend application
+5. Handle authentication success and error states
+</div>
+
 <Steps>
 
 <Step title="Obtain Google OAuth Credentials">
 
-- To start out lets get the redirect url from the [Hanko console](https://cloud.hanko.io/), We will need this in a moment.
-  To do so, sign in to the Hanko console and select your project. Navigate to 'Settings' in the left sidebar and then to 'Social connections'.
+- First, obtain the redirect URL from the [Hanko console](https://cloud.hanko.io/), as you'll need this for Google configuration.
+  Sign in to the Hanko console and select your project. Navigate to 'Settings' in the left sidebar and then to 'Social connections'.
   Copy the 'Redirect URL'.
 
     <img
@@ -17,9 +45,9 @@ sidebarTitle: Google
       width={500}
     />
 
-- Let's also double check that our allowed redirect URL is set to the same URL as our App.
-  To do this, navigate to the 'URLs' tab in the left sidebar.
-  Scroll down and make sure that Allowed redirect URLs includes your App URL + '**'.
+- Verify that your allowed redirect URL is configured correctly for your application.
+  Navigate to the 'URLs' tab in the left sidebar.
+  Ensure that Allowed redirect URLs includes your App URL + '**'.
 
     <img
       src="/images/oauth-providers/google/allowedRedirectURL.png"
@@ -27,7 +55,7 @@ sidebarTitle: Google
       width={500}
     />
 
-- Navigate to [Google cloud console](https://console.cloud.google.com/), login and click on 'Select a project' at the top left.
+- Navigate to [Google Cloud Console](https://console.cloud.google.com/), sign in and click on 'Select a project' at the top left.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -54,7 +82,7 @@ sidebarTitle: Google
       width={500}
     />
 
-- Now type 'OAuth' in the searchbar and choose 'OAuth consent screen' from results.
+- Type 'OAuth' in the search bar and choose 'OAuth consent screen' from the results.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -63,7 +91,7 @@ sidebarTitle: Google
       width={500}
     />
 
-- Configure your Google Auth Platform, press on 'Get started' to set it up.
+- Configure your Google Auth Platform by clicking 'Get started' to begin setup.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -88,7 +116,7 @@ sidebarTitle: Google
       width={500}
     />
 
-- Go to 'Google Auth Platform' > 'Audience' and publish your app.
+- Navigate to 'Google Auth Platform' > 'Audience' and publish your app.
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/Test Users.png"
@@ -106,7 +134,7 @@ sidebarTitle: Google
       width={500}
     />
 
-- select 'Web application' as application type.
+- Select 'Web application' as the application type.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -115,7 +143,7 @@ sidebarTitle: Google
       width={500}
     />
 
-- Choose a name and paste the previous Redirect URL (that you got from the hanko console), as an 'Authorized redirect URI'.
+- Choose a name and paste the Redirect URL (that you obtained from the Hanko console) as an 'Authorized redirect URI'.
 
     <img
       className="border-[1px] border-black rounded-[10px]"
@@ -124,7 +152,7 @@ sidebarTitle: Google
       width={500}
     />
 
-- The Google console will display information about the OAuth client, copy and save both 'Client ID' and the 'Client secret', you will need these in the next step.
+- The Google console will display information about the OAuth client. Copy and save both the 'Client ID' and 'Client secret', as you'll need these in the next step.
     <img
       className="border-[1px] border-black rounded-[10px]"
       src="/images/oauth-providers/google/twelve.png"

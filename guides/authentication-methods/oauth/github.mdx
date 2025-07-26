@@ -3,10 +3,38 @@ title: Add GitHub Login
 sidebarTitle: GitHub
 ---
 
+<div style={{display: 'none'}}>
+# Hanko GitHub OAuth Integration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that provides secure, user-friendly login experiences. It eliminates the need for traditional passwords by supporting modern authentication methods including biometrics, passkeys, and OAuth providers.
+
+**What This Guide Covers**: This guide demonstrates how to integrate GitHub OAuth authentication with Hanko, allowing users to sign in using their GitHub accounts. You'll learn to create a GitHub OAuth app, configure authentication settings, and implement GitHub login in your application.
+
+**Key Technologies**: 
+- OAuth 2.0 authentication protocol
+- GitHub OAuth Apps and API
+- JWT (JSON Web Tokens) for secure session management
+- RESTful API integration
+- Frontend SDK integration
+
+**Prerequisites**: 
+- Active Hanko Cloud account with a configured project
+- GitHub account for developer access
+- Basic understanding of OAuth 2.0 authentication flow
+- Frontend application ready for integration
+
+**Tasks You'll Complete**:
+1. Create and configure a GitHub OAuth application
+2. Set up redirect URLs and obtain client credentials
+3. Configure GitHub OAuth settings in Hanko Console
+4. Implement GitHub authentication in your frontend application
+5. Handle authentication success and error states
+</div>
+
 <Steps>
 <Step title="Obtain GitHub OAuth Credentials">
 
-- Let's get the redirect url first from [Hanko console](https://cloud.hanko.io/), as you'll need it in a moment. To do so, sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
+- First, obtain the redirect URL from [Hanko console](https://cloud.hanko.io/), as you'll need it for GitHub configuration. Sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
   
     <img
       src="/images/oauth-providers/hanko-callback-url.png"
@@ -32,7 +60,7 @@ sidebarTitle: GitHub
           width={500}
          />
 
-- Choose 'OAuth Apps' followed by 'New OAuth App'. This action opens the registration form. But before it, you need to retrieve the 'Redirect URL' from the Hanko cloud.
+- Choose 'OAuth Apps' followed by 'New OAuth App'. This opens the registration form for creating your OAuth application.
 
     <img
       src="/images/oauth-providers/github-new-auth.png"
@@ -48,7 +76,7 @@ sidebarTitle: GitHub
       or have a self-hosted Hanko API.
     </Note>
 
-- Get back to OAuth app registration form, fill in the required details, and paste the copied redirect URL into the 'Application Callback URL' field. Finish by clicking 'Register application'.
+- Return to the OAuth app registration form, fill in the required details, and paste the copied redirect URL into the 'Application Callback URL' field. Complete the registration by clicking 'Register application'.
 
     <img
       src="/images/oauth-providers/github-oauth-form.png"
@@ -56,7 +84,7 @@ sidebarTitle: GitHub
       width={500}
     />
 
-- You'll now see an overview of OAuth app, note down the provided 'Client ID'. Also, generate a 'Client Secret' by selecting 'Generate a new client secret'. Copy these, as you'll need them in next step.
+- You'll now see an overview of your OAuth app. Note down the provided 'Client ID'. Generate a 'Client Secret' by selecting 'Generate a new client secret'. Copy both values, as you'll need them in the next step.
     <img
       src="/images/oauth-providers/github-client-id.png"
       alt="GitHub OAuth Registration Form"
@@ -65,7 +93,7 @@ sidebarTitle: GitHub
 </Step>
 <Step title="Configure GitHub Credentials with Hanko">
 
-- Head back to Identity providers in Hanko and under 'Identity provider settings' configure the following:
+- Return to Identity providers in Hanko and under 'Identity provider settings' configure the following:
     <img
       src="/images/oauth-providers/hanko-callback-url.png"
       alt="Hanko Callback URL"

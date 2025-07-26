@@ -1,19 +1,49 @@
 ---
 title: Add Discord Login
 sidebarTitle: Discord
-description: In this guide you will learn how to add a login with Discord to your application.
+description: Learn how to integrate Discord OAuth authentication with Hanko for secure user login.
 ---
+
+<div style={{display: 'none'}}>
+# Hanko Discord OAuth Integration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that provides secure, user-friendly login experiences. It eliminates the need for traditional passwords by supporting modern authentication methods including biometrics, passkeys, and OAuth providers.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Discord OAuth authentication with Hanko, allowing users to sign in using their Discord accounts. You'll learn to set up a Discord application, configure OAuth credentials, and implement Discord login in your application.
+
+**Key Technologies**: 
+- OAuth 2.0 authentication protocol
+- Discord OAuth provider and API
+- JWT (JSON Web Tokens) for secure session management
+- RESTful API integration
+- Frontend SDK integration
+
+**Prerequisites**: 
+- Active Hanko Cloud account with a configured project
+- Discord account for developer access
+- Basic understanding of OAuth 2.0 authentication flow
+- Frontend application ready for integration
+
+**Tasks You'll Complete**:
+1. Create and configure a Discord application in the developer portal
+2. Set up OAuth redirect URLs and obtain client credentials
+3. Configure Discord OAuth settings in Hanko Console
+4. Implement Discord authentication in your frontend application
+5. Handle authentication success and error states
+</div>
 
 ## Prerequisites
 
-1. You need a Hanko Cloud account and a project. Learn more on how to set them up [here](https://docs.hanko.io/setup-hanko-cloud).
-2. You need a Discord account. You can create account [here](https://discord.com/register).
+Before starting this integration, ensure you have:
+
+1. A Hanko Cloud account and project. [Set up your account here](https://docs.hanko.io/setup-hanko-cloud) if you haven't already.
+2. A Discord account for accessing the developer portal. [Create an account here](https://discord.com/register) if needed.
 
 ## Get your provider redirect URL
 
-When creating an Discord application, you need to provide a redirect URL that determines where the third party
-provider redirects after a successful login. This redirect URL consists of the base URL of the Hanko API
-and the [`/thirdparty/callback`](http://docs.hanko.io/api/public#tag/Third-Party/operation/thirdPartyCallback) endpoint. You can always view your redirect URL in the Hanko Cloud Console:
+You'll need to configure a redirect URL in your Discord application. This URL determines where Discord redirects users after successful authentication. The redirect URL combines your Hanko API base URL with the [`/thirdparty/callback`](http://docs.hanko.io/api/public#tag/Third-Party/operation/thirdPartyCallback) endpoint.
+
+To find your redirect URL:
 
 1. Sign in to [cloud.hanko.io](https://cloud.hanko.io).
 2. Select your `Organization`.
@@ -34,7 +64,7 @@ You need the redirect URL for [creating a new Discord application](#create-a-new
 [configuring your credentials with Hanko](#configure-credentials-with-hanko) (you will also configure the remaining
 configuration options visible in the above screen in this step).
 
-## Create a new Discord application
+## Create a Discord application
 
 1. Navigate to the [Discord developer portal](https://discord.com/developers/applications).
 2. On the main dashboard, select `Applications` in the left sidebar.
@@ -49,7 +79,7 @@ configuration options visible in the above screen in this step).
     />
 </Frame>
 
-4. Provide a name for your application, agree to the Discord terms of service and click `Create`
+4. Enter a name for your application, accept the Discord Terms of Service, and click `Create`.
 
 <Frame>
     <img
@@ -101,10 +131,10 @@ appears.
 </Frame>
 
 
-## Configure credentials with Hanko
+## Configure Discord credentials in Hanko
 
 1. In the Hanko Cloud Console, navigate to your project `Settings` and select `Identity providers`.
-2. Configure the following:
+2. Configure these redirect URLs:
 
 <Frame>
     <img
@@ -115,12 +145,8 @@ appears.
     />
 </Frame>
 
-      - **Error Redirect URL**: This is the URL target in your frontend the Hanko API redirects to if an error occurs during third
-    party sign-in. If your frontend [uses the `hanko-elements` web components](#frontend-integration), this URL should be the URL of the
-    page that embeds the web component such that errors can be processed properly by the web component.
-      - **Allowed Redirect URL**: This is the URL target in your frontend the Hanko API is allowed to redirect to after third party
-    authentication was successful. If your frontend [uses the `hanko-elements` web components](#frontend-integration), this URL should be
-    the URL of the page that embeds the web component.
+      - **Error Redirect URL**: The frontend URL where Hanko redirects users if authentication fails. For applications using `hanko-elements` web components, this should be the page containing the component to handle errors properly.
+      - **Allowed Redirect URL**: The frontend URL where Hanko redirects users after successful authentication. For `hanko-elements` applications, this should be the page containing the authentication component.
 
         <Note>
         The allowed redirect URL supports wildcard matching through globbing:
@@ -129,40 +155,33 @@ appears.
          -  Use ** to act as a super-wildcard/match-all.
         </Note>
 
-2. In the `Providers` section, select `Discord` and use the `Enable provider` toggle to enable the provider.
-3. Provide the `Client ID` and `Client Secret` you obtained in one of the [previous section](#get-your-client-id-and-secret)
-in the remaining inputs.
-4. Click `Save`.
+3. In the `Providers` section, select `Discord` and enable it using the toggle switch.
+4. Enter the `Client ID` and `Client Secret` you obtained from the Discord developer console.
+5. Click `Save` to apply your configuration.
 
-## Frontend integration
+## Implement Discord login in your frontend
 
-To enable a login with Discord in your frontend application we recommend using either our pre-built UI as
-provided by the [`@teamhanko/hanko-elements`](https://www.npmjs.com/package/@teamhanko/hanko-elements) package or building a custom UI using
-the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk).
+You can integrate Discord authentication using either:
+- Pre-built UI components from [`@teamhanko/hanko-elements`](https://www.npmjs.com/package/@teamhanko/hanko-elements)
+- Custom implementation with [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
 
 <Tabs>
 
     <Tab title="Hanko Elements">
-        We recommend following one of our [quickstart guides](https://docs.hanko.io/quickstarts) to integrate
-        the `<hanko-auth>` component from our `@teamhanko/hanko-elements` package in your frontend application .
-        On successful integration, the component will display a button for signing in with `Discord` in the login view
-        of the component.
+        Follow our [quickstart guides](https://docs.hanko.io/quickstarts) to integrate the `<hanko-auth>` component from `@teamhanko/hanko-elements` into your application. Once configured, the component will automatically display a Discord sign-in button in the login interface.
 
         <Note>
             Make sure to configure the page the web component is embedded on as your `error redirect URL` as well as an
             `allowed redirect URL` (see the [previous step](#configure-credentials-with-hanko)).
         </Note>
 
-        On successful authentication with the provider, the backend issues a session cookie and the web component
-        continues the usual component flow on success. Errors that occur during third party
-        provider authentication are also picked up and displayed in the web component accordingly.
+        After successful Discord authentication, Hanko issues a session cookie and the component continues its normal flow. Authentication errors are automatically captured and displayed within the component.
     </Tab>
 
     <Tab title="Hanko Frontend SDK">
-        When building your own UI, you can use the `@teamhanko/hanko-frontend-sdk` to initialize third party sign in.
-        Create a [`Hanko` client](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/Client.html) instance and call  the
-        `thirdParty.auth` method with `discord` as your provider and the target URL in your app you want to redirect
-        to after authentication.
+        For custom UI implementations, use the `@teamhanko/hanko-frontend-sdk` to handle Discord authentication.
+        Create a [`Hanko` client](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/Client.html) instance and call the
+        `thirdParty.auth` method with `discord` as the provider.
 
         ```js
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";
@@ -182,8 +201,7 @@ the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/h
         }
         ```
 
-        On successful authentication, the API redirects you to the given redirect URL. The URL query includes a one time
-        token that must be exchanged for a JWT. Use the `token.validate` method on your client to validate the token:
+        After successful authentication, the API redirects to your specified URL with a one-time token in the query parameters. Exchange this token for a JWT using the `token.validate` method:
 
         ```js
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";
@@ -202,8 +220,7 @@ the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/h
             }
             ```
 
-            On success, the API issues a JWT which is then set by the SDK as a cookie (hanko). All other SDK methods
-            can now use the cookie to make authenticated requests to the API.
+            On successful validation, the SDK sets a JWT cookie (hanko) that enables authenticated API requests for all other SDK methods.
     </Tab>
 </Tabs>
 
