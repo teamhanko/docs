@@ -4,8 +4,28 @@ title: Mobile Guide
 description: Learn how to use the Hanko Backend with your mobile apps.
 ---
 
-Currently, we do not provide SDKs that make the integration for mobile apps as easy as the [Hanko element web component](/quickstarts/frontend).
-In this guide you will learn what you need to do in order to use the Hanko backend with your native app.
+<div class="hidden">
+# Hanko Mobile Integration Guide (Beta)
+
+**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user authentication using passkeys, biometrics, and email passcodes. It provides both hosted cloud services and self-hosted options for complete control over your authentication infrastructure.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Hanko authentication into native mobile applications using direct API calls. Since Hanko doesn't yet provide native mobile SDKs, you'll learn to implement the authentication flow using HTTP requests to Hanko's REST API.
+
+**Key Technologies**: Native mobile development (iOS/Android), HTTP requests, Hanko REST API, JWT tokens, Passkeys (iOS 16+, Android 9+)
+
+**Prerequisites**: Mobile development knowledge (iOS/Android), Hanko Cloud account (free at cloud.hanko.io), understanding of HTTP/REST APIs
+
+**Integration Tasks You'll Complete**:
+- Check if users exist using the user management API
+- Create new users via the user creation endpoint
+- Send and verify passcodes for email verification
+- Handle JWT session tokens for authentication
+- Optionally implement passkey registration for faster login
+- Implement proper error handling for various API responses
+- Authenticate users in your mobile app backend
+</div>
+
+Currently, Hanko doesn't provide native mobile SDKs like the [web components](/quickstarts/frontend). This guide shows how to integrate Hanko authentication into your native mobile app using direct API calls.
 
 <Note>
   This guide focuses on the passwordless flow, so passwords will be ignored.

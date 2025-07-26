@@ -4,20 +4,33 @@ title: Integrate Hanko with Nuxt
 description: Learn how to quickly add authentication and user profile in your Nuxt app using Hanko.
 ---
 
-<di class="hidden">
-Overview: This guide shows how to integrate Hanko authentication into a Nuxt application. You'll use the @nuxtjs/hanko module for streamlined setup with built-in middleware, composables, and auto-registered components.
+<div class="hidden">
+# Hanko Nuxt.js Integration Guide
 
-Key tasks: Install @nuxtjs/hanko module, configure Nuxt settings, create pages with Hanko components, implement middleware-based route protection, and handle user data with useHanko composable.
+**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user authentication using passkeys, biometrics, and email passcodes. It provides both hosted cloud services and self-hosted options for complete control over your authentication infrastructure.
 
-Note: Elements like <Tabs> are from Mintlify documentation. Use only code snippets inside markdown formatting '```'
-</di>
+**What This Guide Covers**: This comprehensive guide demonstrates integrating Hanko authentication into a Nuxt.js application using the `@nuxtjs/hanko` module. You'll learn to set up authentication components, implement session management, secure routes with server middleware, and handle user data across both client and server-side contexts.
+
+**Key Technologies**: Nuxt.js, Vue.js, TypeScript, @nuxtjs/hanko module, Hanko Cloud Console, Server Middleware, Vue Composables
+
+**Prerequisites**: Node.js, basic Nuxt.js knowledge, Hanko Cloud account (free at cloud.hanko.io)
+
+**Integration Tasks You'll Complete**:
+- Install and configure the @nuxtjs/hanko module with auto-registered components
+- Set up authentication pages with hanko-auth and hanko-events components
+- Create user profile management with hanko-profile component
+- Implement logout functionality using the useHanko composable
+- Secure routes using built-in hanko-logged-in and hanko-logged-out middleware
+- Handle server-side authentication validation with event context
+- Access user data through the Hanko SDK and server middleware
+- Customize component appearance and behavior
+- Configure authentication redirects and error handling
+</div>
 
 ## Create a Nuxt application
-Run the following command to [create a new Nuxt application](https://nuxt.com/docs/getting-started/installation):
+First, create a new Nuxt.js application using the official Nuxt starter template. This command sets up a complete Nuxt project with TypeScript support and all necessary dependencies.
 
-<di class="hidden">
-Creates a new Nuxt application using the official Nuxt starter template
-</di>
+Run the following command to [create a new Nuxt application](https://nuxt.com/docs/getting-started/installation):
 
 <CodeGroup> 
 ```bash npm
@@ -39,11 +52,9 @@ yarn create nuxt project-name
 
 ## Install `@nuxtjs/hanko`
 
-Once you've initialized your Nuxt app, installing `@nuxtjs/hanko` module provides you with access to prebuilt components: `hanko-auth`, `hanko-events` and `hanko-profile`
+The `@nuxtjs/hanko` module is the official Nuxt integration for Hanko authentication. It provides pre-built components (`hanko-auth`, `hanko-events`, `hanko-profile`), server middleware for route protection, and Vue composables for easy authentication management.
 
-<di class="hidden">
-Installs the Nuxt Hanko module which provides pre-configured components, middleware, and composables
-</di>
+Install the module as a development dependency:
 
 <CodeGroup>
 ```bash npm
@@ -58,7 +69,7 @@ pnpm add -D @nuxtjs/hanko
 
 ```bash bun
 cd project-name
-bun add @teamhanko/hanko-elements
+bun add -D @nuxtjs/hanko
 ```
 
 ```bash yarn
@@ -69,21 +80,20 @@ yarn add --dev @nuxtjs/hanko
 </CodeGroup>
 
 ## Setup your Hanko project
+Before integrating Hanko into your application, you need to create a Hanko project in the cloud console. This project will provide you with an API URL and manage your authentication settings.
+
 Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
 
 <Note>
-  During creation make sure to input the URL you will be developing on as the `APP URL`.\
-  (Most likely http://localhost:3000/) 
+  During project creation, make sure to set the `APP URL` to your development URL (typically http://localhost:3000/). This ensures proper CORS configuration and redirect handling.
 </Note>
 
 
 ## Add the Hanko API URL
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your .env file.
+After creating your Hanko project, you'll receive a unique API URL. This URL is used to communicate with Hanko's authentication services. The `NUXT_PUBLIC_` prefix makes this environment variable accessible in both server and client-side code.
 
-<di class="hidden">
-Environment variable for Hanko API URL - NUXT_PUBLIC_ prefix makes it accessible in browser
-</di>
+Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and add it to your environment file:
 
 ```sh .env
 NUXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
@@ -96,11 +106,9 @@ NUXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 
 ## Configure Nuxt module
 
-Add the `@nuxtjs/hanko` module to the `modules` section of your `nuxt.config.ts` file.
+Next, register the Hanko module in your Nuxt configuration and set up authentication behavior. This configuration defines where users should be redirected after login/logout and sets up the module with your API URL.
 
-<di class="hidden">
-Nuxt configuration with Hanko module setup including API URL and redirect paths
-</di>
+Add the `@nuxtjs/hanko` module to your `nuxt.config.ts` file:
 
 ```jsx nuxt.config.ts
 export default defineNuxtConfig({
@@ -136,11 +144,9 @@ hanko: {
 
 ## Setup Nuxt pages
 
-Lets add the `NuxtPage` component to `app.vue` to use the Nuxt Page Router.
+Nuxt uses file-based routing, where each file in the `pages/` directory becomes a route. To enable this routing system, add the `NuxtPage` component to your main application template.
 
-<di class="hidden">
-Main app template using NuxtPage for routing
-</di>
+Update your `app.vue` file to use the Nuxt Page Router:
 
 ```vue app.vue
 <template>
@@ -155,14 +161,9 @@ After that lets create a folder called `/pages` and in there we will create `ind
 
 ## Add `<hanko-auth>` component
 
-The `<hanko-auth>` web component adds a login interface to your app.
-By default no action is taken after a successful login. But when you add the `hanko-logged-out` middleware to the login page it will automatically redirect the user to the page they were on before logging in, or to the optional `redirects.success` value in the module config.
+The `<hanko-auth>` web component provides a complete login and registration interface with passwordless authentication. The `hanko-logged-out` middleware ensures that already authenticated users are automatically redirected to the dashboard.
 
-Lets try this out in the `index.vue` page.
-
-<di class="hidden">
-Login page with hanko-logged-out middleware for automatic redirection after successful authentication
-</di>
+Create your login page at `pages/index.vue`:
 
 ```jsx pages/index.vue
 <script setup lang="ts">
@@ -175,11 +176,11 @@ definePageMeta({
 </template>
 ```
 
-Alternatively you can redirect the user to a page of your choice by adding the `<hanko-events>` component to your page and listening for the `onSessionCreated` event.
+## Alternative: Custom redirect handling
 
-<di class="hidden">
-Alternative login page using hanko-events component for custom redirect logic
-</di>
+If you need more control over post-login behavior, you can use the `<hanko-events>` component to listen for authentication events and implement custom logic.
+
+Here's an alternative approach with custom redirect handling:
 
 ```jsx pages/index.vue
 <script setup lang="ts">
@@ -194,11 +195,9 @@ function afterLogin() {
 ```
 
 ## Define event callbacks 
-To subscribe to [events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events) emitted by Hanko, you can add the `<hanko-events>` component to your page and listen for the events you are interested in.
+Hanko emits various [authentication events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events) that you can listen to for custom application logic. These events include session creation, updates, and destruction.
 
-<di class="hidden">
-Example of subscribing to Hanko session events for custom actions
-</di>
+Add the `<hanko-events>` component to subscribe to authentication events:
 
 ```jsx pages/index.vue
 <script setup lang="ts">
@@ -219,13 +218,9 @@ By now, your sign-up and sign-in features should be working. You should see an i
 
 ## Add `<hanko-profile>`
 
-The `<hanko-profile>` component provides an interface, where users can manage their email addresses and passkeys.
+The `<hanko-profile>` component provides a user-friendly interface for managing authentication credentials. Users can add/remove email addresses, register new passkeys, and manage their authentication methods.
 
-Lets try this out in the `dashboard.vue` page.
-
-<di class="hidden">
-Basic dashboard page with profile management component
-</di>
+Create a dashboard page at `pages/dashboard.vue`:
 
 ```jsx pages/dashboard.vue
 <template>
@@ -248,9 +243,9 @@ It should look like this 👇
 
 To log users out, use the `@nuxtjs/hanko` module's built-in composable `useHanko` and call the `logout` method.
 
-<di class="hidden">
-Dashboard page with logout functionality using useHanko composable and hanko-logged-in middleware protection
-</di>
+<div class="hidden">
+Secure dashboard page that combines profile management with logout functionality, protected by hanko-logged-in middleware and using the useHanko composable for session management
+</div>
 
 ```jsx pages/dashboard.vue
 <script setup lang="ts">
@@ -286,9 +281,9 @@ The styles can be scoped to the login/profile page to ensure they dont affect ot
 ## Securing routes with Middleware
 
 Use the `hanko-logged-in` middleware to secure any route and force unauthenticated users to redirect back to the `login` redirect we set in the `nuxt.config.ts`.
-<di class="hidden">
-Page meta configuration for protecting routes with authentication middleware
-</di>
+<div class="hidden">
+Page metadata configuration that applies the hanko-logged-in middleware to protect routes from unauthorized access
+</div>
 
 ```jsx
 <script setup lang="ts">
@@ -301,9 +296,9 @@ Page meta configuration for protecting routes with authentication middleware
 A global server middleware is added by `@nuxtjs/hanko`. After decoding and validating the session token for the request, a new `hanko` property is added to the event context.
 You can check the value of `event.context.hanko` to see if the request was authenticated. The user's id is accessible though the `sub` claim/property.
 
-<di class="hidden">
-Server-side API endpoint with Hanko authentication check using event context
-</di>
+<div class="hidden">
+Server-side API endpoint example that demonstrates how to access authenticated user information through the event context, with proper error handling for unauthorized requests
+</div>
 
 ```jsx /server/api/endpoint.ts
 export default defineEventHandler(async (event) => {

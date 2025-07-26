@@ -4,9 +4,37 @@ title: Integrate Hanko with Solid
 description: Learn how to quickly add authentication and user profile in your Solid app using Hanko.
 ---
 
+<div style={{display: 'none'}}>
+# Hanko Solid Frontend Integration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that enables secure user authentication using passkeys, email verification, and modern web authentication standards. It provides pre-built UI components and a complete authentication infrastructure.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Hanko authentication into a SolidJS application. You'll implement user authentication, profile management, logout functionality, and backend request authentication with Hanko Elements web components.
+
+**Key Technologies**:
+- SolidJS with TypeScript
+- SolidJS Router for navigation
+- Hanko Elements web components
+- Hanko SDK for authentication logic
+
+**Prerequisites**:
+- Node.js installed on your system
+- Basic knowledge of SolidJS and TypeScript
+- A SolidJS project already initialized
+- A Hanko Cloud account (sign up at cloud.hanko.io)
+
+**Integration Tasks You'll Complete**:
+1. Install and configure Hanko Elements
+2. Create a Hanko project in the cloud console
+3. Implement authentication components (HankoAuth, HankoProfile)
+4. Add logout functionality
+5. Authenticate backend requests
+6. Customize component styling
+</div>
+
 ## Install `@teamhanko/hanko-elements`
 
-Once you've initialized your Solid app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+Install `hanko-elements` to access the pre-built `hanko-auth` and `hanko-profile` components.
 
 <CodeGroup>
 ```bash npm
@@ -42,7 +70,7 @@ Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place
 
 ## Add `<hanko-auth>` component
 
-The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the `register` function from `@teamhanko/hanko-elements` into your Solid component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, include it in your JSX.
+Add the `<hanko-auth>` web component to create a login interface. Import the `register` function from `@teamhanko/hanko-elements` and call it with your Hanko API URL to register the component with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry).
 
 ```tsx components/HankoAuth.tsx
 import { onMount, createSignal, onCleanup } from "solid-js";
@@ -137,7 +165,7 @@ style={{ borderRadius: '0.5rem' }}
 
 ## Implement logout functionality
 
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we make a logout button component that you can use anywhere.
+Create a logout button component using `@teamhanko/hanko-elements` to manage user logouts:
 
 ```tsx components/LogoutButton.tsx
 import { useNavigate } from "@solidjs/router";

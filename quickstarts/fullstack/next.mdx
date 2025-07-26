@@ -5,14 +5,28 @@ description: Learn how to quickly add authentication and user profile in your Ne
 ---
 
 <div class="hidden">
-This guide shows how to integrate Hanko into a Next.js application. You'll import and setup the authentication components, implement session management, secure routes with middleware, and handle user data.
+# Hanko Next.js Integration Guide
 
-Key tasks: Install Hanko Elements, import and setup HankoAuth and HankoProfile components, add logout functionality, implement route protection, and retrieve user data.
+**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user authentication using passkeys, biometrics, and email passcodes. It provides both hosted cloud services and self-hosted options for complete control over your authentication infrastructure.
 
-Note: Elements like <Tabs> are from Mintlify documentation. Use only code snippets inside markdown formatting '```'
+**What This Guide Covers**: This comprehensive guide demonstrates integrating Hanko authentication into a Next.js application using the `@teamhanko/hanko-elements` package. You'll learn to set up authentication components, implement session management, secure routes with middleware, and handle user data across both App Router and Pages Router architectures.
+
+**Key Technologies**: Next.js (App Router & Pages Router), TypeScript, Hanko Elements, Hanko Cloud Console, Session Management, Middleware Protection
+
+**Prerequisites**: Node.js, basic Next.js knowledge, Hanko Cloud account (free at cloud.hanko.io)
+
+**Integration Tasks You'll Complete**:
+- Install and configure Hanko Elements package
+- Set up HankoAuth component with session event handling
+- Create HankoProfile component for user credential management  
+- Implement logout functionality with proper session cleanup
+- Secure routes using Next.js middleware with Hanko session validation
+- Retrieve user data both client-side and server-side
+- Handle authentication redirects and error states
+- Customize component appearance and behavior
 </div>
 
-## Create a Next.js application
+## Create a Next.js applicaPtion
 Run the following command to [create a new Next.js application](https://nextjs.org/docs/app/getting-started/installation):
 
 <Note>
@@ -20,9 +34,7 @@ Run the following command to [create a new Next.js application](https://nextjs.o
   Ensure you add the correct code and follow the correct directory structure for Router that you picked.
 </Note>
 
-<div class="hidden">
-Creates a new Next.js application with latest version and default settings
-</div>
+This creates a new Next.js application with the latest version and default settings.
 
 <CodeGroup> 
 ```bash terminal
@@ -35,9 +47,7 @@ npx create-next-app@latest project-name
 ## Install `@teamhanko/hanko-elements`
 Once you've initialized your NextJS app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
 
-<div class="hidden">
-Installs the Hanko Elements package which provides pre-built authentication components
-</div>
+This installs the Hanko Elements package, providing pre-built authentication components.
 
 <CodeGroup> 
 ```bash npm
@@ -74,9 +84,7 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 Retrieve your API URL from the [Hanko console](https://cloud.hanko.io/), and paste this in a `.env` file.
 
-<div class="hidden">
-Environment variable for Hanko API URL - must be prefixed with NEXT_PUBLIC_ to be accessible in browser
-</div>
+Set up your environment variable for the Hanko API URL. The NEXT_PUBLIC_ prefix makes it accessible in the browser.
 
 ```sh .env.local
 NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
@@ -95,9 +103,7 @@ Create a folder called `components` and create two files, `HankoAuth.tsx` and `H
 To get these elements to work with typescript, currently we must add the types to the project.
 To do do this, create a file called `custom.d.ts` and place it in your apps root / src folder.
 
-<div class="hidden">
-TypeScript declarations for Hanko web components to enable type checking and IntelliSense
-</div>
+Add TypeScript declarations for Hanko web components to enable type checking and IntelliSense support.
 
 ```jsx src/custom.d.ts
 import { HankoAuthElementProps, HankoProfileElementProps, HankoEventsElementProps } from "@teamhanko/hanko-elements";
@@ -126,9 +132,7 @@ Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using
 
 <Tabs>
 <Tab title="App directory">
-<div class="hidden">
-App Router version: Authentication component with session event handling and redirect logic after successful login
-</div>
+App Router version: This authentication component handles session events and redirects users after successful login.
 
 ```jsx components/HankoAuth.tsx
 "use client"; //Only for NextJS App Router
@@ -172,9 +176,7 @@ export default function HankoAuth() {
 ```
 </Tab>
 <Tab title="Pages directory">
-<div class="hidden">
-Pages Router version: Authentication component using next/router instead of next/navigation
-</div>
+Pages Router version: This authentication component uses next/router instead of next/navigation.
 
 ```jsx components/HankoAuth.tsx
 import { useEffect, useCallback, useState } from "react";
@@ -221,9 +223,7 @@ Now simply import the component you just created.
 
 <Tabs>
 <Tab title="App directory">
-<div class="hidden">
-App Router login page that renders the HankoAuth component
-</div>
+App Router login page that renders the HankoAuth component.
 
 ```jsx app/login/page.tsx
 import HankoAuth from "@/components/HankoAuth";
@@ -237,9 +237,7 @@ export default function LoginPage() {
 </Tab>
 
 <Tab title="Pages directory">
-<div class="hidden">
-Pages Router login page that renders the HankoAuth component
-</div>
+Pages Router login page that renders the HankoAuth component.
 
 ```jsx pages/login.tsx
 import HankoAuth from "@/components/HankoAuth";
@@ -268,9 +266,7 @@ manage their `Email Addresses` and credentials.
 
 <Tabs>
 <Tab title="App directory">
-<div class="hidden">
-App Router profile component for managing user emails and credentials
-</div>
+App Router profile component for managing user emails and credentials.
 
 ```jsx components/HankoProfile.jsx
 "use client" //Only for NextJS App Router
@@ -293,9 +289,7 @@ return <hanko-profile />;
 ```
 </Tab>
 <Tab title="Pages directory">
-<div class="hidden">
-Pages Router profile component for managing user emails and credentials
-</div>
+Pages Router profile component for managing user emails and credentials.
 
 ```jsx components/HankoProfile.jsx
 import { useEffect } from "react";
@@ -368,9 +362,7 @@ Create `LogoutButton.tsx` and insert the code below.
 
 <Tabs>
 <Tab title="App directory">
-<div class="hidden">
-App Router logout button component with session cleanup and navigation
-</div>
+App Router logout button component that handles session cleanup and navigation.
 
 ```jsx components/LogoutButton.tsx
 "use client"; //Only for NextJS App Router
@@ -404,9 +396,7 @@ export default function LogoutBtn() {
 </Tab>
 
 <Tab title="Pages directory">
-<div class="hidden">
-Pages Router logout button component using router.reload() instead of refresh()
-</div>
+Pages Router logout button component using router.reload() instead of refresh().
 
 ```jsx components/LogoutButton.tsx
 import { useState, useEffect } from "react";
@@ -455,9 +445,7 @@ please refer to [NextJS Middleware](https://nextjs.org/docs/app/building-your-ap
   Middleware tends to not always work after creating it, if this is the case try restarting your next app.
 </Note>
 
-<div class="hidden">
-Next.js middleware for protecting routes by validating Hanko session tokens
-</div>
+This Next.js middleware protects routes by validating Hanko session tokens.
 
 ```jsx middleware.ts
 import { NextResponse, NextRequest } from "next/server";
@@ -512,9 +500,7 @@ Lets update the `dashboard` page to log some of the information from the user an
 
 <Tabs>
 <Tab title="App directory">
-<div class="hidden">
-App Router dashboard with client-side user data retrieval using Hanko SDK
-</div>
+App Router dashboard with client-side user data retrieval using the Hanko SDK.
 
 ```jsx app/dashboard/page.tsx
 "use client" //Only for NextJS App Router
@@ -551,9 +537,7 @@ export default function Dashboard() {
 </Tab>
 
 <Tab title="Pages directory">
-<div class="hidden">
-Pages Router dashboard with client-side user data retrieval
-</div>
+Pages Router dashboard with client-side user data retrieval.
 
 ```jsx pages/dashboard.tsx
 import HankoProfile from "@/components/HankoProfile";
@@ -593,9 +577,7 @@ export default function Dashboard() {
 
 On the server side, you can extract the `userID` from the session token, which you can use to fetch the user's data from the [Hanko Public API](/api-reference/public/user-management/get-a-user-by-id).
 
-<div class="hidden">
-Server-side function to validate session and fetch user data using Hanko API
-</div>
+This server-side function validates sessions and fetches user data using the Hanko API.
 
 ```ts getUserData.ts
 import { cookies } from "next/headers";

@@ -4,23 +4,33 @@ title: Integrate Hanko with SvelteKit
 description: Learn how to quickly add authentication and user profile in your SvelteKit app using Hanko.
 ---
 
-<di class="hidden">
-Overview: This guide shows how to integrate Hanko authentication into a SvelteKit application.
+<div class="hidden">
+# Hanko SvelteKit Integration Guide
 
-- You'll create Svelte components for authentication, implement server-side session validation with hooks, and handle user data retrieval.
+**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user authentication using passkeys, biometrics, and email passcodes. It provides both hosted cloud services and self-hosted options for complete control over your authentication infrastructure.
 
-Key tasks: Install Hanko Elements, create HankoAuth and HankoProfile Svelte components, implement logout functionality, secure routes with server hooks, and retrieve user data using the Hanko SDK.
+**What This Guide Covers**: This comprehensive guide demonstrates integrating Hanko authentication into a SvelteKit application using the `@teamhanko/hanko-elements` package. You'll learn to create reactive Svelte components, implement server-side session validation with hooks, secure routes, and handle user data across both client and server contexts.
 
-Note: Elements like <Tabs> are from Mintlify documentation. Use only code snippets inside markdown formatting '```'
-</di>
+**Key Technologies**: SvelteKit, Svelte, TypeScript, Hanko Elements, Server Hooks, Load Functions, Reactive Components
+
+**Prerequisites**: Node.js, basic SvelteKit knowledge, Hanko Cloud account (free at cloud.hanko.io)
+
+**Integration Tasks You'll Complete**:
+- Install and configure Hanko Elements package for Svelte
+- Create reactive HankoAuth and HankoProfile Svelte components
+- Implement logout functionality with proper session cleanup
+- Set up server-side authentication using SvelteKit hooks
+- Protect routes using load functions and redirects
+- Handle user data retrieval with the Hanko SDK
+- Manage authentication state with Svelte stores
+- Configure proper error handling and navigation
+- Integrate with SvelteKit's server-side rendering
+</div>
 
 ## Create a SvelteKit application
+Create a new SvelteKit application using the official SvelteKit starter.
+
 Run the following command to [create a new SvelteKit application](https://svelte.dev/docs/kit/creating-a-project):
-
-
-<di class="hidden">
-Creates a new SvelteKit application using the official SvelteKit create command
-</di>
 
 <CodeGroup> 
 ```bash terminal
@@ -30,11 +40,9 @@ npx sv create project-name
 
 ## Install `@teamhanko/hanko-elements`
 
-Once you've initialized your SvelteKit app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+The Hanko Elements package provides pre-built authentication components (`hanko-auth`, `hanko-profile`) that work with Svelte's reactive system.
 
-<di class="hidden">
-Installs Hanko Elements package for authentication components in SvelteKit
-</di>
+Install the package:
 
 <CodeGroup> 
 ```bash npm
@@ -59,20 +67,19 @@ yarn add @teamhanko/hanko-elements
 </CodeGroup>
 
 ## Setup your Hanko project
+Create a Hanko project in the cloud console to get your API URL.
+
 Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
 
 <Note>
-  During creation make sure to input the URL you will be developing on as the `APP URL`.\
-  (Most likely http://localhost:5173/) 
+  Set the `APP URL` to your development URL (typically http://localhost:5173/ for SvelteKit).
 </Note>
 
 ## Add your Hanko API URL
 
-Retrieve your API URL from the [Hanko console](https://cloud.hanko.io/), and paste this in a `.env` file.
+Add your Hanko API URL to your environment file. The `PUBLIC_` prefix makes it accessible in both server and client-side code in SvelteKit.
 
-<di class="hidden">
-Environment variable for Hanko API URL - PUBLIC_ prefix makes it accessible in browser
-</di>
+Retrieve your API URL from the [Hanko console](https://cloud.hanko.io/) and add it to your `.env` file:
 
 ```sh .env
 PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
@@ -84,8 +91,7 @@ PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 
 
 ## Create Hanko components
-Create a folder called `components` and create two files in it, `HankoAuth.svelte` and `HankoProfile.svelte`.
-
+Create a `components` folder with two files: `HankoAuth.svelte` and `HankoProfile.svelte`.
 
 ### Hanko Auth
 
@@ -95,9 +101,9 @@ Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using
 
 
 [For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
-<di class="hidden">
-Svelte authentication component with session event handling and navigation
-</di>
+<div class="hidden">
+Svelte authentication component that uses reactive stores, handles session events, and implements navigation to dashboard after successful login
+</div>
 
 ```jsx components/HankoAuth.svelte
 <script>
@@ -124,9 +130,9 @@ Svelte authentication component with session event handling and navigation
 
 Now simply import the component you just created into any page.
 
-<di class="hidden">
-Main page route that renders the authentication component
-</di>
+<div class="hidden">
+Main page route that imports and renders the HankoAuth component for user login and registration
+</div>
 
 ```jsx routes/+page.svelte
 <script>
@@ -155,9 +161,9 @@ manage their `Email Addresses` and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
-<di class="hidden">
-Svelte profile component for managing user credentials and email addresses
-</di>
+<div class="hidden">
+Svelte profile component that allows users to manage their email addresses, passkeys, and authentication credentials using Hanko's built-in interface
+</div>
 
 ```jsx components/HankoProfile.svelte
 <script>
@@ -180,9 +186,9 @@ Svelte profile component for managing user credentials and email addresses
 
 Now simply import the component you just created into any page.
 
-<di class="hidden">
-Dashboard page route that displays the user profile management interface
-</di>
+<div class="hidden">
+Protected dashboard page route that imports and displays the HankoProfile component for user account management
+</div>
 
 ```jsx routes/dashboard/+page.svelte
 <script>
@@ -214,9 +220,9 @@ You can use `@teamhanko/hanko-elements` to easily logout users. Here we will mak
 
 Create `LogoutButton.tsx` and insert the code below.
 
-<di class="hidden">
-Svelte logout button component with session cleanup and navigation
-</di>
+<div class="hidden">
+Svelte logout button component that terminates the user session and navigates back to the home page
+</div>
 
 ```jsx components/LogoutButton.svelte
 <script>
@@ -248,7 +254,7 @@ To verify the session token in your SvelteKit application, we're using the [sess
 The middleware hook extracts and verifies the session token, and redirect unauthorized users back to the home or login page.
 
 For more info on middlewares / hooks in SvelteKit and where to put the `hooks.server.ts` file,\
-please refer to [SvelteKid Hooks](https://svelte.dev/docs/kit/hooks).
+please refer to [SvelteKit Hooks](https://svelte.dev/docs/kit/hooks).
 
 What happens here is that during each request the handle function will be called.
 It then verifies the session token and redirects the user back if he is on a private route and the session token is not valid.
@@ -257,9 +263,9 @@ It then verifies the session token and redirects the user back if he is on a pri
   Hooks like these tends to not always work after creating it, if this is the case try restarting your SvelteKit app.
 </Note>
 
-<di class="hidden">
-SvelteKit server hooks for route protection using session validation middleware
-</di>
+<div class="hidden">
+SvelteKit server hooks that implement route protection by validating session tokens and redirecting unauthorized users away from protected routes
+</div>
 
 ```tsx hooks.server.ts
 import { type RequestEvent, redirect, type Handle } from "@sveltejs/kit";
@@ -317,9 +323,9 @@ Let's use the Hanko SDK to get user data.
 
 Let's update the `dashboard` page to display some of the information from the user.
 
-<di class="hidden">
-Dashboard page with user data retrieval and display using Hanko SDK
-</di>
+<div class="hidden">
+Enhanced dashboard page that retrieves and displays user data (email and ID) using the Hanko SDK alongside the profile management component
+</div>
 
 ```jsx routes/dashboard/+page.svelte
 <script>

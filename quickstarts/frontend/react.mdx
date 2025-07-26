@@ -4,10 +4,40 @@ title: Integrate Hanko with React
 description: Learn how to quickly add authentication and user profile in your React app using Hanko.
 ---
 
+<div style={{display: 'none'}}>
+# Hanko React Frontend Integration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that enables secure user authentication using passkeys, email verification, and modern web authentication standards. It provides pre-built UI components and a complete authentication infrastructure.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Hanko authentication into a React application using Vite. You'll implement user authentication, profile management, route protection, and logout functionality with Hanko Elements web components.
+
+**Key Technologies**:
+- React with TypeScript
+- Vite build tool
+- React Router DOM for routing
+- Hanko Elements web components
+- Hanko SDK for authentication logic
+
+**Prerequisites**:
+- Node.js installed on your system
+- Basic knowledge of React and TypeScript
+- A Hanko Cloud account (sign up at cloud.hanko.io)
+
+**Integration Tasks You'll Complete**:
+1. Set up a new React application with Vite
+2. Install and configure Hanko Elements
+3. Create a Hanko project in the cloud console
+4. Implement authentication components (HankoAuth, HankoProfile)
+5. Set up routing with React Router
+6. Add logout functionality
+7. Implement protected routes with session validation
+8. Retrieve and display user data
+9. Customize component styling
+</div>
 
 ## Create a React application
 
-To setup our React Frontend we will use [vite](https://vite.dev/) as a build tool.
+Set up your React frontend using [Vite](https://vite.dev/) as the build tool.
 
 Run the following command to [create a new Vite React application](https://vite.dev/guide/):
 
@@ -34,9 +64,9 @@ yarn create vite project-name --template react-ts
 
 ## Install `@teamhanko/hanko-elements`
 
-Once you've initialized your React app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+Install `hanko-elements` to access the pre-built `hanko-auth` and `hanko-profile` components.
 
-We will also install the `react-router-dom`, this will allow us to navigate trough pages / routes.
+Also install `react-router-dom` for navigation between pages and routes.
 <CodeGroup>
 ```bash npm
 cd project-name

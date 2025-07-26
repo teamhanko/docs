@@ -4,9 +4,40 @@ title: Integrate Hanko with Svelte
 description: Learn how to quickly add authentication and user profile in your Svelte app using Hanko.
 ---
 
+<div style={{display: 'none'}}>
+# Hanko Svelte Frontend Integration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that enables secure user authentication using passkeys, email verification, and modern web authentication standards. It provides pre-built UI components and a complete authentication infrastructure.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Hanko authentication into a Svelte application using Vite. You'll implement user authentication, profile management, route protection, and logout functionality with Hanko Elements web components.
+
+**Key Technologies**:
+- Svelte with TypeScript
+- Vite build tool
+- Svelte Routing for navigation
+- Hanko Elements web components
+- Hanko SDK for authentication logic
+
+**Prerequisites**:
+- Node.js installed on your system
+- Basic knowledge of Svelte and TypeScript
+- A Hanko Cloud account (sign up at cloud.hanko.io)
+
+**Integration Tasks You'll Complete**:
+1. Set up a new Svelte application with Vite
+2. Install and configure Hanko Elements
+3. Create a Hanko project in the cloud console
+4. Implement authentication components (HankoAuth, HankoProfile)
+5. Set up routing with svelte-routing
+6. Add logout functionality
+7. Implement protected routes with session validation
+8. Retrieve and display user data
+9. Customize component styling
+</div>
+
 ## Create a Svelte application
 
-To setup our Svelte Frontend we will use [vite](https://vite.dev/) as a build tool.
+Set up your Svelte frontend using [Vite](https://vite.dev/) as the build tool.
 
 Run the following command to [create a new Vite Svelte application](https://vite.dev/guide/):
 
@@ -32,9 +63,9 @@ yarn create vite project-name --template svelte-ts
 
 ## Install `@teamhanko/hanko-elements`
 
-Once you've initialized your svelte app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+Install `hanko-elements` to access the pre-built `hanko-auth` and `hanko-profile` components.
 
-We will also install the `svelte-routing` package to handle routing and navigation.
+Also install the `svelte-routing` package to handle routing and navigation.
 <CodeGroup>
 ```bash npm
 cd project-name
@@ -88,7 +119,7 @@ VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 Create a folder called `components` and create two files in it, `HankoAuth.svelte` and `HankoProfile.svelte`.
 
 ### Hanko Auth
-Now let's set up the `HankoAuth.svelte` file to create a functioning login page.
+Set up the `HankoAuth.svelte` file to create a functioning login component.
 
 [For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
@@ -129,8 +160,7 @@ Just like this.
 
 ### Hanko profile
 
-After setting up the HankoAuth let's set up the `HankoProfile.svelte` file to create a interface where users can.\
-manage their `Email Addresses` and credentials.
+Set up the `HankoProfile.svelte` file to create an interface where users can manage their email addresses and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 
