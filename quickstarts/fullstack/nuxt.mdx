@@ -4,28 +4,7 @@ title: Integrate Hanko with Nuxt
 description: Learn how to quickly add authentication and user profile in your Nuxt app using Hanko.
 ---
 
-<div class="hidden">
-# Hanko Nuxt.js Integration Guide
-
-**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user authentication using passkeys, biometrics, and email passcodes. It provides both hosted cloud services and self-hosted options for complete control over your authentication infrastructure.
-
-**What This Guide Covers**: This comprehensive guide demonstrates integrating Hanko authentication into a Nuxt.js application using the `@nuxtjs/hanko` module. You'll learn to set up authentication components, implement session management, secure routes with server middleware, and handle user data across both client and server-side contexts.
-
-**Key Technologies**: Nuxt.js, Vue.js, TypeScript, @nuxtjs/hanko module, Hanko Cloud Console, Server Middleware, Vue Composables
-
-**Prerequisites**: Node.js, basic Nuxt.js knowledge, Hanko Cloud account (free at cloud.hanko.io)
-
-**Integration Tasks You'll Complete**:
-- Install and configure the @nuxtjs/hanko module with auto-registered components
-- Set up authentication pages with hanko-auth and hanko-events components
-- Create user profile management with hanko-profile component
-- Implement logout functionality using the useHanko composable
-- Secure routes using built-in hanko-logged-in and hanko-logged-out middleware
-- Handle server-side authentication validation with event context
-- Access user data through the Hanko SDK and server middleware
-- Customize component appearance and behavior
-- Configure authentication redirects and error handling
-</div>
+<Snippet file="fullstack-integration-about.mdx" />
 
 ## Create a Nuxt application
 First, create a new Nuxt.js application using the official Nuxt starter template. This command sets up a complete Nuxt project with TypeScript support and all necessary dependencies.

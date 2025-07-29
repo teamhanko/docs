@@ -4,26 +4,7 @@ title: Integrate Hanko with Go backend
 description: Learn how to validate Hanko session tokens in your Go backend to secure API endpoints and authenticate users.
 ---
 
-<div class="hidden">
-# Hanko Go Backend Integration Guide
-
-**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user authentication using passkeys, biometrics, and email passcodes. It provides both hosted cloud services and self-hosted options for complete control over your authentication infrastructure.
-
-**What This Guide Covers**: This guide demonstrates how to validate Hanko session tokens in a Go backend application. You'll learn to implement session validation, secure API endpoints, and authenticate requests using Hanko's session management APIs.
-
-**Key Technologies**: Go, HTTP middleware, Hanko session validation API, JSON handling, error handling
-
-**Prerequisites**: Go knowledge, Hanko Cloud account (free at cloud.hanko.io), frontend application with Hanko authentication
-
-**Integration Tasks You'll Complete**:
-- Set up Hanko API URL configuration
-- Implement session token validation using Hanko's validation API
-- Create middleware for protecting API endpoints
-- Handle session validation responses and errors
-- Extract session tokens from HTTP cookies
-- Build reusable authentication utilities
-- Implement proper error handling and logging
-</div>
+<Snippet file="backend-integration-about.mdx" />
 
 After successful authentication, Hanko generates a session token stored as a cookie. This guide shows how to validate these session tokens in your Go backend to authenticate API requests.
 

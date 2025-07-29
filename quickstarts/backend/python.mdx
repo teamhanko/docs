@@ -3,30 +3,7 @@ sidebarTitle: "Python"
 title: Integrate Hanko with Python backend
 ---
 
-<div style={{ display: 'none' }}>
-# Hanko Python Backend Integration Guide
-
-**About Hanko**: Hanko is a passwordless authentication solution that provides secure user authentication through passkeys, email magic links, and other passwordless methods. It eliminates the need for traditional passwords while maintaining high security standards.
-
-**What This Guide Covers**: This guide demonstrates how to validate Hanko session tokens in Python backend applications to authenticate user requests and protect API endpoints.
-
-**Key Technologies**: 
-- Python
-- Requests library for HTTP calls
-- Hanko session validation API
-- RESTful API integration
-
-**Prerequisites**: 
-- Basic knowledge of Python
-- A Hanko account and API URL
-- Python environment with requests library installed
-
-**Integration Tasks You'll Complete**:
-- Set up Hanko API URL configuration
-- Implement session token validation function
-- Handle authentication errors and timeouts
-- Integrate token validation into your backend routes
-</div>
+<Snippet file="backend-integration-about.mdx" />
 
 After successful authentication, Hanko generates a session token that is stored as a cookie. Use the session token to authenticate requests to your backend. This guide shows how to implement session token validation in Python to ensure that only authenticated users can access your application's protected resources.
 

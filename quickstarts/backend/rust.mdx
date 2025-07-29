@@ -3,32 +3,7 @@ sidebarTitle: "Rust"
 title: Integrate Hanko with Rust backend
 ---
 
-<div style={{ display: 'none' }}>
-# Hanko Rust Backend Integration Guide
-
-**About Hanko**: Hanko is a passwordless authentication solution that provides secure user authentication through passkeys, email magic links, and other passwordless methods. It eliminates the need for traditional passwords while maintaining high security standards.
-
-**What This Guide Covers**: This guide demonstrates how to validate Hanko session tokens in Rust backend applications to authenticate user requests and protect API endpoints using async/await patterns.
-
-**Key Technologies**: 
-- Rust
-- Reqwest HTTP client
-- Serde for JSON serialization/deserialization
-- Async/await for asynchronous operations
-- Hanko session validation API
-
-**Prerequisites**: 
-- Basic knowledge of Rust
-- A Hanko account and API URL
-- Rust environment with reqwest and serde dependencies
-
-**Integration Tasks You'll Complete**:
-- Set up Hanko API URL configuration
-- Define data structures for API communication
-- Implement async session token validation function
-- Handle HTTP errors and validation responses
-- Integrate token validation into your Rust web server
-</div>
+<Snippet file="backend-integration-about.mdx" />
 
 After successful authentication, Hanko generates a session token that is stored as a cookie. Use the session token to authenticate requests to your backend. This guide shows how to implement session token validation in Rust to ensure that only authenticated users can access your application's protected resources.
 

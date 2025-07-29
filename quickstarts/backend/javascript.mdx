@@ -4,26 +4,7 @@ title: Integrate Hanko with a JavaScript backend
 description: Learn how to validate Hanko session tokens in your JavaScript/Node.js backend to authenticate API requests.
 ---
 
-<div class="hidden">
-# Hanko JavaScript Backend Integration Guide
-
-**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user authentication using passkeys, biometrics, and email passcodes. It provides both hosted cloud services and self-hosted options for complete control over your authentication infrastructure.
-
-**What This Guide Covers**: This guide demonstrates how to validate Hanko session tokens in a JavaScript/Node.js backend application. You'll learn to implement session validation, create middleware for protecting endpoints, and authenticate requests using Hanko's session management APIs.
-
-**Key Technologies**: JavaScript/TypeScript, Node.js, Express middleware, Fetch API, Hanko session validation API
-
-**Prerequisites**: JavaScript/Node.js knowledge, Hanko Cloud account (free at cloud.hanko.io), frontend application with Hanko authentication
-
-**Integration Tasks You'll Complete**:
-- Set up Hanko API URL configuration
-- Implement session token validation using TypeScript interfaces
-- Create reusable token validator class
-- Handle session validation responses and errors
-- Extract session tokens from HTTP cookies
-- Build middleware for protecting API routes
-- Implement proper error handling and validation
-</div>
+<Snippet file="backend-integration-about.mdx" />
 
 After successful authentication, Hanko generates a session token stored as a cookie. This guide shows how to validate these session tokens in your JavaScript backend to authenticate API requests.
 
