@@ -1,0 +1,262 @@
+# Node.js Quickstart
+
+This prompt helps you (and your AI) to implementing Hanko with Node.js.
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #<filename>.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+<CodeGroup>
+```markdown
+# Add Hanko to Node.js Backend
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) session validation into a Node.js/JavaScript backend application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for server-side session validation.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Validate** session tokens using Hanko's `/sessions/validate` POST endpoint
+- **Extract** session tokens from HTTP cookies (typically named "hanko")
+- **Implement** proper TypeScript interfaces for validation responses
+- **Create** reusable token validator classes for session validation
+- **Use** POST method with JSON body for session validation requests
+- **Handle** validation errors gracefully with proper fallbacks
+- **Implement** middleware patterns for protecting API routes
+- **Configure** Hanko API URL from environment variables
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use POST method** for `/sessions/validate` endpoint (never GET)
+2. **Send JSON body** with `session_token` field for validation requests
+3. **Check response.ok** before parsing JSON from validation response
+4. **Implement proper error handling** with try-catch blocks
+5. **Use TypeScript interfaces** for validation response structure
+6. **Extract tokens from cookies** using appropriate cookie parsing methods
+7. **Return boolean values** from validation functions for clear results
+8. **Configure API URL** from environment variables or secure config
+9. **Handle empty/null tokens** by returning false immediately
+10. **Log validation errors** appropriately for debugging
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use GET method for session validation (must be POST)
+2. **Do not** send tokens in URL parameters or query strings
+3. **Do not** skip error handling in validation functions
+4. **Do not** trust validation without checking response.ok first
+5. **Do not** hardcode API URLs in production code
+6. **Do not** expose validation errors to client responses
+7. **Do not** skip token existence checks before validation
+8. **Do not** use synchronous methods for HTTP requests
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **TypeScript Interfaces**
+```typescript
+interface TokenValidator {
+  validateToken(token: string): Promise<boolean>;
+}
+
+interface ValidationResponse {
+  is_valid: boolean;
+}
+
+interface HankoSessionData {
+  user_id: string;
+  // Add other session fields as needed
+}
+```
+
+### **Token Validator Class**
+```typescript
+class HankoTokenValidator implements TokenValidator {
+  constructor(private readonly hankoApiUrl: string) {}
+
+  async validateToken(token: string): Promise<boolean> {
+    if (!token || token.length === 0) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${this.hankoApiUrl}/sessions/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ session_token: token }),
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const validationData = await response.json() as ValidationResponse;
+      return validationData.is_valid;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      return false;
+    }
+  }
+}
+```
+
+### **Express Middleware Example**
+```typescript
+import { Request, Response, NextFunction } from 'express';
+
+interface AuthenticatedRequest extends Request {
+  userId?: string;
+}
+
+function createAuthMiddleware(validator: TokenValidator) {
+  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      // Extract token from cookies
+      const token = req.cookies?.hanko;
+      
+      if (!token) {
+        return res.status(401).json({ error: 'No session token provided' });
+      }
+
+      const isValid = await validator.validateToken(token);
+      
+      if (!isValid) {
+        return res.status(401).json({ error: 'Invalid session token' });
+      }
+
+      // Optionally extract user data from token
+      // req.userId = extractUserIdFromToken(token);
+      
+      next();
+    } catch (error) {
+      console.error('Authentication middleware error:', error);
+      res.status(500).json({ error: 'Internal authentication error' });
+    }
+  };
+}
+
+// Usage
+const validator = new HankoTokenValidator(process.env.HANKO_API_URL);
+const authMiddleware = createAuthMiddleware(validator);
+
+app.get('/protected', authMiddleware, (req, res) => {
+  res.json({ message: 'This is a protected route' });
+});
+```
+
+### **Next.js API Route Example**
+```typescript
+import { NextApiRequest, NextApiResponse } from 'next';
+
+const validator = new HankoTokenValidator(process.env.HANKO_API_URL);
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const token = req.cookies.hanko;
+    
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const isValid = await validator.validateToken(token);
+    
+    if (!isValid) {
+      return res.status(401).json({ error: 'Invalid session' });
+    }
+
+    // Process authenticated request
+    res.json({ message: 'Authenticated successfully' });
+  } catch (error) {
+    console.error('API route error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+```
+
+### **Simple Validation Function**
+```typescript
+async function validateHankoSession(token: string, hankoApiUrl: string): Promise<boolean> {
+  if (!token) return false;
+
+  try {
+    const response = await fetch(`${hankoApiUrl}/sessions/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_token: token })
+    });
+
+    if (!response.ok) return false;
+
+    const { is_valid } = await response.json();
+    return is_valid;
+  } catch {
+    return false;
+  }
+}
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```typescript
+// ❌ DO NOT use GET method for validation
+const response = await fetch(`${hankoApiUrl}/sessions/validate?token=${token}`);
+
+// ❌ DO NOT skip error handling
+const validationData = await response.json(); // Missing try-catch
+
+// ❌ DO NOT forget to check response.ok
+const validationData = await response.json();
+return validationData.is_valid; // Could fail if response not ok
+
+// ❌ DO NOT send tokens in URL
+const response = await fetch(`${hankoApiUrl}/sessions/validate/${token}`);
+
+// ❌ DO NOT skip token existence check
+async function validateToken(token: string) {
+  // Should check if token exists first
+  const response = await fetch(...);
+}
+
+// ❌ DO NOT hardcode API URLs
+const response = await fetch('https://hardcoded-url.hanko.io/sessions/validate', ...);
+
+// ❌ DO NOT expose validation errors to clients
+catch (error) {
+  res.status(500).json({ error: error.message }); // Exposes internal errors
+}
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **HTTP Method**: Is POST method used for `/sessions/validate` endpoint?
+2. **Request Body**: Is session token sent in JSON body with `session_token` field?
+3. **Error Handling**: Are try-catch blocks used for all HTTP requests?
+4. **Response Check**: Is `response.ok` checked before parsing JSON?
+5. **Token Check**: Are empty/null tokens handled before making requests?
+6. **TypeScript**: Are proper interfaces defined for validation responses?
+7. **Environment**: Are API URLs configured from environment variables?
+8. **Security**: Are validation errors logged but not exposed to clients?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```
+</CodeGroup>

@@ -1,0 +1,286 @@
+# Mobile Quickstart
+
+This prompt helps you (and your AI) to implementing Hanko with mobile applications.
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #<filename>.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+<CodeGroup>
+```markdown
+# Add Hanko to Mobile Applications
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into native mobile applications (iOS/Android).  
+**Scope:** All AI-generated advice or code related to Hanko mobile integration must follow these guardrails for direct API integration.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Use direct API calls** to Hanko's REST endpoints (no native SDKs available yet)
+- **Check user existence** using the `/users` endpoint before creating
+- **Create users** via POST to `/users` endpoint when they don't exist
+- **Send passcodes** using `/passcode/login/initialize` endpoint
+- **Verify passcodes** using `/passcode/login/finalize` endpoint  
+- **Handle JWT tokens** returned in X-Auth-Token header or cookies
+- **Implement passkeys** using native iOS/Android WebAuthn APIs (iOS 16+, Android 9+)
+- **Configure APK Key Hash** for Android passkey support
+- **Validate tokens** on backend using session validation endpoints
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Check user existence first** using GET `/users?email={email}` before creating
+2. **Handle both 200 and 404 responses** for user existence checks
+3. **Store user ID** from responses for subsequent API calls
+4. **Use POST method** for user creation and passcode operations
+5. **Send JSON payloads** with proper Content-Type headers
+6. **Handle JWT tokens** from X-Auth-Token header or cookies
+7. **Use native WebAuthn APIs** for passkey implementation (iOS/Android)
+8. **Configure APK Key Hash** for Android passkey support
+9. **Validate tokens on backend** using session validation
+10. **Implement proper error handling** for all HTTP status codes
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** skip user existence check before creating users
+2. **Do not** use passwords in mobile integration (passwordless only)
+3. **Do not** assume native SDK availability (use direct API calls)
+4. **Do not** ignore HTTP status codes in API responses
+5. **Do not** hardcode API URLs in production code
+6. **Do not** skip error handling for network requests
+7. **Do not** attempt passkeys on unsupported OS versions
+8. **Do not** forget APK Key Hash configuration for Android
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **User Existence Check**
+```http
+GET /users?email=user@example.com
+Headers:
+  Content-Type: application/json
+
+Response 200 (User exists):
+{
+  "id": "user-uuid-here",
+  "email": "user@example.com"
+}
+
+Response 404 (User doesn't exist):
+{
+  "code": 404,
+  "message": "user not found"
+}
+```
+
+### **User Creation**
+```http
+POST /users
+Headers:
+  Content-Type: application/json
+Body:
+{
+  "email": "user@example.com"
+}
+
+Response 200 (Created):
+{
+  "id": "user-uuid-here",
+  "email": "user@example.com"
+}
+
+Response 409 (Already exists):
+{
+  "code": 409,
+  "message": "user already exists"
+}
+```
+
+### **Passcode Flow - Initialize**
+```http
+POST /passcode/login/initialize
+Headers:
+  Content-Type: application/json
+Body:
+{
+  "user_id": "user-uuid-here"
+}
+
+Response 200:
+{
+  "id": "passcode-id-here",
+  "ttl": 300
+}
+```
+
+### **Passcode Flow - Finalize**
+```http
+POST /passcode/login/finalize
+Headers:
+  Content-Type: application/json
+Body:
+{
+  "id": "passcode-id-here",
+  "code": "123456"
+}
+
+Response 200:
+Headers:
+  X-Auth-Token: jwt-token-here
+  Set-Cookie: hanko=jwt-token-here
+```
+
+### **iOS Swift - Passkey Registration**
+```swift
+import AuthenticationServices
+
+// Get WebAuthn options from Hanko
+func getWebAuthnOptions() async -> PublicKeyCredentialCreationOptions? {
+    guard let url = URL(string: "\(hankoApiUrl)/webauthn/registration/initialize") else { return nil }
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+    
+    do {
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return try JSONDecoder().decode(PublicKeyCredentialCreationOptions.self, from: data)
+    } catch {
+        print("Error getting WebAuthn options: \(error)")
+        return nil
+    }
+}
+
+// Create passkey using native API
+func createPasskey(options: PublicKeyCredentialCreationOptions) async -> Bool {
+    let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: options.rp.id)
+    
+    let request = provider.createCredentialRegistrationRequest(
+        challenge: Data(base64URLEncoded: options.challenge)!,
+        name: options.user.name,
+        userID: Data(base64URLEncoded: options.user.id)!
+    )
+    
+    let controller = ASAuthorizationController(authorizationRequests: [request])
+    // Handle delegate methods and finalize with Hanko API
+    
+    return true
+}
+```
+
+### **Android Kotlin - Passkey Registration**
+```kotlin
+import androidx.credentials.CredentialManager
+import androidx.credentials.CreatePublicKeyCredentialRequest
+
+class HankoAuth {
+    private val credentialManager = CredentialManager.create(context)
+    
+    suspend fun getWebAuthnOptions(): PublicKeyCredentialCreationOptions? {
+        val client = OkHttpClient()
+        
+        val request = Request.Builder()
+            .url("$hankoApiUrl/webauthn/registration/initialize")
+            .post(RequestBody.create("application/json".toMediaType(), "{}"))
+            .addHeader("Authorization", "Bearer $jwtToken")
+            .build()
+            
+        return try {
+            val response = client.newCall(request).execute()
+            val json = response.body?.string()
+            gson.fromJson(json, PublicKeyCredentialCreationOptions::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+    
+    suspend fun createPasskey(options: PublicKeyCredentialCreationOptions): Boolean {
+        val request = CreatePublicKeyCredentialRequest(
+            requestJson = gson.toJson(options)
+        )
+        
+        return try {
+            val result = credentialManager.createCredential(
+                context = context,
+                request = request
+            )
+            // Send result to Hanko finalize endpoint
+            finalizeWebAuthnRegistration(result)
+        } catch (e: Exception) {
+            false
+        }
+    }
+}
+```
+
+### **APK Key Hash Configuration (Android)**
+```bash
+# Generate APK Key Hash for Android passkey support
+echo 'android:apk-key-hash:'"$(keytool -exportcert -alias key-name -keystore path-to-keystore | openssl sha256 -binary | openssl base64 | tr -- '+/' '-_' | tr -d '=')"
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```javascript
+// ❌ DO NOT skip user existence check
+const createUser = await fetch('/users', {
+  method: 'POST',
+  body: JSON.stringify({ email: userEmail })
+}); // Should check existence first
+
+// ❌ DO NOT ignore HTTP status codes
+const response = await fetch('/passcode/login/finalize', requestOptions);
+const data = await response.json(); // Should check response.status first
+
+// ❌ DO NOT use passwords in mobile flow
+const loginData = {
+  email: userEmail,
+  password: userPassword // Hanko is passwordless only
+};
+
+// ❌ DO NOT attempt passkeys on unsupported versions
+if (iOS < 16 || Android < 9) {
+  // Still trying to use passkeys - should check version first
+  createPasskey(options);
+}
+
+// ❌ DO NOT forget APK Key Hash for Android
+// Missing APK Key Hash configuration will cause Android passkeys to fail
+
+// ❌ DO NOT hardcode API URLs
+const response = await fetch('https://hardcoded-url.hanko.io/users');
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko mobile solution, you **must** verify:
+
+1. **User Flow**: Is user existence checked before creation?
+2. **API Methods**: Are correct HTTP methods used (GET for check, POST for create/passcode)?
+3. **Error Handling**: Are HTTP status codes checked and handled properly?
+4. **JWT Handling**: Are tokens extracted from X-Auth-Token header or cookies?
+5. **Passkey Support**: Are OS version requirements checked (iOS 16+, Android 9+)?
+6. **Android Config**: Is APK Key Hash mentioned for Android passkey support?
+7. **Native APIs**: Are native WebAuthn APIs used instead of web-based solutions?
+8. **Backend Validation**: Is token validation on backend mentioned?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```
+</CodeGroup>

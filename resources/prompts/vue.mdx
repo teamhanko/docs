@@ -1,0 +1,262 @@
+# Vue Quickstart
+
+This prompt helps you (and your AI) to implementing Hanko with Vue.
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #<filename>.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+<CodeGroup>
+```markdown
+# Add Hanko to Vue Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a Vue 3 application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for Vue 3 with Vite and Vue Router.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Install** `@teamhanko/hanko-elements@latest` and `vue-router` for navigation
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL (likely http://localhost:5173 for development)
+- **Configure** `VITE_HANKO_API_URL` environment variable in `.env` (with VITE_ prefix for Vite)
+- **Configure** custom element resolution in `vite.config.js` for Hanko components
+- **Add** TypeScript support for `.vue` files with `shims-vue.d.ts`
+- **Create** HankoAuth and HankoProfile Vue components with proper composition API
+- **Use** Vue Router for navigation between login and dashboard pages
+- **Implement** logout functionality with proper navigation
+- **Handle** session events with `@onSessionCreated` in template
+- **Register** Hanko web components using the register function in `onMounted`
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use VITE_ prefix** for environment variables in Vite-based Vue apps
+2. **Import from import.meta.env** for environment variables in Vite
+3. **Configure isCustomElement** in vite.config.js for Hanko components
+4. **Add shims-vue.d.ts** for TypeScript support with .vue files
+5. **Use useRouter hook** from vue-router for programmatic navigation
+6. **Register components** using `register()` from hanko-elements in onMounted
+7. **Handle events** with `@onSessionCreated` syntax in template
+8. **Use composition API** with `<script setup lang="ts">` in components
+9. **Install vue-router** alongside hanko-elements for navigation
+10. **Create separate views** for HomeView and DashboardView with router setup
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use environment variables without VITE_ prefix in Vite projects
+2. **Do not** forget to configure isCustomElement in vite.config.js
+3. **Do not** skip shims-vue.d.ts file for TypeScript support
+4. **Do not** skip component registration with register() function
+5. **Do not** use options API instead of composition API for new components
+6. **Do not** forget @onSessionCreated event handler in template
+7. **Do not** use window.location for navigation (use router.push instead)
+8. **Do not** skip error handling in register() and logout() calls
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Environment Setup**
+```bash
+npm install @teamhanko/hanko-elements vue-router
+```
+
+```env
+VITE_HANKO_API_URL=https://your-hanko-api-url.hanko.io
+```
+
+### **Vite Configuration**
+```javascript
+// vite.config.js
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig({
+  plugins: [vue({
+    template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith("hanko-")
+        }
+    }
+    })],
+})
+```
+
+### **TypeScript Support**
+```typescript
+// src/shims-vue.d.ts
+declare module '*.vue' {
+  import type { DefineComponent } from 'vue'
+  const component: DefineComponent<{}, {}, any>
+  export default component
+}
+```
+
+### **HankoAuth Vue Component**
+```vue
+<script setup lang="ts">
+  import { useRouter } from "vue-router";
+  import { onMounted } from "vue";
+  import { register } from "@teamhanko/hanko-elements";
+
+  const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+  const router = useRouter();
+
+  const redirectAfterLogin = () => {
+    router.push("/dashboard");
+  };
+
+  onMounted(() => {
+    register(hankoApi)
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+</script>
+
+<template>
+  <hanko-auth @onSessionCreated="redirectAfterLogin" />
+</template>
+```
+
+### **HankoProfile Vue Component**
+```vue
+<script setup lang="ts">
+  import { onMounted } from "vue";
+  import { register } from "@teamhanko/hanko-elements";
+
+  const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+  onMounted(() => {
+    register(hankoApi).catch((error) => {
+      console.error(error);
+    });
+  });
+</script>
+
+<template>
+  <hanko-profile />
+</template>
+```
+
+### **Vue Router Setup**
+```typescript
+// router/index.ts
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue';
+import DashboardView from '../views/DashboardView.vue';
+
+const router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: [
+      {
+        path: '/',
+        name: 'home',
+        component: HomeView
+      },
+      {
+        path: '/dashboard',
+        name: 'dashboard',
+        component: DashboardView
+      }
+    ]
+  })
+
+export default router
+```
+
+### **App.vue with Router**
+```vue
+<script setup lang="ts">
+  import { RouterView } from 'vue-router'
+</script>
+
+<template>
+    <RouterView />
+</template>
+```
+
+### **Main.ts Integration**
+```typescript
+// src/main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router/index'
+
+const app = createApp(App)
+app.use(router)
+app.mount('#app')
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```vue
+<!-- ❌ DO NOT use environment variables without VITE_ prefix -->
+<script setup lang="ts">
+  const hankoApi = process.env.HANKO_API_URL; // Wrong for Vite
+</script>
+
+<!-- ❌ DO NOT skip isCustomElement configuration -->
+// Missing vite.config.js configuration will cause warnings
+
+<!-- ❌ DO NOT use options API for new components -->
+<script lang="ts">
+export default {
+  mounted() {
+    // Use composition API instead
+  }
+}
+</script>
+
+<!-- ❌ DO NOT forget event handler in template -->
+<template>
+  <hanko-auth /> <!-- Missing @onSessionCreated -->
+</template>
+
+<!-- ❌ DO NOT skip component registration -->
+<script setup lang="ts">
+  // Missing register() call in onMounted
+</script>
+
+<!-- ❌ DO NOT use window.location for navigation -->
+<script setup lang="ts">
+  const redirectAfterLogin = () => {
+    window.location.href = "/dashboard"; // Use router.push instead
+  };
+</script>
+
+<!-- ❌ DO NOT skip shims-vue.d.ts file -->
+// Missing TypeScript declarations will cause IDE errors
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Environment**: Is `VITE_HANKO_API_URL` configured with VITE_ prefix?
+2. **Configuration**: Is `isCustomElement` configured in vite.config.js?
+3. **TypeScript**: Is `shims-vue.d.ts` added for .vue file support?
+4. **Registration**: Is `register()` called in `onMounted` for each component?
+5. **Navigation**: Is `useRouter` from vue-router used for redirects?
+6. **Events**: Are session events handled with `@onSessionCreated` in template?
+7. **Composition API**: Are components using `<script setup lang="ts">`?
+8. **Router**: Is Vue Router properly configured with views and routes?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```
+</CodeGroup>

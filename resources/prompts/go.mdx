@@ -1,0 +1,327 @@
+# Go Quickstart
+
+This prompt helps you (and your AI) to implementing Hanko with Go.
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #<filename>.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+<CodeGroup>
+```markdown
+# Add Hanko to Go Backend
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) session validation into a Go backend application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for server-side session validation in Go.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Validate** session tokens using Hanko's `/sessions/validate` POST endpoint
+- **Extract** session tokens from HTTP cookies (typically named "hanko")
+- **Use** Go's net/http package or HTTP clients for validation requests
+- **Implement** proper error handling with Go error patterns
+- **Create** reusable validation functions or middleware
+- **Handle** JSON responses with proper struct definitions
+- **Configure** Hanko API URL from environment variables
+- **Return** boolean values and errors from validation functions
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use POST method** for `/sessions/validate` endpoint (never GET)
+2. **Send JSON payload** with `session_token` field in request body
+3. **Check HTTP status codes** before parsing JSON responses
+4. **Handle errors properly** using Go's error return pattern
+5. **Use encoding/json** for JSON marshaling/unmarshaling
+6. **Extract tokens from cookies** using http.Request.Cookie method
+7. **Return bool and error** from validation functions for Go conventions
+8. **Configure API URLs** from environment variables (os.Getenv)
+9. **Check for empty tokens** before making HTTP requests
+10. **Use context.Context** for HTTP requests with timeouts
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use GET method for session validation (must be POST)
+2. **Do not** send tokens in URL parameters or query strings
+3. **Do not** skip error handling for HTTP requests or JSON parsing
+4. **Do not** ignore HTTP status codes when parsing responses
+5. **Do not** hardcode API URLs in production code
+6. **Do not** expose internal validation errors to client responses
+7. **Do not** skip empty token checks before making requests
+8. **Do not** use http.DefaultClient without timeouts in production
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Basic Validation Function**
+```go
+package main
+
+import (
+    "bytes"
+    "context"
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+    "time"
+)
+
+type ValidationRequest struct {
+    SessionToken string `json:"session_token"`
+}
+
+type ValidationResponse struct {
+    IsValid bool `json:"is_valid"`
+}
+
+func validateHankoSession(token string) (bool, error) {
+    if token == "" {
+        return false, nil
+    }
+
+    hankoAPIURL := os.Getenv("HANKO_API_URL")
+    if hankoAPIURL == "" {
+        return false, fmt.Errorf("HANKO_API_URL environment variable not set")
+    }
+
+    reqBody := ValidationRequest{SessionToken: token}
+    jsonBody, err := json.Marshal(reqBody)
+    if err != nil {
+        return false, fmt.Errorf("failed to marshal request: %w", err)
+    }
+
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    req, err := http.NewRequestWithContext(ctx, "POST", hankoAPIURL+"/sessions/validate", bytes.NewBuffer(jsonBody))
+    if err != nil {
+        return false, fmt.Errorf("failed to create request: %w", err)
+    }
+    req.Header.Set("Content-Type", "application/json")
+
+    client := &http.Client{Timeout: 10 * time.Second}
+    resp, err := client.Do(req)
+    if err != nil {
+        return false, fmt.Errorf("validation request failed: %w", err)
+    }
+    defer resp.Body.Close()
+
+    if resp.StatusCode != http.StatusOK {
+        return false, nil
+    }
+
+    var validationResp ValidationResponse
+    if err := json.NewDecoder(resp.Body).Decode(&validationResp); err != nil {
+        return false, fmt.Errorf("failed to decode response: %w", err)
+    }
+
+    return validationResp.IsValid, nil
+}
+```
+
+### **HTTP Middleware Example**
+```go
+package main
+
+import (
+    "log"
+    "net/http"
+)
+
+func hankoAuthMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // Extract token from cookies
+        cookie, err := r.Cookie("hanko")
+        if err != nil {
+            http.Error(w, "No session token provided", http.StatusUnauthorized)
+            return
+        }
+
+        isValid, err := validateHankoSession(cookie.Value)
+        if err != nil {
+            log.Printf("Token validation error: %v", err)
+            http.Error(w, "Internal server error", http.StatusInternalServerError)
+            return
+        }
+
+        if !isValid {
+            http.Error(w, "Invalid session token", http.StatusUnauthorized)
+            return
+        }
+
+        next.ServeHTTP(w, r)
+    })
+}
+
+func protectedHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.Write([]byte(`{"message": "This is a protected route"}`))
+}
+
+func main() {
+    mux := http.NewServeMux()
+    
+    // Apply middleware to protected routes
+    mux.Handle("/protected", hankoAuthMiddleware(http.HandlerFunc(protectedHandler)))
+    
+    log.Println("Server starting on :8080")
+    log.Fatal(http.ListenAndServe(":8080", mux))
+}
+```
+
+### **Gin Framework Example**
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gin-gonic/gin"
+)
+
+func hankoAuthMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        token, err := c.Cookie("hanko")
+        if err != nil {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "No session token provided"})
+            c.Abort()
+            return
+        }
+
+        isValid, err := validateHankoSession(token)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+            c.Abort()
+            return
+        }
+
+        if !isValid {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session token"})
+            c.Abort()
+            return
+        }
+
+        c.Next()
+    }
+}
+
+func main() {
+    r := gin.Default()
+    
+    // Apply middleware to protected routes
+    protected := r.Group("/api")
+    protected.Use(hankoAuthMiddleware())
+    {
+        protected.GET("/protected", func(c *gin.Context) {
+            c.JSON(http.StatusOK, gin.H{"message": "This is a protected route"})
+        })
+    }
+    
+    r.Run(":8080")
+}
+```
+
+### **Echo Framework Example**
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/labstack/echo/v4"
+    "github.com/labstack/echo/v4/middleware"
+)
+
+func hankoAuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+    return func(c echo.Context) error {
+        cookie, err := c.Cookie("hanko")
+        if err != nil {
+            return c.JSON(http.StatusUnauthorized, map[string]string{"error": "No session token"})
+        }
+
+        isValid, err := validateHankoSession(cookie.Value)
+        if err != nil {
+            return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal error"})
+        }
+
+        if !isValid {
+            return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid session"})
+        }
+
+        return next(c)
+    }
+}
+
+func main() {
+    e := echo.New()
+    e.Use(middleware.Logger())
+    
+    // Protected route with middleware
+    e.GET("/protected", func(c echo.Context) error {
+        return c.JSON(http.StatusOK, map[string]string{"message": "Protected route"})
+    }, hankoAuthMiddleware)
+    
+    e.Logger.Fatal(e.Start(":8080"))
+}
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```go
+// ❌ DO NOT use GET method for validation
+req, _ := http.NewRequest("GET", hankoAPIURL+"/sessions/validate?token="+token, nil)
+
+// ❌ DO NOT skip error handling
+resp, _ := client.Do(req)  // Missing error handling
+
+// ❌ DO NOT ignore HTTP status codes
+var validationResp ValidationResponse
+json.NewDecoder(resp.Body).Decode(&validationResp)  // No status check
+
+// ❌ DO NOT send tokens in URL path
+req, _ := http.NewRequest("POST", hankoAPIURL+"/sessions/validate/"+token, nil)
+
+// ❌ DO NOT skip empty token checks
+func validateHankoSession(token string) (bool, error) {
+    // Should check if token is empty first
+    req, _ := http.NewRequest("POST", ...)
+}
+
+// ❌ DO NOT hardcode API URLs
+req, _ := http.NewRequest("POST", "https://hardcoded-url.hanko.io/sessions/validate", body)
+
+// ❌ DO NOT use http.DefaultClient in production
+resp, err := http.DefaultClient.Do(req)  // No timeout configured
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **HTTP Method**: Is POST method used for `/sessions/validate` endpoint?
+2. **Request Body**: Is session token sent in JSON body with `session_token` field?
+3. **Error Handling**: Are all errors properly handled with Go error patterns?
+4. **Status Check**: Are HTTP status codes checked before parsing responses?
+5. **Token Check**: Are empty tokens handled before making requests?
+6. **Context**: Is context.Context used for HTTP requests with timeouts?
+7. **Environment**: Are API URLs configured from environment variables?
+8. **Security**: Are validation errors logged but not exposed to clients?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```
+</CodeGroup>

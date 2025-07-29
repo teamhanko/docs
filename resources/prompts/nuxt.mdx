@@ -1,0 +1,220 @@
+# Nuxt Quickstart
+
+This prompt helps you (and your AI) to implementing Hanko with Nuxt.
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #<filename>.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+<CodeGroup>
+```markdown
+# Add Hanko to Nuxt Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a Nuxt.js application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for the official `@nuxtjs/hanko` module.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Install** `@nuxtjs/hanko@latest` as a development dependency - this is the official Nuxt module
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL (likely http://localhost:3000 for development)
+- **Configure** `NUXT_PUBLIC_HANKO_API_URL` environment variable in `.env`
+- **Register** the module in `nuxt.config.ts` with proper configuration
+- **Use** auto-registered components (`<hanko-auth>`, `<hanko-profile>`, `<hanko-events>`)
+- **Secure** routes using built-in `hanko-logged-in` and `hanko-logged-out` middleware
+- **Access** user data through `useHanko()` composable and server context
+- **Implement** logout functionality using the `useHanko` composable
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Install @nuxtjs/hanko as devDependency** - not any other Hanko package for Nuxt integration
+2. **Use NUXT_PUBLIC_ prefix** for environment variables to make them accessible client-side
+3. **Register module in nuxt.config.ts** with proper hanko configuration section
+4. **Configure redirects** in nuxt.config.ts (login path and success path)
+5. **Use auto-registered components** (`<hanko-auth>`, `<hanko-profile>`, `<hanko-events>`)
+6. **Apply middleware correctly**: `hanko-logged-in` for protected routes, `hanko-logged-out` for login pages
+7. **Use useHanko() composable** for client-side authentication operations
+8. **Access server-side auth** through `event.context.hanko` in API routes
+9. **Set up NuxtPage** in app.vue for file-based routing
+10. **Use definePageMeta** to apply middleware to specific pages
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use `@teamhanko/hanko-elements` directly - use `@nuxtjs/hanko` module instead
+2. **Do not** manually register web components - the module handles this automatically
+3. **Do not** forget NUXT_PUBLIC_ prefix for environment variables
+4. **Do not** skip module registration in nuxt.config.ts
+5. **Do not** use incorrect middleware names (must be `hanko-logged-in` or `hanko-logged-out`)
+6. **Do not** access Hanko SDK directly without using useHanko() composable
+7. **Do not** forget to configure redirect paths in module configuration
+8. **Do not** mix client-side and server-side authentication patterns incorrectly
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Installation and Environment Setup**
+```bash
+npm install -D @nuxtjs/hanko
+```
+
+```env
+NUXT_PUBLIC_HANKO_API_URL=https://your-hanko-api-url.hanko.io
+```
+
+### **Nuxt Configuration**
+```typescript
+export default defineNuxtConfig({
+  modules: ["@nuxtjs/hanko"],
+  hanko: {
+    apiURL: process.env.NUXT_PUBLIC_HANKO_API_URL,
+    cookieName: 'hanko',
+    redirects: {
+      login: '/',          // Path to redirect when unauthenticated
+      success: '/dashboard' // Path to redirect after login
+    }
+  },
+})
+```
+
+### **App Layout Setup**
+```vue
+<template>
+  <div>
+    <NuxtPage />
+  </div>
+</template>
+```
+
+### **Login Page with Middleware**
+```vue
+<script setup lang="ts">
+definePageMeta({
+  middleware: ['hanko-logged-out']
+})
+</script>
+<template>
+  <hanko-auth />
+</template>
+```
+
+### **Protected Dashboard Page**
+```vue
+<script setup lang="ts">
+const hanko = useHanko()
+
+function logout() {
+  hanko?.logout();
+}
+
+definePageMeta({
+  middleware: ["hanko-logged-in"],
+});
+</script>
+<template>
+  <hanko-profile />
+  <button @click="logout">
+    Log me out
+  </button>
+</template>
+```
+
+### **Server-Side Authentication Check**
+```typescript
+export default defineEventHandler(async (event) => {
+  const hanko = event.context.hanko;
+  if (!hanko || !hanko.sub) {
+    return {
+      status: 401,
+      body: {
+        message: "Unauthorized",
+      },
+    };
+  }
+  
+  // Use hanko.sub for user ID
+  return {
+    hanko: event.context.hanko,
+  };
+});
+```
+
+### **Custom Event Handling**
+```vue
+<script setup lang="ts">
+function afterLogin() {
+  navigateTo("/dashboard");
+}
+
+function updateSession() {
+  // Custom session logic
+}
+</script>
+<template>
+  <hanko-auth />
+  <hanko-events 
+    @onSessionCreated="afterLogin()" 
+    @onSessionUpdated="updateSession()" 
+  />
+</template>
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```typescript
+// ❌ DO NOT install hanko-elements directly
+npm install @teamhanko/hanko-elements
+
+// ❌ DO NOT manually register components
+import { register } from "@teamhanko/hanko-elements"
+
+// ❌ DO NOT use incorrect environment variable prefix
+HANKO_API_URL=... // Missing NUXT_PUBLIC_ prefix
+
+// ❌ DO NOT skip module registration
+export default defineNuxtConfig({
+  // Missing modules: ["@nuxtjs/hanko"]
+})
+
+// ❌ DO NOT use incorrect middleware names
+definePageMeta({
+  middleware: ['auth'] // Should be 'hanko-logged-in'
+})
+
+// ❌ DO NOT access Hanko SDK directly without composable
+import { Hanko } from "@teamhanko/hanko-elements"
+const hanko = new Hanko(apiUrl) // Use useHanko() instead
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Module**: Is `@nuxtjs/hanko` used as devDependency (not @teamhanko/hanko-elements)?
+2. **Environment**: Is `NUXT_PUBLIC_HANKO_API_URL` configured with correct prefix?
+3. **Configuration**: Is the module registered in nuxt.config.ts with proper hanko section?
+4. **Middleware**: Are correct middleware names used (`hanko-logged-in`, `hanko-logged-out`)?
+5. **Composable**: Is `useHanko()` composable used for client-side operations?
+6. **Components**: Are auto-registered components used without manual registration?
+7. **Server Context**: Is `event.context.hanko` used for server-side authentication?
+8. **Page Meta**: Is `definePageMeta` used correctly to apply middleware?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```
+</CodeGroup>

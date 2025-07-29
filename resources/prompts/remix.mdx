@@ -1,0 +1,260 @@
+# Remix Quickstart
+
+This prompt helps you (and your AI) to implementing Hanko with Remix.
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #<filename>.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+<CodeGroup>
+```markdown
+# Add Hanko to Remix Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a Remix application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for server-side rendering and client-side hydration patterns.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Install** `@teamhanko/hanko-elements@latest` - this provides pre-built authentication components
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL (likely http://localhost:5173 for development)
+- **Configure** `HANKO_API_URL` environment variable in `.env` (server-side only)
+- **Create** client-side utilities using `.client.ts` convention for browser-only code
+- **Implement** HankoAuth and HankoProfile components with proper hydration
+- **Use** Remix loader functions to pass API URL from server to client
+- **Secure** routes using server-side session validation in loaders
+- **Handle** logout functionality with proper navigation
+- **Validate** sessions using `/sessions/validate` POST endpoint
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use .client.ts convention** for browser-only Hanko SDK imports (e.g., `hanko.client.ts`)
+2. **Set HANKO_API_URL without prefix** - it's server-side only, no public prefix needed
+3. **Pass API URL through loaders** from server to client components
+4. **Wrap components in Suspense** for proper hydration
+5. **Use Remix navigation hooks** (`useNavigate`) for post-auth redirects
+6. **Validate sessions server-side** using POST requests to `/sessions/validate`
+7. **Handle cookie parsing** manually using `parse()` function for session tokens
+8. **Use LoaderFunction type** for proper server-side route protection
+9. **Import Hanko dynamically** in components to avoid SSR issues
+10. **Use redirect()** from `@remix-run/node` for unauthorized users
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** import Hanko SDK directly in server-side code or shared modules
+2. **Do not** use NEXT_PUBLIC_ or similar prefixes for environment variables
+3. **Do not** forget Suspense wrapper around Hanko web components
+4. **Do not** use GET requests for session validation (must be POST)
+5. **Do not** skip client-side utility files for browser-only code
+6. **Do not** import from `@teamhanko/hanko-elements` in server code
+7. **Do not** forget to parse cookies manually for session token extraction
+8. **Do not** mix server and client imports without proper separation
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Environment Setup**
+```bash
+npm install @teamhanko/hanko-elements
+```
+
+```env
+HANKO_API_URL=https://your-hanko-api-url.hanko.io
+```
+
+### **Client-Side Utilities**
+```typescript
+// utils/hanko.client.ts
+import { register, Hanko } from "@teamhanko/hanko-elements";
+
+export { register, Hanko };
+```
+
+### **HankoAuth Component**
+```tsx
+import { useNavigate, useLoaderData } from "@remix-run/react";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { register, type Hanko } from "../utils/hanko.client";
+
+export const loader = () => {
+    return { hankoUrl: process.env.HANKO_API_URL }; 
+};
+
+const HankoAuth = () => {
+  const [hanko, setHanko] = useState<Hanko>();
+  const navigate = useNavigate();
+  const data = useLoaderData<typeof loader>();
+  const hankoUrl = data.hankoUrl || '';
+
+  const redirectAfterLogin = useCallback(() => {
+      navigate("/dashboard");
+  }, [navigate]);
+
+  useEffect(() => {
+      if (hanko) {
+          hanko.onSessionCreated(() => {
+              redirectAfterLogin();
+          });
+      }
+  }, [hanko, redirectAfterLogin]);
+
+  useEffect(() => {
+      register(hankoUrl)
+          .catch((error: Error) => {
+              console.error(error.message);
+          })
+          .then((result) => {
+              if (result) {
+                  setHanko(result.hanko);
+              }
+          });
+  }, [hankoUrl]);
+
+  return (
+      <div>
+          <Suspense fallback={"Loading..."}>
+              <hanko-auth />
+          </Suspense>
+      </div>
+  );
+};
+
+export default HankoAuth;
+```
+
+### **Server-Side Session Validation**
+```typescript
+// app/services/auth.server.ts
+import { parse } from "cookie";
+
+export async function ValidateCurrentSession(request: Request, hankoUrl: string){
+    const cookies = parse(request.headers.get("Cookie") || "");
+    const token = cookies.hanko;
+
+    const validationOptions = { 
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: `{"session_token":"${token}"}`
+    }
+    
+    try {
+        const response = await fetch(hankoUrl + '/sessions/validate', validationOptions);
+        if (!response.ok) throw new Error('Session validation failed');
+        
+        const verifiedResponse = await response.json();
+        return verifiedResponse.is_valid
+    } catch (error) {
+        console.log(error)
+        return false;
+    }
+}
+```
+
+### **Protected Route Loader**
+```tsx
+import { type LoaderFunction, redirect } from "@remix-run/node";
+import { ValidateCurrentSession } from "../services/auth.server";
+
+export const loader: LoaderFunction = async ({request}) => {
+  const hankoUrl = process.env.HANKO_API_URL || "";
+  const validated = await ValidateCurrentSession(request, hankoUrl);
+
+  if(!validated){
+    return redirect("/");
+  }
+
+  return { hankoUrl: hankoUrl }; 
+};
+```
+
+### **Logout Component**
+```tsx
+import { useLoaderData, useNavigate } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import { type Hanko } from "../utils/hanko.client";
+
+export const loader = () => {
+    return { hankoUrl: process.env.HANKO_API_URL };
+};
+
+const LogoutButton = () => {
+    const data = useLoaderData<typeof loader>();
+    const hankoUrl = data.hankoUrl || '';
+    const navigate = useNavigate();
+    const [hanko, setHanko] = useState<Hanko>();
+  
+    useEffect(() => {
+      import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+        setHanko(new Hanko(hankoUrl ?? ""))
+      );
+    }, []);
+
+    const logout = async () => {
+        try {
+            await hanko?.logout();
+            navigate("/");
+            return;
+        } catch (error) {
+            console.error("Error during logout:", error);
+        }
+    };
+
+    return <button onClick={logout}>Logout</button>;
+}
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```typescript
+// ❌ DO NOT import Hanko SDK in server-side code
+import { Hanko } from "@teamhanko/hanko-elements"; // Will break SSR
+
+// ❌ DO NOT use public prefix for environment variables  
+NEXT_PUBLIC_HANKO_API_URL=... // Wrong, use HANKO_API_URL
+
+// ❌ DO NOT skip client-side utilities
+import { register, Hanko } from "@teamhanko/hanko-elements"; // Direct import in components
+
+// ❌ DO NOT forget Suspense wrapper
+return <hanko-auth />; // Missing Suspense
+
+// ❌ DO NOT use GET for session validation
+fetch(`${hankoUrl}/sessions/validate?token=${token}`) // Wrong method
+
+// ❌ DO NOT skip cookie parsing
+const token = request.cookies.hanko; // cookies.hanko doesn't exist, need to parse
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Client Utilities**: Is Hanko SDK imported through `.client.ts` files only?
+2. **Environment**: Is `HANKO_API_URL` configured without public prefix?
+3. **Loaders**: Are API URLs passed from server to client through loaders?
+4. **Hydration**: Are Hanko components wrapped in Suspense for proper hydration?
+5. **Session Validation**: Is POST method used for `/sessions/validate` endpoint?
+6. **Cookie Handling**: Are cookies parsed manually using `parse()` function?
+7. **Route Protection**: Are LoaderFunction types used for server-side validation?
+8. **Navigation**: Are Remix navigation hooks used for redirects?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```
+</CodeGroup>

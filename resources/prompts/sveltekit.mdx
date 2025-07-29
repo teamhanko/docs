@@ -1,0 +1,263 @@
+# SvelteKit Quickstart
+
+This prompt helps you (and your AI) to implementing Hanko with SvelteKit.
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #<filename>.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+<CodeGroup>
+```markdown
+# Add Hanko to SvelteKit Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a SvelteKit application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for Svelte's reactive system and SvelteKit's server-side rendering.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Install** `@teamhanko/hanko-elements@latest` - this provides pre-built authentication components
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL (likely http://localhost:5173 for development)
+- **Configure** `PUBLIC_HANKO_API_URL` environment variable in `.env` (with PUBLIC_ prefix)
+- **Create** reactive Svelte components for HankoAuth and HankoProfile
+- **Use** SvelteKit's event system for session handling (`on:onSessionCreated`)
+- **Implement** logout functionality with proper navigation
+- **Secure** routes using SvelteKit hooks with server-side validation
+- **Handle** user data retrieval with the Hanko SDK
+- **Manage** authentication state with Svelte's reactive variables
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use PUBLIC_ prefix** for environment variables to make them accessible client-side
+2. **Import from $env/dynamic/public** for environment variables in components
+3. **Use onMount lifecycle** for registering Hanko components in Svelte
+4. **Handle events with on:eventName** syntax (e.g., `on:onSessionCreated`)
+5. **Use goto from $app/navigation** for programmatic navigation
+6. **Implement server hooks** in `hooks.server.ts` for route protection
+7. **Validate sessions server-side** using POST requests to `/sessions/validate`
+8. **Use cookies.get()** in server hooks to extract session tokens
+9. **Use redirect() from @sveltejs/kit** for unauthorized route access
+10. **Register components with register()** from hanko-elements in onMount
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use environment variables without PUBLIC_ prefix for client-side access
+2. **Do not** forget to register Hanko components in onMount lifecycle
+3. **Do not** use React-style event handlers (onClick instead of on:click)
+4. **Do not** skip server-side route protection with hooks
+5. **Do not** use GET requests for session validation (must be POST)
+6. **Do not** forget to import goto for navigation after auth events
+7. **Do not** mix up Svelte event syntax with other framework patterns
+8. **Do not** skip cookie extraction in server hooks for session validation
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Environment Setup**
+```bash
+npm install @teamhanko/hanko-elements
+```
+
+```env
+PUBLIC_HANKO_API_URL=https://your-hanko-api-url.hanko.io
+```
+
+### **HankoAuth Svelte Component**
+```svelte
+<script>
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
+  import { register } from "@teamhanko/hanko-elements";
+  import { env } from "$env/dynamic/public";
+  
+  const hankoApi = env.PUBLIC_HANKO_API_URL;
+
+  const redirectAfterLogin = () => {
+    goto("/dashboard");
+  };
+
+  onMount(async () => {
+    register(hankoApi).catch((error) => {
+      console.error(error);
+    });
+  });
+</script>
+
+<hanko-auth on:onSessionCreated={redirectAfterLogin} />
+```
+
+### **HankoProfile Svelte Component**
+```svelte
+<script>
+  import { register } from "@teamhanko/hanko-elements";
+  import { onMount } from "svelte";
+  import { env } from "$env/dynamic/public";
+
+  const hankoApi = env.PUBLIC_HANKO_API_URL;
+
+  onMount(async () => {
+    register(hankoApi).catch((error) => {
+      console.error(error);
+    });
+  });
+</script>
+
+<hanko-profile />
+```
+
+### **Logout Button Component**
+```svelte
+<script>
+  import { Hanko } from "@teamhanko/hanko-elements";
+  import { goto } from "$app/navigation";
+  import { env } from "$env/dynamic/public";
+  
+  const hankoApi = env.PUBLIC_HANKO_API_URL;
+  const hanko = new Hanko(hankoApi);
+  
+  const logout = () => {
+    hanko.logout().catch((error) => {
+      console.error(error);
+    });
+    goto("/");
+  };
+</script>
+
+<button on:click={logout}>Logout</button>
+```
+
+### **Server Hooks for Route Protection**
+```typescript
+// hooks.server.ts
+import { type RequestEvent, redirect, type Handle } from "@sveltejs/kit";
+import { env } from "$env/dynamic/public";
+
+const hankoApiUrl = env.PUBLIC_HANKO_API_URL;
+
+export const handle: Handle = async ({ event, resolve }) => {
+  const verified = await authenticatedUser(event);
+
+  if (event.url.pathname.startsWith("/dashboard") && !verified) {
+    throw redirect(303, "/");
+  }
+
+  const response = await resolve(event);
+  return response;
+};
+
+const authenticatedUser = async (event: RequestEvent) => {
+  const { cookies } = event;
+  const cookieToken = cookies.get("hanko");
+
+  const validationOptions = { 
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: `{"session_token":"${cookieToken}"}`
+  }
+
+  try {
+    const response = await fetch(hankoApiUrl + '/sessions/validate', validationOptions);
+    if (!response.ok) throw new Error('Session validation failed');
+    
+    const verifiedResponse = await response.json();
+    return verifiedResponse.is_valid;
+  } catch (error) {
+    console.log(error)
+    return false;
+  }
+};
+```
+
+### **User Data Retrieval**
+```svelte
+<script>
+  import { onMount } from 'svelte';
+  import { env } from "$env/dynamic/public";
+  import { Hanko } from '@teamhanko/hanko-elements';
+  
+  const hankoApi = env.PUBLIC_HANKO_API_URL;
+  let email = '';
+  let userId = '';
+
+  async function fetchUserData() {
+    const hanko = new Hanko(hankoApi);
+    const user = await hanko.getUser();
+    email = user.emails?.[0]?.address || '';
+    userId = user.user_id || '';
+  }
+
+  onMount(async () => {
+    await fetchUserData();
+  });
+</script>
+
+<div>
+  <p>Email: {email}</p>
+  <p>User ID: {userId}</p>
+</div>
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```svelte
+<!-- ❌ DO NOT use environment variables without PUBLIC_ prefix -->
+<script>
+  import { env } from "$env/dynamic/private";
+  const hankoApi = env.HANKO_API_URL; // Won't work client-side
+</script>
+
+<!-- ❌ DO NOT use React-style event handlers -->
+<hanko-auth onClick={redirectAfterLogin} /> <!-- Wrong syntax -->
+
+<!-- ❌ DO NOT forget to register components -->
+<script>
+  // Missing register() call in onMount
+</script>
+<hanko-auth />
+
+<!-- ❌ DO NOT use incorrect navigation imports -->
+<script>
+  import { navigate } from "svelte"; // Wrong import
+  import { router } from "$app/stores"; // Wrong approach
+</script>
+
+<!-- ❌ DO NOT skip server-side session validation -->
+// Missing hooks.server.ts file for route protection
+
+<!-- ❌ DO NOT use GET for session validation -->
+fetch(`${hankoApiUrl}/sessions/validate?token=${token}`) // Wrong method
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Environment**: Is `PUBLIC_HANKO_API_URL` configured with PUBLIC_ prefix?
+2. **Registration**: Is `register()` called in `onMount` for each component?
+3. **Events**: Are Svelte event handlers using `on:eventName` syntax?
+4. **Navigation**: Is `goto` from `$app/navigation` used for redirects?
+5. **Hooks**: Is `hooks.server.ts` implemented for server-side route protection?
+6. **Session Validation**: Is POST method used for `/sessions/validate` endpoint?
+7. **Cookies**: Are session tokens extracted using `cookies.get()` in server hooks?
+8. **Imports**: Are environment variables imported from `$env/dynamic/public`?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```
+</CodeGroup>

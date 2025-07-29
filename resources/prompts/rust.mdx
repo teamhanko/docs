@@ -1,0 +1,369 @@
+# Rust Quickstart
+
+This prompt helps you (and your AI) to implementing Hanko with Rust.
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #<filename>.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+<CodeGroup>
+```markdown
+# Add Hanko to Rust Backend
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) session validation into a Rust backend application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for server-side session validation in Rust.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Validate** session tokens using Hanko's `/sessions/validate` POST endpoint
+- **Extract** session tokens from HTTP cookies (typically named "hanko")
+- **Use** reqwest or similar HTTP client crates for validation requests
+- **Implement** proper error handling with Rust Result types
+- **Create** reusable validation functions or middleware
+- **Handle** JSON responses with serde deserialization
+- **Configure** Hanko API URL from environment variables
+- **Return** Result<bool, Error> from validation functions
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use POST method** for `/sessions/validate` endpoint (never GET)
+2. **Send JSON payload** with `session_token` field in request body
+3. **Check HTTP status codes** before parsing JSON responses
+4. **Handle errors properly** using Rust Result and ? operator
+5. **Use serde** for JSON serialization/deserialization
+6. **Extract tokens from cookies** using appropriate HTTP framework methods
+7. **Return Result<bool, Error>** from validation functions
+8. **Configure API URLs** from environment variables (std::env)
+9. **Check for empty tokens** before making HTTP requests
+10. **Use async/await** for HTTP requests with proper error handling
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use GET method for session validation (must be POST)
+2. **Do not** send tokens in URL parameters or query strings
+3. **Do not** use unwrap() in production code without proper error handling
+4. **Do not** ignore HTTP status codes when parsing responses
+5. **Do not** hardcode API URLs in production code
+6. **Do not** expose internal validation errors to client responses
+7. **Do not** skip empty token checks before making requests
+8. **Do not** use blocking HTTP clients in async contexts
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Cargo Dependencies**
+```toml
+[dependencies]
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+anyhow = "1.0"
+```
+
+### **Basic Validation Function**
+```rust
+use reqwest::Client;
+use serde::{Deserialize, Serialize};
+use std::env;
+use anyhow::{Result, anyhow};
+
+#[derive(Serialize)]
+struct ValidationRequest {
+    session_token: String,
+}
+
+#[derive(Deserialize)]
+struct ValidationResponse {
+    is_valid: bool,
+}
+
+pub async fn validate_hanko_session(token: &str) -> Result<bool> {
+    if token.is_empty() {
+        return Ok(false);
+    }
+
+    let hanko_api_url = env::var("HANKO_API_URL")
+        .map_err(|_| anyhow!("HANKO_API_URL environment variable not set"))?;
+
+    let client = Client::new();
+    let request_body = ValidationRequest {
+        session_token: token.to_string(),
+    };
+
+    let response = client
+        .post(&format!("{}/sessions/validate", hanko_api_url))
+        .json(&request_body)
+        .send()
+        .await
+        .map_err(|e| anyhow!("Failed to send validation request: {}", e))?;
+
+    if !response.status().is_success() {
+        return Ok(false);
+    }
+
+    let validation_response: ValidationResponse = response
+        .json()
+        .await
+        .map_err(|e| anyhow!("Failed to parse validation response: {}", e))?;
+
+    Ok(validation_response.is_valid)
+}
+```
+
+### **Axum Middleware Example**
+```rust
+use axum::{
+    extract::Request,
+    http::{header, StatusCode},
+    middleware::Next,
+    response::Response,
+    Json,
+};
+use serde_json::json;
+
+pub async fn hanko_auth_middleware(
+    request: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    // Extract token from cookies
+    let token = request
+        .headers()
+        .get(header::COOKIE)
+        .and_then(|cookie_header| cookie_header.to_str().ok())
+        .and_then(|cookies| {
+            cookies
+                .split(';')
+                .find_map(|cookie| {
+                    let mut parts = cookie.trim().splitn(2, '=');
+                    if parts.next()? == "hanko" {
+                        parts.next()
+                    } else {
+                        None
+                    }
+                })
+        });
+
+    let token = match token {
+        Some(t) => t,
+        None => {
+            return Err(StatusCode::UNAUTHORIZED);
+        }
+    };
+
+    match validate_hanko_session(token).await {
+        Ok(true) => Ok(next.run(request).await),
+        Ok(false) => Err(StatusCode::UNAUTHORIZED),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
+
+// Usage with Axum
+use axum::{
+    middleware,
+    routing::get,
+    Router,
+};
+
+async fn protected_handler() -> Json<serde_json::Value> {
+    Json(json!({"message": "This is a protected route"}))
+}
+
+pub fn create_router() -> Router {
+    Router::new()
+        .route("/protected", get(protected_handler))
+        .layer(middleware::from_fn(hanko_auth_middleware))
+}
+```
+
+### **Actix-web Middleware Example**
+```rust
+use actix_web::{
+    dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
+    Error, HttpResponse,
+};
+use futures_util::future::LocalBoxFuture;
+use std::rc::Rc;
+
+pub struct HankoAuth;
+
+impl<S, B> Transform<S, ServiceRequest> for HankoAuth
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S::Future: 'static,
+    B: 'static,
+{
+    type Response = ServiceResponse<B>;
+    type Error = Error;
+    type Transform = HankoAuthMiddleware<S>;
+    type InitError = ();
+    type Future = std::future::Ready<Result<Self::Transform, Self::InitError>>;
+
+    fn new_transform(&self, service: S) -> Self::Future {
+        std::future::ready(Ok(HankoAuthMiddleware {
+            service: Rc::new(service),
+        }))
+    }
+}
+
+pub struct HankoAuthMiddleware<S> {
+    service: Rc<S>,
+}
+
+impl<S, B> Service<ServiceRequest> for HankoAuthMiddleware<S>
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S::Future: 'static,
+    B: 'static,
+{
+    type Response = ServiceResponse<B>;
+    type Error = Error;
+    type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
+
+    forward_ready!(service);
+
+    fn call(&self, req: ServiceRequest) -> Self::Future {
+        let service = self.service.clone();
+
+        Box::pin(async move {
+            // Extract token from cookies
+            let token = req
+                .cookie("hanko")
+                .map(|cookie| cookie.value().to_string());
+
+            let token = match token {
+                Some(t) => t,
+                None => {
+                    return Ok(req.into_response(
+                        HttpResponse::Unauthorized()
+                            .json(serde_json::json!({"error": "No session token"}))
+                            .into_body(),
+                    ));
+                }
+            };
+
+            match validate_hanko_session(&token).await {
+                Ok(true) => service.call(req).await,
+                Ok(false) => Ok(req.into_response(
+                    HttpResponse::Unauthorized()
+                        .json(serde_json::json!({"error": "Invalid session"}))
+                        .into_body(),
+                )),
+                Err(_) => Ok(req.into_response(
+                    HttpResponse::InternalServerError()
+                        .json(serde_json::json!({"error": "Internal server error"}))
+                        .into_body(),
+                )),
+            }
+        })
+    }
+}
+```
+
+### **Warp Filter Example**
+```rust
+use warp::{Filter, Rejection, Reply};
+use std::convert::Infallible;
+
+pub fn with_hanko_auth() -> impl Filter<Extract = (), Error = Rejection> + Clone {
+    warp::header::optional::<String>("cookie")
+        .and_then(|cookies: Option<String>| async move {
+            let token = cookies
+                .and_then(|cookies| {
+                    cookies
+                        .split(';')
+                        .find_map(|cookie| {
+                            let mut parts = cookie.trim().splitn(2, '=');
+                            if parts.next()? == "hanko" {
+                                parts.next()
+                            } else {
+                                None
+                            }
+                        })
+                });
+
+            let token = match token {
+                Some(t) => t,
+                None => return Err(warp::reject::custom(AuthError::NoToken)),
+            };
+
+            match validate_hanko_session(token).await {
+                Ok(true) => Ok(()),
+                Ok(false) => Err(warp::reject::custom(AuthError::InvalidToken)),
+                Err(_) => Err(warp::reject::custom(AuthError::ValidationError)),
+            }
+        })
+}
+
+#[derive(Debug)]
+enum AuthError {
+    NoToken,
+    InvalidToken,
+    ValidationError,
+}
+
+impl warp::reject::Reject for AuthError {}
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```rust
+// ❌ DO NOT use GET method for validation
+let response = client.get(&format!("{}/sessions/validate?token={}", api_url, token));
+
+// ❌ DO NOT use unwrap() without proper error handling
+let response = client.post(url).send().await.unwrap(); // Could panic
+
+// ❌ DO NOT ignore HTTP status codes
+let validation_response: ValidationResponse = response.json().await?; // No status check
+
+// ❌ DO NOT send tokens in URL path
+let url = format!("{}/sessions/validate/{}", api_url, token);
+
+// ❌ DO NOT skip empty token checks
+pub async fn validate_hanko_session(token: &str) -> Result<bool> {
+    // Should check if token is empty first
+    let response = client.post(url)...
+}
+
+// ❌ DO NOT hardcode API URLs
+let response = client.post("https://hardcoded-url.hanko.io/sessions/validate");
+
+// ❌ DO NOT expose internal errors
+Err(e) => HttpResponse::InternalServerError().json(format!("Error: {}", e)) // Exposes internals
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **HTTP Method**: Is POST method used for `/sessions/validate` endpoint?
+2. **Request Body**: Is session token sent in JSON body with `session_token` field?
+3. **Error Handling**: Are Result types and ? operator used properly?
+4. **Status Check**: Are HTTP status codes checked before parsing responses?
+5. **Token Check**: Are empty tokens handled before making requests?
+6. **Async/Await**: Are async functions used correctly with proper error handling?
+7. **Environment**: Are API URLs configured from environment variables?
+8. **Security**: Are validation errors handled but not exposed to clients?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```
+</CodeGroup>
