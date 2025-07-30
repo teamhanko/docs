@@ -396,7 +396,9 @@
           {
             "group": "Resources",
             "pages": [
-              "passkey-api/resources/examples"
+              "passkey-api/resources/examples",
+              "resources/prompts/go",
+              "resources/llms"
             ]
           },
           {
