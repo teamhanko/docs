@@ -150,9 +150,44 @@
             "group": "Resources",
             "pages": [
               "resources/examples",
-              "resources/prompts",
               "resources/llms",
               "resources/sdks"
+            ]
+          },
+          {
+            "group": "AI Prompts",
+            "pages": [
+              "resources/prompts",
+              {
+                "group": "Full Stack",
+                "pages": [
+                  "resources/prompts/nextjs",
+                  "resources/prompts/nuxt",
+                  "resources/prompts/remix",
+                  "resources/prompts/sveltekit"
+                ]
+              },
+              {
+                "group": "Frontend",
+                "pages": [
+                  "resources/prompts/react",
+                  "resources/prompts/vue",
+                  "resources/prompts/svelte",
+                  "resources/prompts/solid",
+                  "resources/prompts/javascript",
+                  "resources/prompts/angular"
+                ]
+              },
+              {
+                "group": "Backend",
+                "pages": [
+                  "resources/prompts/nodejs",
+                  "resources/prompts/python",
+                  "resources/prompts/go",
+                  "resources/prompts/rust"
+                ]
+              },
+              "resources/prompts/mobile"
             ]
           },
           {
