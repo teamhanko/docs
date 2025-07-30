@@ -150,6 +150,8 @@
             "group": "Resources",
             "pages": [
               "resources/examples",
+              "resources/prompts",
+              "resources/llms",
               "resources/sdks"
             ]
           },
@@ -397,7 +399,6 @@
             "group": "Resources",
             "pages": [
               "passkey-api/resources/examples",
-              "resources/prompts/go",
               "resources/llms"
             ]
           },

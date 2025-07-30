@@ -1,4 +1,4 @@
-# Python Quickstart
+# Python
 
 This prompt helps you (and your AI) to implementing Hanko with Python.
 
@@ -11,9 +11,9 @@ You can copy the prompts and paste them into your AI assistant or IDE. Some idea
 - In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
 
 ## Prompt
-<CodeGroup>
+
 ```markdown
-# Add Hanko to Python Backend
+## Add Hanko to Python Backend
 
 **Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) session validation into a Python backend application.  
 **Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for server-side session validation in Python.
@@ -243,29 +243,29 @@ def validate_hanko_session(token: str) -> bool:
 ## **4. OUTDATED PATTERNS TO AVOID**
 
 ```python
-# ❌ DO NOT use GET method for validation
+## ❌ DO NOT use GET method for validation
 response = requests.get(f'{hanko_api_url}/sessions/validate?token={token}')
 
-# ❌ DO NOT skip error handling
+## ❌ DO NOT skip error handling
 response = requests.post(url, json=data)
 validation_data = response.json()  # Could fail
 
-# ❌ DO NOT forget to check status codes
+## ❌ DO NOT forget to check status codes
 validation_data = response.json()
 return validation_data['is_valid']  # Could be error response
 
-# ❌ DO NOT send tokens in URL path
+## ❌ DO NOT send tokens in URL path
 response = requests.post(f'{hanko_api_url}/sessions/validate/{token}')
 
-# ❌ DO NOT skip token existence check
+## ❌ DO NOT skip token existence check
 def validate_token(token):
     # Should check if token exists first
     response = requests.post(...)
 
-# ❌ DO NOT hardcode API URLs
+## ❌ DO NOT hardcode API URLs
 response = requests.post('https://hardcoded-url.hanko.io/sessions/validate')
 
-# ❌ DO NOT expose validation errors
+## ❌ DO NOT expose validation errors
 except Exception as e:
     return JsonResponse({'error': str(e)}, status=500)  # Exposes internal errors
 ```
@@ -287,4 +287,3 @@ Before returning any Hanko-related solution, you **must** verify:
 
 If any check **fails**, **stop** and revise until compliance is achieved.
 ```
-</CodeGroup>

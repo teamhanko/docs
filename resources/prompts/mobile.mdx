@@ -1,4 +1,4 @@
-# Mobile Quickstart
+# Mobile
 
 This prompt helps you (and your AI) to implementing Hanko with mobile applications.
 
@@ -11,9 +11,9 @@ You can copy the prompts and paste them into your AI assistant or IDE. Some idea
 - In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
 
 ## Prompt
-<CodeGroup>
+
 ```markdown
-# Add Hanko to Mobile Applications
+## Add Hanko to Mobile Applications
 
 **Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into native mobile applications (iOS/Android).  
 **Scope:** All AI-generated advice or code related to Hanko mobile integration must follow these guardrails for direct API integration.
@@ -228,7 +228,7 @@ class HankoAuth {
 
 ### **APK Key Hash Configuration (Android)**
 ```bash
-# Generate APK Key Hash for Android passkey support
+## Generate APK Key Hash for Android passkey support
 echo 'android:apk-key-hash:'"$(keytool -exportcert -alias key-name -keystore path-to-keystore | openssl sha256 -binary | openssl base64 | tr -- '+/' '-_' | tr -d '=')"
 ```
 
@@ -283,4 +283,3 @@ Before returning any Hanko mobile solution, you **must** verify:
 
 If any check **fails**, **stop** and revise until compliance is achieved.
 ```
-</CodeGroup>
