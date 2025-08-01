@@ -4,6 +4,10 @@ title: Integrate Hanko with JavaScript
 description: Learn how to quickly add authentication and user profile in your vanilla Javascript app using Hanko.
 ---
 
+import FrontendIntegrationAbout from '/snippets/frontend-integration-about.mdx';
+
+<FrontendIntegrationAbout/>
+
 ## Add the Hanko API URL
 
 Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place it in your `.env` file.
@@ -19,7 +23,7 @@ HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 
 ## Add `<hanko-auth>` component
 
-The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the `register` function from `@teamhanko/hanko-elements`. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, use it in your markup.
+Add the `<hanko-auth>` web component to create a login interface. Import the `register` function from `@teamhanko/hanko-elements` and call it with your Hanko API URL to register the component with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry).
 
 ```html login.html
 <body>
@@ -35,7 +39,7 @@ The `<hanko-auth>` web component adds a login interface to your app. Begin by im
 
 ## Define event callbacks
 
-The Hanko client from `@teamhanko/hanko-elements` lets you "listen" for specific [events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events). It simplifies the process of subscribing to events, such as user logins.
+Use the Hanko client to listen for specific [events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events) such as user logins.
 
 ```html login.html
 <body>
@@ -87,8 +91,7 @@ It should look like this 👇
 
 ## Implement logout functionality
 
-Use the Hanko client provided by `@teamhanko/hanko-elements` to log out users. On logout a custom event is
-dispatched that you can subscribe to:
+Implement logout functionality using the Hanko client. A custom event is dispatched on logout that you can subscribe to:
 
 ```html profile.html
 <body>

@@ -4,6 +4,38 @@ title: Google
 description: Learn how to set up an Enterprise Connection with Google.
 ---
 
+<div class="hidden">
+# Hanko Google SAML Integration Guide
+
+**About Hanko**: Hanko is a modern, passwordless authentication solution that enables secure user login experiences through passkeys, SAML SSO, and other advanced authentication methods. This guide demonstrates how to integrate Hanko with Google Workspace for enterprise SAML authentication.
+
+**What This Guide Covers**: This guide demonstrates how to configure Google Workspace as a SAML identity provider for your Hanko project, enabling secure single sign-on authentication for Google Workspace users.
+
+**Key Technologies**:
+- SAML 2.0
+- XML digital signatures
+- Google Workspace
+- Google Admin Console
+- custom SAML applications
+- metadata XML files
+- attribute mapping
+
+**Prerequisites**:
+- Active Google Workspace account with admin privileges
+- Hanko Cloud project
+- Basic understanding of SAML authentication protocols
+- Ability to host XML metadata files publicly
+
+**Tasks You'll Complete**: 
+- Create custom SAML application in Google Admin Console
+- Download and host SAML metadata XML file
+- Configure service provider details (ACS URL and Entity ID)
+- Set up attribute mapping for email addresses
+- Configure user access permissions
+- Create enterprise connection in Hanko Cloud
+- Test integration using IdP-initiated flow
+</div>
+
 ## Prerequisites
 
 You need your project's SAML Assertion Consumer Service (ACS) URL and the Service Provider (SP) Entity ID.
@@ -73,8 +105,7 @@ To find the Assertion Consumer Service (ACS) URL for your project:
     />
 </Frame>
 
-7. Click `Download Metadata`. You currently need to download the file and host it yourself because Hanko needs access to
-the file using a URL, see [Hosting the SAML XML Metadata file](#hosting-the-saml-xml-metadata-file).
+7. Click `Download Metadata`. You need to download and host this file publicly because Hanko requires access to the metadata file via URL. See [Hosting the SAML XML Metadata file](#hosting-the-saml-xml-metadata-file) for details.
 8. Click `Continue`.
 
 <Frame>
@@ -154,9 +185,7 @@ the file using a URL, see [Hosting the SAML XML Metadata file](#hosting-the-saml
 
 ## Hosting the SAML XML Metadata file
 
-Google only allows downloading the SAML metadata XML file but Hanko currently does not support upload of metadata files
-(and IdP certificates) and requires access to the file through a URL. You need host the file on a public web service
-(e.g. AWS S3 bucket, Cloudflare R2, or public website) that can be accessed by Hanko.
+Google only provides SAML metadata as a downloadable XML file, but Hanko requires access to metadata files via URL rather than file upload. You must host the downloaded file on a publicly accessible web service (such as AWS S3, Cloudflare R2, or a public website) that Hanko can access.
 
 ## Configure an enterprise connection
 

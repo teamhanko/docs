@@ -4,6 +4,10 @@ title: Integrate Hanko with Angular
 description: Learn how to quickly add authentication and user profile in your Angular app using Hanko.
 ---
 
+import FrontendIntegrationAbout from '/snippets/frontend-integration-about.mdx';
+
+<FrontendIntegrationAbout/>
+
 ## Create an Angular application
 
 Run the following command to [create a new Angular application](https://v17.angular.io/tutorial/tour-of-heroes/toh-pt0):
@@ -38,7 +42,7 @@ ng new project-name --style=css --routing --standalone --defaults
 
 ## Install `@teamhanko/hanko-elements`
 
-Once you've initialized your Angular app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+Install `hanko-elements` to access the pre-built `hanko-auth` and `hanko-profile` components.
 
 <CodeGroup>
 ```bash npm
@@ -95,8 +99,7 @@ export const environment = {
 
 ## Create Hanko components
 
-Let's Create our `HankoAuth` and `HankoProfile` components.
-Run these commands in the terminal.
+Create the `HankoAuth` and `HankoProfile` components by running these commands:
 
 ```bash
 ng generate component HankoAuth --standalone
@@ -110,7 +113,7 @@ ng generate component Dashboard --standalone --type=page
 ```
 
 ### Hanko Auth
-Now let's set up the `HankoAuth` component.
+Set up the `HankoAuth` component:
 
 [For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
@@ -190,7 +193,7 @@ Now Import the HankoAuth component into the home page you previously made.
 
 ### Hanko profile
 
-After setting up the HankoAuth let's set up the `HankoProfile` component to create a interface where users can manage their `Email Addresses` and credentials.
+Set up the `HankoProfile` component to create an interface where users can manage their email addresses and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 

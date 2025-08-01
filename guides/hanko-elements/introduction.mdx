@@ -3,6 +3,37 @@ title: Hanko Elements
 sidebarTitle: Introduction
 description: Hanko Elements provide web components that add a modern login and registration experience for your users.
 ---
+
+<div class="hidden">
+# Hanko Elements Introduction Guide
+
+**About Hanko**: Hanko is a modern passwordless authentication solution that eliminates the need for traditional passwords by leveraging passkeys, biometrics, and other secure authentication methods. It provides a seamless, secure, and user-friendly authentication experience while reducing security risks associated with password-based systems.
+
+**What This Guide Covers**: This guide introduces Hanko Elements, a collection of pre-built web components that provide modern authentication functionality. You'll learn about the available components, their features, and how to get started with implementing passwordless authentication in your applications.
+
+**Key Technologies**:
+- Hanko Elements
+- Web Components
+- JavaScript/TypeScript
+- passkeys
+- OAuth SSO
+- 2FA authentication
+- CSS customization
+- internationalization
+- modern web frameworks integration
+
+**Prerequisites**:
+- Basic knowledge of frontend development, HTML/JavaScript, and web components
+- Familiarity with your chosen frontend framework and an active Hanko account
+
+**Tasks You'll Complete**: 
+- Understand the available Hanko web components and their use cases
+- Install and configure Hanko Elements in your project
+- Register web components and configure authentication options
+- Implement basic authentication flows using pre-built components
+- Set up event handling for authentication state management
+- Explore customization and internationalization options
+</div>
 ## Web Components
 <CardGroup cols={2}>
   <Card
@@ -27,8 +58,7 @@ description: Hanko Elements provide web components that add a modern login and r
     title="<hanko-profile/>"
     href="/guides/hanko-elements/profile-component"
   >
-    Allows Users to 
-    manage their login methods.
+    Allows users to manage their login methods.
   </Card>
 </CardGroup>
 
@@ -60,7 +90,7 @@ description: Hanko Elements provide web components that add a modern login and r
     }
     href="/guides/hanko-elements/auth-component"
   >
-    Pre-built components to give you fully-functional authentication and user management in minutes.
+    Pre-built components that provide fully-functional authentication and user management in minutes.
   </Card>
   <Card
     title="Customization"
@@ -86,7 +116,7 @@ description: Hanko Elements provide web components that add a modern login and r
     }
     href="/guides/hanko-elements/customize-appearance"
   >
-    Fully customize web components to match your style preferences.
+    Fully customize web components to match your design and branding.
   </Card>
   <Card
     title="Internationalization"
@@ -114,7 +144,7 @@ description: Hanko Elements provide web components that add a modern login and r
     href="/guides/hanko-elements/translations"
   >
 
-    Supports multiple languages and provides translation options for a global user base.
+    Support for multiple languages and translation options for a global user base.
 
   </Card>
   <Card
@@ -139,14 +169,14 @@ description: Hanko Elements provide web components that add a modern login and r
     }
     href="/quickstarts/fullstack/next"
   >
-    Offers versatile choices for integration, including CDN or npm.
+    Flexible integration options including CDN or npm installation.
   </Card>
 </CardGroup>
 
 
 
 ## Installation
-Integrate Hanko Elements into your project using your preferred package manager or CDN implementation:
+Add Hanko Elements to your project using your preferred package manager or CDN:
 
 <CodeGroup>
 ```bash npm
@@ -165,22 +195,21 @@ yarn add @teamhanko/hanko-elements
 
 ## Usage
 
-To implement Hanko, import and invoke the `register()` function from the `hanko-elements` module. This enables the use of web components throughout your application.
+To use Hanko, import and call the `register()` function from the `hanko-elements` module. This enables the web components throughout your application.
 
 <Info>
-    For proper functionality, implement the `<hanko-auth />` element to enable user authentication, and configure the "onSessionCreated" event handler to specify
-    post-authentication behavior, such as page redirection. Detailed implementation steps are provided in subsequent sections.
+    For proper functionality, add the `<hanko-auth />` element to enable user authentication, and configure the "onSessionCreated" event handler to define post-authentication behavior, such as page redirection. Detailed implementation steps are provided in the following sections.
 </Info>
 
 ### Importing the module
 
-If installed through a package manager, you can import the `register()` function from the `@teamhanko/hanko-elements` package in your TypeScript or JavaScript file
+If you installed via a package manager, you can import the `register()` function from the `@teamhanko/hanko-elements` package in your TypeScript or JavaScript file:
 
 ```js
 import { register } from "@teamhanko/hanko-elements";
 ```
 
-For CDN implementation, include a `script` tag with the import statement referencing the CDN-hosted `hanko-elements` package URL.
+For CDN usage, include a `script` tag with the import statement referencing the CDN-hosted `hanko-elements` package URL:
 
 ```html
 <script type="module">
@@ -190,13 +219,13 @@ For CDN implementation, include a `script` tag with the import statement referen
 
 ### Registering the Web Components
 
-After importing the `register()` function, call it with your Hanko API URL as an argument to register the Hanko elements with the browser's `CustomElementRegistry`.
+After importing the `register()` function, call it with your Hanko API URL to register the Hanko elements with the browser's `CustomElementRegistry`:
 
 ```js
 const { hanko } = await register("YOUR_HANKO_API_URL");
 ```
 
-Configuration options can be provided to customize the behavior and appearance of the components.
+You can provide configuration options to customize the behavior and appearance of the components:
 
 ```js
 const defaultOptions = {
@@ -229,7 +258,7 @@ if your frontend application is running on `myapp.com` and you want cookies to b
 
 ### Embedding the Web Components
 
-After implementing the above steps, you can incorporate the web components into your application's markup. Here's a basic implementation example:
+After completing the above steps, you can add the web components to your application's markup. Here's a basic example:
 
 ```html
 <body>

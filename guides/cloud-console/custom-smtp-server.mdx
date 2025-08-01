@@ -4,25 +4,53 @@ title: Send Hanko Emails with your own SMTP Server
 description: Learn how to set up a custom SMTP server to send Hanko emails through your own SMTP server.
 ---
 
+<div class="hidden">
+# Hanko Custom SMTP Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that provides modern, secure authentication flows including passkeys, email-based logins, and social authentication. It offers both hosted (Hanko Cloud) and self-hosted options, with comprehensive SDKs for seamless integration.
+
+**What This Guide Covers**: This guide demonstrates how to configure your own SMTP server to send authentication emails through Hanko. You'll learn to replace Hanko's default email delivery with your custom SMTP provider for better brand consistency and email deliverability control.
+
+**Key Technologies**: 
+- SMTP Protocol
+- Email Service Providers (Resend, SendGrid, etc.)
+- Hanko Cloud Console
+- DNS Configuration
+- Email Authentication (SPF, DKIM)
+
+**Prerequisites**: 
+- Hanko Pro or Enterprise plan subscription
+- SMTP server credentials from your email provider
+- Basic understanding of email server configuration
+- Access to Hanko Cloud Console
+
+**Tasks You'll Complete**:
+1. Gather SMTP server credentials from your provider
+2. Configure custom SMTP settings in Hanko Cloud
+3. Test email delivery functionality
+4. Verify email authentication and deliverability
+5. Monitor email sending performance
+</div>
+
 <Note>
   Custom SMTP server is available in Hanko Pro and Enterprise plans. Check out our [pricing page](https://hanko.io/pricing) for more information.
 </Note>
 
-1. Get the details of your SMTP server from your email provider. You will need the following information. 
+1. **Gather SMTP server credentials** from your email provider. You'll need the following information:
 
-   - Host
-   - Port
-   - Username
-   - Password
-   - Sender email address
+   - Host (SMTP server address)
+   - Port (typically 587 for TLS or 465 for SSL)
+   - Username (often your email address)
+   - Password (or API key for some providers)
+   - Sender email address (must be verified with your provider)
 
-   In case you're using [Resend](https://resend.com), we've got you covered with a [tutorial](https://www.hanko.io/blog/send-hanko-auth-emails-from-your-domain-via-resend) to set up your SMTP server.
+   If you're using [Resend](https://resend.com), follow our detailed [tutorial](https://www.hanko.io/blog/send-hanko-auth-emails-from-your-domain-via-resend) for setup instructions.
 
-2. Login to the [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. **Access your project settings** by logging into [Hanko Cloud](https://cloud.hanko.io) and selecting your project.
 
-3. Navigate to `Settings > Email`.
+3. **Navigate to email configuration** at `Settings > Email`.
 
-4. Enable the Custom SMTP Server option, fill in the details and click `Save`.
+4. **Configure your SMTP server** by enabling the Custom SMTP Server option, entering your credentials, and clicking `Save`.
 
    <Frame>
      <img

@@ -4,10 +4,13 @@ title: Integrate Hanko with React
 description: Learn how to quickly add authentication and user profile in your React app using Hanko.
 ---
 
+import FrontendIntegrationAbout from '/snippets/frontend-integration-about.mdx';
+
+<FrontendIntegrationAbout/>
 
 ## Create a React application
 
-To setup our React Frontend we will use [vite](https://vite.dev/) as a build tool.
+Set up your React frontend using [Vite](https://vite.dev/) as the build tool.
 
 Run the following command to [create a new Vite React application](https://vite.dev/guide/):
 
@@ -34,9 +37,9 @@ yarn create vite project-name --template react-ts
 
 ## Install `@teamhanko/hanko-elements`
 
-Once you've initialized your React app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+Install `hanko-elements` to access the pre-built `hanko-auth` and `hanko-profile` components.
 
-We will also install the `react-router-dom`, this will allow us to navigate trough pages / routes.
+Also install `react-router-dom` for navigation between pages and routes.
 <CodeGroup>
 ```bash npm
 cd project-name

@@ -4,9 +4,13 @@ title: Integrate Hanko with Svelte
 description: Learn how to quickly add authentication and user profile in your Svelte app using Hanko.
 ---
 
+import FrontendIntegrationAbout from '/snippets/frontend-integration-about.mdx';
+
+<FrontendIntegrationAbout/>
+
 ## Create a Svelte application
 
-To setup our Svelte Frontend we will use [vite](https://vite.dev/) as a build tool.
+Set up your Svelte frontend using [Vite](https://vite.dev/) as the build tool.
 
 Run the following command to [create a new Vite Svelte application](https://vite.dev/guide/):
 
@@ -32,9 +36,9 @@ yarn create vite project-name --template svelte-ts
 
 ## Install `@teamhanko/hanko-elements`
 
-Once you've initialized your svelte app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+Install `hanko-elements` to access the pre-built `hanko-auth` and `hanko-profile` components.
 
-We will also install the `svelte-routing` package to handle routing and navigation.
+Also install the `svelte-routing` package to handle routing and navigation.
 <CodeGroup>
 ```bash npm
 cd project-name
@@ -88,7 +92,7 @@ VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 Create a folder called `components` and create two files in it, `HankoAuth.svelte` and `HankoProfile.svelte`.
 
 ### Hanko Auth
-Now let's set up the `HankoAuth.svelte` file to create a functioning login page.
+Set up the `HankoAuth.svelte` file to create a functioning login component.
 
 [For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
 
@@ -129,8 +133,7 @@ Just like this.
 
 ### Hanko profile
 
-After setting up the HankoAuth let's set up the `HankoProfile.svelte` file to create a interface where users can.\
-manage their `Email Addresses` and credentials.
+Set up the `HankoProfile.svelte` file to create an interface where users can manage their email addresses and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 

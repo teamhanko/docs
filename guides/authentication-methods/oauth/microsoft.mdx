@@ -4,6 +4,36 @@ sidebarTitle: Microsoft
 description: In this guide you will learn how to add a login with Microsoft to your application.
 ---
 
+<div class="hidden">
+# Hanko Microsoft OAuth Integration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that provides secure, user-friendly login experiences. It eliminates the need for traditional passwords by supporting modern authentication methods including biometrics, passkeys, and OAuth providers.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Microsoft OAuth authentication with Hanko, allowing users to sign in using their Microsoft accounts (including personal, work, or school accounts). You'll learn to create an Azure application registration, configure Microsoft Entra ID, and implement Microsoft authentication in your application.
+
+**Key Technologies**: 
+- OAuth 2.0 and OpenID Connect protocols
+- Microsoft Entra ID (formerly Azure Active Directory)
+- Azure Application Registration
+- JWT (JSON Web Tokens) for secure session management
+- Microsoft Graph API integration
+- SPF records and email verification
+
+**Prerequisites**: 
+- Active Hanko Cloud account with a configured project
+- Microsoft Azure account for application registration
+- Basic understanding of OAuth 2.0 authentication flow
+- Understanding of Azure multi-tenant applications
+
+**Tasks You'll Complete**:
+1. Create and configure an Azure application registration
+2. Set up multi-tenant authentication with proper account type selection
+3. Generate client secrets and configure redirect URLs
+4. Configure optional claims for enhanced security (UPN, email verification)
+5. Configure Microsoft OAuth settings in Hanko Console
+6. Implement Microsoft authentication in your frontend application
+</div>
+
 ## Prerequisites
 
 1. You need a Hanko Cloud account and a project. Learn more on how to set them up [here](https://docs.hanko.io/setup-hanko-cloud).
@@ -36,7 +66,7 @@ configuration options visible in the above screen in this step).
 
 ## Create a new Azure application
 
-1. Navigate to and log in to the [Azure portal](portal.azure.com).
+1. Navigate to and sign in to the [Azure portal](https://portal.azure.com).
 2. Click the hamburger menu in the navbar in the top left.
 3. Select `Microsoft Entra ID`.
 
@@ -72,7 +102,7 @@ configuration options visible in the above screen in this step).
 </Frame>
 
 6. Enter your Application name.
-7. Under `Supported account types` choose the 3rd option i.e `Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)`.
+7. Under `Supported account types` choose the third option: `Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)`.
     <Warning>
         The above option allows any user to login to your application. Other account types (single-tenant only,
         multi-tenant or public only) are currently not supported.
@@ -322,7 +352,7 @@ in the remaining inputs.
 
 ## Frontend integration
 
-To enable a login with Mircosoft in your frontend application we recommend using either our pre-built UI as
+To enable a login with Microsoft in your frontend application we recommend using either our pre-built UI as
 provided by the [`@teamhanko/hanko-elements`](https://www.npmjs.com/package/@teamhanko/hanko-elements) package or building a custom UI using
 the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk).
 

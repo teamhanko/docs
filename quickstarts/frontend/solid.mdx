@@ -4,9 +4,13 @@ title: Integrate Hanko with Solid
 description: Learn how to quickly add authentication and user profile in your Solid app using Hanko.
 ---
 
+import FrontendIntegrationAbout from '/snippets/frontend-integration-about.mdx';
+
+<FrontendIntegrationAbout/>
+
 ## Install `@teamhanko/hanko-elements`
 
-Once you've initialized your Solid app, installing hanko-elements provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.
+Install `hanko-elements` to access the pre-built `hanko-auth` and `hanko-profile` components.
 
 <CodeGroup>
 ```bash npm
@@ -42,7 +46,7 @@ Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and place
 
 ## Add `<hanko-auth>` component
 
-The `<hanko-auth>` web component adds a login interface to your app. Begin by importing the `register` function from `@teamhanko/hanko-elements` into your Solid component. Call it with the Hanko API URL as an argument to register `<hanko-auth>` with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry). Once done, include it in your JSX.
+Add the `<hanko-auth>` web component to create a login interface. Import the `register` function from `@teamhanko/hanko-elements` and call it with your Hanko API URL to register the component with the browser's [CustomElementRegistry](https://developer.mozilla.org/de/docs/Web/API/CustomElementRegistry).
 
 ```tsx components/HankoAuth.tsx
 import { onMount, createSignal, onCleanup } from "solid-js";
@@ -137,7 +141,7 @@ style={{ borderRadius: '0.5rem' }}
 
 ## Implement logout functionality
 
-You can use `@teamhanko/hanko-elements` to easily manage user logouts. Below, we make a logout button component that you can use anywhere.
+Create a logout button component using `@teamhanko/hanko-elements` to manage user logouts:
 
 ```tsx components/LogoutButton.tsx
 import { useNavigate } from "@solidjs/router";

@@ -1,30 +1,34 @@
 ---
 sidebarTitle: "Go"
 title: Integrate Hanko with Go backend
+description: Learn how to validate Hanko session tokens in your Go backend to secure API endpoints and authenticate users.
 ---
 
+import BackendIntegrationAbout from '/snippets/backend-integration-about.mdx';
 
-After successful authentication, Hanko generates a session token that is stored as a cookie. Use the session token to authenticate requests to your backend.
-This guide demonstrates how to implement session token validation in Go to ensure that only properly authenticated users can access your application's protected resources.
+<BackendIntegrationAbout/>
+
+After successful authentication, Hanko generates a session token stored as a cookie. This guide shows how to validate these session tokens in your Go backend to authenticate API requests.
 
 ## Get the Hanko API URL
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
+Retrieve your project's API URL from the [Hanko console](https://cloud.hanko.io/). This URL is used to validate session tokens.
 
 <Note>
-  If you are self-hosting Hanko you need to provide your own URL.
+  If you are self-hosting Hanko, use your self-hosted instance URL instead.
 </Note>
 
-### Steps to Authenticate Requests
+## Authentication Flow
 
-1. Retrieve the session token.
+To authenticate requests in your Go backend:
 
-2. Verify the session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.
+1. Extract the session token from the HTTP cookie
+2. Validate the token using Hanko's [session validation API](/api-reference/public/session-management/validate-a-session-1)
+3. Allow or deny the request based on validation result
 
-### Example implementation
+## Implementation Example
 
-The following section demonstrates how to validate session tokens against the Hanko backend.
-To retrieve the session token cookie, use the `http.Request.Cookie()` function provided by the Go standard HTTP library.
+This example shows how to create a session validator that can be used as middleware in your Go application:
 
 ```go
 // SessionValidator defines the interface for session validation
@@ -73,5 +77,52 @@ func (v *HankoSessionValidator) ValidateSession(token string) (bool, error) {
 	}
 
 	return validationRes.IsValid, nil
+}
+```
+
+## Using the Validator as Middleware
+
+Here's how to use the session validator to protect your API endpoints:
+
+```go
+func AuthMiddleware(validator SessionValidator) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Extract session token from cookie
+			cookie, err := r.Cookie("hanko")
+			if err != nil {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			// Validate the session token
+			isValid, err := validator.ValidateSession(cookie.Value)
+			if err != nil {
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			if !isValid {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			// Continue to the next handler
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// Usage example
+func main() {
+	validator := NewHankoSessionValidator("https://your-hanko-api-url.hanko.io")
+	
+	mux := http.NewServeMux()
+	mux.HandleFunc("/protected", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("This is a protected endpoint!"))
+	})
+
+	// Apply authentication middleware to protected routes
+	http.ListenAndServe(":8080", AuthMiddleware(validator)(mux))
 }
 ```

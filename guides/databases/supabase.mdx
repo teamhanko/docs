@@ -4,15 +4,45 @@ title: Using Hanko with Supabase
 description: This guide showcases how to add new user info, like user ID and email to the Supabase database, when users sign up with Hanko. Jump to [Nextjs guide](/quickstarts/fullstack/next) to learn how to add Hanko Auth in your Next App.
 ---
 
-We're using Next.js in this guide, but don't worry, you can apply the same concepts to other frameworks or languages. We're working on adding examples with different frameworks, so stay tuned!
+<div class="hidden">
+# Hanko Supabase Integration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that provides modern, secure authentication flows including passkeys, email-based logins, and social authentication. It offers both hosted (Hanko Cloud) and self-hosted options, with comprehensive SDKs for seamless integration.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Hanko authentication with Supabase database. You'll learn to automatically sync user data between Hanko and Supabase, creating user profiles and managing authentication state across both platforms.
+
+**Key Technologies**: 
+- Hanko Elements (Authentication)
+- Supabase (Database & Backend)
+- Next.js (React Framework)
+- TypeScript
+- Supabase JavaScript Client
+- Database Schema Design
+
+**Prerequisites**: 
+- Basic knowledge of React/Next.js
+- Understanding of database concepts
+- Node.js development environment
+- Active Hanko project configured
+- Supabase account and project
+
+**Tasks You'll Complete**:
+1. Set up Supabase project and database
+2. Create users table with proper schema
+3. Configure Supabase client in your application
+4. Build API endpoint for user synchronization
+5. Integrate user sync with Hanko authentication
+6. Test user creation and data flow
+</div>
+
+This guide uses Next.js, but you can apply the same concepts to other frameworks or languages. We're expanding our framework examples, so stay tuned for more!
 
 <Steps>
-  <Step title="Create an account on Supabase">
-    Create an account on [Supabase](https://supabase.com/) if you haven't yet.
+  <Step title="Create Supabase account">
+    Sign up for a [Supabase](https://supabase.com/) account if you don't have one already.
   </Step>
-  <Step title="Create a new project">
-    Once you've created an account, you'll be redirected to the dashboard. Click
-    on 'New Project' to create a new project.
+  <Step title="Create new project">
+    From the Supabase dashboard, click 'New Project' to create a project for your application.
     <Frame>
       <img
         src="/images/supabase/create-new-project.png"
@@ -23,9 +53,10 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
     </Frame>
   </Step>
   <Step title="Create users table">
-    Now, on the project dashboard, choose 'Database' and create a new 'users' table.
-    We'll be using this table to add new user info on signup. In addition to the
-    default 'id' column, add 'user_id' and 'email' columns.
+    In your project dashboard, navigate to 'Database' and create a new 'users' table.
+    This table will store user information from Hanko. Add these columns beyond the default 'id':
+    - 'user_id' (to match Hanko's user ID)
+    - 'email' (to store user email addresses)
     <Frame>
       <img
         src="/images/supabase/create-new-table.png"
@@ -35,8 +66,8 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
       />
     </Frame>
   </Step>
-  <Step title="Get URL and service_role key from Supabase and add it to your project">
-    Now in the project dashboard, select 'Project Settings' from the left sidebar and then click on 'API'. Copy the 'URL' and 'service_role' key and paste them in your `.env.local` file.
+  <Step title="Configure environment variables">
+    In your project dashboard, go to 'Project Settings' > 'API'. Copy the 'URL' and 'service_role' key, then add them to your `.env.local` file.
     ```sh .env.local
     NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 
@@ -46,7 +77,7 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
 
   </Step>
   <Step title="Install Supabase JavaScript Client">
-    Assuming you've already set up Hanko Auth, you'll need to install supabase to your app.
+    Add the Supabase client library to your application (assuming Hanko Auth is already configured).
 
     <CodeGroup>
     ```bash npm
@@ -76,8 +107,8 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
     ```
 
   </Step>
-  <Step title="Create an API">
-    Next up, you'll create an api to add new user info to the users table.
+  <Step title="Create user synchronization API">
+    Build an API endpoint to sync user data between Hanko and Supabase.
 
   ```ts app/api/create-user/route.ts
   import { NextResponse } from "next/server";
@@ -135,8 +166,8 @@ We're using Next.js in this guide, but don't worry, you can apply the same conce
   ```
 
   </Step>
-  <Step title="Use the API in HankoAuth component">
-    Use the API to add a new user to the 'users' table, as soon as user is authenticated and `onSessionCreated` is triggered.
+  <Step title="Integrate with HankoAuth component">
+    Modify your Hanko authentication component to automatically sync user data when `onSessionCreated` triggers.
 
     ```tsx components/hanko/HankoAuth.tsx
     "use client";

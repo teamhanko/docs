@@ -1,0 +1,258 @@
+---
+title: Solid
+description: This prompt helps you (and your AI) to implementing Hanko with Solid.
+---
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #&lt;filename&gt;.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+
+```markdown
+## Add Hanko to Solid Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a SolidJS application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for SolidJS with SolidJS Router.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Install** `@teamhanko/hanko-elements@latest` for authentication components
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL
+- **Configure** `VITE_HANKO_API_URL` environment variable in `.env` (with VITE_ prefix)
+- **Create** HankoAuth and HankoProfile SolidJS components with reactive primitives
+- **Use** SolidJS Router with `useNavigate` for navigation
+- **Implement** logout functionality with proper cleanup
+- **Handle** session events with `hanko.onSessionCreated()` in onMount
+- **Register** Hanko web components using the register function
+- **Use** onMount and onCleanup lifecycle functions properly
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use VITE_ prefix** for environment variables in Vite-based Solid apps
+2. **Import from import.meta.env** for environment variables
+3. **Use onMount lifecycle** for component initialization and event setup
+4. **Use onCleanup** for proper cleanup of event listeners and resources
+5. **Use useNavigate from @solidjs/router** for programmatic navigation
+6. **Register components** using `register()` from hanko-elements in onMount
+7. **Create Hanko instances** with proper API URL configuration
+8. **Handle session events** with `hanko.onSessionCreated()` callbacks
+9. **Use createSignal** for reactive state when needed
+10. **Install @solidjs/router** alongside hanko-elements for navigation
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use environment variables without VITE_ prefix in Vite projects
+2. **Do not** forget to register Hanko components in onMount lifecycle
+3. **Do not** skip cleanup in onCleanup lifecycle function
+4. **Do not** use React hooks or lifecycle methods (useEffect, useState)
+5. **Do not** forget to handle session events for post-login redirects
+6. **Do not** use window.location for navigation (use useNavigate instead)
+7. **Do not** skip error handling in register() and logout() calls
+8. **Do not** create Hanko instances outside of component scope improperly
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Environment Setup**
+```bash
+npm install @teamhanko/hanko-elements @solidjs/router
+```
+
+```env
+VITE_HANKO_API_URL=https://your-hanko-api-url.hanko.io
+```
+
+### **HankoAuth Solid Component**
+```tsx
+import { onMount, onCleanup } from "solid-js";
+import { register, Hanko } from "@teamhanko/hanko-elements";
+import { useNavigate } from "@solidjs/router";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+export default function HankoAuth() {
+  const navigate = useNavigate();
+  const hanko = new Hanko(hankoApi);
+
+  const redirectAfterLogin = () => {
+    navigate("/dashboard");
+  };
+
+  onMount(() => {
+    hanko.onSessionCreated(() => {
+      redirectAfterLogin();
+    });
+
+    register(hankoApi).catch((error) => {
+      console.error(error);
+    });
+  });
+
+  onCleanup(() => {
+    // Cleanup if needed
+  });
+
+  return <hanko-auth />;
+}
+```
+
+### **HankoProfile Solid Component**
+```tsx
+import { onMount } from "solid-js";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+export default function HankoProfile() {
+  onMount(() => {
+    register(hankoApi).catch((error) => {
+      console.error(error);
+    });
+  });
+
+  return <hanko-profile />;
+}
+```
+
+### **Logout Button Component**
+```tsx
+import { createSignal } from "solid-js";
+import { Hanko } from "@teamhanko/hanko-elements";
+import { useNavigate } from "@solidjs/router";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+export default function LogoutButton() {
+  const navigate = useNavigate();
+  const hanko = new Hanko(hankoApi);
+
+  const logout = async () => {
+    try {
+      await hanko.logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+  return <button onClick={logout}>Logout</button>;
+}
+```
+
+### **Router Setup**
+```tsx
+import { Router, Route } from "@solidjs/router";
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+
+function App() {
+  return (
+    <Router>
+      <Route path="/" component={LoginPage} />
+      <Route path="/dashboard" component={DashboardPage} />
+    </Router>
+  );
+}
+
+export default App;
+```
+
+### **Page Components**
+```tsx
+// LoginPage.tsx
+import HankoAuth from "../components/HankoAuth";
+
+export default function LoginPage() {
+  return (
+    <div>
+      <h1>Login</h1>
+      <HankoAuth />
+    </div>
+  );
+}
+```
+
+```tsx
+// DashboardPage.tsx
+import HankoProfile from "../components/HankoProfile";
+import LogoutButton from "../components/LogoutButton";
+
+export default function DashboardPage() {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <HankoProfile />
+      <LogoutButton />
+    </div>
+  );
+}
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```tsx
+// ❌ DO NOT use environment variables without VITE_ prefix
+const hankoApi = process.env.HANKO_API_URL; // Wrong for Vite
+
+// ❌ DO NOT use React hooks in Solid
+import { useEffect, useState } from "react"; // Wrong framework
+
+// ❌ DO NOT forget component registration
+export default function HankoAuth() {
+  // Missing register() call in onMount
+  return <hanko-auth />;
+}
+
+// ❌ DO NOT skip cleanup
+onMount(() => {
+  // Setup code without corresponding onCleanup
+});
+
+// ❌ DO NOT use window.location for navigation
+const redirectAfterLogin = () => {
+  window.location.href = "/dashboard"; // Use useNavigate instead
+};
+
+// ❌ DO NOT forget session event handling
+onMount(() => {
+  register(hankoApi);
+  // Missing hanko.onSessionCreated() setup
+});
+
+// ❌ DO NOT skip error handling
+register(hankoApi); // Missing .catch() for error handling
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Environment**: Is `VITE_HANKO_API_URL` configured with VITE_ prefix?
+2. **Registration**: Is `register()` called in `onMount` for each component?
+3. **Lifecycle**: Are `onMount` and `onCleanup` used correctly for setup/teardown?
+4. **Navigation**: Is `useNavigate` from @solidjs/router used for redirects?
+5. **Events**: Are session events handled with `hanko.onSessionCreated()`?
+6. **Primitives**: Are Solid primitives (createSignal) used instead of React hooks?
+7. **Router**: Is @solidjs/router used for navigation functionality?
+8. **Error Handling**: Are register() and logout() calls wrapped with try-catch?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```

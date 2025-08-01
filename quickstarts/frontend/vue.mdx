@@ -4,6 +4,10 @@ title: Integrate Hanko with Vue
 description: Learn how to quickly add authentication and user profile in your Vue app using Hanko.
 ---
 
+import FrontendIntegrationAbout from '/snippets/frontend-integration-about.mdx';
+
+<FrontendIntegrationAbout/>
+
 ## Create a Vue application
 Run the following command to [create a new Vue application with vite](https://vite.dev/guide/):
 
@@ -26,9 +30,9 @@ yarn create vite project-name --template vue-ts
 </CodeGroup>
 
 ## Install `@teamhanko/hanko-elements`
-Once you've initialized your Vue app, installing `hanko-elements` provides you with access to the prebuilt components: `hanko-auth` and `hanko-profile`.\
-\
-We will also install `vue-router` to setup our routes and pages with.
+Install `hanko-elements` to access the pre-built `hanko-auth` and `hanko-profile` components.
+
+Also install `vue-router` to handle routing and navigation.
 
 <CodeGroup> 
 ```bash npm
@@ -116,7 +120,7 @@ Create a folder called `components` and create two in it, `HankoAuth.vue` and `H
 
 ### Hanko Auth
 
-Now lets setup the `HankoAuth.vue` file to create a functioning login component.
+Set up the `HankoAuth.vue` file to create a functioning login component.
 
 Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action (e.g. redirect to your dashboard).
 
@@ -153,8 +157,7 @@ Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using
 
 ### Hanko profile
 
-After setting up the HankoAuth let's set up the `HankoProfile.vue` file to create a interface where users can.\
-manage their `Email Addresses` and credentials.
+Set up the `HankoProfile.vue` file to create an interface where users can manage their email addresses and credentials.
 
 [For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
 

@@ -2,8 +2,36 @@
 title: User Metadata
 ---
 
-Hanko allows for defining arbitrary user metadata. Metadata can be categorized into
-three types that differ as to how they can be accessed and modified:
+<div class="hidden">
+# Hanko User Metadata Management Guide
+
+**About Hanko**: Hanko is a modern passwordless authentication solution that simplifies user sign-in experiences by eliminating passwords in favor of secure alternatives like passkeys, email magic links, and biometric authentication.
+
+**What This Guide Covers**: This guide explains how to work with Hanko's user metadata system, including the three metadata types (private, public, unsafe), their access permissions, character limitations, and how to read and modify metadata through various APIs.
+
+**Key Technologies**: 
+- Hanko Public API
+- Hanko Admin API
+- JWT Templates and Session Customization
+- User Profile Management
+- JSON Data Storage
+
+**Prerequisites**: 
+- Active Hanko project
+- Understanding of API authentication
+- Admin API access (for private and public metadata management)
+- Basic knowledge of JSON data structures
+
+**Tasks You'll Complete**:
+- Understand the three metadata types and their access levels
+- Learn character limits and JSON storage requirements
+- Access metadata through Public and Admin APIs
+- Modify metadata using appropriate endpoints
+- Implement metadata in JWT templates for session customization
+- Choose the right metadata type for your use case
+</div>
+
+Hanko supports arbitrary user metadata storage. Metadata is organized into three distinct types, each with different access and modification permissions:
 
 | Metadata type | Public API                   | Admin API             |
 |---------------|------------------------------|-----------------------|
@@ -17,29 +45,27 @@ Multibyte UTF-8 characters (like emojis or non-Latin characters) count as 1 char
 
 ## Private metadata
 
-Private metadata should be used for sensitive data that should not be exposed to the client (e.g., internal flags/ids,
-configuration, or access control details).
+Use private metadata for sensitive information that must remain hidden from client applications (e.g., internal flags/IDs, configuration settings, or access control details).
 
-### Accessing private Metadata
+### Accessing private metadata
 
-Private metadata can be read through the Admin API only using the
+Private metadata is accessible exclusively through the Admin API using the
 [Get metadata of a user](/api-reference/admin/user-metadata-management/get-metadata-of-a-user)
 endpoint.
 
 ### Setting private metadata
 
-Private metadata can be set and modified through the Admin API only by using the
+Private metadata can only be created and modified through the Admin API using the
 [Patch metadata of a user](/api-reference/admin/user-metadata-management/patch-metadata-of-a-user) endpoint.
 
 ## Public metadata
 
-Public metadata should be used for non-sensitive information that you want accessible but not modifiable by the client
-(e.g., certain user roles, UI preferences, display options).
+Use public metadata for non-sensitive information that should be readable but not modifiable by client applications
+(e.g., user roles, UI preferences, display settings).
 
 ### Accessing public metadata
 
-Public metadata can be read through the Public API, the Admin API and in JWT templates for customizing
-the session JWT:
+Public metadata is accessible through the Public API, Admin API, and JWT templates for session customization:
 
 - `Public API`:
     - Public metadata is returned in the `user` object in the payload on the `success` state in a
@@ -60,18 +86,16 @@ the session JWT:
 
 ### Setting public metadata
 
-Public metadata can be set and modified through the Admin API only by using the
+Public metadata can only be created and modified through the Admin API using the
 [Patch metadata of a user](/api-reference/admin/user-metadata-management/patch-metadata-of-a-user) endpoint.
 
 ## Unsafe metadata
 
-Unsafe metadata should be used for non-sensitive, temporary or experimental data that doesn't need strong safety
-guarantees.
+Use unsafe metadata for non-sensitive, temporary, or experimental data that doesn't require strict safety guarantees.
 
 ### Accessing unsafe metadata
 
-Unsafe metadata can be read through the Public API, the Admin API and in JWT templates for customizing
-the session JWT:
+Unsafe metadata is accessible through the Public API, Admin API, and JWT templates for session customization:
 
 - `Public API`:
   - Unsafe metadata is returned in the `user` object in the payload on the `success` state in a `Login` and `Registration` flow as well
@@ -92,7 +116,7 @@ the session JWT:
 
 ### Setting unsafe metadata
 
-Unsafe metadata can be set and modified through the Public API and the Admin API:
+Unsafe metadata can be created and modified through both the Public API and Admin API:
 
 - `Public API`:
     - Unsafe metadata can be set using the `patch_metadata` action in the

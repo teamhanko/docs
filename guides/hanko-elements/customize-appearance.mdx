@@ -3,9 +3,38 @@ title: Customize Appearance
 description: This guide will walk you through the UI customization of Hanko Auth and Profile components.
 ---
 
+<div class="hidden">
+# Hanko Elements Appearance Customization Guide
+
+**About Hanko**: Hanko is a modern passwordless authentication solution that eliminates the need for traditional passwords by leveraging passkeys, biometrics, and other secure authentication methods. It provides a seamless, secure, and user-friendly authentication experience while reducing security risks associated with password-based systems.
+
+**What This Guide Covers**: This guide demonstrates how to customize the visual appearance of Hanko web components (`<hanko-auth>` and `<hanko-profile>`) to match your application's design and branding. You'll learn to use CSS variables and CSS Shadow Parts to create a cohesive user interface that aligns with your application's style.
+
+**Key Technologies**:
+- Hanko Elements
+- CSS variables
+- CSS Shadow Parts
+- Web Components Shadow DOM
+- CSS styling
+- responsive design
+- frontend theming techniques
+
+**Prerequisites**:
+- Basic knowledge of CSS styling, web components, and frontend development
+- Understanding of CSS variables and Shadow DOM concepts will be helpful
+
+**Tasks You'll Complete**: 
+- Configure CSS variables to customize colors, fonts, and layout
+- Use CSS Shadow Parts to target specific component elements
+- Implement custom styling for different component states
+- Create responsive designs that work across devices
+- Apply consistent branding across all Hanko components
+- Learn advanced styling techniques for web component customization
+</div>
+
 ## CSS Variables
 
-CSS variables can be used to style the `hanko-auth` and `hanko-profile` elements to your needs. A list of all CSS variables including default values can be found below
+You can use CSS variables to customize the appearance of `hanko-auth` and `hanko-profile` elements to match your design requirements. The complete list of available CSS variables and their default values is shown below:
 
 ```css 
 hanko-auth,
@@ -68,9 +97,9 @@ hanko-profile {
 
 ## CSS Shadow Parts
 
-In addition to CSS variables, you can utilize the `::part` selector to customize the styles of various elements.
+In addition to CSS variables, you can use the `::part` selector to customize specific elements within the components.
 
-Please note that shadow parts only function when the web components are attached to the shadow DOM, which is the default behavior. You can enable the shadow DOM for the components using the following code snippet
+Note that shadow parts only work when the web components are attached to the shadow DOM, which is the default behavior. You can enable the shadow DOM for the components using the following code:
 
 ```js
 register("https://hanko.yourdomain.com", { shadow: true });
@@ -100,7 +129,7 @@ register("https://hanko.yourdomain.com");
 | `form-item` | the container of a form item, e.g. an input field or a button |
 
 ### Examples 
-The following examples demonstrate how to apply styles to specific shadow parts
+The following examples show how to apply custom styles to specific shadow parts:
 
 #### Stacking `hanko-auth` component fields vertically
 

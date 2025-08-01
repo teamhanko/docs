@@ -1,21 +1,49 @@
 ---
 title: Add Facebook Login
 sidebarTitle: Facebook
-description: In this guide you will learn how to add a login with Facebook to your application.
+description: Learn how to integrate Facebook OAuth authentication with Hanko for secure user login.
 ---
+
+<div class="hidden">
+# Hanko Facebook OAuth Integration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that provides secure, user-friendly login experiences. It eliminates the need for traditional passwords by supporting modern authentication methods including biometrics, passkeys, and OAuth providers.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Facebook Login OAuth authentication with Hanko, enabling users to sign in using their Facebook accounts. You'll learn to create a Facebook app, configure OAuth settings, and implement Facebook authentication in your application.
+
+**Key Technologies**: 
+- OAuth 2.0 authentication protocol
+- Facebook Login API and Graph API
+- JWT (JSON Web Tokens) for secure session management
+- Facebook App Review process
+- RESTful API integration
+
+**Prerequisites**: 
+- Active Hanko Cloud account with a configured project
+- Facebook developer account and access to Facebook Developer Portal
+- Basic understanding of OAuth 2.0 authentication flow
+- Frontend application ready for integration
+
+**Tasks You'll Complete**:
+1. Create and configure a Facebook application in the developer portal
+2. Set up Facebook Login with required permissions and redirect URLs
+3. Configure Facebook OAuth credentials in Hanko Console
+4. Implement Facebook authentication in your frontend application
+5. Understand Facebook app publishing requirements
+</div>
 
 ## Prerequisites
 
-1. You need a Hanko Cloud account and a project. Learn more on how to set them up [here](https://docs.hanko.io/setup-hanko-cloud).
-2. You need a Facebook developer account. To create an account visit the
-[Facebook developer portal](https://developers.facebook.com/) and select `Login`.
+Before starting this integration, ensure you have:
+
+1. A Hanko Cloud account and project. [Set up your account here](https://docs.hanko.io/setup-hanko-cloud) if you haven't already.
+2. A Facebook developer account. Visit the [Facebook developer portal](https://developers.facebook.com/) and select `Login` to create an account.
 
 ## Get your provider redirect URL
 
-When creating a Facebook application, you need to provide a redirect URL that determines where the third party
-provider redirects after a successful login. This redirect URL consists of the base URL of the Hanko API
-and the [`/thirdparty/callback`](http://docs.hanko.io/api/public#tag/Third-Party/operation/thirdPartyCallback) endpoint.
-You can always view your redirect URL in the Hanko Cloud Console:
+You'll need to configure a redirect URL in your Facebook application. This URL determines where Facebook redirects users after successful authentication. The redirect URL combines your Hanko API base URL with the [`/thirdparty/callback`](/api-reference/public/third-party/third-party-provider-callback) endpoint.
+
+To find your redirect URL:
 
 1. Sign in to [cloud.hanko.io](https://cloud.hanko.io).
 2. Select your `Organization`.
@@ -34,11 +62,11 @@ You can always view your redirect URL in the Hanko Cloud Console:
 
 You need the redirect URL for [creating a new Facebook application](#create-a-new-facebook-application) in the next step.
 
-## Create a new Facebook application
+## Create a Facebook application
 
 1. Navigate to and log in to the [Facebook developer portal](https://developers.facebook.com).
 2. In the top navigation, select `Apps`.
-3. Click `Create app` in the center view container or on the top right.
+3. Click `Create app` in the center of the page or on the top right.
 
 <Frame>
     <img
@@ -49,7 +77,7 @@ You need the redirect URL for [creating a new Facebook application](#create-a-ne
     />
 </Frame>
 
-4. Provide your `App details` and click `Next`.
+4. Enter your app details and click `Next`.
 
 
 <Frame>
@@ -74,8 +102,7 @@ You need the redirect URL for [creating a new Facebook application](#create-a-ne
     />
 </Frame>
 
-7. On the `Business` view, select `I don't want to connect a business portfolio yet`. If you do have a business portfolio
-and want to connect it, select it.
+7. On the `Business` view, select `I don't want to connect a business portfolio yet` (or connect your existing business portfolio if available).
 8. Click `Next`.
 
 <Frame>
@@ -98,8 +125,7 @@ and want to connect it, select it.
     />
 </Frame>
 
-10. On the app dashboard, click `Customize adding a Facebook Login button` in the `Add and customize use cases`
-accordion.
+10. On the app dashboard, click `Customize adding a Facebook Login button` in the `Add and customize use cases` section.
 
 <Frame>
     <img
@@ -111,7 +137,7 @@ accordion.
 </Frame>
 
 11. In the `Customize use case` view, select `Permissions` in the left sidebar.
-12. Click the `add` button for the `email` permission in the `Permissions` table.
+12. Click the `add` button for the `email` permission in the permissions table to enable email access.
 
 <Frame>
     <img
@@ -123,8 +149,7 @@ accordion.
 </Frame>
 
 13. In the `Customize use case` view, select `Settings` in the left sidebar.
-14. Under `Valid OAuth Redirect URIs` add the redirect URL you [previously](#get-your-provider-redirect-url) retrieved
-from the Hanko Console.
+14. Under `Valid OAuth Redirect URIs`, add the redirect URL you [retrieved from the Hanko Console](#get-your-provider-redirect-url).
 
 <Frame>
     <img
@@ -137,8 +162,7 @@ from the Hanko Console.
 
 
 <Note>
-    If you are testing on `localhost` you do not need to add the redirect URL because all `http://localhost`
-    redirects are automatically allowed by Facebook.
+    When testing locally, you don't need to add localhost redirect URLs as Facebook automatically allows all `http://localhost` redirects.
 </Note>
 
 ## Get your client ID and secret
@@ -156,17 +180,11 @@ from the Hanko Console.
     />
 </Frame>
 
-## Configure credentials with Hanko
+## Configure Facebook credentials in Hanko
 
 1. In the Hanko Cloud Console, navigate to your project `Settings` and select `URLs`.
-2. Configure a **Default Redirect URL**. This is the URL target in your frontend the Hanko API redirects to if an error
-occurs during third party sign-in. If your frontend [uses the `hanko-elements` web components](#frontend-integration),
-this URL should be the URL of the page that embeds the web component such that errors can be processed properly by the
-web component.
-3. Configure your **Allowed Redirect URL**s. These are the URL targets in your frontend the Hanko API is allowed to
-redirect to after third party authentication was successful. If your frontend
-[uses the `hanko-elements` web components](#frontend-integration), this URL should bethe URL of the page that embeds
-the web component.
+2. Configure a **Default Redirect URL** - the frontend URL where Hanko redirects users if authentication fails. For applications using `hanko-elements` web components, this should be the page containing the component to handle errors properly.
+3. Configure your **Allowed Redirect URL**s - the frontend URLs where Hanko can redirect users after successful authentication. For `hanko-elements` applications, this should be the page containing the authentication component.
 
     <Note>
         The allowed redirect URL supports wildcard matching through globbing:
@@ -185,11 +203,11 @@ the web component.
 </Frame>
 
 4. Navigate to your project `Settings` and select `Social connections`.
-5. Under `Connections` find the `Facebook` accordion and expand it.
-6. Enable the provider.
-7. Enter the `App ID` from the previous step as the `Client ID`.
-8. Enter the `App secret` from the previous step as the `Client secret`.
-9. Click `Save`.
+5. In the `Providers` section, find `Facebook` and expand its configuration.
+6. Enable the Facebook provider using the toggle switch.
+7. Enter the Facebook `App ID` as the `Client ID`.
+8. Enter the Facebook `App Secret` as the `Client Secret`.
+9. Click `Save` to apply your configuration.
 
 <Frame>
     <img
@@ -200,35 +218,29 @@ the web component.
     />
 </Frame>
 
-## Frontend integration
+## Implement Facebook login in your frontend
 
-To enable a login with Facebook in your frontend application we recommend using either our pre-built UI as
-provided by the [`@teamhanko/hanko-elements`](https://www.npmjs.com/package/@teamhanko/hanko-elements) package or building a custom UI using
-the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk).
+You can integrate Facebook authentication using either:
+- Pre-built UI components from [`@teamhanko/hanko-elements`](https://www.npmjs.com/package/@teamhanko/hanko-elements)
+- Custom implementation with [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
 
 <Tabs>
 
     <Tab title="Hanko Elements">
-        We recommend following one of our [quickstart guides](https://docs.hanko.io/quickstarts) to integrate
-        the `<hanko-auth>` component from our `@teamhanko/hanko-elements` package in your frontend application .
-        On successful integration, the component will display a button for signing in with `Facebook` in the login view
-        of the component.
+        Follow our [quickstart guides](https://docs.hanko.io/quickstarts) to integrate the `<hanko-auth>` component from `@teamhanko/hanko-elements` into your application. Once configured, the component will automatically display a Facebook sign-in button in the login interface.
 
         <Note>
             Make sure to configure the page the web component is embedded on as your `error redirect URL` as well as an
-            `allowed redirect URL` (see the [previous step](#configure-credentials-with-hanko)).
+            `allowed redirect URL` (see the [previous step](#configure-facebook-credentials-in-hanko)).
         </Note>
 
-        On successful authentication with the provider, the backend issues a session cookie and the web component
-        continues the usual component flow on success. Errors that occur during third party
-        provider authentication are also picked up and displayed in the web component accordingly.
+        After successful Facebook authentication, Hanko issues a session cookie and the component continues its normal flow. Authentication errors are automatically captured and displayed within the component.
     </Tab>
 
     <Tab title="Hanko Frontend SDK">
-        When building your own UI, you can use the `@teamhanko/hanko-frontend-sdk` to initialize third party sign in.
-        Create a [`Hanko` client](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/Client.html) instance and call  the
-        `thirdParty.auth` method with `facebook` as your provider and the target URL in your app you want to redirect
-        to after authentication.
+        For custom UI implementations, use the `@teamhanko/hanko-frontend-sdk` to handle Facebook authentication.
+        Create a [`Hanko` client](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/Client.html) instance and call the
+        `thirdParty.auth` method with `facebook` as the provider.
 
         ```js
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";
@@ -248,8 +260,7 @@ the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/h
         }
         ```
 
-        On successful authentication, the API redirects you to the given redirect URL. The URL query includes a one time
-        token that must be exchanged for a JWT. Use the `token.validate` method on your client to validate the token:
+        After successful authentication, the API redirects to your specified URL with a one-time token in the query parameters. Exchange this token for a JWT using the `token.validate` method:
 
         ```js
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";
@@ -266,13 +277,10 @@ the [`@teamhanko/hanko-frontend-sdk`](https://www.npmjs.com/package/@teamhanko/h
                 }
             ```
 
-            On success, the API issues a JWT which is then set by the SDK as a cookie (hanko). All other SDK methods
-            can now use the cookie to make authenticated requests to the API.
+            On successful validation, the SDK sets a JWT cookie (hanko) that enables authenticated API requests for all other SDK methods.
     </Tab>
 </Tabs>
 
 ## Publish your app
 
-If you closely followed this guide, then your app will probably still have an `Unpublished` status. You must go through
-Facebook's [App review](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review)
-process to publish your app.
+After following this guide, your Facebook app will have an `Unpublished` status, which limits its usage to developers and testers. To allow all users to authenticate with Facebook, you must submit your app for Facebook's [App Review](https://developers.facebook.com/docs/resp-plat-initiatives/individual-processes/app-review) process and get it approved for public use.

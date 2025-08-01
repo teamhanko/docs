@@ -3,10 +3,41 @@ title: Auth Component
 description: A web component that handles user login and user registration.
 ---
 
-## Use Case
-The `<hanko-auth>` component serves as a comprehensive authentication solution, seamlessly integrating both login and registration functionality within a unified interface. This component is specifically designed for applications seeking to streamline their authentication process by consolidating multiple authentication flows without requiring separate routes or pages.
+<div class="hidden">
+# Hanko Elements Auth Component Guide
 
-The component intelligently manages state transitions between login and registration views, enabling effortless user authentication while maintaining a cohesive experience throughout the sign-in and registration process.
+**About Hanko**: Hanko is a modern passwordless authentication solution that eliminates the need for traditional passwords by leveraging passkeys, biometrics, and other secure authentication methods. It provides a seamless, secure, and user-friendly authentication experience while reducing security risks associated with password-based systems.
+
+**What This Guide Covers**: This guide demonstrates how to implement the `<hanko-auth>` web component, which provides a unified authentication interface that handles both user login and registration flows in a single component. You'll learn how to integrate this versatile component into various frameworks and customize its behavior for different use cases.
+
+**Key Technologies**:
+- Hanko Elements
+- Web Components
+- JavaScript/TypeScript
+- React, Vue, Svelte
+- Next.js, Nuxt, SvelteKit
+- CSS customization
+- passkeys
+- OAuth SSO
+- modern authentication methods
+
+**Prerequisites**:
+- Basic knowledge of frontend development, HTML/JavaScript, your chosen framework
+- Active Hanko account with API access
+
+**Tasks You'll Complete**: 
+- Install and register the Hanko Elements package
+- Configure the `<hanko-auth>` component in your application
+- Implement the component across different frameworks (React, Vue, Svelte)
+- Set up event handlers for authentication state changes
+- Configure component attributes for prefilled values and language settings
+- Handle both login and registration flows in a unified interface
+</div>
+
+## Use Case
+The `<hanko-auth>` component provides a complete authentication solution that combines both login and registration functionality in a single interface. This component is ideal for applications that want to streamline their authentication process without needing separate routes or pages for different authentication flows.
+
+The component automatically handles transitions between login and registration views, providing a seamless user experience throughout the entire authentication process.
 
 If you want to create a dedicated Login page: \
 [try out the`<hanko-login>` component](/guides/hanko-elements/login-component).
@@ -40,12 +71,12 @@ If you want to create a dedicated Registration page:  \
 | `prefilled-email` | Used to prefill the email input field |
 | `prefilled-username` | Used to prefill the username input field |
 | `lang` | Used to specify the language of the content within the element |
-| `mode` | Speficy the starting flow, either `registration`or `login`  |
+| `mode` | Specify the starting flow, either `registration` or `login`  |
 
 
 ### Adding `<hanko-auth>` component
 
-Examples showcasing how to add `<hanko-auth>` component in different full stack and frontend frameworks.
+The following examples show how to integrate the `<hanko-auth>` component in different full-stack and frontend frameworks.
 
 #### Full Stack
 

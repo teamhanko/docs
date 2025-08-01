@@ -3,18 +3,49 @@ title: Import and export users
 description: Learn how to import users from other platforms to Hanko, as well as how to export users from Hanko.
 ---
 
+<div class="hidden">
+# Hanko User Migration Guide
+
+**About Hanko**: Hanko is a passwordless authentication solution that provides modern, secure authentication flows including passkeys, email-based logins, and social authentication. It offers both hosted (Hanko Cloud) and self-hosted options, with comprehensive SDKs for seamless integration.
+
+**What This Guide Covers**: This guide demonstrates how to migrate user data to and from Hanko. You'll learn to import existing users from other authentication platforms and export user data for backup or migration purposes.
+
+**Key Technologies**: 
+- JSON Data Formats
+- UUID Standards
+- Hanko Cloud Console
+- Hanko Admin API
+- Data Schema Validation
+- Bulk User Operations
+
+**Prerequisites**: 
+- Active Hanko Cloud project
+- User data in proper JSON format
+- Understanding of UUID format requirements
+- Access to Hanko Cloud Console
+- Admin API access for exports
+
+**Tasks You'll Complete**:
+1. Prepare user data in required JSON schema
+2. Validate UUID format for user IDs
+3. Import users through Hanko Cloud Console
+4. Verify successful user migration
+5. Export users using Admin API
+6. Handle migration errors and edge cases
+</div>
+
 ## Import users
 
-If you're migrating from other auth providers to Hanko, you can import your existing users directly to Hanko Cloud Console.
+Migrating from another authentication provider? Import your existing users directly through the Hanko Cloud Console.
 
-<Note>User IDs should be in UUID format.</Note>
+<Note>All user IDs must be in UUID format for successful import.</Note>
 
 <Steps>
-  <Step title="Head over to Hanko Cloud">
-    Navigate over to [Hanko Cloud](https://cloud.hanko.io), choose the project
-    and click on 'Users' on the left sidebar.
+  <Step title="Access the Users section">
+    Navigate to [Hanko Cloud](https://cloud.hanko.io), select your project,
+    and click 'Users' in the left sidebar.
   </Step>
-  <Step title="Click on import">
+  <Step title="Start the import process">
     <Frame>
       <img
         src="/images/import-export-users/click-import.png"
@@ -24,11 +55,11 @@ If you're migrating from other auth providers to Hanko, you can import your exis
       />
     </Frame>
   </Step>
-  <Step title="Upload the file and import">
+  <Step title="Upload and import your user data">
     <Frame>
       <img
         src="/images/import-export-users/upload-file.png"
-        alt="click import"
+        alt="upload user file"
         width="500"
         style={{ borderRadius: "0.5rem" }}
       />
@@ -38,7 +69,7 @@ If you're migrating from other auth providers to Hanko, you can import your exis
 
 <Note>
 
-The file you're importing should be structured as a JSON array of objects. Each object within this array represents a user with their respective details. For a better understanding of how to structure your user data, refer to this [schema](https://raw.githubusercontent.com/teamhanko/hanko/backend/v0.9.1/backend/json_schema/hanko.user_import.json).
+Structure your import file as a JSON array of user objects. Each object represents one user with their details. Reference the official [schema](https://raw.githubusercontent.com/teamhanko/hanko/backend/v0.9.1/backend/json_schema/hanko.user_import.json) for proper data formatting.
 
 ```json users.json
 [
@@ -73,8 +104,8 @@ The file you're importing should be structured as a JSON array of objects. Each 
 
 ## Export users
 
-You can use the [Hanko Admin API](https://docs.hanko.io/api-reference/admin/user-management/get-a-list-of-users) to retrieve a list of users with all their details, for export purposes.
+Export your user data using the [Hanko Admin API](https://docs.hanko.io/api-reference/admin/user-management/get-a-list-of-users) to retrieve comprehensive user information.
 
-We'll add a proper export feature similar to the import described above to Hanko Cloud soon.
+A dedicated export feature matching the import functionality will be added to Hanko Cloud in the near future.
 
-<Note>Hanko Admin API is a paid feature.</Note>
+<Note>The Hanko Admin API is available with paid plans.</Note>

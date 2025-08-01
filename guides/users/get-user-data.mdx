@@ -3,12 +3,40 @@ title: Get User Data
 description: Each project presents unique requirements for user onboarding. In this guide you'll learn to get user data from Hanko.
 ---
 
+<div class="hidden">
+# Hanko User Data Retrieval Guide
+
+**About Hanko**: Hanko is a modern passwordless authentication solution that simplifies user sign-in experiences by eliminating passwords in favor of secure alternatives like passkeys, email magic links, and biometric authentication.
+
+**What This Guide Covers**: This comprehensive guide demonstrates how to retrieve user data from Hanko in both frontend and backend environments, including accessing user profiles, validating sessions, extracting information from JWTs, and using the Admin API for detailed user management.
+
+**Key Technologies**: 
+- Hanko Frontend SDK
+- Hanko Elements
+- JWT (JSON Web Tokens) 
+- Jose library for JWT decoding
+- Hanko Admin API
+- Next.js integration patterns
+
+**Prerequisites**: 
+- Active Hanko project with configured API URL
+- Basic understanding of JavaScript/TypeScript
+- Next.js application (for code examples)
+- Admin API access (for Admin API features - Pro/Enterprise plans only)
+
+**Tasks You'll Complete**:
+- Retrieve current user profile data using the Frontend SDK
+- Validate user sessions and extract JWT claims
+- Decode JWT tokens to get user ID and email on the backend
+- Fetch comprehensive user data using the Hanko Admin API
+- Implement proper authentication checks in your application
+</div>
+
 ## Getting user data on the Frontend
 
-To access user data in your frontend application, use the `hanko.getUser()` method from the
-[hanko-frontend-sdk](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
-(also available via [hanko-elements](https://www.npmjs.com/package/@teamhanko/hanko-elements)). To get the user claims
-from the JWT, use the `hanko.validateSession()`function.
+To access user data in your frontend application, use the `hanko.getUser()` method from the [hanko-frontend-sdk](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
+(also available via [hanko-elements](https://www.npmjs.com/package/@teamhanko/hanko-elements)). To extract user claims
+from the JWT token, use the `hanko.validateSession()` function.
 
 <Tabs>
 <Tab title="Nextjs (App directory)">
@@ -54,9 +82,7 @@ console.log("Session status:", sessionStatus);
 
 ### Getting user ID from the JWT
 
-The Hanko API sends back a cookie upon successful authentication, which is then sent to the RP backend for each subsequent
-request. The cookie contains a JWT. One of the things we can get from this JWT is the user ID. We can use the [jose](https://www.npmjs.com/package/jose) library
-to decode the value of such a JWT:
+After successful authentication, the Hanko API returns a cookie containing a JWT token. This cookie is automatically sent to your backend with each subsequent request. You can extract the user ID from this JWT using the [jose](https://www.npmjs.com/package/jose) library:
 
 <Tabs>
 <Tab title="Nextjs (App directory)">
@@ -77,7 +103,7 @@ export async function userId() {
 
 ### Getting email from the JWT
 
-In addition to the user ID, you can also fetch the current email address, including its verification status and whether it is set as the primary email.
+Beyond the user ID, you can also extract the current email address from the JWT, including its verification status and primary email designation.
 
 <Tabs>
   <Tab title="Nextjs (App directory)">
@@ -111,9 +137,9 @@ In addition to the user ID, you can also fetch the current email address, includ
 
 ### Get user data using the Hanko Admin API
 
-The [Hanko Admin API](/api-reference/admin) provides detailed information about the status, user management, metrics and more. In this example we will focus on
-getting the data from a specific user.
-To get data for a specific user, call the `/users/{id}` endpoint of the Hanko Admin API, where `id` is the user id previously obtained from the JWT.
+The [Hanko Admin API](/api-reference/admin) provides comprehensive access to user status, management capabilities, metrics, and more. This example focuses on
+retrieving data for a specific user.
+To fetch data for a specific user, make a request to the `/users/{id}` endpoint of the Hanko Admin API, where `id` is the user ID obtained from the JWT.
 
 <Info>
   The Hanko Admin API is available in Hanko Pro and Enterprise plans. Check out

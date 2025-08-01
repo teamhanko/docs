@@ -1,0 +1,254 @@
+---
+title: React
+description: This prompt helps you (and your AI) to implementing Hanko with React.
+---
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #&lt;filename&gt;.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+
+```markdown
+## Add Hanko to React Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a React application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for React with Vite and React Router DOM.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Install** `@teamhanko/hanko-elements@latest` and `react-router-dom` for navigation
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL (likely http://localhost:5173 for development)
+- **Configure** `VITE_HANKO_API_URL` environment variable in `.env` (with VITE_ prefix for Vite)
+- **Add** TypeScript declarations in `custom.d.ts` for web component support
+- **Create** HankoAuth and HankoProfile React components with proper hooks
+- **Use** React Router DOM for navigation between login and dashboard pages
+- **Implement** logout functionality with proper navigation
+- **Handle** session events with useEffect and useCallback hooks
+- **Register** Hanko web components using the register function
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use VITE_ prefix** for environment variables in Vite-based React apps
+2. **Import from import.meta.env** for environment variables in Vite
+3. **Add TypeScript declarations** in `custom.d.ts` for Hanko web components
+4. **Use useNavigate hook** from react-router-dom for programmatic navigation
+5. **Register components** using `register()` from hanko-elements in useEffect
+6. **Handle session events** with `hanko.onSessionCreated()` in useEffect
+7. **Use useMemo** for Hanko instance creation to avoid unnecessary re-renders
+8. **Use useCallback** for event handlers to prevent infinite re-renders
+9. **Install react-router-dom** alongside hanko-elements for navigation
+10. **Create separate components** for HankoAuth, HankoProfile, and LogoutButton
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use environment variables without VITE_ prefix in Vite projects
+2. **Do not** forget TypeScript declarations for web components
+3. **Do not** skip component registration with register() function
+4. **Do not** create Hanko instances in render without useMemo
+5. **Do not** forget dependency arrays in useEffect hooks
+6. **Do not** use window.location for navigation (use useNavigate instead)
+7. **Do not** skip error handling in register() and logout() calls
+8. **Do not** mix up router imports (use react-router-dom, not @reach/router)
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Environment Setup**
+```bash
+npm install @teamhanko/hanko-elements react-router-dom
+```
+
+```env
+VITE_HANKO_API_URL=https://your-hanko-api-url.hanko.io
+```
+
+### **TypeScript Declarations**
+```typescript
+// src/custom.d.ts
+import { HankoAuthElementProps, HankoProfileElementProps, HankoEventsElementProps } from "@teamhanko/hanko-elements";
+
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements {
+        "hanko-auth": HankoAuthElementProps;
+        "hanko-login": HankoAuthElementProps;
+        "hanko-registration": HankoAuthElementProps;
+        "hanko-profile": HankoProfileElementProps;
+        "hanko-events": HankoEventsElementProps;
+    }
+  }
+}
+```
+
+### **HankoAuth Component**
+```tsx
+import { useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from 'react-router-dom';
+import { register, Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+export default function HankoAuth() {
+  const navigate = useNavigate();
+  
+  const hanko = useMemo(() => new Hanko(hankoApi), []);
+  
+  const redirectAfterLogin = useCallback(() => {
+    navigate("/dashboard");
+  }, [navigate]);
+
+  useEffect(
+    () =>
+      hanko?.onSessionCreated(() => {
+        redirectAfterLogin();
+      }),
+    [hanko, redirectAfterLogin]
+  );
+
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      console.error(error);
+    });
+  }, []);
+
+  return <hanko-auth />;
+}
+```
+
+### **HankoProfile Component**
+```tsx
+import { useEffect } from "react";
+import { register } from "@teamhanko/hanko-elements";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+export default function HankoProfile() {
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      console.error(error);
+    });
+  }, []);
+
+  return <hanko-profile />;
+}
+```
+
+### **Logout Button Component**
+```tsx
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+export default function LogoutButton() {
+  const navigate = useNavigate();
+  const [hanko, setHanko] = useState<Hanko>();
+
+  useEffect(() => {
+    import("@teamhanko/hanko-elements").then(({ Hanko }) =>
+      setHanko(new Hanko(hankoApi))
+    );
+  }, []);
+
+  const logout = async () => {
+    try {
+      await hanko?.logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+  return <button onClick={logout}>Logout</button>;
+}
+```
+
+### **App Router Setup**
+```tsx
+import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      <Route index element={<LoginPage />} />
+      <Route path="dashboard" element={<DashboardPage />} />
+    </Route>
+  )
+);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```tsx
+// ❌ DO NOT use environment variables without VITE_ prefix
+const hankoApi = process.env.REACT_APP_HANKO_API_URL; // Wrong for Vite
+
+// ❌ DO NOT skip TypeScript declarations
+// Missing custom.d.ts file will cause TypeScript errors
+
+// ❌ DO NOT create Hanko instances without useMemo
+function HankoAuth() {
+  const hanko = new Hanko(hankoApi); // Will create new instance on every render
+  // Use useMemo instead
+}
+
+// ❌ DO NOT forget dependency arrays in useEffect
+useEffect(() => {
+  hanko?.onSessionCreated(redirectAfterLogin);
+}); // Missing dependency array
+
+// ❌ DO NOT use window.location for navigation
+const redirectAfterLogin = () => {
+  window.location.href = "/dashboard"; // Use useNavigate instead
+};
+
+// ❌ DO NOT skip component registration
+function HankoAuth() {
+  // Missing register() call
+  return <hanko-auth />;
+}
+
+// ❌ DO NOT use incorrect router imports
+import { useNavigate } from "@reach/router"; // Outdated package
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Environment**: Is `VITE_HANKO_API_URL` configured with VITE_ prefix?
+2. **TypeScript**: Are custom.d.ts declarations added for web components?
+3. **Registration**: Is `register()` called in useEffect for each component?
+4. **Navigation**: Is `useNavigate` from react-router-dom used for redirects?
+5. **Hooks**: Are useMemo and useCallback used appropriately to prevent re-renders?
+6. **Dependencies**: Are dependency arrays provided for all useEffect hooks?
+7. **Error Handling**: Are register() and logout() calls wrapped in try-catch?
+8. **Router**: Is react-router-dom used (not outdated alternatives)?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```

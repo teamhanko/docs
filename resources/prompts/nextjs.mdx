@@ -1,0 +1,209 @@
+---
+title: NextJS
+description: This prompt helps you (and your AI) to implementing Hanko with NextJS.
+---
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #&lt;filename&gt;.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+
+```markdown
+## Add Hanko to Next.js Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a Next.js application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for both App Router and Pages Router architectures.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Install** `@teamhanko/hanko-elements@latest` - this provides pre-built authentication components
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL (likely http://localhost:3000 for development)
+- **Configure** `NEXT_PUBLIC_HANKO_API_URL` environment variable in `.env.local`
+- **Add** TypeScript declarations in `custom.d.ts` for web component support
+- **Create** HankoAuth component with session event handling and routing
+- **Create** HankoProfile component for user credential management
+- **Implement** logout functionality with proper session cleanup
+- **Secure** routes using Next.js middleware with Hanko session validation
+- **Retrieve** user data both client-side and server-side using Hanko SDK
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use correct router imports**: `next/navigation` for App Router, `next/router` for Pages Router
+2. **Add "use client" directive** for App Router components that use hooks or browser APIs
+3. **Install @teamhanko/hanko-elements** - not any other Hanko package for frontend integration
+4. **Set NEXT_PUBLIC_HANKO_API_URL** in `.env.local` (with NEXT_PUBLIC_ prefix for browser access)
+5. **Register web components** using `register(hankoApi)` in useEffect
+6. **Handle session events** with `hanko.onSessionCreated()` for post-login redirects
+7. **Use middleware.ts** at project root to protect routes with session validation
+8. **Validate sessions** using `/sessions/validate` API endpoint with POST request
+9. **Extract user data** from validated session using user_id field
+10. **Import Hanko SDK** correctly: `import { Hanko, register } from "@teamhanko/hanko-elements"`
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** mix App Router and Pages Router imports (next/navigation vs next/router)
+2. **Do not** forget "use client" directive for App Router components using hooks
+3. **Do not** use outdated Hanko packages or import paths
+4. **Do not** place middleware.ts in wrong location (must be at project root)
+5. **Do not** use GET requests for session validation (must be POST)
+6. **Do not** forget to handle both success and error cases in authentication flows
+7. **Do not** skip TypeScript declarations for web components
+8. **Do not** use hardcoded redirect URLs without making them configurable
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Environment Setup**
+```bash
+npm install @teamhanko/hanko-elements
+```
+
+```env
+NEXT_PUBLIC_HANKO_API_URL=https://your-hanko-api-url.hanko.io
+```
+
+### **TypeScript Declarations (custom.d.ts)**
+```typescript
+import { HankoAuthElementProps, HankoProfileElementProps, HankoEventsElementProps } from "@teamhanko/hanko-elements";
+
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements {
+        "hanko-auth": HankoAuthElementProps;
+        "hanko-profile": HankoProfileElementProps;
+        "hanko-events": HankoEventsElementProps;
+    }
+  }
+}
+```
+
+### **HankoAuth Component (App Router)**
+```typescript
+"use client";
+
+import { useEffect, useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
+import { register, Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL || '';
+
+export default function HankoAuth() {
+  const router = useRouter();
+  const [hanko, setHanko] = useState<Hanko>();
+
+  useEffect(() => setHanko(new Hanko(hankoApi)), []);
+
+  const redirectAfterLogin = useCallback(() => {
+    router.replace("/dashboard");
+  }, [router]);
+
+  useEffect(
+    () =>
+      hanko?.onSessionCreated(() => {
+        redirectAfterLogin();
+      }),
+    [hanko, redirectAfterLogin]
+  );
+
+  useEffect(() => {
+    register(hankoApi).catch((error) => {
+      console.log(error);
+    });
+  }, []);
+
+  return <hanko-auth />;
+}
+```
+
+### **Session Validation Middleware**
+```typescript
+import { NextResponse, NextRequest } from "next/server";
+
+const hankoApi = process.env.NEXT_PUBLIC_HANKO_API_URL;
+
+export async function middleware(req: NextRequest) {
+  const token = req.cookies.get("hanko")?.value;
+
+  const validationOptions = {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: `{"session_token":"${token}"}`
+  }
+
+  try {
+    const validationResponse = await fetch(
+      new URL(`${hankoApi}/sessions/validate`),
+      validationOptions
+    );
+
+    if (!validationResponse.ok) {
+      throw new Error('Session validation failed');
+    }
+    
+    const responseData = await validationResponse.json();
+
+    if(!responseData.is_valid){
+      throw new Error('Session token not valid');
+    }
+
+  } catch (error) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+}
+
+export const config = {
+  matcher: ["/dashboard"],
+};
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```typescript
+// ❌ DO NOT use old Hanko package names
+import { Hanko } from "@hanko/hanko-elements" // Outdated
+
+// ❌ DO NOT mix router imports
+import { useRouter } from "next/router"; // Wrong for App Router
+import { useRouter } from "next/navigation"; // Wrong for Pages Router
+
+// ❌ DO NOT use GET for session validation
+fetch(`${hankoApi}/sessions/validate?token=${token}`) // Wrong method
+
+// ❌ DO NOT forget "use client" for App Router
+export default function HankoAuth() { // Missing "use client"
+  const router = useRouter(); // Will fail in App Router
+}
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Package**: Is `@teamhanko/hanko-elements` used (not old package names)?
+2. **Router**: Are imports matching the chosen architecture (App vs Pages Router)?
+3. **Client Directive**: Is "use client" added for App Router components with hooks?
+4. **Environment**: Is `NEXT_PUBLIC_HANKO_API_URL` configured correctly?
+5. **Session Validation**: Is POST method used for `/sessions/validate` endpoint?
+6. **Middleware**: Is middleware.ts placed at project root with correct matcher config?
+7. **Error Handling**: Are both success and error cases handled in auth flows?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```

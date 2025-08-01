@@ -1,0 +1,290 @@
+---
+title: Python
+description: This prompt helps you (and your AI) to implementing Hanko with Python.
+---
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #&lt;filename&gt;.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+
+```markdown
+## Add Hanko to Python Backend
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) session validation into a Python backend application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for server-side session validation in Python.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Validate** session tokens using Hanko's `/sessions/validate` POST endpoint
+- **Extract** session tokens from HTTP cookies (typically named "hanko")
+- **Use** Python requests library or similar HTTP client for validation
+- **Implement** proper error handling with try/except blocks
+- **Create** reusable validation functions or classes
+- **Handle** JSON responses from validation endpoint correctly
+- **Configure** Hanko API URL from environment variables
+- **Return** boolean values from validation functions
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use POST method** for `/sessions/validate` endpoint (never GET)
+2. **Send JSON payload** with `session_token` field in request body
+3. **Check HTTP status codes** before parsing JSON responses
+4. **Use try/except blocks** for all HTTP requests and JSON parsing
+5. **Import requests library** or equivalent HTTP client for API calls
+6. **Extract tokens from cookies** using Flask/Django cookie methods
+7. **Return boolean values** from validation functions for clear results
+8. **Configure API URLs** from environment variables (os.environ)
+9. **Handle None/empty tokens** by returning False immediately
+10. **Log validation errors** appropriately without exposing sensitive data
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use GET method for session validation (must be POST)
+2. **Do not** send tokens in URL parameters or query strings
+3. **Do not** skip error handling for HTTP requests or JSON parsing
+4. **Do not** trust validation without checking HTTP status codes
+5. **Do not** hardcode API URLs in production code
+6. **Do not** expose internal validation errors to client responses
+7. **Do not** skip None/empty token checks before making requests
+8. **Do not** use synchronous requests in async frameworks without proper handling
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Basic Validation Function**
+```python
+import requests
+import os
+from typing import Optional
+
+def validate_hanko_session(token: Optional[str]) -> bool:
+    """Validate a Hanko session token."""
+    if not token:
+        return False
+    
+    hanko_api_url = os.environ.get('HANKO_API_URL')
+    if not hanko_api_url:
+        raise ValueError('HANKO_API_URL environment variable not set')
+    
+    try:
+        response = requests.post(
+            f'{hanko_api_url}/sessions/validate',
+            json={'session_token': token},
+            headers={'Content-Type': 'application/json'},
+            timeout=10
+        )
+        
+        if response.status_code != 200:
+            return False
+            
+        validation_data = response.json()
+        return validation_data.get('is_valid', False)
+        
+    except (requests.RequestException, ValueError, KeyError) as e:
+        print(f'Token validation error: {e}')
+        return False
+```
+
+### **Flask Middleware Example**
+```python
+from flask import Flask, request, jsonify
+from functools import wraps
+import requests
+import os
+
+app = Flask(__name__)
+
+def require_auth(f):
+    """Decorator to require valid Hanko authentication."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Extract token from cookies
+        token = request.cookies.get('hanko')
+        
+        if not token:
+            return jsonify({'error': 'No session token provided'}), 401
+        
+        if not validate_hanko_session(token):
+            return jsonify({'error': 'Invalid session token'}), 401
+            
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/protected')
+@require_auth
+def protected_route():
+    return jsonify({'message': 'This is a protected route'})
+
+def validate_hanko_session(token: str) -> bool:
+    """Validate session token with Hanko API."""
+    if not token:
+        return False
+        
+    hanko_api_url = os.environ.get('HANKO_API_URL')
+    
+    try:
+        response = requests.post(
+            f'{hanko_api_url}/sessions/validate',
+            json={'session_token': token},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            return response.json().get('is_valid', False)
+        return False
+        
+    except Exception as e:
+        print(f'Validation error: {e}')
+        return False
+```
+
+### **Django Middleware Example**
+```python
+from django.http import JsonResponse
+from django.utils.deprecation import MiddlewareMixin
+import requests
+import os
+
+class HankoAuthMiddleware(MiddlewareMixin):
+    """Django middleware for Hanko authentication."""
+    
+    def process_request(self, request):
+        # Only protect specific paths
+        protected_paths = ['/api/protected/']
+        
+        if not any(request.path.startswith(path) for path in protected_paths):
+            return None
+            
+        token = request.COOKIES.get('hanko')
+        
+        if not token:
+            return JsonResponse({'error': 'No session token'}, status=401)
+            
+        if not self.validate_token(token):
+            return JsonResponse({'error': 'Invalid session'}, status=401)
+            
+        return None
+    
+    def validate_token(self, token: str) -> bool:
+        """Validate token with Hanko API."""
+        hanko_api_url = os.environ.get('HANKO_API_URL')
+        
+        try:
+            response = requests.post(
+                f'{hanko_api_url}/sessions/validate',
+                json={'session_token': token},
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            return response.status_code == 200 and response.json().get('is_valid', False)
+            
+        except Exception:
+            return False
+```
+
+### **FastAPI Dependency Example**
+```python
+from fastapi import FastAPI, Depends, HTTPException, Request
+import requests
+import os
+from typing import Optional
+
+app = FastAPI()
+
+async def get_current_user(request: Request) -> str:
+    """FastAPI dependency for authentication."""
+    token = request.cookies.get('hanko')
+    
+    if not token:
+        raise HTTPException(status_code=401, detail='No session token')
+    
+    if not validate_hanko_session(token):
+        raise HTTPException(status_code=401, detail='Invalid session')
+    
+    return token  # or return user_id extracted from token
+
+@app.get('/protected')
+async def protected_route(current_user: str = Depends(get_current_user)):
+    return {'message': 'This is a protected route'}
+
+def validate_hanko_session(token: str) -> bool:
+    """Validate session token."""
+    hanko_api_url = os.environ.get('HANKO_API_URL')
+    
+    try:
+        response = requests.post(
+            f'{hanko_api_url}/sessions/validate',
+            json={'session_token': token},
+            timeout=10
+        )
+        
+        return response.status_code == 200 and response.json().get('is_valid', False)
+    except Exception:
+        return False
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```python
+## ❌ DO NOT use GET method for validation
+response = requests.get(f'{hanko_api_url}/sessions/validate?token={token}')
+
+## ❌ DO NOT skip error handling
+response = requests.post(url, json=data)
+validation_data = response.json()  # Could fail
+
+## ❌ DO NOT forget to check status codes
+validation_data = response.json()
+return validation_data['is_valid']  # Could be error response
+
+## ❌ DO NOT send tokens in URL path
+response = requests.post(f'{hanko_api_url}/sessions/validate/{token}')
+
+## ❌ DO NOT skip token existence check
+def validate_token(token):
+    # Should check if token exists first
+    response = requests.post(...)
+
+## ❌ DO NOT hardcode API URLs
+response = requests.post('https://hardcoded-url.hanko.io/sessions/validate')
+
+## ❌ DO NOT expose validation errors
+except Exception as e:
+    return JsonResponse({'error': str(e)}, status=500)  # Exposes internal errors
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **HTTP Method**: Is POST method used for `/sessions/validate` endpoint?
+2. **Request Body**: Is session token sent in JSON body with `session_token` field?
+3. **Error Handling**: Are try/except blocks used for HTTP requests and JSON parsing?
+4. **Status Check**: Are HTTP status codes checked before parsing responses?
+5. **Token Check**: Are None/empty tokens handled before making requests?
+6. **Environment**: Are API URLs configured from environment variables?
+7. **Security**: Are validation errors logged but not exposed to clients?
+8. **Framework**: Are appropriate cookie extraction methods used for the framework?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```

@@ -1,0 +1,240 @@
+---
+title: Angular
+description: This prompt helps you (and your AI) to implementing Hanko with Angular.
+---
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #&lt;filename&gt;.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+
+```markdown
+## Add Hanko to Angular Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into an Angular application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for Angular with standalone components and Angular Router.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Install** `@teamhanko/hanko-elements@latest` for authentication components
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL (likely http://localhost:4200 for development)
+- **Create** Angular application with `--standalone --routing` flags for modern architecture
+- **Configure** environment files with Hanko API URL
+- **Add** CUSTOM_ELEMENTS_SCHEMA to enable web components in Angular
+- **Create** HankoAuth and HankoProfile standalone components
+- **Use** Angular Router for navigation between login and dashboard pages
+- **Implement** logout functionality with proper navigation
+- **Handle** session events with Angular's event binding system
+- **Register** Hanko web components using the register function in ngOnInit
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use --standalone --routing flags** when creating Angular applications
+2. **Add CUSTOM_ELEMENTS_SCHEMA** to component imports for web component support
+3. **Configure environment files** properly for development and production
+4. **Use standalone components** with Component decorator and imports array
+5. **Import Router from @angular/router** for programmatic navigation
+6. **Register components** using `register()` from hanko-elements in ngOnInit
+7. **Handle events** with Angular event binding `(onSessionCreated)`
+8. **Use dependency injection** for Router service in constructors
+9. **Install @angular/cli globally** before creating projects
+10. **Create separate components** for HankoAuth, HankoProfile, and pages
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** create Angular apps without --standalone --routing flags
+2. **Do not** forget CUSTOM_ELEMENTS_SCHEMA for web components
+3. **Do not** skip component registration with register() function
+4. **Do not** use modules when standalone components are preferred
+5. **Do not** forget to inject Router service in component constructors
+6. **Do not** skip environment configuration for API URLs
+7. **Do not** use window.location for navigation (use Router.navigate instead)
+8. **Do not** forget error handling in register() and logout() calls
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Environment Setup**
+```bash
+npm install -g @angular/cli
+ng new project-name --style=css --routing --standalone --defaults
+npm install @teamhanko/hanko-elements
+```
+
+### **Environment Configuration**
+```typescript
+// src/environments/environment.ts
+export const environment = {
+  production: false,
+  hankoApiUrl: 'https://your-hanko-api-url.hanko.io'
+};
+```
+
+### **HankoAuth Standalone Component**
+```typescript
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Router } from '@angular/router';
+import { register } from '@teamhanko/hanko-elements';
+import { environment } from '../environments/environment';
+
+@Component({
+  selector: 'app-hanko-auth',
+  standalone: true,
+  imports: [],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `<hanko-auth (onSessionCreated)="redirectAfterLogin()"></hanko-auth>`
+})
+export class HankoAuthComponent implements OnInit {
+  
+  constructor(private router: Router) {}
+
+  ngOnInit(): void {
+    register(environment.hankoApiUrl).catch((error) => {
+      console.error(error);
+    });
+  }
+
+  redirectAfterLogin(): void {
+    this.router.navigate(['/dashboard']);
+  }
+}
+```
+
+### **HankoProfile Standalone Component**
+```typescript
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { register } from '@teamhanko/hanko-elements';
+import { environment } from '../environments/environment';
+
+@Component({
+  selector: 'app-hanko-profile',
+  standalone: true,
+  imports: [],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `<hanko-profile></hanko-profile>`
+})
+export class HankoProfileComponent implements OnInit {
+
+  ngOnInit(): void {
+    register(environment.hankoApiUrl).catch((error) => {
+      console.error(error);
+    });
+  }
+}
+```
+
+### **Angular Router Configuration**
+```typescript
+// src/app/app.routes.ts
+import { Routes } from '@angular/router';
+import { HomeComponent } from './home/home.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+
+export const routes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: '**', redirectTo: '' }
+];
+```
+
+### **Main App Component**
+```typescript
+// src/app/app.component.ts
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet],
+  template: `<router-outlet></router-outlet>`
+})
+export class AppComponent {
+  title = 'project-name';
+}
+```
+
+### **Page Components**
+```typescript
+// src/app/home/home.component.ts
+import { Component } from '@angular/core';
+import { HankoAuthComponent } from '../hanko-auth/hanko-auth.component';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [HankoAuthComponent],
+  template: `<app-hanko-auth></app-hanko-auth>`
+})
+export class HomeComponent {}
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```typescript
+// ❌ DO NOT create apps without standalone and routing flags
+ng new project-name // Missing --standalone --routing
+
+// ❌ DO NOT forget CUSTOM_ELEMENTS_SCHEMA
+@Component({
+  // Missing schemas: [CUSTOM_ELEMENTS_SCHEMA]
+})
+
+// ❌ DO NOT use modules when standalone is preferred
+@NgModule({
+  declarations: [HankoAuthComponent] // Use standalone components instead
+})
+
+// ❌ DO NOT skip component registration
+ngOnInit(): void {
+  // Missing register() call
+}
+
+// ❌ DO NOT use window.location for navigation
+redirectAfterLogin(): void {
+  window.location.href = '/dashboard'; // Use router.navigate instead
+}
+
+// ❌ DO NOT forget to inject Router service
+export class HankoAuthComponent {
+  // Missing constructor(private router: Router) {}
+  
+  redirectAfterLogin(): void {
+    this.router.navigate(['/dashboard']); // router is undefined
+  }
+}
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Project Setup**: Is Angular app created with `--standalone --routing` flags?
+2. **Schema**: Is `CUSTOM_ELEMENTS_SCHEMA` added to component schemas?
+3. **Environment**: Are environment files configured with Hanko API URL?
+4. **Registration**: Is `register()` called in `ngOnInit` for each component?
+5. **Navigation**: Is `Router` service injected and used for navigation?
+6. **Components**: Are standalone components used with proper imports array?
+7. **Events**: Are session events handled with Angular event binding?
+8. **Error Handling**: Are register() and logout() calls wrapped in try-catch?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```

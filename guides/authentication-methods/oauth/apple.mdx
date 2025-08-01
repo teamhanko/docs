@@ -3,6 +3,34 @@ title: Add Apple Login
 sidebarTitle: Apple
 ---
 
+<div class="hidden">
+# Hanko Apple OAuth Integration Guide
+
+**About Hanko**: Hanko is an open source authentication and user management solution that is easy to integrate, framework-agnostic, and built on privacy-first principles like data minimalism and phishing resistance.
+
+**What This Guide Covers**: This guide demonstrates how to integrate Apple's "Sign in with Apple" OAuth service with Hanko, allowing users to authenticate using their Apple ID accounts. You'll learn to configure Apple's developer console, set up OAuth credentials, and implement Apple login in your application.
+
+**Key Technologies**: 
+- OAuth 2.0 and OpenID Connect protocols
+- Apple Sign In OAuth provider
+- JWT (JSON Web Tokens) for secure authentication
+- Apple's private email relay service
+- ECDSA cryptographic signing for client secrets
+
+**Prerequisites**: 
+- Active Hanko Cloud account with a configured project
+- Apple Developer account with appropriate permissions
+- Basic understanding of OAuth 2.0 flow
+- Docker installed for client secret generation
+
+**Tasks You'll Complete**:
+1. Register and configure Apple App ID and Services ID
+2. Generate required cryptographic keys and client secrets
+3. Configure Apple OAuth credentials in Hanko Console
+4. Implement Apple authentication in your frontend application
+5. Handle Apple's private email relay service (optional)
+</div>
+
 <Steps>
 
 <Step title="Obtain Apple Credentials">
@@ -127,7 +155,7 @@ Secrets expire after 6 months and must be regenerated before the expiration.
                -  Use ** to act as a super-wildcard/match-all.
               </Note>
 
-2.  In the 'Providers' section, select Google and enable its toggle switch.
+2.  In the 'Providers' section, select Apple and enable its toggle switch.
 3.  Input the earlier noted 'Services ID' and 'Secret Key', then click 'Save'.
 
     <img
@@ -144,28 +172,28 @@ Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-element
 <Tabs>
 
 <Tab title="Hanko Elements">
-1. Integrate the `<hanko-auth>` component from `hanko-elements` based on our frontend guides. If everything is good, the component will display a button for signing in with 'Github' in login view.
+1. Integrate the `<hanko-auth>` component from `hanko-elements` based on our frontend guides. If everything is configured correctly, the component will display a button for signing in with Apple in the login view.
 
     <Note>
     Make sure to configure the page the web component is embedded on as your error redirect URL as well as an allowed redirect URL.
     </Note>
 
-    Post successful GitHub authentication, the backend sets a session cookie and errors during authentication are displayed within the component accordingly.
+    After successful Apple authentication, the backend sets a session cookie and any authentication errors are displayed within the component.
 
 </Tab>
 
 <Tab title="Hanko Frontend SDK">
 1. For a custom UI, initialize third party sign-in using `@teamhanko/hanko-frontend-sdk`.
-2. Create Hanko client instance and call `thirdParty.auth` with github as the provider.
+2. Create a Hanko client instance and call `thirdParty.auth` with `apple` as the provider.
 
         ```js 
         import { Hanko } from "@teamhanko/hanko-frontend-sdk";
 
         const hanko = new Hanko("<your_hanko_api_url>");
 
-        async function signInWithGitHub() {
+        async function signInWithApple() {
         try {
-            await hanko.thirdParty.auth("github", "<your_redirect_url>");
+            await hanko.thirdParty.auth("apple", "<your_redirect_url>");
         } catch (error) {
             // handle error
         }

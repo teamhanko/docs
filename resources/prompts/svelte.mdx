@@ -1,0 +1,234 @@
+---
+title: Svelte
+description: This prompt helps you (and your AI) to implementing Hanko with Svelte.
+---
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #&lt;filename&gt;.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+
+```markdown
+## Add Hanko to Svelte Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a Svelte application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for Svelte with Vite and svelte-routing.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Install** `@teamhanko/hanko-elements@latest` and `svelte-routing` for navigation
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL (likely http://localhost:5173 for development)
+- **Configure** `VITE_HANKO_API_URL` environment variable in `.env` (with VITE_ prefix for Vite)
+- **Create** HankoAuth and HankoProfile Svelte components with reactive variables
+- **Use** svelte-routing for navigation between login and dashboard pages
+- **Implement** logout functionality with proper navigation
+- **Handle** session events with `on:onSessionCreated` in components
+- **Register** Hanko web components using the register function in onMount
+- **Manage** authentication state with Svelte stores if needed
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Use VITE_ prefix** for environment variables in Vite-based Svelte apps
+2. **Import from import.meta.env** for environment variables in Vite
+3. **Use onMount lifecycle** for registering Hanko components in Svelte
+4. **Handle events with on:eventName** syntax (e.g., `on:onSessionCreated`)
+5. **Use navigate from svelte-routing** for programmatic navigation
+6. **Register components** using `register()` from hanko-elements in onMount
+7. **Create reactive variables** with `let` for component state
+8. **Install svelte-routing** alongside hanko-elements for navigation
+9. **Use Router, Route, and link components** from svelte-routing
+10. **Handle authentication redirects** with navigate function
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use environment variables without VITE_ prefix in Vite projects
+2. **Do not** forget to register Hanko components in onMount lifecycle
+3. **Do not** use React-style event handlers (onClick instead of on:click)
+4. **Do not** skip component registration with register() function
+5. **Do not** use window.location for navigation (use navigate instead)
+6. **Do not** forget error handling in register() and logout() calls
+7. **Do not** mix up Svelte event syntax with other framework patterns
+8. **Do not** skip installing svelte-routing for navigation
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Environment Setup**
+```bash
+npm install @teamhanko/hanko-elements svelte-routing
+```
+
+```env
+VITE_HANKO_API_URL=https://your-hanko-api-url.hanko.io
+```
+
+### **HankoAuth Svelte Component**
+```svelte
+<script>
+  import { onMount } from "svelte";
+  import { navigate } from "svelte-routing";
+  import { register } from "@teamhanko/hanko-elements";
+  
+  const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+  const redirectAfterLogin = () => {
+    navigate("/dashboard");
+  };
+
+  onMount(async () => {
+    register(hankoApi).catch((error) => {
+      console.error(error);
+    });
+  });
+</script>
+
+<hanko-auth on:onSessionCreated={redirectAfterLogin} />
+```
+
+### **HankoProfile Svelte Component**
+```svelte
+<script>
+  import { onMount } from "svelte";
+  import { register } from "@teamhanko/hanko-elements";
+  
+  const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+
+  onMount(async () => {
+    register(hankoApi).catch((error) => {
+      console.error(error);
+    });
+  });
+</script>
+
+<hanko-profile />
+```
+
+### **Logout Button Component**
+```svelte
+<script>
+  import { Hanko } from "@teamhanko/hanko-elements";
+  import { navigate } from "svelte-routing";
+  
+  const hankoApi = import.meta.env.VITE_HANKO_API_URL;
+  const hanko = new Hanko(hankoApi);
+  
+  const logout = () => {
+    hanko.logout().catch((error) => {
+      console.error(error);
+    });
+    navigate("/");
+  };
+</script>
+
+<button on:click={logout}>Logout</button>
+```
+
+### **App.svelte with Router**
+```svelte
+<script>
+  import { Router, Route } from "svelte-routing";
+  import LoginPage from "./LoginPage.svelte";
+  import DashboardPage from "./DashboardPage.svelte";
+</script>
+
+<Router>
+  <Route path="/" component={LoginPage} />
+  <Route path="/dashboard" component={DashboardPage} />
+</Router>
+```
+
+### **Page Components**
+```svelte
+<!-- LoginPage.svelte -->
+<script>
+  import HankoAuth from "./components/HankoAuth.svelte";
+</script>
+
+<div>
+  <h1>Login</h1>
+  <HankoAuth />
+</div>
+```
+
+```svelte
+<!-- DashboardPage.svelte -->
+<script>
+  import HankoProfile from "./components/HankoProfile.svelte";
+  import LogoutButton from "./components/LogoutButton.svelte";
+</script>
+
+<div>
+  <h1>Dashboard</h1>
+  <HankoProfile />
+  <LogoutButton />
+</div>
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```svelte
+<!-- ❌ DO NOT use environment variables without VITE_ prefix -->
+<script>
+  const hankoApi = process.env.HANKO_API_URL; // Wrong for Vite
+</script>
+
+<!-- ❌ DO NOT use React-style event handlers -->
+<hanko-auth onClick={redirectAfterLogin} /> <!-- Wrong syntax -->
+
+<!-- ❌ DO NOT forget to register components -->
+<script>
+  // Missing register() call in onMount
+</script>
+<hanko-auth />
+
+<!-- ❌ DO NOT use window.location for navigation -->
+<script>
+  const redirectAfterLogin = () => {
+    window.location.href = "/dashboard"; // Use navigate instead
+  };
+</script>
+
+<!-- ❌ DO NOT skip svelte-routing installation -->
+// Missing Router, Route components for navigation
+
+<!-- ❌ DO NOT forget error handling -->
+<script>
+  onMount(async () => {
+    register(hankoApi); // Missing .catch() for error handling
+  });
+</script>
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Environment**: Is `VITE_HANKO_API_URL` configured with VITE_ prefix?
+2. **Registration**: Is `register()` called in `onMount` for each component?
+3. **Events**: Are Svelte event handlers using `on:eventName` syntax?
+4. **Navigation**: Is `navigate` from svelte-routing used for redirects?
+5. **Routing**: Are Router and Route components from svelte-routing used?
+6. **Lifecycle**: Is `onMount` used correctly for component initialization?
+7. **Error Handling**: Are register() and logout() calls wrapped with .catch()?
+8. **Dependencies**: Is svelte-routing installed for navigation functionality?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```

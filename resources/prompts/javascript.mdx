@@ -1,0 +1,240 @@
+---
+title: JavaScript
+description: This prompt helps you (and your AI) to implementing Hanko with Vanilla JavaScript.
+---
+
+## How to use these prompts
+
+You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
+
+- Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #&lt;filename&gt;.
+- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+
+## Prompt
+
+```markdown
+## Add Hanko to Vanilla JavaScript Application
+
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a vanilla JavaScript application.  
+**Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for vanilla JavaScript with ES modules.
+
+---
+
+## **1. Official Hanko Integration Overview**
+
+Use only the **current** approach from Hanko's documentation:
+
+- **Import** `@teamhanko/hanko-elements` via ES modules from CDN (esm.run)
+- **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL
+- **Configure** Hanko API URL directly in JavaScript (no build tools needed)
+- **Use** `<hanko-auth>` and `<hanko-profile>` web components directly in HTML
+- **Register** web components using the register function with API URL
+- **Handle** session events with `hanko.onSessionCreated()` callbacks
+- **Implement** logout functionality using the Hanko SDK
+- **Navigate** using `document.location.href` for page redirects
+- **Serve** files from a web server to support ES modules
+
+---
+
+## **2. CRITICAL INSTRUCTIONS FOR AI MODELS**
+
+### **2.1 – ALWAYS DO THE FOLLOWING**
+
+1. **Import from CDN** using `https://esm.run/@teamhanko/hanko-elements` for ES modules
+2. **Use type="module"** in script tags for ES module support
+3. **Configure API URL** directly in JavaScript without environment variables
+4. **Register components** using `await register(hankoApiUrl)` before use
+5. **Handle session events** with `hanko.onSessionCreated()` for post-login actions
+6. **Use document.location.href** for navigation in vanilla JavaScript
+7. **Destructure hanko instance** from register function return value
+8. **Serve from web server** to avoid CORS issues with ES modules
+9. **Use async/await** with register function calls
+10. **Add web components** directly to HTML as custom elements
+
+### **2.2 – NEVER DO THE FOLLOWING**
+
+1. **Do not** use build tools or bundlers (this is for vanilla JavaScript)
+2. **Do not** use npm install or package.json for this approach
+3. **Do not** forget type="module" attribute in script tags
+4. **Do not** skip await keyword when calling register function
+5. **Do not** use framework-specific navigation methods
+6. **Do not** forget to destructure hanko instance from register return
+7. **Do not** use process.env for environment variables (no Node.js environment)
+8. **Do not** skip web server when testing (file:// protocol won't work)
+
+---
+
+## **3. CORRECT IMPLEMENTATION PATTERNS**
+
+### **Login Page HTML**
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <hanko-auth></hanko-auth>
+
+    <script type="module">
+        import { register } from "https://esm.run/@teamhanko/hanko-elements";
+
+        const hankoApiUrl = "https://your-hanko-api-url.hanko.io";
+        
+        const { hanko } = await register(hankoApiUrl);
+
+        hanko.onSessionCreated(() => {
+            // Successfully logged in, redirect to dashboard
+            document.location.href = "/dashboard.html";
+        });
+    </script>
+</body>
+</html>
+```
+
+### **Profile/Dashboard Page HTML**
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <hanko-profile></hanko-profile>
+    <button id="logout-btn">Logout</button>
+
+    <script type="module">
+        import { register, Hanko } from "https://esm.run/@teamhanko/hanko-elements";
+
+        const hankoApiUrl = "https://your-hanko-api-url.hanko.io";
+        
+        // Register profile component
+        await register(hankoApiUrl);
+        
+        // Set up logout functionality
+        const hanko = new Hanko(hankoApiUrl);
+        
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            try {
+                await hanko.logout();
+                document.location.href = "/login.html";
+            } catch (error) {
+                console.error("Logout failed:", error);
+            }
+        });
+    </script>
+</body>
+</html>
+```
+
+### **User Data Retrieval**
+```html
+<script type="module">
+    import { register, Hanko } from "https://esm.run/@teamhanko/hanko-elements";
+
+    const hankoApiUrl = "https://your-hanko-api-url.hanko.io";
+    const hanko = new Hanko(hankoApiUrl);
+
+    // Get current user data
+    try {
+        const user = await hanko.getUser();
+        console.log("User ID:", user.user_id);
+        console.log("Email:", user.emails?.[0]?.address);
+        
+        // Display user info
+        document.getElementById('user-info').textContent = 
+            `Welcome ${user.emails?.[0]?.address}!`;
+    } catch (error) {
+        console.error("Failed to get user data:", error);
+    }
+</script>
+```
+
+### **Backend Authentication**
+```html
+<script type="module">
+    import { Hanko } from "https://esm.run/@teamhanko/hanko-elements";
+
+    const hankoApiUrl = "https://your-hanko-api-url.hanko.io";
+    const hanko = new Hanko(hankoApiUrl);
+
+    // Make authenticated API requests
+    async function makeAuthenticatedRequest() {
+        try {
+            const token = await hanko.getSession();
+            
+            const response = await fetch('/api/protected', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error("Request failed:", error);
+        }
+    }
+</script>
+```
+
+---
+
+## **4. OUTDATED PATTERNS TO AVOID**
+
+```html
+<!-- ❌ DO NOT forget type="module" -->
+<script>
+    import { register } from "https://esm.run/@teamhanko/hanko-elements"; 
+    // Will fail without type="module"
+</script>
+
+<!-- ❌ DO NOT skip await keyword -->
+<script type="module">
+    const result = register(hankoApiUrl); // Missing await
+</script>
+
+<!-- ❌ DO NOT use npm/build tools approach -->
+<script>
+    const { register } = require('@teamhanko/hanko-elements'); // Wrong for vanilla JS
+</script>
+
+<!-- ❌ DO NOT use process.env -->
+<script type="module">
+    const hankoApiUrl = process.env.HANKO_API_URL; // No Node.js environment
+</script>
+
+<!-- ❌ DO NOT skip destructuring hanko instance -->
+<script type="module">
+    await register(hankoApiUrl);
+    // Missing const { hanko } = await register(hankoApiUrl);
+    hanko.onSessionCreated(() => {}); // hanko is undefined
+</script>
+
+<!-- ❌ DO NOT use framework navigation methods -->
+<script type="module">
+    router.push('/dashboard'); // No router in vanilla JS
+    navigate('/dashboard'); // No navigate function
+</script>
+```
+
+---
+
+## **5. AI MODEL VERIFICATION STEPS**
+
+Before returning any Hanko-related solution, you **must** verify:
+
+1. **Imports**: Are ES modules imported from `https://esm.run/@teamhanko/hanko-elements`?
+2. **Script Tags**: Do script tags have `type="module"` attribute?
+3. **Registration**: Is `register()` called with `await` and API URL?
+4. **Destructuring**: Is hanko instance destructured from register return value?
+5. **Events**: Are session events handled with `hanko.onSessionCreated()`?
+6. **Navigation**: Is `document.location.href` used for page redirects?
+7. **Web Components**: Are `<hanko-auth>` and `<hanko-profile>` used directly in HTML?
+8. **No Build Tools**: Is the solution purely vanilla JavaScript without npm/bundlers?
+
+If any check **fails**, **stop** and revise until compliance is achieved.
+```
