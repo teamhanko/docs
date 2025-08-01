@@ -34,8 +34,7 @@ description: Each project presents unique requirements for user onboarding. In t
 
 ## Getting user data on the Frontend
 
-Retrieve user data in your frontend application using the `hanko.getUser()` method from the
-[hanko-frontend-sdk](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
+To access user data in your frontend application, use the `hanko.getUser()` method from the [hanko-frontend-sdk](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
 (also available via [hanko-elements](https://www.npmjs.com/package/@teamhanko/hanko-elements)). To extract user claims
 from the JWT token, use the `hanko.validateSession()` function.
 
@@ -131,7 +130,9 @@ Beyond the user ID, you can also extract the current email address from the JWT,
 </Tabs>
 
 <Note>
-  You can refer to [JWT Payload Content](/guides/users/jwt-content) docs for more information on the JWT payload.
+  You can refer to the [User Metadata guide](/guides/users/user-metadata) for details on managing
+  user metadata included in the JWT payload. For information on customizing session tokens with metadata, see the
+  [Session Token Customization guide](/guides/sessions/session-management#session-token-customization).
 </Note>
 
 ### Get user data using the Hanko Admin API
