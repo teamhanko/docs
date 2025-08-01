@@ -3,7 +3,9 @@ sidebarTitle: "Rust"
 title: Integrate Hanko with Rust backend
 ---
 
-<Snippet file="backend-integration-about.mdx" />
+import BackendIntegrationAbout from '/snippets/backend-integration-about.mdx';
+
+<BackendIntegrationAbout/>
 
 After successful authentication, Hanko generates a session token that is stored as a cookie. Use the session token to authenticate requests to your backend. This guide shows how to implement session token validation in Rust to ensure that only authenticated users can access your application's protected resources.
 
