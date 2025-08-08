@@ -123,7 +123,8 @@
           {
             "group": "Integrations",
             "pages": [
-
+              "integrations/supabase",
+              "integrations/permit"
             ]
           },
           {
