@@ -75,7 +75,8 @@
                 "group": "Access user data",
                 "pages": [
                   "guides/access-user-data/frontend",
-                  "guides/access-user-data/backend"
+                  "guides/access-user-data/backend",
+                  "guides/access-user-data/user-metadata"
                 ]
               },
               {
@@ -449,6 +450,18 @@
       "github": "https://github.com/teamhanko",
       "linkedin": "https://www.linkedin.com/company/teamhanko/"
     }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "integrations": {
     "plausible": {
