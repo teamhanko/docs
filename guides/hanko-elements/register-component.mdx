@@ -8,7 +8,7 @@ description: A web component that handles user registration.
 
 **About Hanko**: Hanko is a modern passwordless authentication solution that eliminates the need for traditional passwords by leveraging passkeys, biometrics, and other secure authentication methods. It provides a seamless, secure, and user-friendly authentication experience while reducing security risks associated with password-based systems.
 
-**What This Guide Covers**: This guide demonstrates how to implement the `<hanko-register>` web component, which provides a dedicated user registration interface for creating new accounts. You'll learn how to integrate this component for applications that require separate registration flows or controlled onboarding processes.
+**What This Guide Covers**: This guide demonstrates how to implement the `<hanko-registration>` web component, which provides a dedicated user registration interface for creating new accounts. You'll learn how to integrate this component for applications that require separate registration flows or controlled onboarding processes.
 
 **Key Technologies**:
 - Hanko Elements
@@ -27,7 +27,7 @@ description: A web component that handles user registration.
 
 **Tasks You'll Complete**: 
 - Install and register the Hanko Elements package
-- Configure the `<hanko-register>` component for registration-only flows
+- Configure the `<hanko-registration>` component for registration-only flows
 - Implement the component across different frameworks (React, Vue, Svelte)
 - Set up event handlers for successful registration events
 - Configure component attributes for prefilled values and language settings
@@ -35,7 +35,7 @@ description: A web component that handles user registration.
 </div>
 
 ## Use Case
-The `<hanko-register>` component is perfect for creating dedicated user registration flows in modern web applications. It provides a secure, flexible way to onboard new users with minimal setup—eliminating the need to build custom UI or manage complex authentication logic.
+The `<hanko-registration>` component is perfect for creating dedicated user registration flows in modern web applications. It provides a secure, flexible way to onboard new users with minimal setup—eliminating the need to build custom UI or manage complex authentication logic.
 
 If you want to Combine Login and Register on the same page: \
 [try out the`<hanko-auth>` component](/guides/hanko-elements/auth-component).
@@ -58,7 +58,7 @@ If you want to create a dedicated Login page: \
 ### Markup
 
 ```html 
-<hanko-register></hanko-register>
+<hanko-registration></hanko-registration>
 ```
 
 ### Attributes
@@ -70,9 +70,9 @@ If you want to create a dedicated Login page: \
 | `lang` | Used to specify the language of the content within the element |
 
 
-### Adding `<hanko-register>` component
+### Adding `<hanko-registration>` component
 
-The following examples show how to integrate the `<hanko-register>` component in different full-stack and frontend frameworks.
+The following examples show how to integrate the `<hanko-registration>` component in different full-stack and frontend frameworks.
 
 #### Full Stack
 
@@ -95,7 +95,7 @@ export default function HankoRegister() {
   }, []);
 
 return (
-<hanko-register />
+<hanko-registration />
 );
 }
 ```
@@ -117,7 +117,7 @@ export default function HankoRegister() {
 }, []);
 
 return (
-  <hanko-register />
+  <hanko-registration />
   );
 }
 ```
@@ -126,7 +126,7 @@ return (
 <Tab title="Nuxt">
 ```html register.vue
 <template>
-  <hanko-register />
+  <hanko-registration />
 </template>
 ```
 </Tab>
@@ -152,7 +152,7 @@ return (
   });
 </script>
 
-<hanko-register on:onSessionCreated={redirectAfterLogin} />
+<hanko-registration on:onSessionCreated={redirectAfterLogin} />
 ```
 </Tab>
 </Tabs>
@@ -175,7 +175,7 @@ export default function HankoRegister() {
     });
   }, []);
 
-  return <hanko-register />;
+  return <hanko-registration />;
 }
 ```
 </Tab>
@@ -193,7 +193,7 @@ export default function HankoRegister() {
         });
       }, []);
 
-      return <hanko-register />;
+      return <hanko-registration />;
     }
     ```
   </Tab>
@@ -215,7 +215,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <hanko-register />
+  <hanko-registration />
 </template>
 ```
 </Tab>
@@ -236,14 +236,14 @@ onMounted(() => {
   });
 </script>
 
-<hanko-register />
+<hanko-registration />
 ```
 </Tab>
 
 <Tab title="JavaScript">
 ```html Register.html
 <body>
-  <hanko-register />
+  <hanko-registration />
 
   <script type="module">
     import { register } from "https://esm.run/@teamhanko/hanko-elements";
@@ -261,7 +261,7 @@ You should see an interface similar to this 👇
 </Frame>
 
 
-For more detailed instructions on integrating `<hanko-register>` component with your favorite frameworks, navigate to [quickstart guides](/quickstarts/fullstack). 
+For more detailed instructions on integrating `<hanko-registration>` component with your favorite frameworks, navigate to [quickstart guides](/quickstarts/fullstack).
 
 
 
