@@ -1,5 +1,5 @@
 ---
-title: Using the Frontend SDK
+title: Using the Hanko Frontend SDK
 sidebarTitle: "Using Frontend SDK"
 description: The following examples will cover some common use-cases for the `hanko-frontend-sdk` instance returned by the `register()` function, but please take a look into the [frontend-sdk docs](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/) for details.
 ---
@@ -7,7 +7,7 @@ description: The following examples will cover some common use-cases for the `ha
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko Elements Frontend SDK Guide
+**Hanko Elements Frontend SDK Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -57,7 +57,7 @@ hanko.onSessionCreated(({ claims }) => {
 });
 ```
 
-### Session Expired
+### Session expired
 
 Triggered when the session has expired, or when the session has been removed in another browser window because the user has logged out or deleted their account.
 
@@ -68,7 +68,7 @@ hanko.onSessionExpired(() => {
 });
 ```
 
-### User Logged Out
+### User logged out
 
 Triggered when the user actively logs out. In other browser windows, a "hanko-session-expired" event will be triggered at the same time.
 
@@ -78,7 +78,7 @@ hanko.onUserLoggedOut(() => {
   // Redirect to a login page or show the `<hanko-auth>` element.
 });
 ```
-### User Deleted
+### User deleted
 
 Triggered when the user has deleted their account. In other browser windows, a `hanko-session-expired` event will be triggered at the same time.
 
@@ -89,7 +89,7 @@ hanko.onUserDeleted(() => {
 });
 ```
 
-## Common Operations
+## Common operations
 
 The SDK provides functions that simplify interaction with the Hanko API. Here are some common operations:
 

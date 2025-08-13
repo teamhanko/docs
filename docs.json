@@ -11,7 +11,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Hanko Docs",
         "groups": [
           {
             "group": "Getting Started",
@@ -341,7 +341,7 @@
         ]
       },
       {
-        "tab": "Standalone Passkey API",
+        "tab": "Passkey API Docs",
         "groups": [
           {
             "group": "Getting Started",

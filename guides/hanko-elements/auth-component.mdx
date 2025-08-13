@@ -1,12 +1,13 @@
 ---
-title: Auth Component
-description: A web component that handles user login and user registration.
+sidebarTitle: Auth component
+title: Hanko Elements auth component guide
+description: A Web Component that handles user login and user registration.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko Elements Auth Component Guide
+**Hanko Elements Auth Component Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -37,7 +38,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 - Handle both login and registration flows in a unified interface
 </div>
 
-## Use Case
+## Use case
 The `<hanko-auth>` component provides a complete authentication solution that combines both login and registration functionality in a single interface. This component is ideal for applications that want to streamline their authentication process without needing separate routes or pages for different authentication flows.
 
 The component automatically handles transitions between login and registration views, providing a seamless user experience throughout the entire authentication process.
@@ -52,11 +53,12 @@ If you want to create a dedicated Registration page:  \
 ## Features
 |  |  |
 | --- | --- |
-|  **Login + Register** | Seamlessly handles both flows in one component.
+|  **Login + Registration** | Seamlessly handles both flows in one component.
 |  **Passkeys** | Enables passwordless login with modern device credentials.
 |  **Passcodes** | Useful for email-based login and verification workflows.
 |  **2FA** | Users can use a TOTP app or security keys.
 |  **OAuth SSO** | 	Allows users to log in using third-party identity providers (e.g., Google, Apple).
+|  **SAML SSO** | 	Allows users to log in using SAML identity providers (e.g., Entra, Okta, Google Workspace).
 |  **Passwords** | Supports traditional password-based login for broader accessibility.
 
 ## Usage
@@ -81,7 +83,7 @@ If you want to create a dedicated Registration page:  \
 
 The following examples show how to integrate the `<hanko-auth>` component in different full-stack and frontend frameworks.
 
-#### Full Stack
+#### Full stack
 
 <Tabs>
 <Tab title="Nextjs (App directory)">

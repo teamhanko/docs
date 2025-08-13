@@ -1,11 +1,13 @@
 ---
-title: Translations
+sidebarTitle: Internationalization (i18n)
+title: Hanko Elements internationalization (i18n) guide
+description: Hanko Elements support multiple languages and translations can be modified to alter headlines, labels, descriptions and all other texts displayed in Hanko Elements.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko Elements Translations Guide
+**Hanko Elements Translations Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -47,7 +49,7 @@ Markup
 <hanko-auth></hanko-auth>
 ```
 
-## Installing Additional Translations
+## Installing additional translations
 
 Translations are currently available for the following languages:
 
@@ -104,7 +106,7 @@ You can now set the `lang` attribute of the element to the desired language:
 </Warning>
 
 
-## Modifying Translations
+## Modifying translations
 
 You can modify existing translations as follows:
 
@@ -116,7 +118,7 @@ en.errors.somethingWentWrong = "Aww, snap!";
 register("YOUR_HANKO_API_URL", { translations: { en } });
 ```
 
-## Adding New Translations
+## Adding new translations
 
 To create a new translation, pass an object that implements (or partially implements) the `Translation` interface.
 
@@ -137,7 +139,7 @@ Markup
 <hanko-auth lang="myLang"></hanko-auth>
 ```
 
-## Using External Files
+## Using external translation files
 
 For languages provided via the element's lang attribute, or via the fallback language option, that are not included in
 the object passed to the `translations` option, the component will fetch a JSON file from the location specified by the
@@ -160,7 +162,7 @@ Markup
 <hanko-auth lang="en"></hanko-auth>
 ```
 
-## Fallback Language
+## Fallback language
 
 The `fallbackLanguage` option is used to specify a fallback language for the web components when translations are
 missing or incomplete for a particular language. By setting the `fallbackLanguage` option to a valid language string
