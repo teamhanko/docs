@@ -1,18 +1,18 @@
 ---
 sidebarTitle: Backend
-title: Access user data in your backend
-description: Learn how to get the user data in your backend
+title: Access user data with your backend
+description: How to access Hanko user data with your backend.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-    # Hanko User Data Retrieval Guide
+  **Hanko User Data Retrieval Guide**:
 
     **About Hanko**:
     <HankoAbout />
 
-    **What This Guide Covers**: This comprehensive guide demonstrates how to retrieve user data from Hanko in backend environments, including validating sessions, extracting information from JWTs, and using the Admin API.
+    **What This Guide Covers**: This guide demonstrates how to retrieve user data from Hanko in backend environments, including validating sessions, extracting information from JWTs, and using the Admin API.
 
     **Key Technologies**:
     - JWT (JSON Web Tokens)
@@ -29,7 +29,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
     - Implement proper authentication checks in your application
 </div>
 
-# Get user data from the session cookie
+## Get user data from the session cookie
 
 The [`/sessions/validate`](/api-reference/public/session-management/validate-a-session-1) endpoint allows you to extract user claims from the JWT token.
 
@@ -74,7 +74,7 @@ console.log("user data:", sessionStatus);
     [Session Token Customization guide](/guides/session-management#session-token-customization).
 </Note>
 
-# Get user data using the Hanko Admin API
+## Get user data using the Hanko Admin API
 
 The [Hanko Admin API](/api-reference/admin) provides comprehensive access to user status, management capabilities, metrics, and more. This example focuses on
 retrieving data for a specific user.

@@ -1,18 +1,18 @@
 ---
 sidebarTitle: Frontend
 title: Access user data in your frontend
-description: Learn how to get the user data in your frontend
+description: Learn how to get Hanko user data in your frontend code.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-    # Hanko User Data Retrieval Guide
+    **Hanko User Data Retrieval Guide**:
 
     **About Hanko**:
     <HankoAbout />
 
-    **What This Guide Covers**: This comprehensive guide demonstrates how to retrieve user data from Hanko in frontend environments, including accessing user profiles, validating sessions, extracting information from JWTs.
+    **What This Guide Covers**: This guide demonstrates how to retrieve user data from Hanko in frontend environments, including accessing user profiles, validating sessions, extracting information from JWTs.
 
     **Key Technologies**:
     - Hanko Frontend SDK
@@ -29,7 +29,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
     - Implement proper authentication checks in your application
 </div>
 
-# Get user data from API
+## Get user data from API
 
 To access user data in your frontend application, use the `hanko.getUser()` method from the [hanko-frontend-sdk](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
 (also available via [hanko-elements](https://www.npmjs.com/package/@teamhanko/hanko-elements)).
@@ -53,7 +53,7 @@ console.log("User profile:", user);
 // }
 ```
 
-# Get user data from the session cookie
+## Get user data from the session cookie
 
 To extract user claims from the JWT token, use the `hanko.validateSession()` function.
 
