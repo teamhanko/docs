@@ -1,3 +1,19 @@
 ---
 openapi: patch /users/{id}/metadata
+description: Patch metadata of a user
 ---
+Updates a users metadata by deep merging the metadata patch from
+the request with existing metadata.
+
+Set the entire request to `null` to clear all metadata:
+Set any of `public_metadata`, `private_metadata`, `unsafe_metadata` to `null` to
+clear metadata for that category.
+
+An empty object (`{}`) for the top level request object or an empty object for
+`public_metadata`, `private_metadata` or the `unsafe_metadata` property represent
+a noop patch.
+
+Unknown top level keys besides `public_metadata`, `private_metadata` or `unsafe_metadata`
+are ignored.
+
+All other top level request values (e.g. an empty string, a non-empty string, an array) result in a bad request.
