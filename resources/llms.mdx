@@ -355,13 +355,13 @@ Supported social login providers with setup guides:
 6. User profile retrieved and Hanko session created
 
 **SAML SSO (Security Assertion Markup Language)**
-**Reference**: https://docs.hanko.io/guides/authentication-methods/saml/introduction
+**Reference**: https://docs.hanko.io/guides/enterprise-sso/introduction
 
 Enterprise identity provider integrations:
-- **Auth0**: https://docs.hanko.io/guides/authentication-methods/saml/auth0
-- **Microsoft Entra** (formerly Azure AD): https://docs.hanko.io/guides/authentication-methods/saml/entra  
-- **Google Workspace**: https://docs.hanko.io/guides/authentication-methods/saml/google
-- **Okta**: https://docs.hanko.io/guides/authentication-methods/saml/okta
+- **Auth0**: https://docs.hanko.io/guides/enterprise-sso/auth0
+- **Microsoft Entra** (formerly Azure AD): https://docs.hanko.io/guides/enterprise-sso/entra
+- **Google Workspace**: https://docs.hanko.io/guides/enterprise-sso/google
+- **Okta**: https://docs.hanko.io/guides/enterprise-sso/okta
 
 **SAML Concepts**:
 - **Identity Provider (IdP)**: Enterprise system that authenticates users (Okta, Active Directory)
@@ -660,7 +660,7 @@ jwt:
 - **Example**: `auth.yourcompany.com` instead of `your-project.hanko.io`
 - **Requirements**: Domain ownership verification, DNS access
 
-**Custom Emails** https://docs.hanko.io/guides/custom-emails/email-delivery
+**Custom Emails** https://docs.hanko.io/guides/email-delivery/email-delivery
 - **Email Templates**: Fully customizable HTML/text templates
 - **Branding**: Company logo, colors, fonts, custom styling
 - **Content**: Customize all email text, subject lines, call-to-action buttons
@@ -766,7 +766,7 @@ jwt:
 ## Migration and Data Management
 
 ### User Migration
-**Reference**: https://docs.hanko.io/guides/migrations/import-export-users
+**Reference**: https://docs.hanko.io/guides/import-export-users
 
 **Import from Other Providers**:
 - **Supported Sources**: Auth0, Firebase, Cognito, custom systems
@@ -804,7 +804,7 @@ jwt:
 - **Retry Logic**: Guaranteed delivery with exponential backoff
 - **Idempotency**: Handle duplicate webhook deliveries gracefully
 
-**User Metadata Management** https://docs.hanko.io/guides/users/user-metadata
+**User Metadata Management** https://docs.hanko.io/guides/access-user-data/user-metadata
 - **Public Metadata**: User-visible profile information
   - Display name, avatar URL, preferences
   - Accessible via Public API and JWT tokens
@@ -1108,10 +1108,10 @@ providers: [
 
 **SAML SSO Setup**:
 1. **Configure Identity Provider**
-   - Okta: https://docs.hanko.io/guides/authentication-methods/saml/okta
-   - Microsoft Entra: https://docs.hanko.io/guides/authentication-methods/saml/entra  
-   - Auth0: https://docs.hanko.io/guides/authentication-methods/saml/auth0
-   - Google Workspace: https://docs.hanko.io/guides/authentication-methods/saml/google
+   - Okta: https://docs.hanko.io/guides/enterprise-sso/okta
+   - Microsoft Entra: https://docs.hanko.io/guides/enterprise-sso/entra
+   - Auth0: https://docs.hanko.io/guides/enterprise-sso/auth0
+   - Google Workspace: https://docs.hanko.io/guides/enterprise-sso/google
 
 2. **Domain-Based Routing**
    ```javascript
@@ -1174,7 +1174,7 @@ biometricPrompt.authenticate(promptInfo, cryptoObject)
 - **Features**: User registration, protected routes, data isolation
 - **Concepts**: Server-side authentication, database integration, user metadata
 
-**Authorization Integration** https://docs.hanko.io/tutorials/authorization-with-permit
+**Authorization Integration** https://docs.hanko.io/integrations/permit
 - **Stack**: Hanko + Permit.io for role-based access control
 - **Features**: User roles, permissions, policy enforcement
 - **Use Cases**: Multi-tenant applications, admin panels, feature flags

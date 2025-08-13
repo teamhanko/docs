@@ -20,8 +20,6 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 - Microsoft Entra ID
 - Azure Active Directory
 - SAML assertions
-- enterprise applications
-- federation metadata
 
 **Prerequisites**:
 - Active Microsoft Entra account
@@ -190,7 +188,7 @@ maps the Entra user's `user.email` property and click it.
    to `http://schemas.xmlsoap.org/ws/2005/05/identity/claims`.
 4. If your users do not have an email set for the `user.email` property, choose a different source for the
    mapping. Note that the email address value present in this attribute is used to
-   [provision and link accounts](/guides/authentication-methods/saml/introduction#account-provisioning-and-linking).
+   [provision and link accounts](/guides/enterprise-sso/introduction#account-provisioning-and-linking).
    This means that any new accounts created at your Hanko project will use this email address value and any existing
    accounts in your Hanko project will be linked via this email address value.
 
@@ -283,7 +281,7 @@ application on `My Apps` in their profile and the O365 app launcher.
 
 ## Testing your integration
 
-To test your integration via [IdP-initiated](/guides/authentication-methods/saml/introduction#identity-provider-initiated-sso)
+To test your integration via [IdP-initiated](/guides/enterprise-sso/introduction#identity-provider-initiated-sso)
 flow:
 
 1. Navigate to the `Single sign-on` configuration for your application (see step 8 in [Create a Microsoft Entra application](#create-a-microsoft-entra-application)).
