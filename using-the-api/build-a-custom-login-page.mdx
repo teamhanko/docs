@@ -1,12 +1,12 @@
 ---
-title: Build a Custom Login Page
-description: A step-by-step guide to create a custom login page using the Hanko FlowAPI.
+title: Build a custom login page
+description: A step-by-step guide to create a custom login page using the Hanko FlowAPI and Hanko Frontend SDK.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko Flow API Custom Login Page Guide
+**Hanko Flow API Custom Login Page Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -60,11 +60,11 @@ Before starting, ensure you have:
 - A Hanko Cloud project set up with a test user (see Step 1).
 - Basic knowledge of JavaScript, HTML, and CSS.
 
-## Step 1: Set Up the Development Environment
+## Step 1: Set up the development environment
 
 <Steps>
 
-<Step title="Create a Hanko Cloud Project">
+<Step title="Create a Hanko Cloud project">
 - Go to [cloud.hanko.io](https://cloud.hanko.io) and log in.
 - In the sidebar, select **All Projects**.
 - Click **Create Project** to open the setup wizard.
@@ -74,7 +74,7 @@ Before starting, ensure you have:
 - Click **Create Project** to complete the wizard.
 </Step>
 
-<Step title="Configure the Project">
+<Step title="Configure the project">
 To reduce the complexity of this example, we disable certain login features:
 
 - In the sidebar, go to **Settings > 2FA**.
@@ -85,7 +85,7 @@ To reduce the complexity of this example, we disable certain login features:
     - Click **Save**.
 </Step>
 
-<Step title="Create a Test User">
+<Step title="Create a test user">
 - In the sidebar, select **Users**.
 - Click **Create new** to open the user creation wizard.
 - Enter your real email address (in order to receive passcodes).
@@ -100,7 +100,7 @@ To reduce the complexity of this example, we disable certain login features:
 2. Find your project's API URL (e.g., `https://<project-id>.hanko.io`).
 </Step>
 
-<Step title="Set Up the Project Structure">
+<Step title="Set up the project structure">
 Create a project folder (e.g., `hanko-login-page`) and set up the following files:
 ```
 hanko-login-page/
@@ -129,7 +129,7 @@ hanko-login-page/
 ```
 </Step>
 
-<Step title="Install Dependencies">
+<Step title="Install dependencies">
 Run in the project folder:
 
 ```bash
@@ -304,7 +304,7 @@ div.loading::before {
 
 </Step>
 
-<Step title="Start the Local Server">
+<Step title="Start the local server">
 Run the following to start the server at http://localhost:3000:
 
 ```bash
@@ -316,7 +316,7 @@ Open `http://localhost:3000` in your browser to verify the page loads (it will b
 
 </Steps>
 
-## Step 2: Initialize the Login Flow
+## Step 2: Initialize the login flow
 
 In `script.js`, initialize the Hanko instance and start the login flow. If the user is on `success.html`, set up logout
 functionality instead.
@@ -386,7 +386,7 @@ if (isSuccessPage) {
 Replace `https://<your-project-id>.hanko.io` with your project's API endpoint from the Hanko Cloud dashboard.
 </Tip>
 
-## Step 3: Handle Flow States and Render UI
+## Step 3: Handle flow states and render UI
 
 Implement handler functions to process each state and render the appropriate UI. The `hanko.onAfterStateChange` event is
 used to update the UI after state transitions. We'll also create a `generateInput` function to dynamically generate input
@@ -458,7 +458,7 @@ function renderLoginInit(state) {
   const inputHtml = generateInput(emailInput, { autocomplete: "username webauthn" });
 
   app.innerHTML = `
-    <h1>Log In</h1>
+    <h1>Log in</h1>
     ${error ? `<p class="error">${error.message}</p>` : ""}
     <form id="login-form">
       ${inputHtml}
@@ -479,7 +479,7 @@ function renderLoginMethodChooser(state) {
   const error = state.error;
 
   app.innerHTML = `
-    <h1>Choose Login Method</h1>
+    <h1>Choose login method</h1>
     ${error ? `<p class="error">${error.message}</p>` : ""}
     <div id="actions"></div>`;
 
@@ -487,15 +487,15 @@ function renderLoginMethodChooser(state) {
   const actions = state.actions;
 
   if (actions.continue_to_password_login.enabled) {
-    actionsDiv.innerHTML += `<button data-action="continue_to_password_login">Use Password</button>`;
+    actionsDiv.innerHTML += `<button data-action="continue_to_password_login">Use password</button>`;
   }
 
   if (actions.continue_to_passcode_confirmation.enabled) {
-    actionsDiv.innerHTML += `<button data-action="continue_to_passcode_confirmation">Use Passcode</button>`;
+    actionsDiv.innerHTML += `<button data-action="continue_to_passcode_confirmation">Use passcode</button>`;
   }
 
   if (actions.webauthn_generate_request_options.enabled) {
-    actionsDiv.innerHTML += `<button data-action="webauthn_generate_request_options">Use Passkey</button>`;
+    actionsDiv.innerHTML += `<button data-action="webauthn_generate_request_options">Use passkey</button>`;
   }
 
   if (actions.back.enabled) {
@@ -516,7 +516,7 @@ function renderOnboardingCreatePasskey(state) {
   const error = state.error;
 
   app.innerHTML = `
-    <h1>Create a Passkey</h1>
+    <h1>Create a passkey</h1>
     ${error ? `<p class="error">${error.message}</p>` : ""}
     <p>Add a passkey for faster login (optional).</p>
     <div id="actions"></div>`;
@@ -525,7 +525,7 @@ function renderOnboardingCreatePasskey(state) {
   const actions = state.actions;
 
   if (actions.webauthn_generate_creation_options.enabled) {
-    actionsDiv.innerHTML += `<button data-action="webauthn_generate_creation_options">Create Passkey</button>`;
+    actionsDiv.innerHTML += `<button data-action="webauthn_generate_creation_options">Create passkey</button>`;
   }
 
   if (actions.skip.enabled) {
@@ -552,7 +552,7 @@ function renderPasscodeConfirmation(state) {
   const inputHtml = generateInput(codeInput);
 
   app.innerHTML = `
-    <h1>Enter Passcode</h1>
+    <h1>Enter passcode</h1>
     ${error ? `<p class="error">${error.message}</p>` : ""}
     <p>Check your email for the passcode.</p>
     <form id="passcode-form">
@@ -572,7 +572,7 @@ function renderPasscodeConfirmation(state) {
   const actionsDiv = document.getElementById("actions");
 
   if (state.actions.resend_passcode.enabled) {
-    actionsDiv.innerHTML += `<button data-action="resend_passcode">Resend Passcode</button>`;
+    actionsDiv.innerHTML += `<button data-action="resend_passcode">Resend passcode</button>`;
   }
 
   if (state.actions.back.enabled) {
@@ -614,11 +614,11 @@ function renderLoginPassword(state) {
   const actionsDiv = document.getElementById("actions");
 
   if (state.actions.continue_to_passcode_confirmation_recovery.enabled) {
-    actionsDiv.innerHTML += `<button data-action="continue_to_passcode_confirmation_recovery">Forgot your Password?</button>`;
+    actionsDiv.innerHTML += `<button data-action="continue_to_passcode_confirmation_recovery">Forgot your password?</button>`;
   }
 
   if (state.actions.continue_to_login_method_chooser.enabled) {
-    actionsDiv.innerHTML += `<button data-action="continue_to_login_method_chooser">Choose another Method</button>`;
+    actionsDiv.innerHTML += `<button data-action="continue_to_login_method_chooser">Choose another method</button>`;
   }
 
   if (state.actions.back.enabled) {
@@ -641,7 +641,7 @@ function renderLoginPasswordRecovery(state) {
   const inputHtml = generateInput(passwordInput);
 
   app.innerHTML = `
-    <h1>Enter a new Password</h1>
+    <h1>Enter a new password</h1>
     ${error ? `<p class="error">${error.message}</p>` : ""}
     <form id="password-recovery-form">
       ${inputHtml}
@@ -665,7 +665,7 @@ function renderError(state) {
   app.innerHTML = `
     <h1>Error</h1>
     <p class="error">${error.message}</p>
-    <button id="retry">Try Again</button>`;
+    <button id="retry">Try again</button>`;
 
   document.getElementById("retry").addEventListener("click", () => {
     initializeLoginFlow();
@@ -683,14 +683,14 @@ function renderError(state) {
 - Technical Errors: The error state handler displays `state.error.message`.
 </Note>
 
-## Step 4: Run and Test the Login Page
+## Step 4: Run and test the login page
 
 <Warning>
 Always **use your own email address** in the following steps. The Hanko API sends real emails, so proceed with caution!
 </Warning>
 
 <Steps>
-<Step title="Run the Application">
+<Step title="Run the application">
 - Ensure the Hanko Cloud project is configured as described (App URL: `http://localhost:3000`, no 2FA, device trust
   "Never").
 - Update `API_URL` in `script.js` with your Hanko Cloud project's API endpoint.
@@ -705,7 +705,7 @@ Always **use your own email address** in the following steps. The Hanko API send
 - Open `http://localhost:3000` in your browser.
 </Step>
 
-<Step title="Test the Login Flow">
+<Step title="Test the login flow">
 - Enter the test user's email.
 - Check your email for the passcode, enter the code, and click submit.
 - If prompted, register a passkey.
@@ -739,7 +739,7 @@ FlowAPI supports registration and user profile management flows.
 
 ## References
 
-<Card title="API Reference">
+<Card title="API reference">
     [https://docs.hanko.io/api-reference/flow/login](https://docs.hanko.io/api-reference/flow/login)
 </Card>
 <Card title="Frontend SDK">

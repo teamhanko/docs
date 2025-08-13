@@ -1,13 +1,13 @@
 ---
-sidebarTitle: Understanding the FlowAPI
-title: Understanding the FlowAPI
-description: A brief introduction in how the FlowAPI works.
+sidebarTitle: Understanding the Flow API
+title: Understanding the Hanko Flow API
+description: A brief introduction to the Hanko Flow API.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko Flow API Understanding Guide
+**Hanko Flow API Understanding Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -52,7 +52,7 @@ Key takeaways include:
 2. **Dynamic Input Validation:** Inputs come with metadata for client-side validation, while the backend ensures robust validation.
 3. **Error Handling:** Detailed error annotations in responses guide the frontend in displaying actionable feedback to users.
 
-## **Understanding States and Actions**
+## **Understanding states and actions**
 
 Every Flow API response contains all information needed to render the appropriate UI. Each response represents a specific `state` in the authentication flow, and each state defines available `actions` that users can perform.
 
@@ -120,22 +120,22 @@ classDiagram
 ```
 </Frame>
 
-## Initializing Flows
+## Initializing flows
 
 The Flow API supports three main flows, each initialized with an empty `POST` request:
 - `/login` - User authentication flow
 - `/registration` - User registration flow  
 - `/profile` - User profile management flow
 
-Refer to the [Flow API documentation](https://docs.hanko.io/api-reference/flow) for complete details on available states and actions in each flow.
+Refer to the [Flow API documentation](/api-reference/flow/registration) for complete details on available states and actions in each flow.
 
 This guide uses an example `/example-flow` endpoint to demonstrate the concepts. Here's how to initialize and work with any flow:
 
 <Steps>
-  <Step title={"Initialize a New Flow"}>
+  <Step title={"Initialize a new flow"}>
     Send an empty `POST` request to the the flow URL, `/example-flow` in this example.
   </Step>
-  <Step title={"Obtain the Response Body"}>
+  <Step title={"Obtain the response body"}>
     When the API successfully created a new flow, the response will look like this:
     ```json
     {
@@ -167,7 +167,7 @@ This guide uses an example `/example-flow` endpoint to demonstrate the concepts.
   </Step>
 </Steps>
 
-## Interacting with Flows
+## Interacting with flows
 
 After receiving a flow response, you process the current state by calling the appropriate handler function. This handler renders the UI based on the state and available actions.
 
@@ -201,7 +201,7 @@ To execute an action, collect the input values from your form and create a reque
 According to the example reponse object, we would proceed as follows to execute the 'example-action':
 
 <Steps>
-  <Step title={"Generate the Request Object"}>
+  <Step title={"Generate the request object"}>
     Let’s assume that we’ve obtained an input value 'example input value' for the input
     field 'example-input-field'. The request body to be generated would look like this:
     ```json
@@ -216,11 +216,11 @@ According to the example reponse object, we would proceed as follows to execute 
       Note that the `csrf_token` from the previous state must be included in each request.
     </Tip>
   </Step>
-  <Step title={"Execute the Action"}>
+  <Step title={"Execute the action"}>
     Send the object via a `POST` request to the `href` provided by the action. In this case, the `href` is
     `/example-flow?action=example-action@example-flow-id`.
   </Step>
-  <Step title={"Obtain the Response Body"}>
+  <Step title={"Obtain the response body"}>
     When the request was successful, you receive an object in the
     same manner, representing the next state:
     ```json
@@ -234,12 +234,12 @@ According to the example reponse object, we would proceed as follows to execute 
   </Step>
 </Steps>
 
-## Handling Validation Errors
+## Handling validation errors
 
 The Flow API includes detailed validation metadata for each input field, such as minimum and maximum length requirements (`min_length` and `max_length`). While you can implement client-side validation using this metadata, the backend always performs final validation and returns detailed error information when validation fails:
 
 <Steps>
-  <Step title={"Send Invalid Input Values"}>
+  <Step title={"Send invalid input values"}>
     Let’s assume that we’ve generated an invalid value for ‘example-input-field’:
     ```json
     {
@@ -250,11 +250,11 @@ The Flow API includes detailed validation metadata for each input field, such as
     }
     ```
   </Step>
-  <Step title={"Execute the Action"}>
+  <Step title={"Execute the action"}>
     Send the object via a `POST` request to the `href` provided by the action. Again, the `href` would be
     `/example-flow?action=example-action@example-flow-id`.
   </Step>
-  <Step title={"Obtain the Response Body"}>
+  <Step title={"Obtain the response body"}>
     The API would return an object representing the same state, ‘example-state’, but with error annotations indicating
     the validation issue:
     ```json
@@ -298,7 +298,7 @@ The Flow API includes detailed validation metadata for each input field, such as
   </Step>
 </Steps>
 
-## Handling Technical Errors
+## Handling technical errors
 
 Technical errors (non-4xx HTTP errors) result in an error state that indicates the flow cannot continue. These typically occur due to server issues, network problems, or system failures. Here's how such responses appear:
 
@@ -315,7 +315,7 @@ Technical errors (non-4xx HTTP errors) result in an error state that indicates t
 
 When you encounter an error state, display the error message to the user and provide an option to restart the authentication process by initializing a new flow.
 
-## Configuring Flows
+## Configuring flows
 
 Flow behavior is highly configurable to match your application's requirements:
 
@@ -330,7 +330,7 @@ When building custom UIs, you have two approaches:
 
 After making configuration changes, always test your application thoroughly and add any missing state handlers to ensure proper functionality.
 
-## Conclusion and Outlook
+## Conclusion and outlook
 
 This guide has shown you the core concepts of the Flow API through practical examples:
 
@@ -340,4 +340,4 @@ This guide has shown you the core concepts of the Flow API through practical exa
 - **Handle validation errors** with detailed field-level error information
 - **Manage technical errors** by implementing proper error recovery flows
 
-For complete details on available states and actions in each flow, consult the [Flow API documentation](https://docs.hanko.io/api-reference/flow). The Flow API continues to evolve with additional features and improved tooling to make authentication integration even simpler.
+For complete details on available states and actions in each flow, consult the [Flow API documentation](/api-reference/flow/registration). The Flow API continues to evolve with additional features and improved tooling to make authentication integration even simpler.

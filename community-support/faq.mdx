@@ -1,11 +1,11 @@
 ---
 title: FAQ
-description: Collection of common questions that Hanko users get.
+description: A collection of common questions that we hear from Hanko users.
 ---
 
 <AccordionGroup>
-<Accordion title="Is Hanko open-source?">
-Yes, Hanko is open-source.
+<Accordion title="Is Hanko open source?">
+Yes, Hanko is open source and all source code is published in the Hanko monorepo on GitHub. Hanko backend is licensed under AGPLv3 and the Hanko Frontend SDK as well as Hanko Elements are MIT licensed. Please note that the Hanko Cloud infrastructure and the Hanko Cloud Console are closed source.
 </Accordion>
 
 <Accordion title="What is Hanko Cloud?">
@@ -17,6 +17,10 @@ Yes, Hanko is open-source.
 <Accordion title="Can I self-host Hanko?">
   Yes, you can self-host. Please refer to this
   [guide](https://github.com/teamhanko/hanko/tree/main/backend#hanko-backend).
+</Accordion>
+
+<Accordion title="How can I get my data out of Hanko Cloud?">
+  You can access most of your data via the Admin API. This data does not include password hashes or TOTP secrets. If you need these as well, please contact us and we will provide a complete dataset for migrating to self-hosted Hanko or another authentication provider.
 </Accordion>
 
 <Accordion title="How can I integrate Hanko to my app?">
@@ -31,8 +35,8 @@ Yes, Hanko is open-source.
   but it's a bit more work on your end.
 </Accordion>
 
-<Accordion title="Can I add the passkey to my existing auth?">
-  Yes, you can. Refer to our [Passkey API docs](/passkey-api/introduction) for more
+<Accordion title="Can I use Hanko to add passkeys to my existing authentication solution?">
+  Yes, we provide a dedicated product for that: The Hanko Passkey API. Refer to our [Passkey API docs](/passkey-api/introduction) for more
   information.
 </Accordion>
 

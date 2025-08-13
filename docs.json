@@ -14,7 +14,7 @@
         "tab": "Hanko Docs",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Getting started",
             "pages": [
               "introduction",
               "setup-hanko-cloud",
@@ -332,7 +332,7 @@
             ]
           },
           {
-            "group": "Community & Support",
+            "group": "FAQ & support",
             "pages": [
               "community-support/get-help",
               "community-support/troubleshoot",
@@ -435,13 +435,13 @@
   "navbar": {
     "links": [
       {
-        "label": "Community",
+        "label": "Discord",
         "href": "https://discord.gg/tAG6RrRqJD"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Start for free",
+      "label": "Hanko Cloud Console",
       "href": "https://cloud.hanko.io"
     }
   },
