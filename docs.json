@@ -47,7 +47,8 @@
                       "quickstarts/backend/javascript",
                       "quickstarts/backend/go",
                       "quickstarts/backend/python",
-                      "quickstarts/backend/rust"
+                      "quickstarts/backend/rust",
+                      "quickstarts/backend/java_spring"
                     ]
                   },
                   "quickstarts/mobile"

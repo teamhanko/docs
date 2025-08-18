@@ -1,0 +1,192 @@
+---
+sidebarTitle: "Java/Spring"
+title: Integrate Hanko with Java/Spring backend
+description: Learn how to validate Hanko session tokens in your Java/Spring backend to secure API endpoints and authenticate users.
+---
+
+import BackendIntegrationAbout from '/snippets/backend-integration-about.mdx';
+
+<BackendIntegrationAbout/>
+
+After successful authentication, Hanko generates a session token stored as a cookie. This guide shows how to validate these session tokens in your Java/Spring backend to authenticate API requests.
+
+## Get the Hanko API URL
+
+Retrieve your project's API URL from the [Hanko console](https://cloud.hanko.io/). This URL is used to validate session tokens.
+
+<Note>
+    If you are self-hosting Hanko, use your self-hosted instance URL instead.
+</Note>
+
+## Authentication Flow
+
+To authenticate requests in your Java/Spring backend:
+
+1. Extract the session token from the HTTP cookie
+2. Validate the token using Hanko's [session validation API](/api-reference/public/session-management/validate-a-session-1)
+3. Allow or deny the request based on validation result
+
+## Implementation Example
+
+This example shows how to create a session validator that can be used as a filter in your Java/Spring application:
+
+```java
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClient;
+
+import java.util.Arrays;
+import java.util.Map;
+
+public class HankoSessionValidationResponse {
+
+    @JsonProperty("is_valid")
+    private boolean isValid;
+
+    public boolean isValid() {
+        return isValid;
+    }
+}
+
+@Component
+public class HankoSessionValidator {
+
+    private static final Logger log = LoggerFactory.getLogger(HankoSessionValidator.class);
+
+    private final RestClient restClient;
+    private final String hankoBaseUrl;
+    private final String hankoCookieName;
+
+    public HankoSessionValidator(
+            @Value("${hanko.baseUrl:}") String hankoBaseUrl,
+            @Value("${hanko.cookieName:hanko}") String hankoCookieName,
+            RestClient.Builder restClientBuilder
+    ) {
+        this.hankoBaseUrl = hankoBaseUrl != null ? hankoBaseUrl.replaceAll("/+$", "") : "";
+        this.hankoCookieName = hankoCookieName;
+        this.restClient = restClientBuilder.build();
+    }
+
+    public boolean isSessionValid(HttpServletRequest request) {
+        if (hankoBaseUrl == null || hankoBaseUrl.isBlank()) {
+            log.warn("Hanko base URL is not configured");
+            return false;
+        }
+
+        try {
+            String token = extractSessionToken(request);
+            if (token == null || token.isBlank()) {
+                return false;
+            }
+
+            HankoSessionValidationResponse body = restClient.post()
+                    .uri(hankoBaseUrl + "/sessions/validate")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("session_token", token))
+                    .retrieve()
+                    .body(HankoSessionValidationResponse.class);
+
+            return body != null && body.isValid();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            if (e.getStatusCode().is4xxClientError()) {
+                log.debug("Hanko session invalid: {}", e.getStatusCode());
+            } else {
+                log.warn("Hanko validation error: {}", e.getStatusCode());
+            }
+            return false;
+        } catch (Exception e) {
+            log.warn("Failed to validate Hanko session", e);
+            return false;
+        }
+    }
+
+    private String extractSessionToken(HttpServletRequest request) {
+        // Cookie: hanko=<token> (name configurable via hanko.cookieName)
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            return Arrays.stream(cookies)
+                    .filter(c -> hankoCookieName.equals(c.getName()))
+                    .map(Cookie::getValue)
+                    .filter(v -> v != null && !v.isBlank())
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        return null;
+    }
+}
+```
+
+## Using the validator as a Spring filter
+
+Create a filter to protect your routes using the session validator:
+
+```java
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+@Component
+public class HankoSessionFilter extends OncePerRequestFilter {
+
+    private final HankoSessionValidator validator;
+
+    public HankoSessionFilter(HankoSessionValidator validator) {
+        this.validator = validator;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        if (!validator.isSessionValid(request)) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\":\"unauthorized\"}");
+            return;
+        }
+        filterChain.doFilter(request, response);
+    }
+}
+```
+
+Configure Spring to run the filter on all routes that should be protected:
+
+<Note>
+    In this example only the `/secured` route is protected.
+</Note>
+
+```java
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public FilterRegistrationBean<HankoSessionFilter> hankoSessionFilterRegistration(HankoSessionFilter filter) {
+        FilterRegistrationBean<HankoSessionFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(filter);
+        registration.setUrlPatterns(List.of("/secured"));
+        registration.setOrder(1);
+        return registration;
+    }
+}
+```
