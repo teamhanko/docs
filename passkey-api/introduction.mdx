@@ -2,6 +2,7 @@
 title: Introduction to Passkey API
 sidebarTitle: Introduction
 description: Add passkey support to your existing auth system with Hanko Passkey API.
+mode: wide
 ---
 
 Hanko Passkey API adds support for passkeys for **existing users** of your platform. It's designed to be used **together with your own auth system**, and can be used without any other Hanko product.
@@ -10,9 +11,9 @@ Users cannot create an account through the Passkey API. Instead, the Passkey API
 payment transactions.
 
 <Tip>
-Note that the Passkey API is not designed to be a full authentication solution — it's only intended to be used together with another auth system.
+Please note that the Passkey API is **not** a full authentication solution — it's only intended to be used together with another authentication system that doesn't support passkeys natively.
 
-If you need a full, open-source auth solution, check out [Hanko Auth](/introduction).
+If you need a complete, open source authentication solution, check out [Hanko](/introduction).
 
 </Tip>
 
@@ -26,7 +27,7 @@ The Passkey API is designed to be used both from your backend and frontend:
 
 <CardGroup cols={2}>
   <Card
-    title="Set up Passkey Project"
+    title="Set up a Passkey API project"
     icon={
       <svg width="20" height="20" viewBox="0 0 48 48" fill="#5465FF" xmlns="http://www.w3.org/2000/svg">
         <path d="M36.0611 12.8774V41.9346H32.0922V26.037H16.4355V29.9695H28.1247V31.9991C28.1245 37.076 28.1162 42.1529 28.1294 47.2296C28.1302 47.5458 28.147 47.7976 28.1834 47.9964C32.6231 47.2725 36.6568 45.3468 39.9439 42.5638V22.1278C39.9439 19.047 39.2607 15.6673 36.0611 12.8774Z"/>
@@ -37,7 +38,7 @@ The Passkey API is designed to be used both from your backend and frontend:
     }
     href="/passkey-api/setup-passkey-project"
   >
-    Set up a passkey project on Hanko Cloud.
+    Set up a Passkey API project on Hanko Cloud.
   </Card>
   <Card
     title="Example implementation"

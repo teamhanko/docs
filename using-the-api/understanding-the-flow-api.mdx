@@ -1,7 +1,7 @@
 ---
 sidebarTitle: Understanding the Flow API
 title: Understanding the Hanko Flow API
-description: A brief introduction to the Hanko Flow API.
+description: Build your own authentication and account management UI.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
@@ -41,6 +41,8 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 </div>
 
 ## Introduction
+
+For most applications, the recommended way to use Hanko is by integrating [Hanko Elements](/guides/hanko-elements/introduction). In case you want to build a custom frontend **instead** of using Hanko Elements, for example when building a native mobile app or if Elements do not match your requirements, the [Hanko Flow API](/api-reference/flow/registration) and the `hanko-frontend-sdk` are the tools you need for that. 
 
 The Flow API simplifies frontend development by moving authentication flow logic to the backend. Traditional authentication implementations require frontends to manage complex state transitions, predict next steps, and handle various configuration options. This complexity increases maintenance overhead and makes configuration changes difficult.
 

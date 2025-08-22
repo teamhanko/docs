@@ -20,32 +20,35 @@
               "setup-hanko-cloud",
               {
                 "group": "Quickstarts",
+                "icon": "rocket",
                 "pages": [
+                  "quickstarts/overview",
                   {
                     "group": "Full Stack",
                     "pages": [
                       "quickstarts/fullstack/next",
-                      "quickstarts/fullstack/remix",
                       "quickstarts/fullstack/nuxt",
+                      "quickstarts/fullstack/remix",
                       "quickstarts/fullstack/sveltekit"
                     ]
                   },
                   {
                     "group": "Frontend",
                     "pages": [
-                      "quickstarts/frontend/react",
-                      "quickstarts/frontend/vue",
-                      "quickstarts/frontend/svelte",
-                      "quickstarts/frontend/solid",
+                      "quickstarts/frontend/angular",
                       "quickstarts/frontend/javascript",
-                      "quickstarts/frontend/angular"
+                      "quickstarts/frontend/react",
+                      "quickstarts/frontend/solid",
+                      "quickstarts/frontend/svelte",
+                      "quickstarts/frontend/vue"
                     ]
                   },
                   {
                     "group": "Backend",
                     "pages": [
-                      "quickstarts/backend/javascript",
                       "quickstarts/backend/go",
+                      "quickstarts/backend/javascript",
+                      "quickstarts/backend/java_spring",
                       "quickstarts/backend/python",
                       "quickstarts/backend/rust"
                     ]
@@ -72,11 +75,11 @@
                 ]
               },
               {
-                "group": "Access user data",
+                "group": "User data",
                 "pages": [
-                  "guides/access-user-data/frontend",
-                  "guides/access-user-data/backend",
-                  "guides/access-user-data/user-metadata"
+                  "guides/user-data/frontend",
+                  "guides/user-data/backend",
+                  "guides/user-data/user-metadata"
                 ]
               },
               {
@@ -115,7 +118,7 @@
             ]
           },
           {
-            "group": "Using the API",
+            "group": "Using the Hanko API",
             "pages": [
               "using-the-api/understanding-the-flow-api",
               "using-the-api/build-a-custom-login-page"
@@ -345,7 +348,7 @@
         "tab": "Passkey API Docs",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Getting started",
             "pages": [
               "passkey-api/introduction",
               "passkey-api/setup-passkey-project",
@@ -366,7 +369,7 @@
             "group": "Resources",
             "pages": [
               "passkey-api/resources/examples",
-              "resources/llms"
+              "passkey-api/resources/tutorials"
             ]
           },
           {

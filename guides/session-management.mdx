@@ -1,18 +1,18 @@
 ---
-sidebarTitle: Sessions
-title: Sessions
-description: Learn how to manage user sessions.
+sidebarTitle: Sessions & tokens
+title: Sessions & tokens
+description: Learn how to manage user sessions and session tokens with Hanko.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko Session Management Guide
+**Hanko Session Management Guide**:
 
 **About Hanko**:
 <HankoAbout />
 
-**What This Guide Covers**: This guide demonstrates comprehensive session management in Hanko applications. You'll learn to configure session lifetimes, implement session validation, handle multiple concurrent sessions, and customize session tokens with additional claims.
+**What This Guide Covers**: This guide demonstrates session management in applications using Hanko for authentication. You'll learn to configure session lifetimes, implement session validation, handle multiple concurrent sessions, and customize session tokens with additional claims.
 
 **Key Technologies**: 
 - JSON Web Tokens (JWT)
@@ -75,7 +75,7 @@ Sessions can be terminated through various explicit and implicit methods, depend
 
 ### Explicit user logout
 
-Users can manually log out through the `/users/logout` [endpoint](https://docs.hanko.io/api-reference/public/user-management/log-out-the-current-user). Successful logout requests clear session cookies and terminate the associated session.
+Users can manually log out through the `/logout` [endpoint](https://docs.hanko.io/api-reference/public/user-management/log-out-the-current-user). Successful logout requests clear session cookies and terminate the associated session.
 
 ### Limiting session duration
 
