@@ -100,7 +100,7 @@ export default defineConfig({
 })
 ```
 
-## Setup TS support for Vue components
+## Set up TS support for Vue components
 TypeScript doesn't understand .vue files by default, which can cause IDE errors or issues during development.
 
 To fix this we will create a new file `shims-vue.d.ts` in our `src/` directory.
@@ -124,7 +124,7 @@ Set up the `HankoAuth.vue` file to create a functioning login component.
 
 Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action (e.g. redirect to your dashboard).
 
-[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
+For more information please refer to the [Auth component page.](/guides/hanko-elements/auth-component)
 
 ```jsx src/components/HankoAuth.vue 
 <script setup lang="ts">
@@ -159,7 +159,7 @@ Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using
 
 Set up the `HankoProfile.vue` file to create an interface where users can manage their email addresses and credentials.
 
-[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
+For more information please refer to the [Profile component page.](/guides/hanko-elements/profile-component)
 
 ```jsx src/components/HankoProfile.vue
   <script setup lang="ts">
@@ -181,7 +181,7 @@ Set up the `HankoProfile.vue` file to create an interface where users can manage
   </template>
 ```
 
-## Setup routes and views
+## Set up routes and views
 
 To route our app we will use the `RouterView` component from the vue-router.
 First let's set up our views which will be used by the router.
@@ -219,7 +219,7 @@ And:
 </template>
 ```
 
-### Setup Router
+### Set up router
 
 Create a file `index.ts` in a new directory `/router`.
 In here we can set up the `vue-router` just like this:

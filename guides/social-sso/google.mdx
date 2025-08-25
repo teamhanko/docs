@@ -1,12 +1,13 @@
 ---
-title: Add Google Login
+title: Set up Sign in with Google using Hanko
 sidebarTitle: Google
+description: Step-by-step guide to integrating Sign in with Google using Hanko. Enable secure authentication and seamless onboarding for your app's users.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko Google OAuth Integration Guide
+**Hanko Google OAuth Integration Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -36,9 +37,9 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
 <Steps>
 
-<Step title="Obtain Google OAuth Credentials">
+<Step title="Obtain Google OAuth credentials">
 
-- First, obtain the redirect URL from the [Hanko console](https://cloud.hanko.io/), as you'll need this for Google configuration.
+- First, obtain the redirect URL from the [Hanko Console](https://cloud.hanko.io/), as you'll need this for Google configuration.
   Sign in to the Hanko console and select your project. Navigate to 'Settings' in the left sidebar and then to 'Social connections'.
   Copy the 'Redirect URL'.
 
@@ -163,7 +164,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
       width={500}
     />
 </Step>
-<Step title="Configure Google OAuth Credentials with Hanko">
+<Step title="Configure Google OAuth credentials with Hanko">
 
 - In the 'Social connections' section, select Google and enable its toggle switch.
 - Input the earlier noted 'Client ID' and 'Client Secret', then click 'Save'.
@@ -175,7 +176,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
       height={500}
     />
 </Step>
-<Step title="Implement Google Login in Your Frontend Application">
+<Step title="Implement Sign in with Google in your frontend application">
 
 Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-elements` package or opt for a custom UI with the `@teamhanko/hanko-frontend-sdk` will determine your approach to frontend integration.
 

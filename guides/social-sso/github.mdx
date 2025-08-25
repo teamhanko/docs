@@ -1,12 +1,13 @@
 ---
-title: Add GitHub Login
+title: Set up Sign in with GitHub using Hanko
 sidebarTitle: GitHub
+description: Step-by-step guide to integrating Sign in with GitHub using Hanko. Enable secure authentication and seamless onboarding for your app's users.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko GitHub OAuth Integration Guide
+**Hanko GitHub OAuth Integration Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -35,9 +36,9 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 </div>
 
 <Steps>
-<Step title="Obtain GitHub OAuth Credentials">
+<Step title="Obtain GitHub OAuth credentials">
 
-- First, obtain the redirect URL from [Hanko console](https://cloud.hanko.io/), as you'll need it for GitHub configuration. Sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
+- First, obtain the redirect URL from [Hanko Console](https://cloud.hanko.io/), as you'll need it for GitHub configuration. Sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
   
     <img
       src="/images/oauth-providers/hanko-callback-url.png"
@@ -59,7 +60,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
         <img
           src="/images/oauth-providers/developer-settings.png"
-          alt="GitHub Developer Settings"
+          alt="GitHub developer settings"
           width={500}
          />
 
@@ -67,7 +68,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
     <img
       src="/images/oauth-providers/github-new-auth.png"
-      alt="GitHub New OAuth App option"
+      alt="GitHub New OAuth app option"
       width={700}
     />
 
@@ -83,18 +84,18 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
     <img
       src="/images/oauth-providers/github-oauth-form.png"
-      alt="GitHub OAuth Registration Form"
+      alt="GitHub OAuth registration form"
       width={500}
     />
 
 - You'll now see an overview of your OAuth app. Note down the provided 'Client ID'. Generate a 'Client Secret' by selecting 'Generate a new client secret'. Copy both values, as you'll need them in the next step.
     <img
       src="/images/oauth-providers/github-client-id.png"
-      alt="GitHub OAuth Registration Form"
+      alt="GitHub OAuth registration form"
       width={500}
     />
 </Step>
-<Step title="Configure GitHub Credentials with Hanko">
+<Step title="Configure GitHub credentials with Hanko">
 
 - Return to Identity providers in Hanko and under 'Identity provider settings' configure the following:
     <img
@@ -123,7 +124,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
     />
 </Step>
 
-<Step title="Implement GitHub Login in Your Frontend Application">
+<Step title="Implement Sign in with GitHub in your frontend application">
 
 Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-elements` package or opt for a custom UI with the `@teamhanko/hanko-frontend-sdk` will determine your approach to frontend integration.
 

@@ -54,8 +54,8 @@ description: "Select your framework or programming language below to open the qu
     title="Remix"
     icon={
         <svg
-            width="30"
-            height="30"
+            width="18"
+            height="21"
             viewBox="0 0 30 30"
             strokeWidth="2"
             stroke="#5465FF"
@@ -248,6 +248,28 @@ description: "Select your framework or programming language below to open the qu
     <Card horizontal
         title="Go"
         icon={
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                viewBox="0 0 30 30"
+                strokeWidth="2"
+                stroke="#5465FF"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-brand-golang"
+                {...props}
+            >
+                <path stroke="none" d="M0 0h24v24H0z" />
+                <path d="M15.695 14.305c1.061 1.06 2.953.888 4.226-.384 1.272-1.273 1.444-3.165.384-4.226-1.061-1.06-2.953-.888-4.226.384-1.272 1.273-1.444 3.165-.384 4.226zM12.68 9.233c-1.084-.497-2.545-.191-3.591.846-1.284 1.273-1.457 3.165-.388 4.226 1.07 1.06 2.978.888 4.261-.384A3.669 3.669 0 0 0 14 12h-2.427M5.5 15H4M6 9H4M5 12H2" />
+            </svg>
+        }
+        href="/quickstarts/backend/go"
+    />
+    <Card horizontal
+        title="JavaScript"
+        icon={
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width="30"
@@ -258,35 +280,12 @@ description: "Select your framework or programming language below to open the qu
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="icon icon-tabler icons-tabler-outline icon-tabler-brand-angular"
+            className="icon icon-tabler icons-tabler-outline icon-tabler-brand-nodejs"
             {...props}
         >
             <path stroke="none" d="M0 0h24v24H0z" />
-            <path d="m5.428 17.245 6.076 3.471a1 1 0 0 0 .992 0l6.076-3.471a1 1 0 0 0 .495-.734l1.323-9.704a1 1 0 0 0-.658-1.078l-7.4-2.612a1 1 0 0 0-.665 0L4.268 5.73a1 1 0 0 0-.658 1.078l1.323 9.704a1 1 0 0 0 .495.734z" />
-            <path d="m9 15 3-8 3 8M10 13h4" />
-        </svg>
-        }
-        href="/quickstarts/backend/go"
-    />
-    <Card horizontal
-        title="JavaScript"
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="30"
-            height="30"
-            viewBox="0 0 30 30"
-            strokeWidth="2"
-            stroke="#5465FF"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="icon icon-tabler icons-tabler-outline icon-tabler-brand-javascript"
-            {...props}
-        >
-            <path stroke="none" d="M0 0h24v24H0z" />
-            <path d="m20 4-2 14.5-6 2-6-2L4 4z" />
-            <path d="M7.5 8h3v8l-2-1M16.5 8H14a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h1.423a.5.5 0 0 1 .495.57L15.5 15.5l-2 .5" />
+            <path d="M9 9v8.044a2 2 0 0 1-2.996 1.734l-1.568-.9A3 3 0 0 1 3 15.317V8.682a3 3 0 0 1 1.436-2.56l6-3.667a3 3 0 0 1 3.128 0l6 3.667A3 3 0 0 1 21 8.683v6.634a3 3 0 0 1-1.436 2.56l-6 3.667a3 3 0 0 1-3.128 0" />
+            <path d="M17 9h-3.5a1.5 1.5 0 0 0 0 3h2a1.5 1.5 0 0 1 0 3H12" />
         </svg>
         }
         href="/quickstarts/backend/javascript"
@@ -294,27 +293,24 @@ description: "Select your framework or programming language below to open the qu
     <Card horizontal
         title="Java (Spring)"
         icon={
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="icon icon-tabler icon-tabler-brand-react"
-            width="30"
-            height="30"
-            viewBox="0 0 30 30"
-            strokeWidth="2"
-            stroke="#5465FF"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-            <path d="M6.306 8.711c-2.602 .723 -4.306 1.926 -4.306 3.289c0 2.21 4.477 4 10 4c.773 0 1.526 -.035 2.248 -.102"></path>
-            <path d="M17.692 15.289c2.603 -.722 4.308 -1.926 4.308 -3.289c0 -2.21 -4.477 -4 -10 -4c-.773 0 -1.526 .035 -2.25 .102"></path>
-            <path d="M6.305 15.287c-.676 2.615 -.485 4.693 .695 5.373c1.913 1.105 5.703 -1.877 8.464 -6.66c.387 -.67 .733 -1.339 1.036 -2"></path>
-            <path d="M17.694 8.716c.677 -2.616 .487 -4.696 -.694 -5.376c-1.913 -1.105 -5.703 1.877 -8.464 6.66c-.387 .67 -.733 1.34 -1.037 2"></path>
-            <path d="M12 5.424c-1.925 -1.892 -3.82 -2.766 -5 -2.084c-1.913 1.104 -1.226 5.877 1.536 10.66c.386 .67 .793 1.304 1.212 1.896"></path>
-            <path d="M12 18.574c1.926 1.893 3.821 2.768 5 2.086c1.913 -1.104 1.226 -5.877 -1.536 -10.66c-.375 -.65 -.78 -1.283 -1.212 -1.897"></path>
-            <path d="M11.5 12.866a1 1 0 1 0 1 -1.732a1 1 0 0 0 -1 1.732z"></path>
-        </svg>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                viewBox="0 0 30 30"
+                strokeWidth="2"
+                stroke="#5465FF"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-coffee"
+                {...props}
+            >
+                <path stroke="none" d="M0 0h24v24H0z" />
+                <path d="M3 14c.83.642 2.077 1.017 3.5 1 1.423.017 2.67-.358 3.5-1 .83-.642 2.077-1.017 3.5-1 1.423-.017 2.67.358 3.5 1M8 3a2.4 2.4 0 0 0-1 2 2.4 2.4 0 0 0 1 2M12 3a2.4 2.4 0 0 0-1 2 2.4 2.4 0 0 0 1 2" />
+                <path d="M3 10h14v5a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6v-5z" />
+                <path d="M16.746 16.726a3 3 0 1 0 .252-5.555" />
+            </svg>
         }
         href="/quickstarts/backend/java_spring"
     />
@@ -331,13 +327,12 @@ description: "Select your framework or programming language below to open the qu
                 fill="none"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="icon icon-tabler icons-tabler-outline icon-tabler-brand-solidjs"
+                className="icon icon-tabler icons-tabler-outline icon-tabler-brand-python"
                 {...props}
             >
                 <path stroke="none" d="M0 0h24v24H0z" />
-                <path d="M2 17.5c4.667 3 8 4.5 10 4.5 2.5 0 4-1.5 4-3.5S14.5 15 12 15c-2 0-5.333.833-10 2.5z" />
-                <path d="M5 13.5c4.667-1.667 8-2.5 10-2.5 2.5 0 4 1.5 4 3.5 0 .738-.204 1.408-.588 1.96l-2.883 3.825M22 6.5C18 3.5 14 2 12 2c-2.04 0-2.618.463-3.419 1.545M2 17.5l3-4M22 6.5l-3 4M8.581 3.545 5.628 7.256" />
-                <path d="M7.416 12.662C5.906 12.186 5 11.183 5 9.5 5 7 6.5 6 9 6c1.688 0 5.087 1.068 8.198 3.204A114.76 114.76 0 0 1 19 10.5l-2.302.785" />
+                <path d="M12 9H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h3M12 15h7a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3" />
+                <path d="M8 9V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4M11 6v.01M13 18v.01" />
             </svg>
         }
         href="/quickstarts/backend/python"
@@ -345,22 +340,24 @@ description: "Select your framework or programming language below to open the qu
     <Card horizontal
     title="Rust"
     icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-brand-svelte"
-        width="30"
-        height="30"
-        viewBox="0 0 30 30"
-        strokeWidth="2"
-        stroke="#5465FF"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M15 8l-5 3l.821 -.495c1.86 -1.15 4.412 -.49 5.574 1.352a3.91 3.91 0 0 1 -1.264 5.42l-5.053 3.126c-1.86 1.151 -4.312 .591 -5.474 -1.251a3.91 3.91 0 0 1 1.263 -5.42l.26 -.16"></path>
-        <path d="M8 17l5 -3l-.822 .496c-1.86 1.151 -4.411 .491 -5.574 -1.351a3.91 3.91 0 0 1 1.264 -5.42l5.054 -3.127c1.86 -1.15 4.311 -.59 5.474 1.252a3.91 3.91 0 0 1 -1.264 5.42l-.26 .16"></path>
-      </svg>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            viewBox="0 0 30 30"
+            strokeWidth="2"
+            stroke="#5465FF"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="icon icon-tabler icons-tabler-outline icon-tabler-brand-rust"
+            {...props}
+        >
+            <path stroke="none" d="M0 0h24v24H0z" />
+            <path d="M10.139 3.463c.473-1.95 3.249-1.95 3.722 0a1.916 1.916 0 0 0 2.859 1.185c1.714-1.045 3.678.918 2.633 2.633a1.916 1.916 0 0 0 1.184 2.858c1.95.473 1.95 3.249 0 3.722a1.916 1.916 0 0 0-1.185 2.859c1.045 1.714-.918 3.678-2.633 2.633a1.916 1.916 0 0 0-2.858 1.184c-.473 1.95-3.249 1.95-3.722 0a1.916 1.916 0 0 0-2.859-1.185c-1.714 1.045-3.678-.918-2.633-2.633a1.916 1.916 0 0 0-1.184-2.858c-1.95-.473-1.95-3.249 0-3.722A1.916 1.916 0 0 0 4.648 7.28c-1.045-1.714.918-3.678 2.633-2.633a1.914 1.914 0 0 0 2.858-1.184z" />
+            <path d="M8 12h6a2 2 0 1 0 0-4H8v8-4z" />
+            <path d="M19 16h-2a2 2 0 0 1-2-2 2 2 0 0 0-2-2h-1M9 8H5M5 16h4" />
+        </svg>
     }
     href="/quickstarts/backend/rust"
     />

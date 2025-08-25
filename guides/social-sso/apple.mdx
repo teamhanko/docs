@@ -1,12 +1,13 @@
 ---
-title: Add Apple Login
+title: Set up Sign in with Apple using Hanko
 sidebarTitle: Apple
+description: Step-by-step guide to integrating Sign in with Apple using Hanko. Enable secure authentication and seamless onboarding for your app's users.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko Apple OAuth Integration Guide
+**Hanko Apple OAuth Integration Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -36,8 +37,8 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
 <Steps>
 
-<Step title="Obtain Apple Credentials">
-1.  Let's get the redirect url first from [Hanko console](https://cloud.hanko.io/), as you'll need it in a moment. To do so, sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
+<Step title="Obtain Apple credentials">
+1.  Let's get the redirect url first from [Hanko Console](https://cloud.hanko.io/), as you'll need it in a moment. To do so, sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
     <img
     src="/images/oauth-providers/hanko-callback-url.png"
     alt="Hanko Callback URL"
@@ -71,7 +72,7 @@ sidebar, then click the add button (`+`) on the top.
 - Click `Done` at the bottom to close the modal.
 - Back on the `Edit your Services ID Configuration` view, click `Continue` at the top right, then click `Save`.
 
-## Create Key and download Key file
+## Create key and download key file
 
 Next, you need to create a `Key` and download a `Key` file. You need this file to
 generate your client secret in the [next step](#generate-secret).
@@ -139,7 +140,7 @@ Secrets expire after 6 months and must be regenerated before the expiration.
 
 </Step>
 
-<Step title="Configure Apple Credentials with Hanko">
+<Step title="Configure Apple credentials with Hanko">
 1.  Head back to Identity providers in Hanko and under 'Identity provider settings' configure the following:
 
     <img
@@ -168,7 +169,7 @@ Secrets expire after 6 months and must be regenerated before the expiration.
     />
 </Step>
 
-<Step title="Implement Apple Login in Your Frontend Application">
+<Step title="Implement Sign in with Apple in your frontend application">
 
 Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-elements` package or opt for a custom UI with the `@teamhanko/hanko-frontend-sdk` will determine your approach to frontend integration.
 
