@@ -1,0 +1,31 @@
+---
+sidebarTitle: Privacy
+title: Privacy
+description: Learn about the privacy settings of Hanko
+---
+
+## Overview
+When a new project is created, it is set up with user-friendly settings by default. This means that users receive feedback when they enter incorrect information, helping them correct mistakes easily. However, for projects that prioritize security and privacy, this feedback may not be desirable. To accommodate these needs, our platform provides two key privacy settings:
+
+1. **Show Account Existence Hints**
+2. **Hide Unavailable Login Methods**
+
+By disabling both options, your project is protected against account/email enumeration attacks—but only if usernames are also disabled. If usernames are enabled, it is not possible to fully mitigate enumeration attacks. In some configurations, complete protection against account enumeration may not be achievable.
+
+## Show Account Existence Hints
+When this setting is enabled, users receive feedback when they enter an unknown email address during login or an already registered email address during signup. This can improve the user experience but may expose account existence information, making enumeration attacks possible.
+
+### Impact of Disabling This Setting
+- Users will not receive any indication whether an email exists in the system.
+- May lead to a less intuitive user experience.
+- Attackers cannot easily determine if an email is registered.
+
+## Hide Unavailable Login Methods
+Enabling this setting ensures that users are only prompted with their configured login credentials. This setting does not apply to third-party authentication providers or passkeys.
+
+### Impact of Enabling This Setting
+- Users only see login options that they have configured.
+- Reduces information exposure by not revealing unavailable authentication methods.
+- Does not affect multi-factor authentication (MFA); users will always be prompted with their configured MFA credentials.
+
+By properly configuring these settings, you can tailor your project's privacy and security policies to best suit your use case while balancing usability and protection.

@@ -1,9 +1,15 @@
 ---
-title: Welcome to Hanko Docs
+title: Welcome to the Hanko documentation
 sidebarTitle: Introduction
-description: "Hanko is a lightweight, open source user authentication solution that takes you on the journey beyond passwords."
+description: "Learn how to integrate Hanko to securely and seamlessly onboard and authenticate your users."
+icon: "hand-wave"
 mode: wide
 ---
+
+## What is Hanko?
+Hanko is a fully open-source authentication and user management system built around a flexible API. It supports multiple authentication methods, including passwords, passkeys, two-factor authentication (2FA), single sign-on (SSO), and Hanko Elements — a set of lightweight, framework-agnostic web components for fast integration into any website or application.
+
+Hanko follows a privacy-first approach, focusing on data minimalism and phishing-resistant authentication methods such as passkeys. You retain full control over your data and can move seamlessly between self-hosted deployments and Hanko Cloud at any time.
 
 <img
   className="block dark:hidden"
@@ -19,9 +25,14 @@ mode: wide
   style={{ borderRadius: "1rem" }}
 />
 
-## Quickstarts
+<Tip>
+Please note that Hanko is a complete authentication solution. If you only want to add passkeys to your existing user base, check out [Passkey API](/passkey-api/introduction).
 
-Get started quickly with your favorite frameworks.
+</Tip>
+
+## Hanko quickstart guides
+
+Integrate Hanko using a quickstart guide for your favorite frameworks:
 
 <CardGroup cols={2}>
   <Card
@@ -126,108 +137,4 @@ Get started quickly with your favorite frameworks.
     Add Hanko authentication to your Svelte app.
   </Card>
 </CardGroup>
-    [More >>](/quickstarts)
-
-## Features
-
-<CardGroup cols={2}>
-  <Card
-    title="Passkeys"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-circle-key"
-        width="30"
-        height="30"
-        viewBox="0 0 30 30"
-        strokeWidth="2"
-        stroke="#5465FF"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M14 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-        <path d="M21 12a9 9 0 1 1 -18 0a9 9 0 0 1 18 0z"></path>
-        <path d="M12.5 11.5l-4 4l1.5 1.5"></path>
-        <path d="M12 15l-1.5 -1.5"></path>
-      </svg>
-    }
-    href="https://www.hanko.io/features/passkeys"
-  >
-    Hanko is built for passkeys – a new way to sign in that works completely
-    without passwords.
-  </Card>
-  <Card
-    title="Mobile App Biometrics"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-login"
-        width="30"
-        height="30"
-        viewBox="0 0 30 30"
-        strokeWidth="2"
-        stroke="#5465FF"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"></path>
-        <path d="M20 12h-13l3 -3m0 6l-3 -3"></path>
-      </svg>
-    }
-    href="/quickstarts/mobile"
-  >
-    If you’re looking for a modern authentication solution for iOS or Android apps, Hanko has got you covered.
-  </Card>
-  <Card
-    title="Passcodes"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-mail"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        stroke="#5465FF"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"></path>
-        <path d="M3 7l9 6l9 -6"></path>
-      </svg>
-    }
-    href="https://www.hanko.io/features/passcodes"
-  >
-    Use passcodes to verify an identity without the need for a password.
-  </Card>
-  <Card
-    title="OAuth Login"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-brand-google"
-        width="30"
-        height="30"
-        viewBox="0 0 30 30"
-        strokeWidth="2"
-        stroke="#5465FF"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M17.788 5.108a9 9 0 1 0 3.212 6.892h-8"></path>
-      </svg>
-    }
-    href="/guides/authentication-methods/oauth"
-  >
-    Offering sign in options for popular 3rd-party identity providers have a
-    positive impact on conversion rates.
-  </Card>
-</CardGroup>
+    [Discover all guides >>](/quickstarts/overview)

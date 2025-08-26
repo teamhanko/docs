@@ -1,22 +1,21 @@
 ---
-sidebarTitle: "Next"
+sidebarTitle: "Next.js"
 title: Integrate Hanko with Next.js
-description: Learn how to quickly add authentication and user profile in your Next.js app using Hanko.
+description: Learn how to quickly add authentication and a user profile to your Next.js app using Hanko.
 ---
 
 import FullstackIntegrationAbout from '/snippets/fullstack-integration-about.mdx';
 
 <FullstackIntegrationAbout/>
 
-## Create a Next.js applicaPtion
+## Create a Next.js application
 Run the following command to [create a new Next.js application](https://nextjs.org/docs/app/getting-started/installation):
 
 <Note>
-  During the Next.js setup you could pick between two routers, the [App Router](https://nextjs.org/docs/app) and the [Pages Router](https://nextjs.org/docs/pages).
-  Ensure you add the correct code and follow the correct directory structure for Router that you picked.
+  When setting up Next.js, you’ll choose either the [App Router](https://nextjs.org/docs/app) or the [Pages Router](https://nextjs.org/docs/pages). Be sure to follow the proper directory structure and add the matching code for the router you selected.
 </Note>
 
-This creates a new Next.js application with the latest version and default settings.
+This creates a new Next.js application using the latest version and default settings.
 
 <CodeGroup> 
 ```bash terminal
@@ -54,8 +53,8 @@ yarn add @teamhanko/hanko-elements
 </CodeGroup>
 
 
-## Setup your Hanko project
-Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+## Set up your Hanko project
+Go to the [Hanko Console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
 
 <Note>
   During creation make sure to input the URL you will be developing on as the `APP URL`.
@@ -64,7 +63,7 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 ## Add your Hanko API URL
 
-Retrieve your API URL from the [Hanko console](https://cloud.hanko.io/), and paste this in a `.env` file.
+Retrieve your API URL from the [Hanko Console](https://cloud.hanko.io/), and paste this in a `.env` file.
 
 Set up your environment variable for the Hanko API URL. The NEXT_PUBLIC_ prefix makes it accessible in the browser.
 
@@ -80,12 +79,12 @@ NEXT_PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
 ## Create Hanko components
 Create a folder called `components` and create two files, `HankoAuth.tsx` and `HankoProfile.jsx`.
 
-### Typescript
+### Add Typescript types
 
 To get these elements to work with typescript, currently we must add the types to the project.
 To do do this, create a file called `custom.d.ts` and place it in your apps root / src folder.
 
-Add TypeScript declarations for Hanko web components to enable type checking and IntelliSense support.
+Add TypeScript declarations for Hanko Web Components to enable type checking and IntelliSense support.
 
 ```jsx src/custom.d.ts
 import { HankoAuthElementProps, HankoProfileElementProps, HankoEventsElementProps } from "@teamhanko/hanko-elements";
@@ -103,14 +102,13 @@ declare module "react" {
 }
 ```
 
-### Hanko Auth
+### Login page with `<hanko-auth>`
 
 Now lets setup the `HankoAuth.tsx` file to create a functioning login page.
 
 Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action. (e.g. redirect to your dashboard).
 
-
-[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
+For more information please refer to the [Auth component page.](/guides/hanko-elements/auth-component)
 
 <Tabs>
 <Tab title="App directory">
@@ -239,12 +237,12 @@ By now, your sign-up and sign-in features should be working. You should see an i
 <img src="/images/fullstack-guide/next-one.png" alt="sign up" width="500" style={{ borderRadius: '0.5rem' }}/>
 </Frame>
 
-### Hanko profile
+### Profile page with `<hanko-profile>`
 
-After setting up the HankoAuth let's set up the `HankoProfile.jsx` file to create an interface where users can
-manage their `Email Addresses` and credentials.
+After setting up `HankoAuth`, let's set up the `HankoProfile.jsx` file to create an interface where users can
+manage their email addresses and login methods.
 
-[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
+For more information please refer to the [Profile component page.](/guides/hanko-elements/profile-component)
 
 <Tabs>
 <Tab title="App directory">
@@ -415,7 +413,7 @@ export default function LogoutBtn() {
 
 You can customize the appearance of `hanko-auth` and `hanko-profile` components using CSS variables and parts. Refer to our [customization guide](/guides/hanko-elements/customize-appearance).
 
-## Securing routes with Middleware
+## Securing routes with middleware
 
 To verify the session token in your Next.js application, we're using the [session/validate API request](/api-reference/public/session-management/validate-a-session). By checking for a valid session token this middleware will ensure secure access to specific routes, like `/dashboard` and `/protected`.\
 The middleware extracts and verifies the session token, and redirect unauthorized users back to the home or login page.
@@ -555,7 +553,7 @@ export default function Dashboard() {
 </Tabs>
 
 
-### Server Side
+### Server side
 
 On the server side, you can extract the `userID` from the session token, which you can use to fetch the user's data from the [Hanko Public API](/api-reference/public/user-management/get-a-user-by-id).
 

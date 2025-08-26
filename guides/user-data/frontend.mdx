@@ -1,0 +1,80 @@
+---
+sidebarTitle: Access from frontend
+title: Access user data from your frontend
+description: Learn how to access Hanko user data in your frontend code.
+---
+
+import HankoAbout from '/snippets/hanko-about.mdx'
+
+<div class="hidden">
+    **Hanko User Data Retrieval Guide**:
+
+    **About Hanko**:
+    <HankoAbout />
+
+    **What This Guide Covers**: This guide demonstrates how to retrieve user data from Hanko in frontend environments, including accessing user profiles, validating sessions, extracting information from JWTs.
+
+    **Key Technologies**:
+    - Hanko Frontend SDK
+    - Hanko Elements
+    - JWT (JSON Web Tokens)
+
+    **Prerequisites**:
+    - Active Hanko project with configured API URL
+    - Basic understanding of JavaScript/TypeScript
+
+    **Tasks You'll Complete**:
+    - Retrieve current user profile data using the Frontend SDK
+    - Validate user sessions and extract JWT claims
+    - Implement proper authentication checks in your application
+</div>
+
+## Get user data from API
+
+To access user data in your frontend application, use the `hanko.getUser()` method from the [hanko-frontend-sdk](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
+(also available via [hanko-elements](https://www.npmjs.com/package/@teamhanko/hanko-elements)).
+
+```js
+import { Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = "<YOUR_HANKO_API_URL>";
+const hanko = new Hanko(hankoApi);
+
+// Fetches the current user's profile information
+const user = await hanko.getUser();
+console.log("User profile:", user);
+// Example output:
+// {
+//   user_id: "123e4567-e89b-12d3-a456-426614174000",
+//   emails: [{ address: "user@example.com", is_primary: true, is_verified: true }],
+//   username: { id: "f2882293-3c39-451d-a7cb-4cf3375e0c66", username: "johndoe" },
+//   created_at: "2025-01-01T10:00:00Z",
+//   updated_at: "2025-04-01T12:00:00Z"
+// }
+```
+
+## Get user data from the session cookie
+
+To extract user claims from the JWT token, use the `hanko.validateSession()` function.
+
+```js
+import { Hanko } from "@teamhanko/hanko-elements";
+
+const hankoApi = "<YOUR_HANKO_API_URL>";
+const hanko = new Hanko(hankoApi);
+
+// Checks the validity of the current session and returns the user claims
+const sessionStatus = await hanko.validateSession();
+console.log("Session status:", sessionStatus);
+// Example output:
+// {
+//   is_valid: true,
+//   claims: {
+//     subject: "123e4567-e89b-12d3-a456-426614174000",
+//     session_id: "789abc",
+//     expiration: "2025-04-25T12:00:00Z",
+//     email: { address: "user@example.com", is_primary: true, is_verified: true },
+//     custom_field: "value"
+//   }
+// }
+```

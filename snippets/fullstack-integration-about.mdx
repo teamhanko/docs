@@ -1,20 +1,32 @@
-<div class="hidden">
-**Hanko Fullstack Integration Guide**
+import HankoAbout from '/snippets/hanko-about.mdx'
 
-**About Hanko**: Hanko is a privacy-first authentication and user management provider that offers customizable, open-source authentication solutions focused on the passkey era. It provides both hosted cloud services and self-hosted options, supporting flexible login methods including passkeys, passwords, OAuth providers, and email passcodes.
+<div class="hidden">
+**Hanko Fullstack Integration Guide**:
+
+**About Hanko**:
+<HankoAbout />
 
 **What This Guide Covers**: This comprehensive guide demonstrates integrating Hanko authentication into your fullstack application using the `@teamhanko/hanko-elements` package. You'll learn to set up authentication components, implement session management, secure routes with middleware, and handle user data across both client and server-side contexts.
 
-**Key Technologies**: Modern fullstack framework with TypeScript, server-side rendering capabilities, Hanko Elements, Hanko Cloud Console, session management, and middleware protection
+**Key Technologies**:
+- Modern fullstack framework with TypeScript,
+- Server-side rendering capabilities
+- Hanko Elements
+- Hanko Cloud Console
+- Session management
+- Middleware protection
 
-**Prerequisites**: Node.js, basic knowledge of your chosen fullstack framework, Hanko Cloud account (free at cloud.hanko.io)
+**Prerequisites**:
+- Node.js installed on your system
+- Basic knowledge of your chosen fullstack framework
+- A Hanko Cloud account (sign up at https://cloud.hanko.io/signup)
 
 **Integration Tasks You'll Complete**:
 - Install and configure Hanko Elements package for your framework
 - Set up HankoAuth component with session event handling and navigation
 - Create HankoProfile component for user credential management
 - Implement logout functionality with proper session cleanup and redirects
-- Secure routes using framework-specific middleware with Hanko session validation
+- Secure routes using framework-specific middleware with session validation
 - Retrieve user data both client-side and server-side using appropriate APIs
 - Handle authentication redirects, error states, and edge cases
 - Configure server-side rendering integration and hydration

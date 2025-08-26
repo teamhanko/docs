@@ -1,12 +1,16 @@
 ---
-title: Login Component
-description: A web component that handles user login.
+sidebarTitle: Login component
+title: Hanko Elements Login component guide
+description: A Web Component that handles user login.
 ---
 
-<div class="hidden">
-# Hanko Elements Login Component Guide
+import HankoAbout from '/snippets/hanko-about.mdx'
 
-**About Hanko**: Hanko is a modern passwordless authentication solution that eliminates the need for traditional passwords by leveraging passkeys, biometrics, and other secure authentication methods. It provides a seamless, secure, and user-friendly authentication experience while reducing security risks associated with password-based systems.
+<div class="hidden">
+**Hanko Elements Login Component Guide**:
+
+**About Hanko**:
+<HankoAbout />
 
 **What This Guide Covers**: This guide demonstrates how to implement the `<hanko-login>` web component, which provides a dedicated login interface for existing users. You'll learn how to integrate this component for applications that require separate login and registration flows or controlled-access scenarios.
 
@@ -16,10 +20,10 @@ description: A web component that handles user login.
 - JavaScript/TypeScript
 - React, Vue, Svelte
 - Next.js, Nuxt, SvelteKit
-- passkeys
+- Passkeys
 - OAuth SSO
 - 2FA authentication
-- session management
+- Session management
 
 **Prerequisites**:
 - Basic knowledge of frontend development, HTML/JavaScript, your chosen framework
@@ -35,14 +39,14 @@ description: A web component that handles user login.
 </div>
 
 
-## Use Case
+## Use case
 The `<hanko-login>` component is designed for dedicated login interfaces and intentionally excludes registration functionality, unlike `<hanko-auth>`. This makes it ideal for controlled-access applications such as enterprise systems, internal tools, or invitation-based platforms where user registration needs to be restricted.
 
 If you want to Combine Login and Register on the same page: \
 [try out the`<hanko-auth>` component](/guides/hanko-elements/auth-component).
 
 If you want to create a dedicated Registration page:  \
-[try out the `<hanko-register>` component](/guides/hanko-elements/register-component) .
+[try out the `<hanko-registration>` component](/guides/hanko-elements/register-component) .
 
 
 ## Features
@@ -53,6 +57,7 @@ If you want to create a dedicated Registration page:  \
 |  **Passcodes** | Useful for email-based login and verification workflows.
 |  **2FA** | Users can use a TOTP app or security keys.
 |  **OAuth SSO** | 	Allows users to log in using third-party identity providers (e.g., Google, Apple).
+|  **SAML SSO** | 	Allows users to log in using SAML identity providers (e.g., Entra, Okta, Google Workspace).
 |  **Passwords** | Supports traditional password-based login for broader accessibility.
 
 
@@ -77,7 +82,7 @@ If you want to create a dedicated Registration page:  \
 
 The following examples show how to integrate the `<hanko-login>` component in different full-stack and frontend frameworks.
 
-#### Full Stack
+#### Full stack
 
 <Tabs>
 <Tab title="Nextjs (App directory)">

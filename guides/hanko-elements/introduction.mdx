@@ -1,26 +1,29 @@
 ---
-title: Hanko Elements
+title: Hanko Elements guide
 sidebarTitle: Introduction
-description: Hanko Elements provide web components that add a modern login and registration experience for your users.
+description: Hanko Elements are Web Components that can be used to quickly add registration, login, and profile settings functionality to web apps.
 ---
 
+import HankoAbout from '/snippets/hanko-about.mdx'
+
 <div class="hidden">
-# Hanko Elements Introduction Guide
+**Hanko Elements introduction guide**:
 
-**About Hanko**: Hanko is a modern passwordless authentication solution that eliminates the need for traditional passwords by leveraging passkeys, biometrics, and other secure authentication methods. It provides a seamless, secure, and user-friendly authentication experience while reducing security risks associated with password-based systems.
+**About Hanko**:
+<HankoAbout />
 
-**What This Guide Covers**: This guide introduces Hanko Elements, a collection of pre-built web components that provide modern authentication functionality. You'll learn about the available components, their features, and how to get started with implementing passwordless authentication in your applications.
+**What This Guide Covers**: This guide introduces Hanko Elements, a collection of pre-built web components that provide modern authentication functionality. You'll learn about the available components, their features, and how to get started with integrating the components in your applications.
 
 **Key Technologies**:
 - Hanko Elements
 - Web Components
 - JavaScript/TypeScript
-- passkeys
+- Passkeys
 - OAuth SSO
 - 2FA authentication
 - CSS customization
-- internationalization
-- modern web frameworks integration
+- Internationalization
+- Modern web frameworks integration
 
 **Prerequisites**:
 - Basic knowledge of frontend development, HTML/JavaScript, and web components
@@ -34,146 +37,34 @@ description: Hanko Elements provide web components that add a modern login and r
 - Set up event handling for authentication state management
 - Explore customization and internationalization options
 </div>
-## Web Components
+
+## Components overview
 <CardGroup cols={2}>
   <Card
     title="<hanko-login/>"
     href="/guides/hanko-elements/login-component"
   >
-    A web component that handles user login.
+    A Web Component that handles user login.
   </Card>
   <Card
-    title="<hanko-register/>"
+    title="<hanko-registration/>"
     href="/guides/hanko-elements/register-component"
   >
-    A web component that handles user registration.
+    A Web Component that handles user registration.
   </Card>
   <Card
     title="<hanko-auth/>"
     href="/guides/hanko-elements/auth-component"
   >
-    A web component that handles user login and registration.
+    User login and registration flows combined into a single Web Component.
   </Card>
   <Card
     title="<hanko-profile/>"
     href="/guides/hanko-elements/profile-component"
   >
-    Allows users to manage their login methods.
+    A Web Component that allows users to manage their account.
   </Card>
 </CardGroup>
-
-
-## Features
-
-<CardGroup cols={2}>
-  <Card
-    title="Web Components"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-components"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        stroke="currentColor"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M3 12l3 3l3 -3l-3 -3z"></path>
-        <path d="M15 12l3 3l3 -3l-3 -3z"></path>
-        <path d="M9 6l3 3l3 -3l-3 -3z"></path>
-        <path d="M9 18l3 3l3 -3l-3 -3z"></path>
-      </svg>
-    }
-    href="/guides/hanko-elements/auth-component"
-  >
-    Pre-built components that provide fully-functional authentication and user management in minutes.
-  </Card>
-  <Card
-    title="Customization"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-brush"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        stroke="currentColor"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M3 21v-4a4 4 0 1 1 4 4h-4"></path>
-        <path d="M21 3a16 16 0 0 0 -12.8 10.2"></path>
-        <path d="M21 3a16 16 0 0 1 -10.2 12.8"></path>
-        <path d="M10.6 9a9 9 0 0 1 4.4 4.4"></path>
-      </svg>
-    }
-    href="/guides/hanko-elements/customize-appearance"
-  >
-    Fully customize web components to match your design and branding.
-  </Card>
-  <Card
-    title="Internationalization"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-language"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        stroke="currentColor"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M4 5h7"></path>
-        <path d="M9 3v2c0 4.418 -2.239 8 -5 8"></path>
-        <path d="M5 9c0 2.144 2.952 3.908 6.7 4"></path>
-        <path d="M12 20l4 -9l4 9"></path>
-        <path d="M19.1 18h-6.2"></path>
-      </svg>
-    }
-    href="/guides/hanko-elements/translations"
-  >
-
-    Support for multiple languages and translation options for a global user base.
-
-  </Card>
-  <Card
-    title="Integration Flexibility"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-brand-nextjs"
-        width="30"
-        height="30"
-        viewBox="0 0 30 30"
-        strokeWidth="2"
-        stroke="currentColor"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M9 15v-6l7.745 10.65a9 9 0 1 1 2.255 -1.993"></path>
-        <path d="M15 12v-3"></path>
-      </svg>
-    }
-    href="/quickstarts/fullstack/next"
-  >
-    Flexible integration options including CDN or npm installation.
-  </Card>
-</CardGroup>
-
-
 
 ## Installation
 Add Hanko Elements to your project using your preferred package manager or CDN:
@@ -275,3 +166,64 @@ After completing the above steps, you can add the web components to your applica
     // redirect to a different page
   });
 </script>
+```
+
+## Advanced guides
+
+<CardGroup cols={2}>
+  <Card
+    title="Customization"
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-brush"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 21v-4a4 4 0 1 1 4 4h-4"></path>
+        <path d="M21 3a16 16 0 0 0 -12.8 10.2"></path>
+        <path d="M21 3a16 16 0 0 1 -10.2 12.8"></path>
+        <path d="M10.6 9a9 9 0 0 1 4.4 4.4"></path>
+      </svg>
+    }
+    href="/guides/hanko-elements/customize-appearance"
+  >
+    Style Hanko Elements Web Components to match your app's design.
+  </Card>
+  <Card
+    title="Internationalization"
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-language"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M4 5h7"></path>
+        <path d="M9 3v2c0 4.418 -2.239 8 -5 8"></path>
+        <path d="M5 9c0 2.144 2.952 3.908 6.7 4"></path>
+        <path d="M12 20l4 -9l4 9"></path>
+        <path d="M19.1 18h-6.2"></path>
+      </svg>
+    }
+    href="/guides/hanko-elements/translations"
+  >
+
+    Support for multiple languages and translation options for a global user base.
+
+  </Card>
+</CardGroup>

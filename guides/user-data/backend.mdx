@@ -1,0 +1,109 @@
+---
+sidebarTitle: Access from backend
+title: Access user data from your backend
+description: Learn how to access Hanko user data in your backend code.
+---
+
+import HankoAbout from '/snippets/hanko-about.mdx'
+
+<div class="hidden">
+  **Hanko User Data Retrieval Guide**:
+
+    **About Hanko**:
+    <HankoAbout />
+
+    **What This Guide Covers**: This guide demonstrates how to retrieve user data from Hanko in backend environments, including validating sessions, extracting information from JWTs, and using the Admin API.
+
+    **Key Technologies**:
+    - JWT (JSON Web Tokens)
+    - Hanko Admin API
+
+    **Prerequisites**:
+    - Active Hanko project with configured API URL
+    - Basic understanding of JavaScript/TypeScript
+    - Admin API access (for Admin API features - Pro/Enterprise plans only)
+
+    **Tasks You'll Complete**:
+    - Validate user sessions and extract JWT claims
+    - Fetch comprehensive user data using the Hanko Admin API
+    - Implement proper authentication checks in your application
+</div>
+
+## Get user data from the session cookie
+
+The [`/sessions/validate`](/api-reference/public/session-management/validate-a-session-1) endpoint allows you to extract user claims from the JWT token.
+
+```js
+// Checks the validity of the current session and returns the user claims
+const validateSession = async (sessionToken) => {
+    const apiUrl = process.env.HANKO_API;
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            session_token: sessionToken
+        }),
+    };
+
+    const response = await fetch(`${apiUrl}/sessions/validate`, options);
+
+    return response.json();
+};
+
+const sessionToken = ""; // Get the session token, this depends on your framework you use.
+const sessionStatus = await validateSession(sessionToken);
+console.log("user data:", sessionStatus);
+// Example output:
+// {
+//   is_valid: true,
+//   claims: {
+//     subject: "123e4567-e89b-12d3-a456-426614174000",
+//     session_id: "789abc",
+//     expiration: "2025-04-25T12:00:00Z",
+//     email: { address: "user@example.com", is_primary: true, is_verified: true },
+//     custom_field: "value"
+//   }
+// }
+```
+
+<Note>
+    You can refer to the [User Metadata guide](/guides/user-data/user-metadata) for details on managing
+    user metadata included in the JWT payload. For information on customizing session tokens with metadata, see the
+    [Session Token Customization guide](/guides/session-management#session-token-customization).
+</Note>
+
+## Get user data using the Hanko Admin API
+
+The [Hanko Admin API](/api-reference/admin) provides comprehensive access to user status, management capabilities, metrics, and more. This example focuses on
+retrieving data for a specific user.
+To fetch data for a specific user, make a request to the [`/users/{id}`](https://docs.hanko.io/api-reference/admin/user-management/get-a-user-by-id) endpoint of the Hanko Admin API, where `id` is the user ID obtained from the JWT.
+
+<Info>
+    The Hanko Admin API is available in Hanko Pro and Enterprise plans. Check out
+    our [pricing page](https://hanko.io/pricing) for more information.
+
+    You also need an API key secret to access the Hanko Admin API which can be
+    generated under the `Settings  > API Keys` section of your project.
+</Info>
+
+```js
+const getUserData = async () => {
+    const adminAPI = process.env.ADMIN_API;
+    const adminSecret = process.env.ADMIN_SECRET;
+    const options = {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${adminSecret}`,
+        },
+    };
+
+    const response = await fetch(`${adminAPI}/users/${userID}`, options);
+
+    return response.json();
+};
+
+const userData = await getUserData();
+console.log("user data:", userData);
+```

@@ -1,0 +1,297 @@
+---
+sidebarTitle: Microsoft Entra
+title: Set up SAML SSO with Microsoft Entra
+description: Learn how to set up enterprise connections in Hanko for customers using Microsoft Entra as SAML identity provider.
+---
+
+import HankoAbout from '/snippets/hanko-about.mdx'
+
+<div class="hidden">
+**Hanko Microsoft Entra SAML Integration Guide**:
+
+**About Hanko**:
+<HankoAbout />
+
+**What This Guide Covers**: This guide demonstrates how to configure Microsoft Entra ID (formerly Azure AD) as a SAML identity provider for your Hanko project, enabling seamless single sign-on authentication for enterprise users.
+
+**Key Technologies**:
+- SAML 2.0
+- XML digital signatures
+- Microsoft Entra ID
+- Azure Active Directory
+- SAML assertions
+
+**Prerequisites**:
+- Active Microsoft Entra account
+- Hanko Cloud project
+- Basic understanding of SAML authentication protocols
+- Admin access to both Microsoft Entra and Hanko Cloud dashboards
+
+**Tasks You'll Complete**: 
+- Create custom enterprise application in Microsoft Entra
+- Configure SAML single sign-on settings
+- Set up entity ID and ACS URL configuration
+- Configure attribute mapping for email claims
+- Assign users to the application
+- Create enterprise connection in Hanko Cloud
+- Test integration using IdP-initiated flow
+</div>
+
+## Prerequisites
+
+You need your project's SAML Assertion Consumer Service (ACS) URL and the Service Provider (SP) Entity ID.
+
+### Service Provider Entity ID
+
+The SP Entity ID for your Hanko project is equal to the API URL of your project.
+
+To find the API URL for your project:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Dashboard`.
+3. Copy and save the `API URL`.
+
+<Frame>
+    <img
+        src="/images/saml/hanko-console-api-url.png"
+        alt="Obtain the API URL from the Hanko Cloud project dashboard"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+### Service Provider ACS URL
+
+To find the Assertion Consumer Service (ACS) URL for your project:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Enterprise connections`.
+3. Under `Enterprise connections` find the `Redirect URL` panel.
+4. Copy and save the URL.
+
+<Frame>
+    <img
+        src="/images/saml/hanko-console-acs-url.png"
+        alt="Obtain the Assertion Consumer Service URL in the Hanko Cloud enterprise settings of a project"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+## Create a Microsoft Entra application
+
+1. Sign up or sign in with [Microsoft Entra](https://entra.microsoft.com/).
+2. Once you're logged in, select `Identity > Applications > Enterprise Applications` in the left sidebar.
+3. Click `New Application`. This will open the `Microsoft Entra Gallery`.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-new-application.png"
+        alt="Create a new Entra application"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+4. In the `Microsoft Entra Gallery`, click `Create your own appplication`.
+5. Give your application a name.
+6. Select `Integrate any other application you don't find in the gallery (Non-gallery)`.
+7. Click `Create` to create the application.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-create-new-application-custom.png"
+        alt="Create a new custom Entra application"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+8. Once your app is created, select `Single sign-on` in the application sidebar.
+9. Select `SAML` as the SSO method.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-configure-custom-application-sso.png"
+        alt="Configure new custom Entra application to use SAML as SSO method"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+10. Find the `Basic SAML configuration` panel and click `Edit`.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-configure-custom-application-sso-configuration.png"
+        alt="Configure new custom Entra application to use SAML as SSO method"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+11. Under `Identifier (Entity ID)` click `Add identifier` and enter you project API URL
+    (see [Prerequisites - Service Provider Entity ID](#service-provider-entity-id)).
+12. Under `Reply URL (Assertion Consumer Service URL)` click `Add reply URL` and enter your ACS URL
+    (see [Prerequisites - Service Provider ACS URL](#service-provider-acs-url)).
+13. Click `Save`.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-configure-custom-application-sso-configuration-basic.png"
+        alt="Configure Entity ID and ACS URL in the basic SAML settings"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+14. In the `SAML Certificates` panel, find the `App Fedration Metadata Url` and copy it. You need this for
+configuring the enterprise connection with Hanko.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-custom-application-metadata-url.png"
+        alt="Obtain IdP Metadata URL from SAML certificates settings"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+### Attribute mapping
+
+SAML SSO integration with Hanko requires an email address attribute in the IdP's SAML response. To ensure this attribute is present:
+
+1. In your application's `Single sign-on` configuration, find the `Attributes & Claims` panel and click `Edit`.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-custom-application-attributes.png"
+        alt="Access SAMl attribute mappings through Attributes & Claims panel"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+2. There should be `Additional Claims` listed that have been added to your application per default. Find the claim that
+maps the Entra user's `user.email` property and click it.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-custom-application-attributes-details.png"
+        alt="Select email address attribute mapping"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+3. Ensure that the `Name` is equal to `emailaddress` and the `Namespace` is equal
+   to `http://schemas.xmlsoap.org/ws/2005/05/identity/claims`.
+4. If your users do not have an email set for the `user.email` property, choose a different source for the
+   mapping. Note that the email address value present in this attribute is used to
+   [provision and link accounts](/guides/enterprise-sso/introduction#account-provisioning-and-linking).
+   This means that any new accounts created at your Hanko project will use this email address value and any existing
+   accounts in your Hanko project will be linked via this email address value.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-custom-application-attributes-email.png"
+        alt="Ensure email address attribute name and namepsace matches defaults"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+### Assign users to your application
+
+To enable users to log in, you need to assign users to the application.
+
+1. Select `Identity > Applications > Enterprise Applications` in the left sidebar.
+2. Select your application, then select `Manage > Properties`.
+3. Ensure that your application is enabled for users to sign-in.
+4. Choose whether user assignment is required for this app. If set to `No`, all users will be able to sign in.
+5. Choose whether this app is visible to users. If this option is set to yes, then assigned users will see the
+application on `My Apps` in their profile and the O365 app launcher.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-custom-application-properties.png"
+        alt="Configure custom application properties to make the app available to users"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+6. If you selected `Yes` in step 4, then select `Manage > Users and groups`.
+7. Click `Add user/group`.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-custom-application-users-and-groups.png"
+        alt="Configure users and groups for custom application"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+8. Under `Users`, click `None selected`/`X user selected`.
+9. Select the users you want to assign.
+10. Click `Select`.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-custom-application-users-and-groups-2.png"
+        alt="Select and assign specific users to the application"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+
+## Configure an enterprise connection
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Enterprise connections`.
+3. Under `Connections`, click `New connection`.
+
+<Frame>
+    <img
+        src="/images/saml/hanko-console-new-saml-connection.png"
+        alt="Create a new enterprise connection in the Hanko Cloud project settings"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+4. In the shown modal provide the following data:
+   -  A `Name` for the connection.
+   -  A `Domain` for the connection. When users authenticate via SAML SSO, the domain of the email
+      address provided as an identifier at the start of an authentication flow must match the domain configured here.
+   -  A `Metadata URL`. This is the URL you copied in step 14 in [Create a Microsoft Entra application](#create-a-microsoft-entra-application).
+   -  Select whether you want skip email verification for this provider.
+5. Click `Save` to create the connection.
+
+<Frame>
+    <img
+        src="/images/saml/hanko-console-new-saml-connection-data.png"
+        alt="Provide name, domain, metadata URL and email verification requirement for a new enterprise connection"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+## Testing your integration
+
+To test your integration via [IdP-initiated](/guides/enterprise-sso/introduction#identity-provider-initiated-sso)
+flow:
+
+1. Navigate to the `Single sign-on` configuration for your application (see step 8 in [Create a Microsoft Entra application](#create-a-microsoft-entra-application)).
+2. Find the `Test single sign-on with My App`  panel and click the `Test`.
+
+<Frame>
+    <img
+        src="/images/saml/entra/entra-test-idp-initiated.png"
+        alt="Testing IdP-initiated single sign-on with your Entra application"
+        width={500}
+        style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>

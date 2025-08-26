@@ -1,0 +1,372 @@
+---
+sidebarTitle: Sessions and tokens
+title: Sessions and tokens in Hanko
+description: Learn how to manage Hanko authentication sessions, configure duration, validate tokens, limit concurrent sessions, customize JWT tokens, and handle revocation.
+---
+
+import HankoAbout from '/snippets/hanko-about.mdx'
+
+<div class="hidden">
+**Hanko Session Management Guide**:
+
+**About Hanko**:
+<HankoAbout />
+
+**What This Guide Covers**: This guide demonstrates session management in applications using Hanko for authentication. You'll learn to configure session lifetimes, implement session validation, handle multiple concurrent sessions, and customize session tokens with additional claims.
+
+**Key Technologies**: 
+- JSON Web Tokens (JWT)
+- Session Cookies
+- JWT Signature Validation
+- Token Customization
+- Hanko Cloud Console
+
+**Prerequisites**: 
+- Active Hanko project configured
+- Understanding of JWT concepts
+- Basic knowledge of authentication flows
+- Access to Hanko Cloud Console
+- Frontend/backend development knowledge
+
+**Tasks You'll Complete**:
+- Configure session duration and limits
+- Implement session validation logic
+- Set up session termination methods
+- Customize session tokens with claims
+- Handle concurrent session management
+- Configure cookie retention policies
+- Monitor and revoke active sessions
+</div>
+
+## Sessions and JSON Web Tokens
+
+Hanko creates a session when users authenticate (registration or sign-in). Each session is represented by a JSON Web Token ([JWT](https://datatracker.ietf.org/doc/html/rfc7519)) that encodes user claims as JSON objects. All Hanko JWTs are signed using JSON Web Signature ([JWS](https://datatracker.ietf.org/doc/html/rfc7515)) standards for security.
+
+Authentication operations (login, registration) return session tokens in the `X-Auth-Token` response header.
+
+<Note>
+    When using [Hanko Elements](https://docs.hanko.io/guides/hanko-elements/introduction) or
+    the [Hanko Frontend SDK](https://docs.hanko.io/resources/sdks#sdks), the session token is read from the
+    `X-Auth-Token` header and used to set a cookie (name: `hanko`) on the client-side. If you use neither Hanko
+    Elements nor the SDK, you have to take care of storing the session token yourself.
+</Note>
+
+Protected API requests must include the session token either in a `Cookie` header or as a `Bearer` token in the `Authorization` header (`Authorization: Bearer <JWT>`).
+
+Upon session creation, a unique identifier is generated and stored in the database, linked to the corresponding user.
+This identifier is also included in the session JWT under the `session_id` claim. For subsequent requests, the API
+validates the JWT signature and uses the `session_id` to query the database for an active session match. This enables
+remote session revocation. As a result, if a user is logged in on one device but has multiple active sessions across
+other devices, the API’s [Profile](/api-reference/flow/profile) flow facilitates the listing and
+explicit termination of sessions on those devices. This functionality is also accessible through the UI via the Hanko
+Elements’ [Profile Component](/guides/hanko-elements/profile-component).
+
+## Session validation
+
+Validate sessions manually using the `sessions/validate` [endpoint](/api-reference/public/session-management/validate-a-session-1). Send the session token in the request body for validation of expiry, signature, and session persistence.
+
+The validation response includes session validity status, token expiry information, and associated user claims.
+
+Alternatively, use the Hanko Frontend SDK for session validation. See [Using the Frontend SDK](/guides/hanko-elements/using-frontend-sdk#sessions) for implementation details.
+
+## Session termination
+
+Sessions can be terminated through various explicit and implicit methods, depending on your tenant configuration.
+
+### Explicit user logout
+
+Users can manually log out through the `/logout` [endpoint](https://docs.hanko.io/api-reference/public/user-management/log-out-the-current-user). Successful logout requests clear session cookies and terminate the associated session.
+
+### Limiting session duration
+
+Sessions automatically expire based on configured duration settings. The session duration controls how long users remain authenticated after login. Hanko Cloud defaults to 12 hours, but you can configure anywhere from 1 minute to 1 month.
+
+Configure session duration:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project
+2. Navigate to `Settings > Session`
+3. Set your desired `Session duration` and click `Save`
+
+### Limiting concurrent sessions
+
+Sessions terminate automatically when exceeding the allowed concurrent session limit. Hanko defaults to 5 concurrent sessions - creating a new session invalidates the oldest existing session.
+
+Configure concurrent session limits:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project
+2. Navigate to `Settings > Session`
+3. Set your desired `Session limit` and click `Save`
+
+### Limiting cookie retention period
+
+You can configure the retention period of session cookies. Possible configurations are:
+
+- **Persistent** (default): This type sets the `Max-Age` attribute of the cookie to the specified
+[session duration](#limiting-session-duration) (in seconds). The cookie will be automatically deleted from the browser
+once the specified expiry time has been reached.
+- **Session**: This type sets the `Max-Age` attribute of the cookie to 0, resulting in the cookie being deleted from the
+browser when the browser tab or window is closed.
+- **Prompt**: If you use [Hanko Elements](/guides/hanko-elements/introduction) (+1.3) then selecting this type results
+in Hanko Elements displaying a `Stay signed in` checkbox on the login form which allows users to determine the cookie
+retention period: if the checkbox is checked, the cookie will be a `Persistent` cookie, if it is unchecked the
+cookie will be a `Session` cookie.
+
+To configure the cookie retention period:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Under `Stay signed in (cookie type)`, select the desired type and click `Save`.
+
+## Session self-service
+
+There are a number of configurations options for your tenant that provide control over how users manage their session
+through the profile.
+
+### Allowing session revocation
+
+You can configure whether the [Profile](https://docs.hanko.io/api-reference/flow/profile) flow permits session
+revocation via the dedicated `session_delete` action. If you are using
+[Hanko Elements](/guides/hanko-elements/introduction) version 1.3 or later, the Profile component provides interface
+elements that allow users to revoke active sessions, excluding the session currently in use.
+This session can be revoked manually through a [manual logout](#explicit-user-logout).
+
+To control self-service session revocation behaviour:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Use the `Allow session revocation` toggle to allow or disallow end-user session revocation via profile.
+
+### Showing sessions on profile
+
+You can control whether information about active sessions is returned in the `Profile` flow.
+If you use [Hanko Elements](/guides/hanko-elements/introduction) (+1.3) then information about active sessions is
+displayed in the [Profile component](guides/hanko-elements/profile-component).
+
+To control whether information about active sessions is returned from the `Profile` flow (and shown in Hanko Elements):
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Use the `Show sessions on profile` toggle to include information about active sessions in the profil API response
+(and the [Hanko Elements profile component](guides/hanko-elements/profile-component)).
+
+## Session metadata retention
+
+You can control whether active session metadata is persisted with a session and returned from session validation
+[endpoints](/api-reference/public/session-management/validate-a-session). This metadata currently includes the IP
+address and the user agent used to establish a session.
+
+To control the type of metadata retained with a session:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. You can configure the following options:
+     -  Use the `Acquire IP address` toggle to include information about the IP (IPv4/IPv6) address used to establish
+        the session.
+     -  Use the `Acquire user agent` toggle to include information about the user agent used to establish the session.
+
+## Session callbacks
+
+You can hook into the session lifecycle by using the Hanko Frontend SDKs central client. See
+[Using the Frontend SDK](/guides/hanko-elements/using-frontend-sdk#events) for details.
+
+## Administrative session management
+
+The [Admin API](/api-reference/admin/introduction#learn-how-to-use-the-hanko-admin-api) allows administrators to
+[create sessions](/api-reference/admin/session-management/create-session),
+[list active sessions](/api-reference/admin/session-management/list-sessions) and
+[delete sessions](/api-reference/admin/session-management/delete-session) for a specific user.
+
+## Session token customization
+
+Session tokens can be extended with custom claims by defining them using
+[Go's text/template syntax](https://pkg.go.dev/text/template). These claims are evaluated during JWT generation and
+may include static values, dynamic expressions, or nested structures.
+
+To define custom claims:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Session`.
+3. Locate the `Customize session token` section.
+4. Enter your custom claims in YAML format within the provided textarea.
+5. Click `Save` to apply your changes.
+
+### Accessing user data in templates
+
+Each template has access to user data via the `.User` field, which includes:
+- `.User.UserID`: The user's unique ID (string)
+- `.User.Email`: Email details (optional)
+    - `.User.Email.Address`: The email address (string)
+    - `.User.Email.IsPrimary`: Indicates if the email is the primary address (boolean)
+    - `.User.Email.IsVerified`: Indicates if the email is verified (boolean)
+- `.User.Username`: The user's username (string, optional)
+- `.User.Metadata`: The user's public and unsafe metadata (optional)
+    - `.User.Metadata.Public`: The user's public metadata (object)
+    - `.User.Metadata.Unsafe`: The user's unsafe metadata (object)
+
+#### Accessing user metadata
+
+`.User.Metadata.Public` and `.User.Metadata.Unsafe` can be accessed and queried using
+[GJSON Path Syntax](https://github.com/tidwall/gjson/blob/master/SYNTAX.md) (try it out in the
+[playground](https://gjson.dev/)).
+
+Assume that a user's public metadata consisted of the following data:
+
+```json
+{
+    "display_name": "GamerDude",
+    "favorite_games": [
+        {
+            "name": "Legends of Valor",
+            "genre": "RPG",
+            "playtime_hours": 142.3
+        },
+        {
+            "name": "Space Raiders",
+            "genre": "Sci-Fi Shooter",
+            "playtime_hours": 87.6
+        }
+    ]
+}
+```
+
+Then you could, for example, access this data in the following ways in your templates:
+
+```yaml
+display_name: '{{ .User.Metadata.Public "display_name" }}'
+favorite_games: '{{ .User.Metadata.Public "favorite_games" }}'
+favorite_games_with_playtime_over_100: '{{ .User.Metadata.Public "favorite_games.#(playtime_hours>100)" }}'
+favorite_genres: '{{ .User.Metadata.Public "favorite_games.#.genre" }}'
+```
+
+<Warning>
+    Ensure you use proper quoting when accessing metadata. `.User.Metadata.Public` and `.User.Metadata.Unsafe`
+    are function calls internally and and the given path argument must be a string, so it must be double quoted.
+    If you use use double quotes for your entire claim template then the path argument must be escaped, i.e.:
+
+    `"{{ .User.Metadata.Public \"display_name\" }}"`
+</Warning>
+
+### Example configuration
+
+```yaml
+role: "user"                                           # Static value
+user_email: "{{.User.Email.Address}}"                  # Templated string
+is_verified: "{{.User.Email.IsVerified}}"              # Boolean from user data
+metadata:                                              # Nested map
+  greeting: "Hello {{.User.Username}}"
+  source: '{{ .User.Metadata.Public "display_name" }}' # Data read from public metadata
+  ui_theme: '{{ .User.Metadata.Unsafe "ui_theme" }}'   # Data read from unsafe metadata
+scopes:                                                # Slice with templated value
+    - "read"
+    - "write"
+    - "{{if .User.Email.IsVerified}}admin{{else}}basic{{end}}"
+```
+
+### Important notes and limitations
+
+- Custom claims are added at the top level of the session token [payload](#jwt-payload).
+- Claims with the following keys will be ignored because they are currently added to the JWT by default:
+    - `sub`
+    - `iat`
+    - `exp`
+    - `aud`
+    - `iss`
+    - `email`
+    - `username`
+    - `session_id`
+- Templates must conform to valid [Go text/template syntax](https://pkg.go.dev/text/template). Invalid templates are
+logged and excluded from the generated token.
+- Boolean strings ("true" or "false") from templates are automatically converted to actual booleans.
+
+## Session JWT structure
+
+The session JWT is a [compact](https://datatracker.ietf.org/doc/html/rfc7515#section-3.1) JWS. It is a string composed
+of three base64 URL safe encoded parts ([header](#jwt-header), [payload](#jwt-payload) and signature), separated by a
+dot (`.`). The JWT payload contains the claims about a user.
+
+### JWT Header
+
+```json
+{
+  "alg": "RS256",
+  "kid": "2288bfa9-3214-4f19-9757-92631190420b",
+  "typ": "JWT"
+}
+```
+
+<ResponseField name="alg" type="string">
+    The algorithm used for signing this token.
+</ResponseField>
+
+<ResponseField name="kid" type="string">
+    The key ID indicating which key was used to secure the token.
+</ResponseField>
+
+<ResponseField name="typ" type="string">
+    The media type of this token.
+</ResponseField>
+
+
+### JWT Payload
+
+```json
+{
+  "aud": [ "example.com" ],
+  "email": {
+    "address": "user@example.com",
+    "is_primary": true,
+    "is_verified": true
+  },
+  "exp": 17123108000,
+  "iat": 1712307200,
+  "session_id": "140f3967-ab87-4caa-80bd-603ac59c545f",
+  "sub": "9930ac89-1584-488c-bd63-1607f03ab1e8",
+  "username": "johndoe"
+}
+```
+
+<ResponseField name="aud" type="string[]">
+    The audience for which the JWT was created. It specifies the intended recipient or system that should accept this
+    JWT. When using Hanko Cloud, the `aud` will be your `App URL`.
+</ResponseField>
+
+<ResponseField name="email" type="object">
+    An object containing information about the user’s email address.
+    <Expandable title="properties">
+        <ResponseField name="address" type="string">
+            The current primary email address of the user.
+        </ResponseField>
+        <ResponseField name="is_primary" type="boolean">
+            A boolean field indicating whether the email address is the primary email. Currently, this field is
+            redundant because only the primary email is included in the JWT.
+        </ResponseField>
+        <ResponseField name="is_verified" type="boolean">
+            A boolean field indicating whether the email address has been verified.
+        </ResponseField>
+    </Expandable>
+</ResponseField>
+
+<ResponseField name="exp" type="integer">
+    The (UNIX) timestamp indicating when the JWT will expire.
+</ResponseField>
+
+<ResponseField name="iat" type="integer">
+    The (UNIX) timestamp indicating when the JWT was created.
+</ResponseField>
+
+<ResponseField name="session_id" type="string">
+    The ID of the session.
+</ResponseField>
+
+<ResponseField name="sub" type="string">
+    The ID of the user.
+</ResponseField>
+
+<ResponseField name="username" type="string">
+    The username of the user (if set).
+</ResponseField>
+
+<Note>
+The payload further contains any [custom claims](#session-token-customization) that you have defined.
+</Note>
+

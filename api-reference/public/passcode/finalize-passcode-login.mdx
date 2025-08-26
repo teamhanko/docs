@@ -1,8 +1,14 @@
 ---
 openapi: openapi-public post /passcode/login/finalize
 deprecated: true
+description: Finalize a passcode login.
 ---
-
 <Warning>
-    Deprecated. Please use the [Flow API](/api-reference/flow/registration) instead. [What's the Flow API?](/guides/flow-api/understanding-the-flow-api).
+    Deprecated. Please use the [Flow API](/api-reference/flow/registration) instead. [What's the Flow API?](/using-the-api/understanding-the-flow-api).
 </Warning>
+
+Finalize a passcode login given the `id` of the passcode and the actual `code` provided in the email sent
+to the user during initialization.
+
+On success, sets the User's `verified` status to `true`
+

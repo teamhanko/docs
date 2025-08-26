@@ -11,47 +11,49 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Hanko Docs",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Getting started",
             "pages": [
               "introduction",
               "setup-hanko-cloud",
               {
                 "group": "Quickstarts",
+                "icon": "rocket",
                 "pages": [
+                  "quickstarts/overview",
                   {
                     "group": "Full Stack",
                     "pages": [
                       "quickstarts/fullstack/next",
-                      "quickstarts/fullstack/remix",
                       "quickstarts/fullstack/nuxt",
+                      "quickstarts/fullstack/remix",
                       "quickstarts/fullstack/sveltekit"
                     ]
                   },
                   {
                     "group": "Frontend",
                     "pages": [
-                      "quickstarts/frontend/react",
-                      "quickstarts/frontend/vue",
-                      "quickstarts/frontend/svelte",
-                      "quickstarts/frontend/solid",
+                      "quickstarts/frontend/angular",
                       "quickstarts/frontend/javascript",
-                      "quickstarts/frontend/angular"
+                      "quickstarts/frontend/react",
+                      "quickstarts/frontend/solid",
+                      "quickstarts/frontend/svelte",
+                      "quickstarts/frontend/vue"
                     ]
                   },
                   {
                     "group": "Backend",
                     "pages": [
-                      "quickstarts/backend/javascript",
                       "quickstarts/backend/go",
+                      "quickstarts/backend/javascript",
+                      "quickstarts/backend/java_spring",
                       "quickstarts/backend/python",
                       "quickstarts/backend/rust",
                       "quickstarts/backend/java_spring"
                     ]
-                  },
-                  "quickstarts/mobile"
+                  }
                 ]
               }
             ]
@@ -59,49 +61,6 @@
           {
             "group": "Guides",
             "pages": [
-              {
-                "group": "Users",
-                "pages": [
-                  "guides/users/get-user-data",
-                  "guides/users/user-metadata"
-                ]
-              },
-              {
-                "group": "Authentication Methods",
-                "pages": [
-                  {
-                    "group": "Enterprise Connections",
-                    "pages": [
-                      "guides/authentication-methods/saml/introduction",
-                      {
-                        "group": "SAML Providers",
-                        "pages": [
-                          "guides/authentication-methods/saml/auth0",
-                          "guides/authentication-methods/saml/google",
-                          "guides/authentication-methods/saml/entra",
-                          "guides/authentication-methods/saml/okta"
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "group": "OAuth Providers",
-                    "pages": [
-                      "guides/authentication-methods/oauth/apple",
-                      "guides/authentication-methods/oauth/discord",
-                      "guides/authentication-methods/oauth/facebook",
-                      "guides/authentication-methods/oauth/google",
-                      "guides/authentication-methods/oauth/github",
-                      "guides/authentication-methods/oauth/linkedin",
-                      "guides/authentication-methods/oauth/microsoft"
-                    ]
-                  },
-                  "guides/authentication-methods/passkeys",
-                  "guides/authentication-methods/passcodes",
-                  "guides/authentication-methods/fido",
-                  "guides/authentication-methods/mobile-app"
-                ]
-              },
               {
                 "group": "Hanko Elements",
                 "pages": [
@@ -117,82 +76,268 @@
                 ]
               },
               {
-                "group": "Cloud Console",
+                "group": "User data",
                 "pages": [
-                  "guides/cloud-console/custom-smtp-server"
+                  "guides/user-data/frontend",
+                  "guides/user-data/backend",
+                  "guides/user-data/user-metadata"
                 ]
               },
               {
-                "group": "Databases",
+                "group": "Social SSO",
                 "pages": [
-                  "guides/databases/supabase"
+                  "guides/social-sso/apple",
+                  "guides/social-sso/discord",
+                  "guides/social-sso/facebook",
+                  "guides/social-sso/github",
+                  "guides/social-sso/google",
+                  "guides/social-sso/linkedin",
+                  "guides/social-sso/microsoft"
                 ]
               },
               {
-                "group": "Migrations",
+                "group": "Enterprise SSO",
                 "pages": [
-                  "guides/migrations/import-export-users"
+                  "guides/enterprise-sso/introduction",
+                  "guides/enterprise-sso/auth0",
+                  "guides/enterprise-sso/entra",
+                  "guides/enterprise-sso/google",
+                  "guides/enterprise-sso/okta"
                 ]
               },
+              "guides/import-export-users",
+              "guides/webhooks",
               {
-                "group": "FlowAPI",
+                "group": "Email delivery",
                 "pages": [
-                  "guides/flow-api/understanding-the-flow-api",
-                  "guides/flow-api/build-a-custom-login-page"
+                  "guides/email-delivery/email-delivery",
+                  "guides/email-delivery/custom-smtp-server"
                 ]
               },
-              "guides/sessions/session-management",
-              "guides/webhooks/introduction",
-              "guides/custom-emails/email-delivery",
-              "guides/custom-domain/custom-domain"
+              "guides/custom-domain/custom-domain",
+              "guides/session-management"
+            ]
+          },
+          {
+            "group": "Using the Hanko API",
+            "pages": [
+              "using-the-api/understanding-the-flow-api",
+              "using-the-api/build-a-custom-login-page"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/supabase",
+              "integrations/permit"
             ]
           },
           {
             "group": "Resources",
             "pages": [
               "resources/examples",
-              "resources/llms",
-              "resources/sdks"
+              {
+                "group": "API reference",
+                "pages": [
+                  {
+                    "group": "Public",
+                    "pages": [
+                      {
+                        "group": "Flow",
+                        "pages": [
+                          "api-reference/flow/registration",
+                          "api-reference/flow/login",
+                          "api-reference/flow/profile",
+                          "api-reference/flow/token-exchange"
+                        ]
+                      },
+                      {
+                        "group": "Status",
+                        "pages": [
+                          "api-reference/public/status/status-page"
+                        ]
+                      },
+                      {
+                        "group": "Passcode",
+                        "pages": [
+                          "api-reference/public/passcode/initialize-passcode-login",
+                          "api-reference/public/passcode/finalize-passcode-login"
+                        ]
+                      },
+                      {
+                        "group": "Password",
+                        "pages": [
+                          "api-reference/public/password/do-password-login",
+                          "api-reference/public/password/createset-a-password"
+                        ]
+                      },
+                      {
+                        "group": "WebAuthn",
+                        "pages": [
+                          "api-reference/public/webauthn/initialize-webauthn-login",
+                          "api-reference/public/webauthn/finalize-webauthn-login",
+                          "api-reference/public/webauthn/initialize-webauthn-registration",
+                          "api-reference/public/webauthn/finalize-webauthn-registration",
+                          "api-reference/public/webauthn/get-a-list-of-webauthn-credentials",
+                          "api-reference/public/webauthn/deletes-a-webauthn-credential",
+                          "api-reference/public/webauthn/updates-a-webauthn-credential"
+                        ]
+                      },
+                      {
+                        "group": ".well-known",
+                        "pages": [
+                          "api-reference/public/well-known/get-json-web-key-set",
+                          "api-reference/public/well-known/get-public-hanko-configuration"
+                        ]
+                      },
+                      {
+                        "group": "Third Party",
+                        "pages": [
+                          "api-reference/public/third-party/initialize-third-party-login",
+                          "api-reference/public/third-party/third-party-provider-callback"
+                        ]
+                      },
+                      {
+                        "group": "Token",
+                        "pages": [
+                          "api-reference/public/token/exchange-one-time-token-for-session"
+                        ]
+                      },
+                      {
+                        "group": "User Management",
+                        "pages": [
+                          "api-reference/public/user-management/get-user-details-by-email",
+                          "api-reference/public/user-management/deletes-the-current-user",
+                          "api-reference/public/user-management/get-the-current-user-id",
+                          "api-reference/public/user-management/log-out-the-current-user",
+                          "api-reference/public/user-management/create-a-user",
+                          "api-reference/public/user-management/get-a-user-by-id"
+                        ]
+                      },
+                      {
+                        "group": "Email Management",
+                        "pages": [
+                          "api-reference/public/email-management/get-a-list-of-emails-of-the-current-user",
+                          "api-reference/public/email-management/add-a-new-email-address-to-the-current-user",
+                          "api-reference/public/email-management/marks-the-email-address-as-primary-email",
+                          "api-reference/public/email-management/delete-an-email-address"
+                        ]
+                      },
+                      {
+                        "group": "SAML",
+                        "pages": [
+                          "api-reference/public/saml/get-a-saml-provider",
+                          "api-reference/public/saml/get-saml-metadata",
+                          "api-reference/public/saml/saml-identity-provider-callback"
+                        ]
+                      },
+                      {
+                        "group": "Session Management",
+                        "pages": [
+                          "api-reference/public/session-management/validate-a-session",
+                          "api-reference/public/session-management/validate-a-session-1"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Admin",
+                    "pages": [
+                      {
+                        "group": "Status",
+                        "pages": [
+                          "api-reference/admin/status/status-page"
+                        ]
+                      },
+                      {
+                        "group": "User Management",
+                        "pages": [
+                          "api-reference/admin/user-management/get-a-list-of-users",
+                          "api-reference/admin/user-management/create-a-new-user",
+                          "api-reference/admin/user-management/get-a-user-by-id",
+                          "api-reference/admin/user-management/delete-a-user-by-id"
+                        ]
+                      },
+                      {
+                        "group": "User Metadata Management",
+                        "pages": [
+                          "api-reference/admin/user-metadata-management/get-metadata-of-a-user",
+                          "api-reference/admin/user-metadata-management/patch-metadata-of-a-user"
+                        ]
+                      },
+                      {
+                        "group": "Email Management",
+                        "pages": [
+                          "api-reference/admin/email-management/get-a-list-of-emails",
+                          "api-reference/admin/email-management/create-an-email-for-a-user",
+                          "api-reference/admin/email-management/get-a-email-by-id",
+                          "api-reference/admin/email-management/remove-a-email-by-id",
+                          "api-reference/admin/email-management/set-an-email-as-primary"
+                        ]
+                      },
+                      {
+                        "group": "Password Management",
+                        "pages": [
+                          "api-reference/admin/password-management/create-password",
+                          "api-reference/admin/password-management/get-password",
+                          "api-reference/admin/password-management/update-password",
+                          "api-reference/admin/password-management/delete-password"
+                        ]
+                      },
+                      {
+                        "group": "WebAuthn credential Management",
+                        "pages": [
+                          "api-reference/admin/webauthn-credential-management/list-webauthn-credentials",
+                          "api-reference/admin/webauthn-credential-management/get-webauthn-credential",
+                          "api-reference/admin/webauthn-credential-management/delete-webauthn-credential"
+                        ]
+                      },
+                      {
+                        "group": "OTP Management",
+                        "pages": [
+                          "api-reference/admin/otp-management/get-otp",
+                          "api-reference/admin/otp-management/delete-otp"
+                        ]
+                      },
+                      {
+                        "group": "Session Management",
+                        "pages": [
+                          "api-reference/admin/session-management/create-session",
+                          "api-reference/admin/session-management/list-sessions",
+                          "api-reference/admin/session-management/delete-session"
+                        ]
+                      },
+                      {
+                        "group": "Webhooks",
+                        "pages": [
+                          "api-reference/admin/webhooks/get-a-list-of-webhooks",
+                          "api-reference/admin/webhooks/create-a-webhook",
+                          "api-reference/admin/webhooks/get-a-webhook-by-id",
+                          "api-reference/admin/webhooks/update-a-webhook",
+                          "api-reference/admin/webhooks/delete-a-webhook"
+                        ]
+                      },
+                      {
+                        "group": "Audit Logs",
+                        "pages": [
+                          "api-reference/admin/audit-logs/get-a-list-of-audit-logs"
+                        ]
+                      },
+                      {
+                        "group": "Metrics",
+                        "pages": [
+                          "api-reference/admin/metrics/get-prometheus-metrics"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resources/frontend-sdk"
             ]
           },
           {
-            "group": "AI Prompts",
-            "pages": [
-              "resources/prompts",
-              {
-                "group": "Full Stack",
-                "pages": [
-                  "resources/prompts/nextjs",
-                  "resources/prompts/nuxt",
-                  "resources/prompts/remix",
-                  "resources/prompts/sveltekit"
-                ]
-              },
-              {
-                "group": "Frontend",
-                "pages": [
-                  "resources/prompts/react",
-                  "resources/prompts/vue",
-                  "resources/prompts/svelte",
-                  "resources/prompts/solid",
-                  "resources/prompts/javascript",
-                  "resources/prompts/angular"
-                ]
-              },
-              {
-                "group": "Backend",
-                "pages": [
-                  "resources/prompts/nodejs",
-                  "resources/prompts/python",
-                  "resources/prompts/go",
-                  "resources/prompts/rust"
-                ]
-              },
-              "resources/prompts/mobile"
-            ]
-          },
-          {
-            "group": "Community & Support",
+            "group": "FAQ & support",
             "pages": [
               "community-support/get-help",
               "community-support/troubleshoot",
@@ -202,219 +347,10 @@
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "Passkey API Docs",
         "groups": [
           {
-            "group": "API Documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Public",
-            "pages": [
-              "api-reference/public/introduction",
-              {
-                "group": "Flow",
-                "pages": [
-                  "api-reference/flow/registration",
-                  "api-reference/flow/login",
-                  "api-reference/flow/profile",
-                  "api-reference/flow/token-exchange"
-                ]
-              },
-              {
-                "group": "Status",
-                "pages": [
-                  "api-reference/public/status/status-page"
-                ]
-              },
-              {
-                "group": "Passcode",
-                "pages": [
-                  "api-reference/public/passcode/initialize-passcode-login",
-                  "api-reference/public/passcode/finalize-passcode-login"
-                ]
-              },
-              {
-                "group": "Password",
-                "pages": [
-                  "api-reference/public/password/do-password-login",
-                  "api-reference/public/password/createset-a-password"
-                ]
-              },
-              {
-                "group": "WebAuthn",
-                "pages": [
-                  "api-reference/public/webauthn/initialize-webauthn-login",
-                  "api-reference/public/webauthn/finalize-webauthn-login",
-                  "api-reference/public/webauthn/initialize-webauthn-registration",
-                  "api-reference/public/webauthn/finalize-webauthn-registration",
-                  "api-reference/public/webauthn/get-a-list-of-webauthn-credentials",
-                  "api-reference/public/webauthn/deletes-a-webauthn-credential",
-                  "api-reference/public/webauthn/updates-a-webauthn-credential"
-                ]
-              },
-              {
-                "group": ".well-known",
-                "pages": [
-                  "api-reference/public/well-known/get-json-web-key-set",
-                  "api-reference/public/well-known/get-public-hanko-configuration"
-                ]
-              },
-              {
-                "group": "Third Party",
-                "pages": [
-                  "api-reference/public/third-party/initialize-third-party-login",
-                  "api-reference/public/third-party/third-party-provider-callback"
-                ]
-              },
-              {
-                "group": "Token",
-                "pages": [
-                  "api-reference/public/token/exchange-one-time-token-for-session"
-                ]
-              },
-              {
-                "group": "User Management",
-                "pages": [
-                  "api-reference/public/user-management/get-user-details-by-email",
-                  "api-reference/public/user-management/deletes-the-current-user",
-                  "api-reference/public/user-management/get-the-current-user-id",
-                  "api-reference/public/user-management/log-out-the-current-user",
-                  "api-reference/public/user-management/create-a-user",
-                  "api-reference/public/user-management/get-a-user-by-id"
-                ]
-              },
-              {
-                "group": "Email Management",
-                "pages": [
-                  "api-reference/public/email-management/get-a-list-of-emails-of-the-current-user",
-                  "api-reference/public/email-management/add-a-new-email-address-to-the-current-user",
-                  "api-reference/public/email-management/marks-the-email-address-as-primary-email",
-                  "api-reference/public/email-management/delete-an-email-address"
-                ]
-              },
-              {
-                "group": "SAML",
-                "pages": [
-                  "api-reference/public/saml/get-a-saml-provider",
-                  "api-reference/public/saml/get-saml-metadata",
-                  "api-reference/public/saml/saml-identity-provider-callback"
-                ]
-              },
-              {
-                "group": "Session Management",
-                "pages": [
-                  "api-reference/public/session-management/validate-a-session",
-                  "api-reference/public/session-management/validate-a-session-1"
-                ]
-              }
-            ]
-          },
-          {
-            "group": "Admin",
-            "pages": [
-              "api-reference/admin/introduction",
-              {
-                "group": "Status",
-                "pages": [
-                  "api-reference/admin/status/status-page"
-                ]
-              },
-              {
-                "group": "User Management",
-                "pages": [
-                  "api-reference/admin/user-management/get-a-list-of-users",
-                  "api-reference/admin/user-management/create-a-new-user",
-                  "api-reference/admin/user-management/get-a-user-by-id",
-                  "api-reference/admin/user-management/delete-a-user-by-id"
-                ]
-              },
-              {
-                "group": "User Metadata Management",
-                "pages": [
-                  "api-reference/admin/user-metadata-management/get-metadata-of-a-user",
-                  "api-reference/admin/user-metadata-management/patch-metadata-of-a-user"
-                ]
-              },
-              {
-                "group": "Email Management",
-                "pages": [
-                  "api-reference/admin/email-management/get-a-list-of-emails",
-                  "api-reference/admin/email-management/create-an-email-for-a-user",
-                  "api-reference/admin/email-management/get-a-email-by-id",
-                  "api-reference/admin/email-management/remove-a-email-by-id",
-                  "api-reference/admin/email-management/set-an-email-as-primary"
-                ]
-              },
-              {
-                "group": "Password Management",
-                "pages": [
-                  "api-reference/admin/password-management/create-password",
-                  "api-reference/admin/password-management/get-password",
-                  "api-reference/admin/password-management/update-password",
-                  "api-reference/admin/password-management/delete-password"
-                ]
-              },
-              {
-                "group": "WebAuthn credential Management",
-                "pages": [
-                  "api-reference/admin/webauthn-credential-management/list-webauthn-credentials",
-                  "api-reference/admin/webauthn-credential-management/get-webauthn-credential",
-                  "api-reference/admin/webauthn-credential-management/delete-webauthn-credential"
-                ]
-              },
-              {
-                "group": "OTP Management",
-                "pages": [
-                  "api-reference/admin/otp-management/get-otp",
-                  "api-reference/admin/otp-management/delete-otp"
-                ]
-              },
-              {
-                "group": "Session Management",
-                "pages": [
-                  "api-reference/admin/session-management/create-session",
-                  "api-reference/admin/session-management/list-sessions",
-                  "api-reference/admin/session-management/delete-session"
-                ]
-              },
-              {
-                "group": "Webhooks",
-                "pages": [
-                  "api-reference/admin/webhooks/get-a-list-of-webhooks",
-                  "api-reference/admin/webhooks/create-a-webhook",
-                  "api-reference/admin/webhooks/get-a-webhook-by-id",
-                  "api-reference/admin/webhooks/update-a-webhook",
-                  "api-reference/admin/webhooks/delete-a-webhook"
-                ]
-              },
-              {
-                "group": "Audit Logs",
-                "pages": [
-                  "api-reference/admin/audit-logs/get-a-list-of-audit-logs"
-                ]
-              },
-              {
-                "group": "Metrics",
-                "pages": [
-                  "api-reference/admin/metrics/get-prometheus-metrics"
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Frontend SDK",
-        "href": "https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/"
-      },
-      {
-        "tab": "Standalone Passkey API",
-        "groups": [
-          {
-            "group": "Getting Started",
+            "group": "Getting started",
             "pages": [
               "passkey-api/introduction",
               "passkey-api/setup-passkey-project",
@@ -435,7 +371,7 @@
             "group": "Resources",
             "pages": [
               "passkey-api/resources/examples",
-              "resources/llms"
+              "passkey-api/resources/tutorials"
             ]
           },
           {
@@ -483,19 +419,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "Tutorials",
-        "groups": [
-          {
-            "group": "Tutorials",
-            "pages": [
-              "tutorials/introduction",
-              "tutorials/authorization-with-permit",
-              "tutorials/nextjs-todo"
-            ]
-          }
-        ]
       }
     ]
   },
@@ -517,22 +440,34 @@
   "navbar": {
     "links": [
       {
-        "label": "Community",
+        "label": "Discord",
         "href": "https://discord.gg/tAG6RrRqJD"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Start for free",
+      "label": "Hanko Cloud Console",
       "href": "https://cloud.hanko.io"
     }
   },
   "footer": {
     "socials": {
-      "twitter": "https://twitter.com/hanko_io",
+      "x": "https://x.com/hanko_io",
       "github": "https://github.com/teamhanko",
       "linkedin": "https://www.linkedin.com/company/teamhanko/"
     }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "integrations": {
     "plausible": {

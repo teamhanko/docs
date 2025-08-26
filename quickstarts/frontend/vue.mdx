@@ -56,8 +56,8 @@ yarn add @teamhanko/hanko-elements vue-router
 ```
 </CodeGroup>
 
-## Setup your Hanko project
-Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+## Set up your Hanko project
+Go to the [Hanko Console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
 
 <Note>
   During creation make sure to input the URL you will be developing on as the `APP URL`.\
@@ -66,7 +66,7 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 ## Add the Hanko API URL
 
-Retrieve your API URL from the [Hanko console](https://cloud.hanko.io/), and paste this in a `.env` file.
+Retrieve your API URL from the [Hanko Console](https://cloud.hanko.io/), and paste this in a `.env` file.
 
 ```sh .env
 VITE_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
@@ -100,7 +100,7 @@ export default defineConfig({
 })
 ```
 
-## Setup TS support for Vue components
+## Set up TS support for Vue components
 TypeScript doesn't understand .vue files by default, which can cause IDE errors or issues during development.
 
 To fix this we will create a new file `shims-vue.d.ts` in our `src/` directory.
@@ -124,7 +124,7 @@ Set up the `HankoAuth.vue` file to create a functioning login component.
 
 Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action (e.g. redirect to your dashboard).
 
-[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
+For more information please refer to the [Auth component page.](/guides/hanko-elements/auth-component)
 
 ```jsx src/components/HankoAuth.vue 
 <script setup lang="ts">
@@ -155,11 +155,11 @@ Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using
 </template>
 ```
 
-### Hanko profile
+### Hanko Profile
 
 Set up the `HankoProfile.vue` file to create an interface where users can manage their email addresses and credentials.
 
-[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
+For more information please refer to the [Profile component page.](/guides/hanko-elements/profile-component)
 
 ```jsx src/components/HankoProfile.vue
   <script setup lang="ts">
@@ -181,7 +181,7 @@ Set up the `HankoProfile.vue` file to create an interface where users can manage
   </template>
 ```
 
-## Setup routes and views
+## Set up routes and views
 
 To route our app we will use the `RouterView` component from the vue-router.
 First let's set up our views which will be used by the router.
@@ -219,7 +219,7 @@ And:
 </template>
 ```
 
-### Setup Router
+### Set up router
 
 Create a file `index.ts` in a new directory `/router`.
 In here we can set up the `vue-router` just like this:

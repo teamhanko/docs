@@ -48,10 +48,10 @@ yarn add @teamhanko/hanko-elements
 </CodeGroup>
 
 
-## Setup your Hanko project
-Create a Hanko project in the cloud console to get your API URL.
+## Set up your Hanko project
+Create a Hanko project in the Cloud Console to get your API URL.
 
-Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+Go to the [Hanko Console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
 
 <Note>
   Set the `APP URL` to your development URL (typically http://localhost:5173/ for Remix).
@@ -62,7 +62,7 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 Add your Hanko API URL to your environment file. In Remix, environment variables without a public prefix are server-side only.
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/) and add it to your `.env` file:
+Retrieve the API URL from the [Hanko Console](https://cloud.hanko.io/) and add it to your `.env` file:
 
 ```sh .env
 HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
@@ -94,7 +94,7 @@ Create a `components` folder with two files: `HankoAuth.tsx` and `HankoProfile.t
 
 The `HankoAuth` component provides login and registration functionality. It uses Remix's loader to pass the API URL from server to client, and handles the `onSessionCreated` event for post-login navigation.
 
-[For more information see the Auth Component documentation.](/guides/hanko-elements/auth-component)
+For more information see the [Auth component documentation.](/guides/hanko-elements/auth-component)
 
 ```jsx components/HankoAuth.tsx
 import { useNavigate, useLoaderData } from "@remix-run/react";
@@ -151,11 +151,11 @@ export default HankoAuth;
 ```
 
 
-### Hanko profile
+### Hanko Profile
 
 The `HankoProfile` component allows users to manage their email addresses and passkeys.
 
-[For more information see the Profile Component documentation.](/guides/hanko-elements/profile-component)
+For more information see the [Profile component documentation.](/guides/hanko-elements/profile-component)
 
 ```jsx components/HankoProfile.tsx
 import { useLoaderData } from "@remix-run/react";

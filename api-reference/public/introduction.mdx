@@ -1,32 +1,60 @@
 ---
 sidebarTitle: "Introduction"
-title: Learn how to use the Hanko Public API
-description: This minimal example showcases how you can get user data using Public API from the userID obtained from the JWT.
+title: "Hanko APIs"
+description: "OpenAPI specifications for Hanko APIs"
 ---
 
-```js
-import { cookies } from "next/headers";
-import * as jose from "jose";
-
-const hankoApiUrl = process.env.NEXT_PUBLIC_HANKO_API_URL;
-
-export async function getUserData() {
-  const token = cookies().get("hanko")?.value;
-  const payload = jose.decodeJwt(token ?? "");
-
-  const userID = payload.sub;
-
-  const response = await fetch(`${hankoApiUrl}/users/${userID}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const userData = await response.json();
-  return userData;
-}
-```
+<CardGroup cols={2}>
+  <Card
+    title="Public API"
+    href="/api-reference/"
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-api"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M4 13h5"></path>
+        <path d="M12 16v-8h3a2 2 0 0 1 2 2v1a2 2 0 0 1 -2 2h-3"></path>
+        <path d="M20 8v8"></path>
+        <path d="M9 16v-5.5a2.5 2.5 0 0 0 -5 0v5.5"></path>
+      </svg>
+    }
+  >
+    OpenAPI specs for Public API
+  </Card>
+  <Card
+    title="Admin API"
+    href="/admin/"
+    icon={
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon icon-tabler icon-tabler-api"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M4 13h5"></path>
+        <path d="M12 16v-8h3a2 2 0 0 1 2 2v1a2 2 0 0 1 -2 2h-3"></path>
+        <path d="M20 8v8"></path>
+        <path d="M9 16v-5.5a2.5 2.5 0 0 0 -5 0v5.5"></path>
+      </svg>
+    }
+  >
+        OpenAPI specs for Admin API
+  </Card>
+</CardGroup>

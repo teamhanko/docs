@@ -1,6 +1,6 @@
 ---
 sidebarTitle: "Rust"
-title: Integrate Hanko with Rust backend
+title: Integrate Hanko with a Rust backend
 ---
 
 import BackendIntegrationAbout from '/snippets/backend-integration-about.mdx';
@@ -11,17 +11,17 @@ After successful authentication, Hanko generates a session token that is stored 
 
 ### Get the Hanko API URL
 
-Retrieve the API URL from the [Hanko console](https://cloud.hanko.io/).
+Retrieve the API URL from the [Hanko Console](https://cloud.hanko.io/).
 
 <Note>If you are self-hosting Hanko you need to provide your own URL.</Note>
 
-### Steps to Authenticate Requests
+### Steps to authenticate requests
 
 1. Retrieve the Session Token.
 
 2. Verify the Session token using the Hanko [Validate](/api-reference/public/session-management/validate-a-session-1) API endpoint.
 
-### Session Token Validation Function
+### Session token validation function
 The following code demonstrates how to validate session tokens against the Hanko backend. The implementation for retrieving the session token cookie will vary depending on your web framework.
 
 ```rust

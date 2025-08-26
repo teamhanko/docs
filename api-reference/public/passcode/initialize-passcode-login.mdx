@@ -1,8 +1,13 @@
 ---
 openapi: openapi-public post /passcode/login/initialize
 deprecated: true
+description: Initialize a passcode login.
 ---
 
 <Warning>
-    Deprecated. Please use the [Flow API](/api-reference/flow/registration) instead. [What's the Flow API?](/guides/flow-api/understanding-the-flow-api).
+    Deprecated. Please use the [Flow API](/api-reference/flow/registration) instead. [What's the Flow API?](/using-the-api/understanding-the-flow-api).
 </Warning>
+
+Initialize a passcode login for the user identified by `user_id`. Sends an email
+containing the actual passcode to the user's primary email address or to the address specified
+through `email_id`. Returns a representation of the passcode.

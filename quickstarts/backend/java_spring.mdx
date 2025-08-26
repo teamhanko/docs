@@ -1,6 +1,6 @@
 ---
-sidebarTitle: "Java/Spring"
-title: Integrate Hanko with Java/Spring backend
+sidebarTitle: "Java (Spring)"
+title: Integrate Hanko with a Java/Spring backend
 description: Learn how to validate Hanko session tokens in your Java/Spring backend to secure API endpoints and authenticate users.
 ---
 
@@ -12,13 +12,13 @@ After successful authentication, Hanko generates a session token stored as a coo
 
 ## Get the Hanko API URL
 
-Retrieve your project's API URL from the [Hanko console](https://cloud.hanko.io/). This URL is used to validate session tokens.
+Retrieve your project's API URL from the [Hanko Console](https://cloud.hanko.io/). This URL is used to validate session tokens.
 
 <Note>
     If you are self-hosting Hanko, use your self-hosted instance URL instead.
 </Note>
 
-## Authentication Flow
+## Authentication flow
 
 To authenticate requests in your Java/Spring backend:
 
@@ -26,7 +26,7 @@ To authenticate requests in your Java/Spring backend:
 2. Validate the token using Hanko's [session validation API](/api-reference/public/session-management/validate-a-session-1)
 3. Allow or deny the request based on validation result
 
-## Implementation Example
+## Implementation example
 
 This example shows how to create a session validator that can be used as a filter in your Java/Spring application:
 

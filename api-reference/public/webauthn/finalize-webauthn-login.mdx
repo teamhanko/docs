@@ -1,8 +1,18 @@
 ---
 openapi: openapi-public post /webauthn/login/finalize
 deprecated: true
+description: Finalize a login with Webauthn.
 ---
 
 <Warning>
-    Deprecated. Please use the [Flow API](/api-reference/flow/registration) instead. [What's the Flow API?](/guides/flow-api/understanding-the-flow-api).
+    Deprecated. Please use the [Flow API](/api-reference/flow/registration) instead. [What's the Flow API?](/using-the-api/understanding-the-flow-api).
 </Warning>
+
+Finalize a login with Webauthn using the WebAuthn API response to a `navigator.credentials.get()` call.
+
+<Note>
+    The Webauthn API uses binary data represented by ArrayBuffers for certain input/output values.
+    The Hanko API returns these values as base64url-encoded, so they must be converted to ArrayBuffers
+    when passed to the Webauthn API. Similarly, Webauthn API output must be converted to base64url-encoded values
+    when passed to the Hanko API (e.g. using the [webauthn-json](https://github.com/github/webauthn-json) library).
+</Note>

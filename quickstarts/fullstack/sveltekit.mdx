@@ -47,10 +47,10 @@ yarn add @teamhanko/hanko-elements
 ```
 </CodeGroup>
 
-## Setup your Hanko project
-Create a Hanko project in the cloud console to get your API URL.
+## Set up your Hanko project
+Create a Hanko project in the Cloud Console to get your API URL.
 
-Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
+Go to the [Hanko Console](https://cloud.hanko.io/) and [create a project for this application.](/setup-hanko-cloud)
 
 <Note>
   Set the `APP URL` to your development URL (typically http://localhost:5173/ for SvelteKit).
@@ -60,7 +60,7 @@ Go to the [Hanko console](https://cloud.hanko.io/) and [create a project for thi
 
 Add your Hanko API URL to your environment file. The `PUBLIC_` prefix makes it accessible in both server and client-side code in SvelteKit.
 
-Retrieve your API URL from the [Hanko console](https://cloud.hanko.io/) and add it to your `.env` file:
+Retrieve your API URL from the [Hanko Console](https://cloud.hanko.io/) and add it to your `.env` file:
 
 ```sh .env
 PUBLIC_HANKO_API_URL=https://f4****-4802-49ad-8e0b-3d3****ab32.hanko.io
@@ -81,7 +81,7 @@ Now let's setup the `HankoAuth.tsx` file to create a functioning login page.
 Here we subscribe to the `onSessionCreated` [event](/guides/hanko-elements/using-frontend-sdk#events), this triggers when a user successfully logs in. You can use these event to perform any desired action.(e.g. redirect to your dashboard).
 
 
-[For more information please refer to the Auth Component Page.](/guides/hanko-elements/auth-component)
+For more information please refer to the [Auth component page.](/guides/hanko-elements/auth-component)
 <div class="hidden">
 Svelte authentication component that uses reactive stores, handles session events, and implements navigation to dashboard after successful login
 </div>
@@ -135,12 +135,12 @@ By now, your sign-up and sign-in features should be working. You should see an i
 </Frame>
 
 
-### Hanko profile
+### Hanko Profile
 
 After setting up the HankoAuth let's set up the `HankoProfile.jsx` file to create an interface where users can
 manage their `Email Addresses` and credentials.
 
-[For more information please refer to the Profile Component Page.](/guides/hanko-elements/profile-component)
+For more information please refer to the [Profile component page.](/guides/hanko-elements/profile-component)
 
 <div class="hidden">
 Svelte profile component that allows users to manage their email addresses, passkeys, and authentication credentials using Hanko's built-in interface

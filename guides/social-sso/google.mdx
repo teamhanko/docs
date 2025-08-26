@@ -1,0 +1,236 @@
+---
+title: Sign in with Google
+sidebarTitle: Google
+description: Step-by-step guide to integrating Sign in with Google using Hanko. Enable secure authentication and seamless onboarding for your app's users.
+---
+
+import HankoAbout from '/snippets/hanko-about.mdx'
+
+<div class="hidden">
+**Hanko Google OAuth Integration Guide**:
+
+**About Hanko**:
+<HankoAbout />
+
+**What This Guide Covers**: This guide demonstrates how to integrate Google OAuth authentication with Hanko, allowing users to sign in using their Google accounts. You'll learn to set up a Google Cloud Console project, configure OAuth consent, and implement Google login in your application.
+
+**Key Technologies**: 
+- OAuth 2.0 and OpenID Connect protocols
+- Google Cloud Console and Google Auth Platform
+- JWT (JSON Web Tokens) for secure session management
+- Google OAuth 2.0 authorization server
+- RESTful API integration
+
+**Prerequisites**: 
+- Active Hanko Cloud account with a configured project
+- Google account for Cloud Console access
+- Basic understanding of OAuth 2.0 authentication flow
+- Frontend application ready for integration
+
+**Tasks You'll Complete**:
+- Create a Google Cloud Console project and configure OAuth consent
+- Set up OAuth 2.0 credentials and redirect URLs
+- Configure Google OAuth settings in Hanko Console
+- Implement Google authentication in your frontend application
+- Handle authentication success and error states
+</div>
+
+<Steps>
+
+<Step title="Obtain Google OAuth credentials">
+
+- First, obtain the redirect URL from the [Hanko Console](https://cloud.hanko.io/), as you'll need this for Google configuration.
+  Sign in to the Hanko console and select your project. Navigate to 'Settings' in the left sidebar and then to 'Social connections'.
+  Copy the 'Redirect URL'.
+
+    <img
+      src="/images/oauth-providers/google/socialConnections.png"
+      alt="Hanko Callback URL"
+      width={500}
+    />
+
+- Verify that your allowed redirect URL is configured correctly for your application.
+  Navigate to the 'URLs' tab in the left sidebar.
+  Ensure that Allowed redirect URLs includes your App URL + '**'.
+
+    <img
+      src="/images/oauth-providers/google/allowedRedirectURL.png"
+      alt="Hanko allowed redirect url"
+      width={500}
+    />
+
+- Navigate to [Google Cloud Console](https://console.cloud.google.com/), sign in and click on 'Select a project' at the top left.
+
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/one.png"
+      alt="Google settings option"
+      width={500}
+    />
+
+- Select 'New Project' from the top right of modal.
+
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/two.png"
+      alt="Google settings option"
+      width={500}
+    />
+
+- Provide a 'Project name', if you want the project to be part of an organization, assign it using the 'Location' input and hit 'Create'
+
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/three.png"
+      alt="Google settings option"
+      width={500}
+    />
+
+- Type 'OAuth' in the search bar and choose 'OAuth consent screen' from the results.
+
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/four.png"
+      alt="Google settings option"
+      width={500}
+    />
+
+- Configure your Google Auth Platform by clicking 'Get started' to begin setup.
+
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/googleAuthConfig.png"
+      alt="Google auth configuration"
+      width={500}
+    />
+
+- Name your app and select a user support Email.
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/configurationOne.png"
+      alt="Google App Information"
+      width={500}
+    />
+
+- Select 'User Type' depending on your requirements
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/configurationTwo.png"
+      alt="Google Project Audience"
+      width={500}
+    />
+
+- Navigate to 'Google Auth Platform' > 'Audience' and publish your app.
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/Test Users.png"
+      alt="Google test users"
+      width={500}
+    />
+
+
+- Click 'Clients' in the left sidebar, then click 'Create client'.
+
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/createClient.png"
+      alt="Create oauth client"
+      width={500}
+    />
+
+- Select 'Web application' as the application type.
+
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/ten.png"
+      alt="Google settings option"
+      width={500}
+    />
+
+- Choose a name and paste the Redirect URL (that you obtained from the Hanko console) as an 'Authorized redirect URI'.
+
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/clientSetup.png"
+      alt="Google auth client setup"
+      width={500}
+    />
+
+- The Google console will display information about the OAuth client. Copy and save both the 'Client ID' and 'Client secret', as you'll need these in the next step.
+    <img
+      className="border-[1px] border-black rounded-[10px]"
+      src="/images/oauth-providers/google/twelve.png"
+      alt="Google settings option"
+      width={500}
+    />
+</Step>
+<Step title="Configure Google OAuth credentials with Hanko">
+
+- In the 'Social connections' section, select Google and enable its toggle switch.
+- Input the earlier noted 'Client ID' and 'Client Secret', then click 'Save'.
+
+    <img
+      src="/images/oauth-providers/google/thirteen.png"
+      alt="Hanko Callback URL"
+      width={500}
+      height={500}
+    />
+</Step>
+<Step title="Implement Sign in with Google in your frontend application">
+
+Whether you choose to use the pre-designed UI from the `@teamhanko/hanko-elements` package or opt for a custom UI with the `@teamhanko/hanko-frontend-sdk` will determine your approach to frontend integration.
+
+<Tabs>
+
+<Tab title="Hanko Elements">
+- Integrate the `<hanko-auth>` component from `hanko-elements` based on our frontend guides. If everything is good, the component will display a button for signing in with 'Google' in login view.
+
+    <Note>
+    Make sure to configure the page the web component is embedded on as your error redirect URL as well as an allowed redirect URL.
+    </Note>
+
+    Post successful Google authentication, the backend sets a session cookie and errors during authentication are displayed within the component accordingly.
+
+</Tab>
+
+<Tab title="Hanko Frontend SDK">
+- For a custom UI, initialize third party sign-in using `@teamhanko/hanko-frontend-sdk`.
+- Create Hanko client instance and call `thirdParty.auth` with google as the provider.
+
+        ```js 
+        import { Hanko } from "@teamhanko/hanko-frontend-sdk";
+
+        const hanko = new Hanko("<your_hanko_api_url>");
+
+        async function signInWithGoogle() {
+        try {
+            await hanko.thirdParty.auth("google", "<your_redirect_url>");
+        } catch (error) {
+            // handle error
+        }
+        }
+        ```
+
+- On successful authentication, the API redirects you to the given redirect URL. The URL query includes a one time token that must be exchanged for a JWT. Use the `token.validate` method on your client to validate the token:
+
+        ```js 
+        import { Hanko } from "@teamhanko/hanko-frontend-sdk";
+
+        const hanko = new Hanko("<your_hanko_api_url>");
+
+        async function onLoad() {
+        try {
+            await hanko.token.validate();
+        } catch (error) {
+            // handle error
+        }
+
+        // you should now have a JWT cookie set
+        }
+        ```
+        On success, the API issues a JWT which is then set by the SDK as a cookie (hanko). All other SDK methods can now use the cookie to make authenticated requests to the API.
+
+</Tab>
+</Tabs>
+</Step>
+</Steps>
