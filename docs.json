@@ -134,6 +134,7 @@
           {
             "group": "Resources",
             "pages": [
+              "resources/examples",
               {
                 "group": "API reference",
                 "pages": [
@@ -331,8 +332,7 @@
                   }
                 ]
               },
-              "resources/frontend-sdk",
-              "resources/examples"
+              "resources/frontend-sdk"
             ]
           },
           {
