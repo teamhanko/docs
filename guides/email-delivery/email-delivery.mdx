@@ -1,13 +1,14 @@
 ---
-sidebarTitle: Custom emails
-title: Send custom emails
-description: Send emails with your own text and style.
+sidebarTitle: Email customization
+title: How to customize Hanko's emails
+description: Send Hanko emails with your own text and style.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import ProFeatureNote from '/snippets/pro-feature-note.mdx'
 
 <div class="hidden">
-# Hanko Custom Emails Guide
+**Hanko Custom Emails Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -37,11 +38,9 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 - Test custom email delivery flows
 </div>
 
-import ProFeatureNote from '/snippets/pro-feature-note.mdx'
-
 This guide walks you through implementing custom email delivery instead of using Hanko's default email service.
 
-## Create a Webhook
+## Create a webhook
 
 Set up a webhook subscription for the `email.send` event. This webhook triggers whenever Hanko needs to send an authentication email.
 
@@ -49,7 +48,7 @@ Set up a webhook subscription for the `email.send` event. This webhook triggers 
   New to webhooks? Check out our comprehensive [Webhooks guide](/guides/webhooks) first.
 </Note>
 
-## Disable Hanko's Email Delivery
+## Disable email delivery by Hanko
 
 <ProFeatureNote/>
 
@@ -58,13 +57,13 @@ Set up a webhook subscription for the `email.send` event. This webhook triggers 
         Log in to Hanko Cloud, select your organization and project, then navigate to `Settings > Email delivery`.
     </Step>
     <Step title={"Disable default email delivery"}>
-        Locate the `Email delivery by Hanko` setting and toggle it off to disable default email sending.
+        Set the `Email delivery` setting to `Off` to disable default email sending.
     </Step>
 </Steps>
 
-Once disabled, Hanko will no longer send emails automatically. All email delivery becomes your responsibility through webhook handling.
+Once disabled, Hanko will no longer send emails for you. All email sending becomes your responsibility through webhook handling.
 
-## Send Custom Emails
+## Send custom emails
 
 When Hanko needs to send an email, the `email.send` webhook event triggers with all necessary data for custom email delivery. The webhook token payload contains comprehensive email information:
 

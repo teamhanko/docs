@@ -1,13 +1,14 @@
 ---
 sidebarTitle: Custom SMTP server
-title: Send Hanko emails with your own SMTP server
+title: Send Hanko emails using your own SMTP server
 description: Learn how to set up a custom SMTP server to send Hanko emails through your own SMTP server.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import ProFeatureNote from '/snippets/pro-feature-note.mdx'
 
 <div class="hidden">
-# Hanko Custom SMTP Guide
+**Hanko Custom SMTP Guide**:
 
 **About Hanko**:
 <HankoAbout />
@@ -35,9 +36,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 - Monitor email sending performance
 </div>
 
-<Note>
-  Custom SMTP server is available in Hanko Pro and Enterprise plans. Check out our [pricing page](https://hanko.io/pricing) for more information.
-</Note>
+<ProFeatureNote/>
 
 1. **Gather SMTP server credentials** from your email provider. You'll need the following information:
 
@@ -51,9 +50,9 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
 2. **Access your project settings** by logging into [Hanko Cloud](https://cloud.hanko.io) and selecting your project.
 
-3. **Navigate to email configuration** at `Settings > Email`.
+3. **Navigate to email configuration** at `Settings > Email delivery`.
 
-4. **Configure your SMTP server** by enabling the Custom SMTP Server option, entering your credentials, and clicking `Save`.
+4. **Configure your SMTP server** by enabling the `Custom SMTP` Server option, entering your credentials, and clicking `Save`.
 
    <Frame>
      <img

@@ -1,13 +1,13 @@
 ---
 sidebarTitle: Overview
-title: Introduction
-description: Learn how SAML SSO enterprise connections work.
+title: Using SAML SSO with Hanko
+description: Learn how SAML SSO enterprise connections work with Hanko.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
 
 <div class="hidden">
-# Hanko SAML Integration Overview
+**Hanko SAML Integration Overview**:
 
 **About Hanko**:
 <HankoAbout />
@@ -47,12 +47,12 @@ Hanko supports SAML SSO for any IdP compatible with the SAML 2.0 protocol.
     This guide uses SAML 2.0 terminology. Consult the [glossary](#glossary) for unfamiliar terms.
 </Info>
 
-## Managing Enterprise Connections
+## Managing enterprise connections
 
 A SAML SSO integration requires configuration at the Service Provider (SP, your Hanko project in this case) and
 the Identity Provider (IdP).
 
-### Adding an Enterprise Connection
+### Adding an enterprise connection
 
 To add an enterprise connection to your project:
 
@@ -82,7 +82,7 @@ To add an enterprise connection to your project:
            addresses (see also: [Account provisioning and linking](#account-provisioning-and-linking))
        </Warning>
 
-### Configuring SAML Identity Providers
+### Configuring SAML identity providers
 
 The configuration required at an IdP varies by provider. While Hanko supports any SAML 2.0-compatible provider, the following providers have been officially tested:
 
@@ -91,7 +91,7 @@ The configuration required at an IdP varies by provider. While Hanko supports an
 - [Google (Workspaces)](/guides/enterprise-sso/google)
 - [Okta](/guides/enterprise-sso/okta)
 
-## Using Enterprise Connections
+## Using enterprise connections
 
 Once you have set up a connection, users can authenticate via SAML SSO using either a
 [Service Provider-initiated SSO](#service-provider-initiated-sso) or
@@ -101,7 +101,7 @@ The main difference between these two flow types is that in an SP-initiated SSO 
 when the user attempts to access a service, whereas in an IdP-initiated flow, the user begins the authentication process
 at the IdP.
 
-### Service Provider-Initiated SSO
+### Service provider-initiated SSO
 
 The Service Provider-initiated (SP-initiated) flow begins with the Service Provider (SP - your Hanko Cloud tenant acting
 as the Service Provider) initiating a SAML authentication request when attempting to access your client application,
@@ -156,7 +156,7 @@ sequenceDiagram
 13. The User accesses the Client Application.
 
 
-### Identity Provider-Initiated SSO
+### Identity provider-initiated SSO
 
 In an Identity Provider-initiated (IdP-initiated) flow, the user begins at the Identity Provider (IdP), which could be
 a login portal or a service like Google or Microsoft. After authentication with the IdP the user selects which service

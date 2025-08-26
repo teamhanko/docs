@@ -331,7 +331,8 @@
                   }
                 ]
               },
-              "resources/frontend-sdk"
+              "resources/frontend-sdk",
+              "resources/examples"
             ]
           },
           {
