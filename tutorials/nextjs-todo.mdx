@@ -865,3 +865,19 @@ That’s all, you’ve successfully created a Todo app with Next.js, Hanko, Pris
   >
     Full source code available on our GitHub
   </Card>
+
+
+## Deployment & CORS Configuration
+
+After deploying your Next.js app (for example, on Vercel), update your App URL in the Hanko Cloud Console:
+
+1. Go to [Hanko Cloud Console](https://cloud.hanko.io).
+2. Select your project.
+3. Navigate to **Settings > General**.
+4. Update the **App URL** to match your production domain (e.g., `https://your-app.vercel.app`).
+
+This ensures CORS is configured correctly and avoids authentication errors.
+
+<Info>
+For best practice, create separate Hanko Cloud projects for development and production. This keeps test users out of your live app and allows you to test settings safely.
+</Info>
