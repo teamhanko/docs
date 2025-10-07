@@ -1213,7 +1213,7 @@ components:
           properties:
             name:
               enum:
-                - "public-key"
+                - "public_key"
             type:
               enum:
                 - "json"
@@ -2661,11 +2661,11 @@ components:
                   type:
                     type: string
                     enum:
-                      - public-key
+                      - public_key
                   alg:
                     type: number
               example:
-                - type: public-key
+                - type: public_key
                   alg: -7
             timeout:
               type: number
@@ -2733,8 +2733,8 @@ components:
                   type:
                     type: string
                     enum:
-                      - public-key
-                    example: public-key
+                      - public_key
+                    example: public_key
                   id:
                     type: string
                     format: base64url
@@ -2881,7 +2881,7 @@ components:
         last_used_at:
           type: string
           format: date-time
-        public-key:
+        public_key:
           type: string
         transports:
           type: array

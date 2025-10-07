@@ -842,7 +842,7 @@ components:
           type: string
         type:
           enum:
-            - public-key
+            - public_key
       required:
         - id
         - type
@@ -920,7 +920,7 @@ components:
       properties:
         type:
           enum:
-            - public-key
+            - public_key
         alg:
           type: integer
           format: int32
@@ -933,7 +933,7 @@ components:
       properties:
         type:
           enum:
-            - public-key
+            - public_key
         id:
           type: string
         transports:

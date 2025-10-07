@@ -325,7 +325,7 @@ paths:
                       timeout: 60000
                       rpId: localhost
                       allowCredentials:
-                        - type: public-key
+                        - type: public_key
                           id: Mepptysj5ZZrTlg0qiLbsZ068OtQMeGVAikVy2n1hvvG...
                       userVerification: required
                 disco:
@@ -1414,11 +1414,11 @@ components:
                   type:
                     type: string
                     enum:
-                      - public-key
+                      - public_key
                   alg:
                     type: number
               example:
-                - type: public-key
+                - type: public_key
                   alg: -7
             timeout:
               type: number
@@ -1486,8 +1486,8 @@ components:
                   type:
                     type: string
                     enum:
-                      - public-key
-                    example: public-key
+                      - public_key
+                    example: public_key
                   id:
                     type: string
                     format: base64url
@@ -1594,8 +1594,8 @@ components:
         type:
           type: string
           enum:
-            - public-key
-          example: public-key
+            - public_key
+          example: public_key
         response:
           type: object
           properties:
@@ -1628,8 +1628,8 @@ components:
         type:
           type: string
           enum:
-            - public-key
-          example: public-key
+            - public_key
+          example: public_key
         response:
           type: object
           properties:
