@@ -1120,7 +1120,7 @@ components:
                 - "password"
             type:
               enum:
-                - "string"
+                - "password"
             min_length:
               default: 8
             required:
