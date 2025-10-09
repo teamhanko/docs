@@ -945,15 +945,45 @@ components:
             type: string
         issuer:
           type: string
-        email:
-          type: object
-          properties:
-            address:
-              type: string
-            is_verified:
-              type: boolean
-            is_primary:
-              type: boolean
+        emails:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              address:
+                type: string
+                format: email
+              is_primary:
+                type: boolean
+              is_verified:
+                type: boolean
+              identity:
+                deprecated: true
+                description: Deprecated. See `identities` instead.
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Contains the ID of the user at the provider.
+                  provider:
+                    type: string
+                    description: |
+                      Contains the display name of the provider, if available. Otherwise contains the provider ID.
+              identities:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: ID of the user at the provider
+                    provider:
+                      type: string
+                      description: |
+                        Contains the display name of the provider, if available. Otherwise contains the provider ID.
       additionalProperties:
         description: "Any additional claims defined through templates for customizing the session JWT"
     CSRFToken:
