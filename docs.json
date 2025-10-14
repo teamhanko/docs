@@ -50,8 +50,7 @@
                       "quickstarts/backend/javascript",
                       "quickstarts/backend/java_spring",
                       "quickstarts/backend/python",
-                      "quickstarts/backend/rust",
-                      "quickstarts/backend/java_spring"
+                      "quickstarts/backend/rust"
                     ]
                   }
                 ]
