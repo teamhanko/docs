@@ -55,7 +55,7 @@ func (v *HankoSessionValidator) ValidateSession(token string) (bool, error) {
 
 	req, err := http.NewRequest(http.MethodPost, v.apiURL+"/sessions/validate", payload)
 	if err != nil {
-		return false, &fmt.Errorf("Failed to create request: %w", err)
+		return false, fmt.Errorf("Failed to create request: %w", err)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
