@@ -1236,6 +1236,21 @@ components:
               default: true
             hidden:
               default: true
+    InputCodeVerifier:
+      allOf:
+        - $ref: "#/components/schemas/Input"
+        - type: object
+          properties:
+            name:
+              enum:
+                - "code_verifier"
+            type:
+              enum:
+                - "string"
+            required:
+              default: false
+            hidden:
+              default: true
     InputRememberMe:
       allOf:
         - $ref: "#/components/schemas/Input"
@@ -1612,6 +1627,8 @@ components:
         redirect_to:
           type: string
           format: uri
+        code_verifier:
+          type: string
       required:
         - provider
         - redirect_to
@@ -1821,6 +1838,8 @@ components:
           $ref: "#/components/schemas/InputProvider"
         redirect_to:
           $ref: "#/components/schemas/InputRedirectTo"
+        code_verifier:
+          $ref: "#/components/schemas/InputCodeVerifier"
       required:
         - provider
         - redirect_to
