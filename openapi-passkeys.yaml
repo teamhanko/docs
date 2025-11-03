@@ -24,12 +24,31 @@ paths:
       tags:
         - credentials
       summary: List Credentials
-      description: Get a list of webauthn credentials for a user
+      description: Get a list of webauthn credentials
       operationId: get-credentials
       parameters:
         - $ref: "#/components/parameters/X-API-KEY"
         - $ref: "#/components/parameters/user_id"
         - $ref: "#/components/parameters/tenant_id"
+        - name: page
+          in: query
+          description: Page to start from
+          schema:
+            type: number
+            default: 1
+        - name: per_page
+          in: query
+          description: How many logs should be displayed per page
+          schema:
+            type: number
+            default: 20
+        - name: order
+          in: query
+          description: The sorting order of the list. Always sorted by `created at`
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
       requestBody:
         description: ""
         content: {}
@@ -475,6 +494,84 @@ paths:
           #     default: localhost
           #   path_prefix:
           #     default: ""
+  '/{tenant_id}/audit_logs':
+    get:
+      summary: List audit log entries
+      description: Get a list of audit logs
+      operationId: get-tenants-tenant_id-audit_logs
+      tags:
+        - audit_logs
+      parameters:
+        - name: page
+          in: query
+          description: Page to start from
+          schema:
+            type: number
+            default: 1
+        - name: per_page
+          in: query
+          description: How many logs should be displayed per page
+          schema:
+            type: number
+            default: 20
+        - name: start_time
+          in: query
+          description: timestamp from where to start the list
+          schema:
+            type: string
+            format: date-time
+        - name: end_time
+          in: query
+          description: timestamp on which to end the list
+          schema:
+            type: string
+            format: date-time
+        - name: type
+          in: query
+          description: comma separated list of types to query for
+          schema:
+            type: string
+        - name: actor_user_id
+          in: query
+          description: id of the user who performed the action
+          schema:
+            type: string
+        - name: meta_source_ip
+          in: query
+          description: ip address from which the action was performed
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: the search string
+          schema:
+            type: string
+        - $ref: '#/components/parameters/tenant_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/audit_log'
+          headers:
+            Link:
+              schema:
+                type: string
+              description: links to pages
+            X-Total-Count:
+              schema:
+                type: number
+              description: Total number of log entries
+        '400':
+          $ref: '#/components/responses/error'
+        '500':
+          $ref: '#/components/responses/error'
+      security: []
+      servers:
+        - url: "https://passkeys.hanko.io"
 tags:
   - name: credentials
     description: Represents all objects which are related to WebAuthn credentials
@@ -482,13 +579,15 @@ tags:
     description: Represents all objects which are related to MFA in common
   - name: webauthn
     description: Represents all objects which are related to WebAuthn in common
+  - name: audit_logs
+    description: Represents all objects which are related to audit logs
 components:
   parameters:
     user_id:
       name: user_id
       in: query
       description: representational id of the user
-      required: true
+      required: false
       schema:
         type: string
     credential_id:
@@ -1021,3 +1120,40 @@ components:
           - backup_eligible
           - backup_state
           - is_mfa
+    audit_log:
+      type: object
+      title: audit_log
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        error:
+          type: string
+        meta_http_request_id:
+          type: string
+        meta_source_ip:
+          type: string
+        meta_user_agent:
+          type: string
+        actor_user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tenant_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - type
+        - meta_http_request_id
+        - meta_source_ip
+        - meta_user_agent
+        - created_at
+        - updated_at
+        - tenant_id
