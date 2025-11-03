@@ -414,6 +414,12 @@
                   "passkey-api/reference/credentials/finish-mfa-registration"
                 ]
               },
+              {
+                "group": "Audit Logs",
+                "pages": [
+                  "passkey-api/reference/list-audit-logs"
+                ]
+              },
               "passkey-api/reference/credentials/well-known-jwks"
             ]
           }
