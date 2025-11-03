@@ -44,10 +44,11 @@ paths:
             default: 20
         - name: order
           in: query
-          description: The sorting order of the list
+          description: The sorting order of the list. Always sorted by `created at`
           schema:
             type: string
             enum: [asc, desc]
+            default: desc
       requestBody:
         description: ""
         content: {}
