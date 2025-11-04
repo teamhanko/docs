@@ -17,7 +17,9 @@ Hanko Auth Component
 <Frame>
   <img src="/images/troubleshoot/technical-error.png" style={{ borderRadius: "0.5rem" }} />
 </Frame>
-    CORS errors usually occur when the application URL hasn't been correctly configured in Hanko Cloud. If you're developing your project on `localhost`, you'll need to add a URL like `http://localhost:3000`. For production, you'll need to add the production URL. Please follow this [guide](/setup-hanko-cloud) for a seamless setup of Hanko Cloud.
+CORS errors usually happen when your app URL isn’t correctly set up in Hanko Cloud. If you’re developing locally, make sure to add something like `http://localhost:3000`. For production, use your live URL. Follow this [guide](/setup-hanko-cloud) for a smooth Hanko Cloud setup.
+
+Also, double-check that your app’s API URL is correct — even a missing or extra character when copying it from the Hanko Console can trigger a CORS error.
 
   </Accordion>
 
