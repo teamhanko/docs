@@ -26,7 +26,7 @@ servers:
   - url: "https://{tenant_id}.hanko.io/admin"
     variables:
       tenant_id:
-        default: "<replace-with-your-tenant-id>"
+        default: ""
         description: "The (UU)ID of a tenant. Replace the default value with your tenant ID."
 paths:
   /:
