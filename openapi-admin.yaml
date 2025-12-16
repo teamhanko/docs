@@ -1326,7 +1326,7 @@ components:
       description: The type of the audit log
       type: string
       enum:
-        - user_created
+        - user_logged_out
         - password_set_succeeded
         - password_set_failed
         - password_login_succeeded
@@ -1343,8 +1343,30 @@ components:
         - webauthn_authentication_init_failed
         - webauthn_authentication_final_succeeded
         - webauthn_authentication_final_failed
+        - webauthn_credential_updated
+        - webauthn_credential_deleted
         - thirdparty_signup_succeeded
         - thirdparty_signin_succeeded
+        - thirdparty_linking_succeeded
+        - thirdparty_signin_signup_failed
+        - token_exchange_succeeded
+        - token_exchange_failed
+        - user_created
+        - email_created
+        - email_verified
+        - email_deleted
+        - primary_email_changed
+        - user_deleted
+        - login_success
+        - login_failure
+        - otp_created
+        - passkey_created
+        - passkey_deleted
+        - security_key_created
+        - username_changed
+        - username_deleted
+        - password_changed
+        - password_deleted
     CreateSession:
       type: object
       properties:
