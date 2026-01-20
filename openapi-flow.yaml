@@ -206,6 +206,17 @@ components:
             action:
               enum:
                 - "back"
+    ActionConnectThirdPartyOAuthProvider:
+      description: Connect a third-party OAuth provider.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "connect_thirdparty_oauth_provider"
+            inputs:
+              $ref: "#/components/schemas/InputsConnectThirdPartyOAuthProvider"
     ActionContinueToLoginOTP:
       description: Continue to the `login_otp` state.
       allOf:
@@ -298,6 +309,17 @@ components:
                 - "continue_with_login_identifier"
             inputs:
               $ref: "#/components/schemas/InputsContinueWithLoginIdentifier"
+    ActionDisconnectThirdPartyOAuthProvider:
+      description: Disconnect a third-party OAuth provider.
+      allOf:
+        - $ref: "#/components/schemas/Action"
+        - type: object
+          properties:
+            action:
+              enum:
+                - "disconnect_thirdparty_oauth_provider"
+            inputs:
+              $ref: "#/components/schemas/InputsDisconnectThirdPartyOAuthProvider"
     ActionEmailAddressSet:
       description: Set an email address.
       allOf:
@@ -869,8 +891,12 @@ components:
       properties:
         account_delete:
           $ref: "#/components/schemas/ActionAccountDelete"
+        connect_thirdparty_oauth_provider:
+          $ref: "#/components/schemas/ActionConnectThirdPartyOAuthProvider"
         continue_to_otp_secret_creation:
           $ref: "#/components/schemas/ActionContinueToOTPSecretCreation"
+        disconnect_thirdparty_oauth_provider:
+          $ref: "#/components/schemas/ActionDisconnectThirdPartyOAuthProvider"
         email_create:
           $ref: "#/components/schemas/ActionEmailCreate"
         email_delete:
@@ -919,6 +945,8 @@ components:
       properties:
         exchange_token:
           $ref: "#/components/schemas/ActionExchangeToken"
+        back:
+          $ref: "#/components/schemas/ActionBack"
     ActionsWebauthnVerifyAttestationResponse:
       description: ActionsWebauthnVerifyAttestationResponse
       type: object
@@ -1494,6 +1522,36 @@ components:
       required:
         - webauthn_available
       additionalProperties: false
+    InputDataConnectThirdPartyOAuthProvider:
+      title: ConnectThirdPartyOAuthProvider
+      description: Input data for the `connect_thirdparty_oauth_provider` action.
+      type: object
+      properties:
+        provider:
+          type: string
+          description: The third-party OAuth provider to connect.
+        redirect_to:
+          type: string
+          description: URL to redirect to after authentication with the provider.
+        code_verifier:
+          type: string
+          description: The code verifier for a PKCE OAuth flow.
+      required:
+        - provider
+        - redirect_to
+      additionalProperties: false
+    InputDataDisconnectThirdPartyOAuthProvider:
+      title: DisconnectThirdPartyOAuthProvider
+      description: Input data for the `disconnect_thirdparty_oauth_provider` action.
+      type: object
+      properties:
+        identity_id:
+          type: string
+          format: uuid4
+          description: The ID of the third party identity to remove.
+      required:
+        - identity_id
+      additionalProperties: false
     InputDataContinueWithLoginIdentifier:
       description: Input data for the `continue_with_login_identifier` action.
       oneOf:
@@ -1709,6 +1767,8 @@ components:
       type: object
       additionalProperties:
         $ref: "#/components/schemas/Input"
+    InputsConnectThirdPartyOAuthProvider:
+      $ref: "#/components/schemas/InputsThirdPartyOauth"
     InputsContinueWithLoginIdentifier:
       type: object
       properties:
@@ -1719,6 +1779,13 @@ components:
             - $ref: "#/components/schemas/InputUsername"
           discriminator:
             propertyName: name
+    InputsDisconnectThirdPartyOAuthProvider:
+      type: object
+      properties:
+        identity_id:
+          type: string
+          format: uuid4
+          description: The ID of the third party identity to remove.
     InputsEmailAddressSet:
       type: object
       properties:
@@ -2820,6 +2887,7 @@ components:
         - $ref: "#/components/schemas/StatePasscodeConfirmation"
         - $ref: "#/components/schemas/StateProfileWebauthnCredentialVerification"
         - $ref: "#/components/schemas/StateMFAOTPSecretCreation"
+        - $ref: "#/components/schemas/StateThirdParty"
       discriminator:
         propertyName: name
         mapping:
@@ -2829,6 +2897,7 @@ components:
           passcode_confirmation: "#/components/schemas/StatePasscodeConfirmation"
           webauthn_credential_verification: "#/components/schemas/StateProfileWebauthnCredentialVerification"
           mfa_otp_secret_creation: "#/components/schemas/StateMFAOTPSecretCreation"
+          thirdparty: "#/components/schemas/StateThirdParty"
     StatesRegistration:
       oneOf:
         - $ref: "#/components/schemas/StatePreflight"
@@ -3284,10 +3353,13 @@ components:
               input_data:
                 oneOf:
                   - $ref: "#/components/schemas/InputDataRegisterClientCapabilities"
+                  - $ref: "#/components/schemas/InputDataConnectThirdPartyOAuthProvider"
+                  - $ref: "#/components/schemas/InputDataDisconnectThirdPartyOAuthProvider"
                   - $ref: "#/components/schemas/InputDataEmailCreate"
                   - $ref: "#/components/schemas/InputDataEmailDelete"
                   - $ref: "#/components/schemas/InputDataEmailSetPrimary"
                   - $ref: "#/components/schemas/InputDataEmailVerify"
+                  - $ref: "#/components/schemas/InputDataExchangeToken"
                   - $ref: "#/components/schemas/InputDataPasswordCreate"
                   - $ref: "#/components/schemas/InputDataPasswordUpdate"
                   - $ref: "#/components/schemas/InputDataPatchMetadata"
