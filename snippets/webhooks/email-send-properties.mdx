@@ -27,10 +27,10 @@
             The preferred language for the email content.
         </ResponseField>
         <ResponseField name="type" type="enum<string>">
-            The type of the email being sent.
+            The type of the email being sent or to be sent.
 
             Available options: `login`, `email_login_attempted`, `email_registration_attempted`, `email_verification`,
-            `recovery`
+            `recovery`, `security_notification`
         </ResponseField>
         <ResponseField name="data" type="object">
             Additional data.
