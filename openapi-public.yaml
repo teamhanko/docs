@@ -574,6 +574,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /.well-known/config:
     get:
+      deprecated: true
       summary: 'Get public Hanko configuration'
       description: |
         Retrieve public backend configuration options.
@@ -592,6 +593,7 @@ paths:
                 $ref: '#/components/schemas/HankoConfiguration'
   /saml/provider:
     get:
+      deprecated: true
       summary: Get a SAML provider
       description: Get a SAML service provider config for a provided domain.
       operationId: get-saml-provider
@@ -895,6 +897,7 @@ paths:
                 $ref: '#/components/schemas/CookieSession'
   /token:
     post:
+      deprecated: true
       summary: 'Exchange one time token for session'
       description: |
         Provide a one time token (e.g. obtained through the [thirdparty callback](#tag/Third-Party/operation/thirdPartyCallback)) to retrieve a session JWT as cookie

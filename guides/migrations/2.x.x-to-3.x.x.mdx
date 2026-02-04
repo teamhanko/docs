@@ -1,0 +1,77 @@
+---
+sidebarTitle: 2.x.x to 3.0.0
+title: Migration Guide
+description: Migration guide for upgrading from Hanko 2.x.x to 3.0.0
+---
+
+## Overview
+
+Hanko 3.0.0 removes previously deprecated API endpoints. This guide outlines the breaking changes and migration path for upgrading from version 2.x.x to 3.0.0.
+
+<Warning>
+  Hanko 3.0.0 is scheduled for release on Hanko Cloud on **May 20, 2026**. Please plan your migration accordingly.
+</Warning>
+
+
+## Breaking Changes
+
+### Deprecated API Endpoints
+
+The following Public API endpoints have been deprecated and will be removed in version 3.0.0:
+
+**Authentication Endpoints:**
+- [`POST /passcode/login/initialize`](/api-reference/public/passcode/initialize-passcode-login)
+- [`POST /passcode/login/finalize`](/api-reference/public/passcode/finalize-passcode-login)
+- [`POST /password/login`](/api-reference/public/password/do-password-login)
+- [`PUT /password`](/api-reference/public/password/createset-a-password)
+
+**WebAuthn Endpoints:**
+- [`POST /webauthn/login/initialize`](/api-reference/public/webauthn/initialize-webauthn-login)
+- [`POST /webauthn/login/finalize`](/api-reference/public/webauthn/finalize-webauthn-login)
+- [`POST /webauthn/registration/initialize`](/api-reference/public/webauthn/initialize-webauthn-registration)
+- [`POST /webauthn/registration/finalize`](/api-reference/public/webauthn/finalize-webauthn-registration)
+- [`GET /webauthn/credentials`](/api-reference/public/webauthn/get-a-list-of-webauthn-credentials)
+- [`DELETE /webauthn/credentials/{id}`](/api-reference/public/webauthn/deletes-a-webauthn-credential)
+- [`PATCH /webauthn/credentials/{id}`](/api-reference/public/webauthn/updates-a-webauthn-credential)
+
+**Configuration & Authentication:**
+- [`GET /.well-known/config`](/api-reference/public/well-known/get-public-hanko-configuration)
+- [`GET /thirdparty/auth`](/api-reference/public/third-party/initialize-third-party-login)
+- [`POST /token`](/api-reference/public/token/exchange-one-time-token-for-session)
+
+**User Management:**
+- [`POST /user`](/api-reference/public/user-management/get-user-details-by-email)
+- [`DELETE /user`](/api-reference/public/user-management/deletes-the-current-user)
+- [`POST /users`](/api-reference/public/user-management/create-a-user)
+
+**Email Management:**
+- [`GET /emails`](/api-reference/public/email-management/get-a-list-of-emails-of-the-current-user)
+- [`POST /emails`](/api-reference/public/email-management/add-a-new-email-address-to-the-current-user)
+- [`POST /emails/{id}/set_primary`](/api-reference/public/email-management/marks-the-email-address-as-primary-email)
+- [`DELETE /emails/{id}`](/api-reference/public/email-management/delete-an-email-address)
+
+**SAML:**
+- [`GET /saml/provider`](/api-reference/public/saml/get-a-saml-provider)
+
+## Migration Path
+
+<Note>
+    Exception: If your integration only uses, `hanko-elements` version **1.0.0 or later**, and not using the Hanko API directly, no migration changes are required.
+</Note>
+
+All deprecated endpoints have been replaced with the new **Flow API**, which provides a unified and streamlined authentication interface.
+
+Check out the [Understanding the Flow API guide](/using-the-api/understanding-the-flow-api) and [Build a custom login flow guide](/guides/authentication-methods/build-custom-login-flow) for more information about building your own custom UI.
+
+### Action Required
+
+To ensure a smooth transition:
+
+1. Review your current implementation and identify usage of deprecated endpoints
+2. Migrate to the Flow API before the May 20, 2026 release date
+3. Test your integration thoroughly in a development environment
+4. Refer to the [Flow API documentation](/api-reference/flow) for implementation details
+
+<Note>
+  Need assistance with your migration? Contact our support team or visit our [community forum](/community-support) for help.
+</Note>
