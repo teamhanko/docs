@@ -114,7 +114,13 @@
                 ]
               },
               "guides/custom-domain/custom-domain",
-              "guides/session-management"
+              "guides/session-management",
+              {
+                "group": "Migrations",
+                "pages": [
+                  "guides/migrations/2.x.x-to-3.x.x"
+                ]
+              }
             ]
           },
           {
