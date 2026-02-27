@@ -2132,6 +2132,8 @@ components:
                     description: |
                       Contains the display name of the provider, if available. Otherwise contains the provider ID.
               identities:
+                deprecated: true
+                description: Deprecated. See top-level `identities` instead.
                 type: array
                 items:
                   type: object
@@ -2143,6 +2145,23 @@ components:
                       type: string
                       description: |
                         Contains the display name of the provider, if available. Otherwise contains the provider ID.
+        identities:
+          description: The user's third party connections/identities.
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: The ID of the user at the provider
+              identity_id:
+                type: string
+                description: The identity's ID
+                format: uuid4
+              provider:
+                type: string
+                description: |
+                  Contains the display name of the provider, if available. Otherwise contains the provider ID.
         metadata:
           type: object
           properties:
@@ -2161,14 +2180,21 @@ components:
               type: boolean
             security_keys_enabled:
               type: boolean
-        username:
-          type: string
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
+        name:
+          type: string
+        given_name:
+          type: string
+        family_name:
+          type: string
+        picture:
+          type: string
+          format: uri
     RequestInputData:
       description: |
         The actual properties of the `input_data` is determined by the `inputs` of the `action` to be performed.
@@ -2969,6 +2995,8 @@ components:
         last_used_at:
           type: string
           format: date-time
+        mfa_only:
+          type: boolean
         public-key:
           type: string
         transports:

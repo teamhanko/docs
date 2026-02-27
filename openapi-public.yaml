@@ -760,11 +760,11 @@ paths:
         - CookieAuth: [ ]
         - BearerTokenAuth: [ ]
       responses:
-        200:
+        '200':
           $ref: "#/components/responses/ValidateSessionResponse"
-        400:
+        '400':
           $ref: "#/components/responses/BadRequest"
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
     post:
       tags:
@@ -783,11 +783,11 @@ paths:
               required:
                 - session_token
       responses:
-        200:
+        '200':
           $ref: "#/components/responses/ValidateSessionResponse"
-        400:
+        '400':
           $ref: "#/components/responses/BadRequest"
-        500:
+        '500':
           $ref: '#/components/responses/InternalServerError'
   /thirdparty/auth:
     get:
@@ -1010,8 +1010,8 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /me:
     get:
-      summary: 'Get the current user ID'
-      description: Retrieve the user ID for the current user (i.e. the subject of the JWT).
+      summary: 'Get the current user'
+      description: Retrieve data for the current user (i.e. the subject of the JWT given in a cookie or as a bearer token).
       operationId: IsUserAuthorized
       tags:
         - User Management
@@ -1020,16 +1020,7 @@ paths:
         - BearerTokenAuth: [ ]
       responses:
         '200':
-          description: 'User'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    description: The id of the current user
-                    allOf:
-                      - $ref: '#/components/schemas/UUID4'
+          $ref: '#/components/responses/MeResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1105,11 +1096,7 @@ paths:
             $ref: '#/components/schemas/UUID4'
       responses:
         '200':
-          description: 'Details about the user'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
+          $ref: '#/components/responses/GetUserByIdResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -1222,6 +1209,37 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 components:
   responses:
+    MeResponse:
+      description: Details for the current user
+      content:
+        application/json:
+          schema:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/UserBase'
+              - type: object
+                properties:
+                  username:
+                    $ref: '#/components/schemas/Username'
+    GetUserByIdResponse:
+      description: Details for a user retrieved by ID
+      content:
+        application/json:
+          schema:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/UserBase'
+              - type: object
+                properties:
+                  email:
+                    description: The email address of the user
+                    type: string
+                    format: email
+                  username:
+                    description: The username of the user
+                    type: string
+                  webauthn_credentials:
+                    $ref: '#/components/schemas/WebauthnCredentials'
     ValidateSessionResponse:
       description: Session validation response
       content:
@@ -1502,6 +1520,26 @@ components:
                 - preferred
                 - discouraged
               example: required
+    Identity:
+      type: object
+      description: Representation of a user's third party connection/identity.
+      properties:
+        id:
+          type: string
+          description: The ID of the user at the provider
+        identity_id:
+          type: string
+          description: The identity's ID
+          format: uuid4
+        provider:
+          type: string
+          description: |
+            Contains the display name of the provider, if available. Otherwise contains the provider ID.
+    Identities:
+      description: The user's third party connections/identities.
+      type: array
+      items:
+        $ref: '#/components/schemas/Identity'
     JSONWebKey:
       type: object
       externalDocs:
@@ -1744,17 +1782,19 @@ components:
         - subject
         - expiration
         - session_id
-    User:
+    UserBase:
       type: object
       properties:
         id:
           description: The ID of the user
           allOf:
             - $ref: '#/components/schemas/UUID4'
-        email:
-          description: The email address of the user
-          type: string
-          format: email
+        user_id:
+          description: The ID of the user
+          allOf:
+            - $ref: '#/components/schemas/UUID4'
+        emails:
+          $ref: '#/components/schemas/Emails'
         created_at:
           description: Time of creation of the the user
           type: string
@@ -1763,22 +1803,45 @@ components:
           description: Time of last update of the user
           type: string
           format: date-time
-        username:
-          description: The username of the user
-          type: string
-        webauthn_credentials:
-          description: List of registered Webauthn credentials
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                description: The ID of the Webauthn credential
-                type: string
-                format: base64url
-                example: Meprtysj5ZZrTlg0qiLbsZ168OtQMeGVAikVy2n1hvvG...
+        passkeys:
+          $ref: "#/components/schemas/WebauthnCredential"
+        security_keys:
+          allOf:
+            - $ref: "#/components/schemas/WebauthnCredential"
+            - example:
+                id: "f826013e-e7e3-4366-a6d8-9359effc8cdd"
+                name: "Yubikey Bio"
+                public_key: "aNMEEyadASFYIBblARCP_at3cmp4gg3zQN1lJ..."
+                attestation_type: "packed"
+                aaguid: "90636e1f-ef82-43bf-bdcf-5255f139d12f"
+                last_used_at: "2026-02-24T21:40:36.26936Z"
+                created_at: "2026-02-24T21:40:36.26936Z"
+                transports: [
+                  "usb"
+                ]
+                backup_eligible: true
+                backup_state: false
+                mfa_only: true
         metadata:
           $ref: "#/components/schemas/UserMetadata"
+        name:
+          type: string
+        given_name:
+          type: string
+        family_name:
+          type: string
+        picture:
+          type: string
+          format: uri
+        mfa_config:
+          type: object
+          properties:
+            auth_app_set_up:
+              type: boolean
+            totp_enabled:
+              type: boolean
+            security_key_enabled:
+              type: boolean
     UserMetadata:
       description: The public and unsafe metadata of a user
       type: object
@@ -1793,6 +1856,26 @@ components:
           additionalProperties: true
           example:
             birthday: "2025-05-12"
+    Username:
+      description: The representation of a username of the user
+      type: object
+      properties:
+        id:
+          description: The ID of the user
+          allOf:
+            - $ref: '#/components/schemas/UUID4'
+        created_at:
+          description: Time of creation of the username
+          type: string
+          format: date-time
+        updated_at:
+          description: Time of last update of the username
+          type: string
+          format: date-time
+        username:
+          description: The username of the user
+          type: string
+          example: john_doe
     Emails:
       type: array
       items:
@@ -1812,58 +1895,111 @@ components:
           is_primary:
             description: Indicates it's the primary email address.
             type: boolean
+          identity:
+            allOf:
+              - $ref: '#/components/schemas/Identity'
+              - deprecated: true
+              - description: Deprecated, use `user.identities` instead.
+          identities:
+            allOf:
+              - $ref: '#/components/schemas/Identities'
+              - deprecated: true
+              - description: Deprecated, use `user.identities` instead.
       example:
         - id: 5333cc5b-c7c4-48cf-8248-9c184ac72b65
           address: john.doe@example.com
           is_verified: true
           is_primary: false
+    WebauthnCredential:
+      type: object
+      properties:
+        aaguid:
+          type: string
+          format: uuid
+        attestation_type:
+          type: string
+          enum:
+            - none
+            - packed
+            - tpm
+            - android-key
+            - android-safetynet
+            - fido-u2f
+            - apple
+        backup_eligible:
+          type: boolean
+        backup_state:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        id:
+          type: string
+          format: uuid
+        last_used_at:
+          type: string
+          format: date-time
+        mfa_only:
+          type: boolean
+        name:
+          type: string
+        public-key:
+          type: string
+        transports:
+          type: array
+          items:
+            type: string
+            enum:
+              - ble
+              - internal
+              - nfc
+              - usb
+      example:
+          id: "5333cc5b-c7c4-48cf-8248-9c184ac72b65"
+          name: "iCloud"
+          public_key: "pQECYyagASFYIBblARCP_at3cmprjzQN1lJ..."
+          attestation_type: "packed"
+          aaguid: "01020304-0506-0708-0102-030405060708"
+          last_used_at: "2026-02-24T21:40:36.26936Z"
+          created_at: "2026-02-24T21:40:36.26936Z"
+          transports: [
+            "internal"
+          ]
+          backup_eligible: true
+          backup_state: true
+          mfa_only: false
     WebauthnCredentials:
       description: 'A list of WebAuthn credentials'
       type: array
       items:
-        type: object
-        properties:
-          id:
-            description: The ID of the Webauthn credential
-            type: string
-            format: base64url
-            example: Meprtysj5ZZrTlg0qiLbsZ168OtQMeGVAikVy2n1hvvG...
-          name:
-            description: The name of the credential. Can be updated by the user.
-            type: string
-          public_key:
-            description: The public key assigned to the credential.
-            type: boolean
-          aaguid:
-            description: The AAGUID of the authenticator.
-            type: boolean
-          transports:
-            description: Transports which may be used by the authenticator.
-            type: array
-            items:
-              type: string
-              enum:
-                - usb
-                - nfc
-                - ble
-                - internal
-          last_used_at:
-            description: The time when the credential was used last
-            type: string
-            format: date-time
-          created_at:
-            description: Time of creation of the credential
-            type: string
-            format: date-time
-        required: [id, public_key, aaguid, transports, created_at]
+        $ref: '#/components/schemas/WebauthnCredential'
       example:
-        - id: 5333cc5b-c7c4-48cf-8248-9c184ac72b65
+        - id: "5333cc5b-c7c4-48cf-8248-9c184ac72b65"
           name: "iCloud"
           public_key: "pQECYyagASFYIBblARCP_at3cmprjzQN1lJ..."
-          aaguid: "adce0002-35bc-c60a-648b-0b25f1f05503"
-          transports:
-            - internal
-          created_at: "022-12-06T21:26:06.535106Z"
+          attestation_type: "packed"
+          aaguid: "01020304-0506-0708-0102-030405060708"
+          last_used_at: "2026-02-24T21:40:36.26936Z"
+          created_at: "2026-02-24T21:40:36.26936Z"
+          transports: [
+            "internal"
+          ]
+          backup_eligible: true
+          backup_state: true
+          mfa_only: false
+        - id: "f826013e-e7e3-4366-a6d8-9359effc8cdd"
+          name: "Yubikey Bio"
+          public_key: "aNMEEyadASFYIBblARCP_at3cmp4gg3zQN1lJ..."
+          attestation_type: "packed"
+          aaguid: "90636e1f-ef82-43bf-bdcf-5255f139d12f"
+          last_used_at: "2026-02-24T21:40:36.26936Z"
+          created_at: "2026-02-24T21:40:36.26936Z"
+          transports: [
+            "usb"
+          ]
+          backup_eligible: true
+          backup_state: false
+          mfa_only: true
     WebauthnLoginResponse:
       description: 'Response after a successful login with webauthn'
       type: object
