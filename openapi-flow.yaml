@@ -961,6 +961,25 @@ components:
       description: Contains the claims of a user as they appear in the payload of session JWTs.
       type: object
       properties:
+        amr:
+          description: Authentication Method References, JSON array of strings that are identifiers for authentication methods used in the authentication.
+          type: array
+          items:
+            type: string
+            enum:
+              - pwd
+              - passkey
+              - otp
+              - ext:<provider>
+              - totp
+              - security_key
+            description: |
+              - `pwd` => password
+              - `passkey` => passkey
+              - `otp` => email passcode
+              - `ext:<provider>` => thirdparty provider, where <provider> is the internal provider ID, e.g. `ext:microsoft`
+              - `totp` => 2FA authenticator app
+              - `security_key` => 2FA security key
         subject:
           type: string
           format: uuid4

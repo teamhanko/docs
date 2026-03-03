@@ -1779,7 +1779,7 @@ components:
           allOf:
             - $ref: '#/components/schemas/UUID4'
         amr:
-          description: "Authentication Method References, JSON array of strings that are identifiers for authentication methods used in the authentication."
+          description: Authentication Method References, JSON array of strings that are identifiers for authentication methods used in the authentication.
           type: array
           items:
             type: string
