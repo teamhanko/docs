@@ -2195,10 +2195,19 @@ components:
           properties:
             auth_app_set_up:
               type: boolean
+              description: Indicates whether the user has set up an authenticator app for 2FA.
             totp_enabled:
               type: boolean
+              description: |
+                Indicates whether 2FA via authenticator app is enabled on this tenant. 
+                
+                To check whether a user has set up an authenticator app for 2FA, see [`payload.user.mfa_config.app_auth_set_up`](#response-one-of-1-payload-user-mfa-config-app-auth-set-up).
             security_keys_enabled:
               type: boolean
+              description: |
+                Indicates whether 2FA via security keys is enabled on this tenant.
+                
+                To check whether a user has enrolled security keys for 2FA, see [`payload.user.security_keys`](#response-one-of-1-payload-user-security-keys).
         created_at:
           type: string
           format: date-time
