@@ -1183,6 +1183,10 @@ components:
           description: Time of last update of the username
           type: string
           format: date-time
+        username:
+          description: The username of the user
+          type: string
+          example: john_doe_123
     WebAuthnCredential:
       type: object
       required:
