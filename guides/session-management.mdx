@@ -14,14 +14,14 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
 **What This Guide Covers**: This guide demonstrates session management in applications using Hanko for authentication. You'll learn to configure session lifetimes, implement session validation, handle multiple concurrent sessions, and customize session tokens with additional claims.
 
-**Key Technologies**: 
+**Key Technologies**:
 - JSON Web Tokens (JWT)
 - Session Cookies
 - JWT Signature Validation
 - Token Customization
 - Hanko Cloud Console
 
-**Prerequisites**: 
+**Prerequisites**:
 - Active Hanko project configured
 - Understanding of JWT concepts
 - Basic knowledge of authentication flows
@@ -68,6 +68,17 @@ Validate sessions manually using the `sessions/validate` [endpoint](/api-referen
 The validation response includes session validity status, token expiry information, and associated user claims.
 
 Alternatively, use the Hanko Frontend SDK for session validation. See [Using the Frontend SDK](/guides/hanko-elements/using-frontend-sdk#sessions) for implementation details.
+
+### Authentication methods used
+
+When validating a session, the response includes the JWT `claims`. These claims contain an `amr` array
+(**Authentication Method References**) that allows you to determine how the current session was authenticated.
+
+- `amr` can contain multiple values (for example, a password login followed by a second factor).
+- Third-party logins are represented as `ext:<provider>`.
+
+The `amr` claim is also present in the JWT payload itself. See [JWT payload](#param-amr) for the list of supported
+`amr` values in both JWTs and session validation responses.
 
 ## Session termination
 
@@ -311,6 +322,7 @@ dot (`.`). The JWT payload contains the claims about a user.
 
 ```json
 {
+  "amr": [ "pwd", "totp" ],
   "aud": [ "example.com" ],
   "email": {
     "address": "user@example.com",
@@ -324,6 +336,21 @@ dot (`.`). The JWT payload contains the claims about a user.
   "username": "johndoe"
 }
 ```
+
+<ResponseField name="amr" type="string[]">
+    Authentication Method References, JSON array of strings that are identifiers for authentication methods used in the authentication.
+
+    Available options:
+        - `pwd` => password
+        - `passkey` => passkey
+        - `otp` => email passcode
+        - `ext:<provider>` => thirdparty provider, where `<provider>` is the internal provider ID, e.g. `ext:microsoft`
+        - `totp` => 2FA authenticator app
+        - `security_key` => 2FA security key
+
+    Can contain multiple values. The order is generally, but not guaranteed, as follows: primary authentication methods
+    (`pwd`, `passkey`, `otp`, `ext:<provider>`) first, then follow 2FA methods (`totp`, `security_key`).
+</ResponseField>
 
 <ResponseField name="aud" type="string[]">
     The audience for which the JWT was created. It specifies the intended recipient or system that should accept this
