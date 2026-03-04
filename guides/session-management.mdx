@@ -14,14 +14,14 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
 **What This Guide Covers**: This guide demonstrates session management in applications using Hanko for authentication. You'll learn to configure session lifetimes, implement session validation, handle multiple concurrent sessions, and customize session tokens with additional claims.
 
-**Key Technologies**: 
+**Key Technologies**:
 - JSON Web Tokens (JWT)
 - Session Cookies
 - JWT Signature Validation
 - Token Customization
 - Hanko Cloud Console
 
-**Prerequisites**: 
+**Prerequisites**:
 - Active Hanko project configured
 - Understanding of JWT concepts
 - Basic knowledge of authentication flows
@@ -198,6 +198,10 @@ Each template has access to user data via the `.User` field, which includes:
     - `.User.Email.Address`: The email address (string)
     - `.User.Email.IsPrimary`: Indicates if the email is the primary address (boolean)
     - `.User.Email.IsVerified`: Indicates if the email is verified (boolean)
+- `.User.FamilyName`: The user's family name (string, optional)
+- `.User.GivenName`: The user's given name (string, optional)
+- `.User.Name`: The user's full name (string, optional)
+- `.User.Picture`: The user's profile picture URL (string, optional)
 - `.User.Username`: The user's username (string, optional)
 - `.User.Metadata`: The user's public and unsafe metadata (optional)
     - `.User.Metadata.Public`: The user's public metadata (object)
