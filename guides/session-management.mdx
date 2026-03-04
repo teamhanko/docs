@@ -348,7 +348,7 @@ dot (`.`). The JWT payload contains the claims about a user.
         - `totp` => 2FA authenticator app
         - `security_key` => 2FA security key
 
-    Can contain multiple values. The order generally is: primary authentication methods
+    Can contain multiple values. The order is generally, but not guaranteed, as follows: primary authentication methods
     (`pwd`, `passkey`, `otp`, `ext:<provider>`) first, then follow 2FA methods (`totp`, `security_key`).
 </ResponseField>
 
