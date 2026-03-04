@@ -260,7 +260,8 @@
                           "api-reference/admin/user-management/get-a-list-of-users",
                           "api-reference/admin/user-management/create-a-new-user",
                           "api-reference/admin/user-management/get-a-user-by-id",
-                          "api-reference/admin/user-management/delete-a-user-by-id"
+                          "api-reference/admin/user-management/delete-a-user-by-id",
+                          "api-reference/admin/user-management/update-a-user-by-id"
                         ]
                       },
                       {
