@@ -1082,6 +1082,7 @@ paths:
     get:
       summary: 'Get a user by ID'
       operationId: listUser
+      deprecated: true
       tags:
         - User Management
       security:
