@@ -1806,7 +1806,8 @@ components:
       type: object
       properties:
         id:
-          description: The ID of the user
+          description: The ID of the user. Deprecated, use `user_id` instead.
+          deprecated: true
           allOf:
             - $ref: '#/components/schemas/UUID4'
         user_id:
