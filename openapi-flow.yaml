@@ -150,6 +150,15 @@ components:
       name: X-Language
       schema:
         type: string
+        enum:
+          - bn
+          - de
+          - en
+          - fr
+          - it
+          - nl
+          - pt-BR
+          - zh
       description: |
         Used to internationalize outgoing emails (e.g. for email verification, recovery, etc.). 
 
@@ -159,6 +168,7 @@ components:
           - "en" (English) 
           - "fr" (French) 
           - "it" (Italian) 
+          - "nl" (Dutch)
           - "pt-BR" (Brazilian Portuguese), 
           - "zh" (Chinese)
         
