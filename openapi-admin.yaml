@@ -299,7 +299,7 @@ paths:
         - in: query
           name: meta_source_ip
           schema:
-            allOf:
+            oneOf:
               - type: string
                 format: ipv4
               - type: string
