@@ -1069,7 +1069,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateUserResponse'
+                $ref: '#/components/schemas/CreateUserResponseObject'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
@@ -1726,7 +1726,7 @@ components:
                 type: string
                 format: base64url
                 example: Meprtysj5ZZrTlg0qiLbsZ168OtQMeGVAikVy2n1hvvG...
-    CreateUserResponse:
+    CreateUserResponseObject:
       type: object
       properties:
         user_id:
