@@ -889,7 +889,7 @@ paths:
       summary: Delete the password of a user
       security:
         - BearerApiKeyAuth: [ ]
-      operationId: get-users-password
+      operationId: delete-users-password
       parameters:
         - $ref: "#/components/parameters/Id"
       responses:
