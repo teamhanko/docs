@@ -1443,7 +1443,7 @@ components:
                 - type: public-key
                   alg: -7
             timeout:
-              type: number
+              type: integer
               format: int64
               example: 60000
             authenticatorSelection:
@@ -1494,7 +1494,7 @@ components:
               format: base64url
               example: qgOI+0KpGnl9NOqaT6dfsYvi96R87LgpErnvePeOgSU=
             timeout:
-              type: number
+              type: integer
               format: int64
               example: 60000
             rpId:
