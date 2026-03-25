@@ -1825,24 +1825,41 @@ components:
           type: string
           format: date-time
         passkeys:
-          $ref: "#/components/schemas/WebauthnCredential"
+          type: array
+          items:
+            $ref: "#/components/schemas/WebauthnCredential"
+          example:
+            - id: "5333cc5b-c7c4-48cf-8248-9c184ac72b65"
+              name: "iCloud"
+              public_key: "pQECYyagASFYIBblARCP_at3cmprjzQN1lJ..."
+              attestation_type: "packed"
+              aaguid: "01020304-0506-0708-0102-030405060708"
+              last_used_at: "2026-02-24T21:40:36.26936Z"
+              created_at: "2026-02-24T21:40:36.26936Z"
+              transports: [
+                "internal"
+              ]
+              backup_eligible: true
+              backup_state: true
+              mfa_only: false
         security_keys:
-          allOf:
-            - $ref: "#/components/schemas/WebauthnCredential"
-            - example:
-                id: "f826013e-e7e3-4366-a6d8-9359effc8cdd"
-                name: "Yubikey Bio"
-                public_key: "aNMEEyadASFYIBblARCP_at3cmp4gg3zQN1lJ..."
-                attestation_type: "packed"
-                aaguid: "90636e1f-ef82-43bf-bdcf-5255f139d12f"
-                last_used_at: "2026-02-24T21:40:36.26936Z"
-                created_at: "2026-02-24T21:40:36.26936Z"
-                transports: [
-                  "usb"
-                ]
-                backup_eligible: true
-                backup_state: false
-                mfa_only: true
+          type: array
+          items:
+            $ref: "#/components/schemas/WebauthnCredential"
+          example:
+            - id: "f826013e-e7e3-4366-a6d8-9359effc8cdd"
+              name: "Yubikey Bio"
+              public_key: "aNMEEyadASFYIBblARCP_at3cmp4gg3zQN1lJ..."
+              attestation_type: "packed"
+              aaguid: "90636e1f-ef82-43bf-bdcf-5255f139d12f"
+              last_used_at: "2026-02-24T21:40:36.26936Z"
+              created_at: "2026-02-24T21:40:36.26936Z"
+              transports: [
+                "usb"
+              ]
+              backup_eligible: true
+              backup_state: false
+              mfa_only: true
         metadata:
           $ref: "#/components/schemas/UserMetadata"
         name:
@@ -1975,20 +1992,6 @@ components:
               - internal
               - nfc
               - usb
-      example:
-          id: "5333cc5b-c7c4-48cf-8248-9c184ac72b65"
-          name: "iCloud"
-          public_key: "pQECYyagASFYIBblARCP_at3cmprjzQN1lJ..."
-          attestation_type: "packed"
-          aaguid: "01020304-0506-0708-0102-030405060708"
-          last_used_at: "2026-02-24T21:40:36.26936Z"
-          created_at: "2026-02-24T21:40:36.26936Z"
-          transports: [
-            "internal"
-          ]
-          backup_eligible: true
-          backup_state: true
-          mfa_only: false
     WebauthnCredentials:
       description: 'A list of WebAuthn credentials'
       type: array
