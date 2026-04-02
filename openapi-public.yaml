@@ -755,7 +755,9 @@ paths:
       tags:
         - Session Management
       summary: Validate a session
-      description: Validate a session using a cookie header or an authorization header.
+      description: |
+        Validate a session using a cookie header or an authorization header.
+        This is a passive check that does not update the session's internal last activity timestamp.
       security:
         - CookieAuth: [ ]
         - BearerTokenAuth: [ ]
@@ -770,7 +772,10 @@ paths:
       tags:
         - Session Management
       summary: Validate a session
-      description: Validate a session using a session token in a request body.
+      description: |
+        Validate a session using a session token in a request body.
+        This endpoint updates the session's internal last activity timestamp. This extends the idle timeout window
+        if configured).
       requestBody:
         content:
           application/json:
@@ -1262,6 +1267,12 @@ components:
                 deprecated: true
               claims:
                 $ref: '#/components/schemas/JWTClaims'
+              idle_expires_at:
+                description: |
+                  Timestamp (in UTC) indicating when the session will expire due to inactivity, assuming no further activity occurs before this time.
+                  Only present when idle timeout is configured. The value is capped to the JWT expiration time.
+                type: string
+                format: date-time
             required:
               - isValid
     BadRequest:
