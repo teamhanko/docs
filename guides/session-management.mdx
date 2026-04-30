@@ -98,6 +98,30 @@ Configure session duration:
 2. Navigate to `Settings > Session`
 3. Set your desired `Session duration` and click `Save`
 
+
+### Limiting idle session timeout
+
+You can configure sessions to expire after a period of inactivity by setting `idle_timeout`.
+When an idle timeout is configured, session validation responses include an `idle_expires_at` timestamp. This timestamp
+indicates when the session will expire if it is not used again before then.
+The session becomes invalid if it has exceeded the configured idle timeout.
+
+The `idle_expires_at` value is separate from the JWT `exp` claim:
+
+- `exp` defines the absolute lifetime of the session token.
+- `idle_expires_at` defines the inactivity-based expiration time.
+
+Only the `POST` session validation [endpoint](/api-reference/public/session-management/validate-a-session-1) renews the
+session's idle timeout. It updates the session's last-used timestamp and extends `idle_expires_at` accordingly.
+
+The `GET` session validation [endpoint](/api-reference/public/session-management/validate-a-session) does not renew the idle timeout.
+
+Configure session idle timeouts:
+
+1. Log in to Hanko Cloud and select your project
+2. Navigate to `Settings` > `Session`
+3. Set your desired `Idle timeout` and click `Save`.
+
 ### Limiting concurrent sessions
 
 Sessions terminate automatically when exceeding the allowed concurrent session limit. Hanko defaults to 5 concurrent sessions - creating a new session invalidates the oldest existing session.
