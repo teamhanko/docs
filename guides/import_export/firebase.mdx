@@ -1,12 +1,12 @@
 ---
 sidebarTitle: Firebase user migration
-title: Migrate Users from Firebase Authentication
+title: Migrate Users from Firebase
 description: Learn how to migrate users exported from Firebase with the Firebase CLI to Hanko.
 ---
 
 ## Overview
 
-Hanko supports migrating users from Firebase Authentication while allowing them to continue signing in with their existing passwords.
+Hanko supports migrating users from Firebase while allowing them to continue signing in with their existing passwords.
 
 During migration, user accounts exported from Firebase are converted into a format that can be imported into Hanko. Password information is preserved in a way that enables Hanko to verify Firebase Scrypt password hashes during authentication, eliminating the need for users to reset their passwords after migration.
 
@@ -14,7 +14,7 @@ During migration, user accounts exported from Firebase are converted into a form
 
 The migration consists of four steps:
 
-1. Export users from Firebase Authentication
+1. Export users from Firebase
 2. Export your Firebase project's password hash parameters
 3. Convert the exported users into Hanko import data
 4. Import the converted users into Hanko
