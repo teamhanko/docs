@@ -1,0 +1,171 @@
+---
+sidebarTitle: Firebase user migration
+title: Migrate Users from Firebase Authentication
+description: Learn how to migrate users exported from Firebase with the Firebase CLI to Hanko.
+---
+
+## Overview
+
+Hanko supports migrating users from Firebase Authentication while allowing them to continue signing in with their existing passwords.
+
+During migration, user accounts exported from Firebase are converted into a format that can be imported into Hanko. Password information is preserved in a way that enables Hanko to verify Firebase Scrypt password hashes during authentication, eliminating the need for users to reset their passwords after migration.
+
+## How It Works
+
+The migration consists of four steps:
+
+1. Export users from Firebase Authentication
+2. Export your Firebase project's password hash parameters
+3. Convert the exported users into Hanko import data
+4. Import the converted users into Hanko
+
+After completing these steps, you can verify the migration by signing in with an imported user.
+
+## Prerequisites
+
+Before starting, make sure you have:
+
+- A Firebase project with Authentication enabled
+- The [Firebase CLI](https://firebase.google.com/docs/cli#install_the_firebase_cli) installed and authenticated
+
+Depending on your preferred execution method for the conversion of Firebase users you also need one of the following
+sets of prerequisites:
+
+<Tabs>
+    <Tab title={"Docker"}>
+        - [Docker](https://www.docker.com/) installed and running
+    </Tab>
+    <Tab title={"From Source"}>
+        - [Go](https://go.dev/) (1.21+ recommended)
+        - [Git](https://git-scm.com/) (to clone the Hanko repository)
+        - the cloned [Hanko repository](https://github.com/teamhanko/hanko):
+            ```bash
+            git clone https://github.com/teamhanko/hanko.git
+            cd hanko
+            ```
+    </Tab>
+</Tabs>
+
+## Step 1. Export users from Firebase
+
+In the [Firebase Console](https://console.firebase.google.com) select the project you want to import users from.
+Find your project's ID on the top of the main `Project Overview`. Export your Firebase users using the Firebase CLI's
+[`auth:export`](https://firebase.google.com/docs/cli/auth#auth-export) command:
+
+```bash
+firebase auth:export firebase-users.json --project <project-id>
+```
+
+This generates a file containing Firebase Authentication users and password hashes.
+
+## Step 2. Export Firebase hash config
+
+1. In the Firebase console, go to the `Authentication` section of your project.
+2. Click the three vertical dots on the top right of the users table and select `Password hash parameters`
+
+<Frame>
+    <img
+    src="/images/import-export-users/firebase/hash-config.png"
+    alt="Get Firebase project hash config"
+    width="500"
+    style={{ borderRadius: "0.5rem" }}
+    />
+</Frame>
+
+3. Copy what looks like a JSON "object" (don't include the `hash_config` string), and make it valid JSON:
+
+    ```json
+    {
+        "algorithm": "SCRYPT",
+        "base64_signer_key": "...",
+        "base64_salt_separator": "...",
+        "rounds": 8,
+        "mem_cost": 14
+    }
+    ```
+
+    Save the file (we will refer to it as `hash-config.json` in the rest of the guide).
+
+## Step 3. Convert Firebase users
+
+To convert your Firebase users, you can use either Docker or Go. In a directory containing the exported firebase
+user file and the hash config file, run:
+
+<Tabs>
+    <Tab title={"Docker"}>
+
+```bash
+docker run --rm \
+-v "$(pwd):/data" \
+ghcr.io/teamhanko/hanko:latest \
+user convert firebase \
+--input=/data/firebase-users.json \
+--config=/data/hash-config.json \
+--output=/data/hanko-import.json \
+--dlq-output=/data/firebase-dlq.jsonl
+```
+
+    </Tab>
+    <Tab title={"Go (from source)"}>
+
+```bash
+go run main.go user convert firebase \
+--input="./firebase-users.json" \
+--config="./hash-config.json"
+```
+
+    </Tab>
+</Tabs>
+
+## Step 4. Import users into Hanko
+
+Import the file (`hanko-import.json`) as described in
+[Import users](/guides/import_export/import-export-users#import-users).
+
+## Caveats
+
+### File size limits
+
+Firebase does not provide a fixed limit for the size of user export files, and export size depends on the number of
+users in the project.
+
+Hanko supports importing user files up to ~**50 MB** in size.
+
+If the converted import file exceeds this limit, it must be split into smaller chunks before importing.
+The conversion utility does not automatically split or paginate output files.
+
+## Troubleshooting
+
+### Conversion failures
+
+Failed conversions are written to a Dead Letter Queue (DLQ) file (default `firebase-dlq.jsonl`).
+
+Each line contains:
+
+* The error reason
+* The original Firebase user record
+
+### Authentication fails after migration
+
+Check:
+
+1. Correct Firebase hash config was used
+2. User exists in `hanko-import.json`
+3. User is not present in `firebase-dlq.jsonl`
+
+## `firebase` command API
+
+```bash
+Convert user data exported via Firebase CLI to Hanko import data
+
+Usage:
+  hanko user convert firebase [flags]
+
+Flags:
+      --config string   Firebase hash config file (JSON)
+      --dlq string      DLQ file containing user conversion errors (NDJSON) (default "firebase-dlq.jsonl")
+  -h, --help            help for firebase
+      --input string    Firebase export input file (JSON)
+      --output string   Hanko import output file (JSON) (default "hanko-import.json")
+      --workers int     Number of workers (default 12)
+```
