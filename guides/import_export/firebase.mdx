@@ -102,7 +102,7 @@ user convert firebase \
 --input=/data/firebase-users.json \
 --config=/data/hash-config.json \
 --output=/data/hanko-import.json \
---dlq-output=/data/firebase-dlq.jsonl
+--dlq=/data/firebase-dlq.jsonl
 ```
 
     </Tab>
@@ -111,7 +111,9 @@ user convert firebase \
 ```bash
 go run main.go user convert firebase \
 --input="./firebase-users.json" \
---config="./hash-config.json"
+--config="./hash-config.json" \
+--output="./hanko-import.json" \
+--dlq="./firebase-dlq.jsonl"
 ```
 
     </Tab>
