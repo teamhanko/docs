@@ -104,7 +104,13 @@
                   "guides/enterprise-sso/okta"
                 ]
               },
-              "guides/import-export-users",
+              {
+                "group": "Import/Export",
+                "pages": [
+                  "guides/import_export/import-export-users",
+                  "guides/import_export/firebase"
+                ]
+              },
               "guides/webhooks",
               {
                 "group": "Email delivery",
