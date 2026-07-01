@@ -66,16 +66,17 @@ The following Public API endpoints have been deprecated and will be removed in v
 
 All deprecated endpoints have been replaced with the new **Flow API**, which provides a unified and streamlined authentication interface.
 
-Check out the [Understanding the Flow API guide](/using-the-api/understanding-the-flow-api) and [Build a custom login flow guide](/guides/authentication-methods/build-custom-login-flow) for more information about building your own custom UI.
+Check out the [Understanding the Flow API guide](/using-the-api/understanding-the-flow-api) and [Build a custom login flow guide](/using-the-api/build-a-custom-login-page) for more information about building your own custom UI.
 
 ### Action Required
 
 To ensure a smooth transition:
 
-1. Review your current implementation and check for any usage of deprecated API endpoints or `hanko-elements` versions older than 1.0.0.
-2. When using any of the deprecated endpoints, migrate to the Flow API before the May 26, 2026 release date. Refer to the [Flow API documentation](/api-reference/flow) for implementation details.
-3. When using `hanko-elements` versions older than 1.0.0, migrate to the latest version before the May 26, 2026 release date.
-4. Test your integration thoroughly in a development environment.
+1. Review your current implementation and check for any usage of deprecated API endpoints, SDK functions, or `hanko-elements` versions older than 1.0.0.
+2. When using any of the deprecated endpoints, migrate to the Flow API before the v3.0.0 release date. Refer to the [Flow API documentation](/api-reference/flow) for implementation details.
+3. When using `hanko-elements` versions older than 1.0.0, migrate to the latest version before the v3.0.0 release date.
+4. Replace all usage of `getUser()` with `getCurrentUser()`.
+5. Test your integration thoroughly in a development environment.
 
 <Note>
   Need assistance with your migration? Contact our [support team](https://www.hanko.io/support) or visit our [community Discord](/community-support) for help.
