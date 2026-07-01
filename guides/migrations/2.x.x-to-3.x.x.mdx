@@ -57,7 +57,8 @@ The following Public API endpoints have been deprecated and will be removed in v
 ## Migration Path
 
 <Note>
-    Exception: If your integration only uses `hanko-elements` version **1.0.0 or later** and does not use the Hanko API directly, no migration changes are required.
+    Exception: If your integration only uses `hanko-elements` version **1.0.0 or later** and does not use the Hanko API directly, no migration changes are required. 
+    The only exception is if you use the SDK's getUser() function. In that case, you must migrate to the getCurrentUser() function.
 </Note>
 
 All deprecated endpoints have been replaced with the new **Flow API**, which provides a unified and streamlined authentication interface.
