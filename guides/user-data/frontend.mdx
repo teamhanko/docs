@@ -31,7 +31,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
 ## Get user data from API
 
-To access user data in your frontend application, use the `hanko.getUser()` method from the [hanko-frontend-sdk](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
+To access user data in your frontend application, use the `hanko.getCurrentUser()` method from the [hanko-frontend-sdk](https://www.npmjs.com/package/@teamhanko/hanko-frontend-sdk)
 (also available via [hanko-elements](https://www.npmjs.com/package/@teamhanko/hanko-elements)).
 
 ```js
@@ -41,7 +41,7 @@ const hankoApi = "<YOUR_HANKO_API_URL>";
 const hanko = new Hanko(hankoApi);
 
 // Fetches the current user's profile information
-const user = await hanko.getUser();
+const user = await hanko.getCurrentUser();
 console.log("User profile:", user);
 // Example output:
 // {

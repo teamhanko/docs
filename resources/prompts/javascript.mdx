@@ -140,7 +140,7 @@ Use only the **current** approach from Hanko's documentation:
 
     // Get current user data
     try {
-        const user = await hanko.getUser();
+        const user = await hanko.getCurrentUser();
         console.log("User ID:", user.user_id);
         console.log("Email:", user.emails?.[0]?.address);
         
