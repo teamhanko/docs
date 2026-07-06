@@ -391,7 +391,7 @@ export default function Dashboard() {
 
   useEffect(() => setHanko(new Hanko(hankoApi)), []);
     useEffect(() => {
-      hanko?.getUser()
+      hanko?.getCurrentUser()
         .then((user) => {
           console.log("User profile:", user);// Log user Profile
           console.log(user.emails?.[0]?.address);

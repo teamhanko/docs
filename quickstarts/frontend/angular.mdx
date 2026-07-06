@@ -518,7 +518,7 @@ Lets update our dashboard page.
     ngOnInit(): void {
       const hanko = new Hanko(this.hankoApi);
       //Get user to get the user information
-      hanko.getUser().then((user: any) => {
+      hanko.getCurrentUser().then((user: any) => {
         this.email = user.emails?.[0]?.address || 'Unknown';
         this.id = user.user_id || 'Unknown';
       }).catch(err => console.error('Failed to fetch user', err));

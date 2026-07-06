@@ -301,8 +301,8 @@ Lets update the `dashboard` page to log some of the information from the User An
 
     async function fetchUserData() {
       const hanko = new Hanko(hankoApi);
-      const _email = (await hanko.getUser()).emails?.[0]?.address;
-      const _id = (await hanko.getUser()).user_id;
+      const _email = (await hanko.getCurrentUser()).emails?.[0]?.address;
+      const _id = (await hanko.getCurrentUser()).user_id;
       return { email: _email, id: _id };
     }
 

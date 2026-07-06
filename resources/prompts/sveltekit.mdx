@@ -195,7 +195,7 @@ const authenticatedUser = async (event: RequestEvent) => {
 
   async function fetchUserData() {
     const hanko = new Hanko(hankoApi);
-    const user = await hanko.getUser();
+    const user = await hanko.getCurrentUser();
     email = user.emails?.[0]?.address || '';
     userId = user.user_id || '';
   }
