@@ -1,0 +1,144 @@
+---
+sidebarTitle: Authentication
+title: Authenticate with a device using the Hanko FIDO UAF Client
+description: Authenticate with a previously registered device on-device using the Hanko FIDO UAF Client and the Hanko API.
+---
+
+In order to authenticate with a device using the Hanko FIDO UAF Client and the Hanko API, the following three steps must be performed:
+
+- **Step 1**: Retrieve an authentication request
+- **Step 2**: Pass the authentication request to the Hanko FIDO UAF Client
+- **Step 3**: Send the public key to the Hanko API
+
+<Frame caption="Sequence diagram for the UAF authentication flow with the Hanko FIDO UAF Client for Android">
+  <img
+    src="/images/hanko-authenticator/quickstart/uaf-client-authentication-flow.svg"
+    alt="Hanko FIDO UAF Client authentication flow"
+  />
+</Frame>
+
+## Step 1: Retrieve an authentication request
+
+The first step consists of initiating the authentication by issuing a `POST` request to the UAF
+endpoint (`{API_URL}/v1/uaf/requests`) of the Hanko API. The `POST` request body must include the appropriate
+operation type (i.e. `AUTH` for authentication), a `userId` and a `username`. The userId will be used to map a public key
+credential generated during registration to a specific user account with the relying party.
+
+As mentioned in the [prerequisites](/hanko-authenticator/quickstart/uaf-client), you need an HTTP client
+to make a request to your backend. In your backend you can use one of the server-side Hanko SDKs to initiate
+the authentication with the Hanko API. This request targets a secured endpoint of the API, so you will need an
+API Key ID and an API Key (see the [prerequisites](/hanko-authenticator/quickstart/uaf-client)).
+
+<CodeGroup>
+```bash httpie
+http POST {API_URL}/v1/uaf/requests \
+ 'Authorization:secret pasteYourApiKeySecretHere' \
+ 'operation=AUTH' \
+ 'username=example@example.com' \
+ 'userId=exampleId'
+```
+
+```bash cURL
+curl -X POST "{API_URL}/v1/uaf/requests" \
+-H 'Authorization:secret pasteYourApiKeyHere' \
+-H 'Content-Type: application/json' \
+-d '{"operation": "AUTH", "username":"example@example.com", "userId":"exampleId" }'
+```
+</CodeGroup>
+
+The API will respond with a Hanko request in a `PENDING` status. It
+contains the authentication `request` issued by the FIDO server which must be passed to the Hanko FIDO UAF Client in order
+to trigger authentication through an authentication gesture.
+
+```json
+{
+  "id": "<requestId>",
+  "request": "<fido-uaf-request>",
+  "operation": "AUTH",
+  "username": "example@example.com",
+  "userId": "exampleId",
+  "status": "PENDING",
+  ...
+}
+```
+
+Remember to cache the returned Hanko request because the request `id` will be required to finalize the registration
+in Step 3.
+
+## Step 2: Pass the authentication request to the Hanko FIDO UAF Client
+
+<Tabs>
+  <Tab title="Android">
+    Extract the `request` value from the Hanko request you retrieved in the previous step and use Android's Intent mechanism to
+    pass it to the Hanko FIDO UAF Client. This will start an activity which will trigger the prompt for an authentication
+    gesture. To retrieve the activity result, use the [`startActivityForResult()`](https://developer.android.com/reference/android/app/Activity#startActivityForResult(android.content.Intent,%20int,%20android.os.Bundle))
+    API.
+
+    ```java
+    Intent intent = new Intent(context, io.hanko.fidouafclient.FidoUafClient.class);
+    intent.setType("application/fido.uaf_client+json");
+    intent.putExtra("UAFIntentType", "UAF_OPERATION");
+    intent.putExtra("channelBindings", "{}");
+    intent.putExtra("message", "<fido-uaf-request>");
+
+    startActivityForResult(intent, REQUEST_CODE);
+    ```
+
+    After the user accepted or denied the request by performing an authentication gesture, you can process the result
+    using the [`onActivityResult`](https://developer.android.com/reference/android/app/Activity#onActivityResult(int,%20int,%20android.content.Intent))
+    API.
+
+    ```java
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if(resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+    		short errorCode = data.getShortExtra("errorCode", (short) 0xFF);
+    		if(errorCode == 0x00) { // errorCode 0x00 means success
+    			try {
+    				JSONObject jsonObject = new JSONObject(data.getStringExtra("message")); // 1.
+                    String uafResponse = jsonObject.getString("uafProtocolMessage"); // 1.
+    				// verify uafResponse
+    			} catch(JSONException ex) {
+    				// TODO
+    			}
+    		} else {
+    			// some error occured, use errorCode for determination
+    		}
+    	}
+    }
+    ```
+
+    Extract the response (1) from the `Intent` data. The extracted value will be used in the
+    next step to verify the authenticator response.
+  </Tab>
+  <Tab title="iOS">
+    Extract the `request` value from the Hanko request you retrieved in the previous step and create a
+    `UAFMessage` (`<fido-uaf-request>` is the `request` value).
+
+    ```swift
+    let uafMessage = UAFMessage(uafProtocolMessage: "<fido-uaf-request>")
+    ```
+
+    Pass the `UAFMessage` to the client's `process` method.
+
+    ```swift
+    FidoClient.process(uafMessage: uafMessage) { resultMessage, error in
+    	// send resultMessage to Hanko API
+    }
+    ```
+
+    After the user accepted or denied the request by performing an authentication gesture, send the
+    authenticator response (`resultMessage`) to the Hanko API in the next step.
+  </Tab>
+</Tabs>
+
+## Step 3: Send the public key to the Hanko API
+
+To finalize the authentication by verifying the authenticator response, use an HTTP client in your app to forward the
+authenticator response along with the `requestId` to your backend. Then, use a Hanko server-side SDK to pass the
+authenticator response to the Hanko API. This request targets a secured endpoint
+so you will need an API Key ID and an API Key. Reuse a previously instantiated client instance or create one as
+described in Step 1.
+
+<Note>
+  Backend SDK examples for this step will be added once official server SDKs are available again.
+</Note>

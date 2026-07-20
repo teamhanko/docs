@@ -437,6 +437,84 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Hanko Authenticator Docs",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "hanko-authenticator/introduction",
+              "hanko-authenticator/what-is-fido-uaf",
+              "hanko-authenticator/core-components"
+            ]
+          },
+          {
+            "group": "Quickstarts",
+            "pages": [
+              {
+                "group": "Hanko Authenticator App",
+                "pages": [
+                  "hanko-authenticator/quickstart/authenticator-app",
+                  "hanko-authenticator/quickstart/authenticator-app-registration",
+                  "hanko-authenticator/quickstart/authenticator-app-authentication",
+                  "hanko-authenticator/quickstart/authenticator-app-transactions",
+                  "hanko-authenticator/quickstart/authenticator-app-de-registration"
+                ]
+              },
+              {
+                "group": "FIDO UAF Client SDK",
+                "pages": [
+                  "hanko-authenticator/quickstart/uaf-client",
+                  "hanko-authenticator/quickstart/uaf-client-registration",
+                  "hanko-authenticator/quickstart/uaf-client-authentication",
+                  "hanko-authenticator/quickstart/uaf-client-transactions",
+                  "hanko-authenticator/quickstart/uaf-client-de-registration"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "hanko-authenticator/guides/integration-overview",
+              "hanko-authenticator/guides/registration-screen",
+              "hanko-authenticator/guides/login-screen",
+              "hanko-authenticator/guides/recovery",
+              "hanko-authenticator/guides/authenticator-apps"
+            ]
+          },
+          {
+            "group": "SDKs & Plugins",
+            "pages": [
+              "hanko-authenticator/sdks/android",
+              "hanko-authenticator/sdks/ios",
+              "hanko-authenticator/sdks/keycloak-plugin"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "pages": [
+              {
+                "group": "Hanko Authenticator",
+                "pages": [
+                  "hanko-authenticator/reference/create-a-request",
+                  "hanko-authenticator/reference/get-a-request",
+                  "hanko-authenticator/reference/cancel-a-request",
+                  "hanko-authenticator/reference/validate-a-request",
+                  "hanko-authenticator/reference/get-a-qr-code"
+                ]
+              },
+              {
+                "group": "Device Management",
+                "pages": [
+                  "hanko-authenticator/reference/get-a-users-devices",
+                  "hanko-authenticator/reference/rename-a-device"
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   },

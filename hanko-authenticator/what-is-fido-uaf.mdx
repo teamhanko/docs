@@ -1,0 +1,133 @@
+---
+sidebarTitle: What is FIDO UAF?
+title: What is FIDO UAF?
+description: A high-level overview of the FIDO Universal Authentication Framework (UAF) protocol that powers the Hanko Authenticator.
+---
+
+This page provides a high-level overview of the history and background of the FIDO Universal Authentication Framework (UAF) protocol — what's behind the acronym, the motivation behind it, and the core concepts and terminology that underpin the Hanko Authenticator.
+
+## The problem with passwords
+
+Authentication is fundamental to businesses for managing access to secured resources and services. Despite the growing expansion of technologies using biometric patterns for authentication, like iris scanners or fingerprint scanners, employing a username and password scheme still remains the most widespread method for doing authentication. Passwords are not without issues, however. According to the 2020 iteration of Verizon's often-cited [Data Breach Investigation Report](https://enterprise.verizon.com/resources/reports/2020-data-breach-investigations-report.pdf), phishing and the use of stolen credentials still rank among the top threat action varieties in data breaches, making up over 40% of the total. It also concludes that:
+
+> Hacking and even breaches in general [...] are driven by credential theft. Over 80% of breaches within Hacking involve Brute force or the Use of lost or stolen credentials.
+
+Security issues of passwords also often interact with the fact that passwords turn out to be inconvenient for users. An ever-growing amount of cloud-based service offerings also potentially entails an ever-growing amount of passwords to remember, which often leads to credential reuse or the use of short, easy-to-remember passwords, making them susceptible to brute force attacks.
+
+With acknowledgement of the password problem and the rapid expansion of mobile devices and communication came solutions that envisioned the use of a second authentication step in order to provide stronger and more secure authentication. These developments resulted in the employment of One-Time-Passwords (OTPs) — short (typically 6 to 8 digit) codes that can be generated either directly on a mobile device through an app or generated on a separate remote device and sent to the user via Short-Messaging-Service (SMS). Although two-step authentication provides more security than password-only solutions, OTPs are still [vulnerable](https://krebsonsecurity.com/2018/08/reddit-breach-highlights-limits-of-sms-based-authentication/) to phishing and man-in-the-middle attacks.
+
+## Enter the FIDO Alliance
+
+<Frame>
+  <img
+    src="/images/hanko-authenticator/fido-alliance-logo.png"
+    alt="FIDO Alliance logo"
+  />
+</Frame>
+
+In 2012 PayPal, Lenovo, Nok Nok Labs, Validity Sensors, Infineon, and Agnitio founded the [FIDO Alliance](https://fidoalliance.org/), an open industry group whose primary goal was to eliminate passwords from the internet by developing an industry standard based on principles of public key cryptography, thus enabling authentication methods that are more secure and easier to use. In their own words, the Alliance's core missions are:
+
+1. Ease of use
+2. Privacy and security
+3. Standardization
+
+## FIDO UAF & FIDO U2F
+
+By 2014 the FIDO Alliance completed and published the first version of two of its major protocols: the [FIDO Universal Authentication Framework (FIDO UAF)](https://fidoalliance.org/specs/fido-uaf-v1.1-ps-20170202/fido-uaf-overview-v1.1-ps-20170202.html) and the [FIDO Universal 2nd Factor (FIDO U2F)](https://fidoalliance.org/specs/fido-uaf-v1.1-ps-20170202/fido-security-ref-v1.1-ps-20170202.html) protocol.
+
+FIDO U2F, developed by Google, Yubico, and NXP, was intended to serve as a protocol that facilitates augmenting existing password-based authentication schemes by also providing proof of possession of a separate physical hardware device (a security key) in addition to the password, using public key cryptography (digital signatures). Rather than typing a code (OTP), the user inserts a security key into their computer's USB port and taps it to verify their presence and complete the authentication process.
+
+FIDO UAF aimed at providing a generic framework for **passwordless** and **multi-factor** authentication, potentially leveraging the capabilities of a wide range of existing hardware devices (built-in or **bound** platform capabilities like fingerprint sensors, cameras, microphones, embedded TPM hardware) but also leaving open the possibility of using portable (also: **roaming**) devices not bound to any one specific device. This is the protocol the **Hanko Authenticator** and the **Hanko FIDO UAF Client** are built on.
+
+Both protocols' component architecture comprises:
+
+- a user side of the authentication process which includes:
+  - A **FIDO client**: the software component processing UAF or U2F protocol messages on a user's device. The FIDO client acts as a mediating layer between an authenticator and a relying party, and can be a browser, a desktop application, a mobile application, or a platform (i.e. an operating system like Android or iOS).
+  - An **authenticator**: the hardware device responsible for user verification and maintaining the cryptographic material.
+- a **relying party** side, i.e. the website or other entity that uses a FIDO protocol to authenticate users, which includes:
+  - The relying party's (web) server hosting the application a user wants to authenticate with.
+  - A **FIDO server**: the software component, typically deployed in the relying party's infrastructure, that meets UAF protocol server requirements.
+
+<Note>
+The FIDO UAF architecture also includes what is called an Authenticator Specific Module (ASM), which "is a software interface on top of UAF authenticators which gives a standardized way for FIDO UAF Clients to detect and access the functionality of UAF authenticators and hides internal communication complexity from FIDO UAF Client." ([Source](https://fidoalliance.org/specs/fido-uaf-v1.1-ps-20170202/fido-uaf-asm-api-v1.1-ps-20170202.html))
+</Note>
+
+The following figure depicts a simplified overview of the key components of both protocol architectures.
+
+<Frame caption="Architectural components of FIDO U2F (left) and FIDO UAF (right)">
+  <img
+    src="/images/hanko-authenticator/u2f-vs-uaf.svg"
+    alt="Architectural components of FIDO U2F and FIDO UAF"
+  />
+</Frame>
+
+### Public key cryptography
+
+Both protocols rely on the use of public key cryptography for authentication, using hardware devices as so-called authenticators on the client side to generate cryptographic key pairs. The private key is stored securely on the user's device and never transmitted over a potentially insecure channel (i.e. the internet), while the public key is supplied to and stored by the relying party. Through the use of a **challenge-response** mechanism, relying parties issue challenges which a client must respond to by signing the challenge using the private key stored on the user's device.
+
+To do so, an end-user employs the biometric capabilities of their device (a face scan or a fingerprint) or — where unavailable — a PIN or a passphrase — to **locally** unlock access to the private key on their authenticator to create the digital signature. Biometric data (or PINs/passphrases) are also never transmitted over an insecure channel, making this procedure an inherently stronger and more secure method than using passwords. This is also where the term multi-factor comes into play. The three major authentication factors are:
+
+- Knowledge — something the entity knows; e.g., passwords or challenge-response techniques
+- Ownership — something the entity possesses; e.g., U2F tokens or ID cards
+- Inherence — something the entity is or is capable of; e.g., biometric properties or signatures
+
+The provision of biometric data (something you are) or a PIN (something you know) to unlock the private key on a device (something you have) ensures usage of at least two factors, thus lowering the overall chance of an unauthorized entity being able to provide both factors at once.
+
+## FIDO core operations
+
+Authentication through FIDO protocols involves two major operations, sometimes also referred to as "protocol conversations" or "ceremonies": registration and authentication.
+
+### Registration
+
+In the FIDO context, registration describes the process where a user registers a new account on a website/service, through which cryptographic key material is generated and associated with a relying party.
+
+<Frame caption="Sequence diagram for the FIDO registration operation">
+  <img
+    src="/images/hanko-authenticator/fido-registration-sequence.svg"
+    alt="Sequence diagram for the FIDO registration operation"
+  />
+</Frame>
+
+1. The user visits the website of a relying party application through their web browser and initiates a sign-up process.
+2. The client/web browser initiates a registration request with the relying party.
+3. The relying party then issues a challenge for the authenticator to sign over. The interaction defines a parameter (RP, relying party) that denotes the origin of the challenge. Cryptographic credential material in FIDO is scoped in the sense that FIDO authenticators sign over an origin (usually the URL of the relying party application) with an associated private key. This so-called **token binding** ensures that the origin can't be spoofed through phishing.
+4. The user is prompted to perform an authentication gesture.
+5. Depending on the type of authenticator used, this gesture can either be the proof of **user presence** or a case of **user verification**. If the authenticator is a roaming authenticator, like a security key, the user simply confirms user presence, usually by tapping the authenticator device. If the authenticator is a mobile device or a platform device with built-in biometric capabilities, the user performs user verification by presenting a fingerprint or entering a PIN.
+6. The result of the authentication gesture is then used to generate a **credential key pair** in the form of a private and a public key.
+7. The credential private key is stored on the authenticator device.
+8. The credential public key is sent to the relying party and signed with a private **attestation key**. This so-called **attestation** mechanism defines a process for authenticators to make verifiable claims to a relying party that the created credentials originate from a trusted authenticator. For this reason, authenticators possess another key pair, the **attestation key pair**, which is "burned" into the device during manufacturing.
+9. The relying party can now verify that the attestation signature came from a genuine authenticator device.
+10. The relying party then stores the credential public key to complete the registration process.
+
+### Authentication
+
+In contrast to registration, authentication in the FIDO context describes the process of employing a FIDO authenticator to prove possession of a registered key to a relying party.
+
+<Frame caption="Sequence diagram for the FIDO authentication operation">
+  <img
+    src="/images/hanko-authenticator/fido-authentication-sequence.svg"
+    alt="Sequence diagram for the FIDO authentication operation"
+  />
+</Frame>
+
+1. The user visits the website of a relying party application through their web browser and initiates a login process, providing a username or e-mail.
+2. The client/web browser initiates an authentication request with the relying party.
+3. As with registration, the relying party then issues a challenge for the authenticator to sign over.
+4. The user is prompted to perform an authentication gesture.
+5. The user performs the authentication gesture.
+6. The result of the authentication gesture is used to unlock the **credential key pair**.
+7. The relying party's challenge is signed with the credential private key. In contrast to registration, where a key pair is used to provide an **attestation** signature, the credential key pair is used to provide an **assertion** signature.
+8. The resulting signature is sent to the relying party.
+9. The relying party verifies the signature using the credential public key previously stored during registration.
+10. The relying party then returns the verification result.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Hanko Authenticator" href="/hanko-authenticator/introduction">
+    Find out how the Hanko Authentication service leverages FIDO UAF in your application.
+  </Card>
+  <Card title="FIDO specifications" href="https://fidoalliance.org/specifications/">
+    Dive deeper by studying the official FIDO specifications.
+  </Card>
+</CardGroup>

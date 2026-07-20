@@ -1,0 +1,114 @@
+---
+sidebarTitle: Authentication
+title: Authenticate with a device using Hanko Authenticator
+description: How to authenticate a registered device through the Hanko API and the Hanko Authenticator app.
+---
+
+In order to authenticate with a device through the Hanko API using the Hanko Authenticator apps, the following three steps must be performed:
+
+- [**Step 1**](#step-1-retrieve-an-authentication-request): Retrieve an authentication request
+- [**Step 2**](#step-2-confirm-the-authentication-request): Confirm the authentication request through the Hanko Authenticator via out-of-band communication
+- [**Step 3**](#step-3-verify-successful-authentication): Use the Hanko API to verify successful authentication
+
+<Frame caption="Sequence diagram for the authentication flow with the Hanko Authenticator">
+  <img
+    src="/images/hanko-authenticator/quickstart/authenticator-app-authentication-flow.svg"
+    alt="Hanko Authenticator authentication flow"
+  />
+</Frame>
+
+---
+
+## Step 1: Retrieve an authentication request
+
+First we need to initiate the authentication of an authenticator device by issuing a `POST` request to the UAF endpoint (`{API_URL}/v1/uaf/requests`) of the Hanko API. The `POST` request body must include the appropriate `operation` type (i.e. `AUTH` for authentication), a `userId` and a `username`.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "{API_URL}/v1/uaf/requests" \
+-H 'Authorization:secret pasteYourApiKeyHere' \
+-H 'Content-Type: application/json' \
+-d '{"operation": "AUTH", "username":"example@example.com", "userId":"exampleId" }'
+```
+
+```bash HTTPie
+http POST {API_URL}/v1/uaf/requests \
+ 'Authorization:secret pasteYourApiKeySecretHere' \
+ 'operation=AUTH' \
+ 'username=example@example.com' \
+ 'userId=exampleId'
+```
+</CodeGroup>
+
+The API will respond with a Hanko request indicating that the authentication is currently `PENDING`. The `links` section of the Hanko request contains an API endpoint reference that allows us to retrieve a status of the Hanko request. We will later use this to verify whether the authentication process was successful.
+
+```json
+{
+  "id": "HzZqumLjNYZ29PNwEkzFQHuAF6U0kmW2oEuzchFtUJIF",
+  "operation": "AUTH",
+  "status": "PENDING",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  "links": [
+    {
+      "href": "{API_URL}/v1/uaf/requests/HzZqumLjNYZ29PNwEkzFQHuAF6U0kmW2oEuzchFtUJIF",
+      "method": "GET",
+      "rel": "result"
+    }
+  ],
+  ...,
+}
+```
+
+---
+
+## Step 2: Confirm the authentication request
+
+The Hanko API will send a push notification to our mobile device which triggers the Hanko Authenticator to inform us that an authentication request was initiated and prompt us to confirm that we initiated the authentication request. To continue with the authentication process:
+
+1. The Hanko Authenticator will display metadata pertaining to the authentication request (e.g. date, geo-location of the request origin) and prompt you to confirm the authentication request to ensure that it was indeed you who initiated the authentication process.
+2. The Hanko Authenticator will then retrieve the current pending authentication request from the Hanko API and provide the authenticator with the FIDO server challenge contained in the request.
+3. When prompted, perform an authentication gesture either by using the biometric capabilities of your mobile devices or - if your mobile device does not have any biometric capabilities - provide the mobile device PIN.
+4. The Hanko Authenticator will return the UAF authenticator response including the signed challenge from the initial FIDO request and validate and finalize the authentication request.
+
+---
+
+## Step 3: Verify successful authentication
+
+We can verify that the authentication was successful by using the `status` link contained in the Hanko request we retrieved in [Step 1](#step-1-retrieve-an-authentication-request).
+
+```json
+{
+  "href": "{API_URL}/v1/uaf/requests/csBMTswnVm11PcC7OgOVm5s9a6uwoCxEyoYul1Fr3csF",
+  "method": "GET",
+  "rel": "status"
+}
+```
+
+If successful, the `status` property of the returned Hanko request should be `OK`.
+
+```json
+{
+  "id": "csBMTswnVm11PcC7OgOVm5s9a6uwoCxEyoYul1Fr3csF",
+  "operation": "AUTH",
+  "status": "OK",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  ...,
+}
+```
+
+Note that the interactions in [Step 2](#step-2-confirm-the-authentication-request) were based on out-of-band communication. This means that an authentication flow as depicted above would usually require the relying party application to somehow become aware of the outcome of the authentication process so that the original client accessing the application can be informed and updated. One way to achieve this is to continually poll the request Hanko request until a `status` change can be detected.
+
+<CodeGroup>
+```bash cURL
+curl -X GET "{API_URL}/v1/uaf/requests/{id}" \
+-H 'Authorization:secret pasteYourApiKeySecretHere' \
+-H 'Content-Type: application/json'
+```
+
+```bash HTTPie
+http GET {API_URL}/v1/uaf/requests/{id} \
+ 'Authorization:secret pasteYourApiKeySecretHere'
+```
+</CodeGroup>

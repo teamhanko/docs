@@ -1,0 +1,32 @@
+---
+sidebarTitle: Transactions
+title: Confirm transactions using the Hanko FIDO UAF Client
+description: Bind a transaction to the authentication challenge and confirm it on-device with the Hanko FIDO UAF Client.
+---
+
+The process for confirming transactions with the Hanko FIDO UAF Client is essentially the same as for the
+regular [authentication](/hanko-authenticator/quickstart/uaf-client-authentication) process.
+
+The main difference between the two is that when _initializing_ the request you need to supply a request body with an
+additional `transaction` attribute. Its value is a transaction text that becomes part of the challenge issued by the
+FIDO server and hence the signature created in the course of the authentication process.
+
+<CodeGroup>
+```bash httpie
+http POST {API_URL}/v1/uaf/requests \
+ 'Authorization:secret pasteYourApiKeySecretHere' \
+ 'operation=AUTH' \
+ 'username=example@example.com' \
+ 'userId=exampleId' \
+ 'transaction=Transfer $100 to Mike?'
+```
+
+```bash cURL
+curl -X POST "{API_URL}/v1/uaf/requests" \
+-H 'Authorization:secret pasteYourApiKeyHere' \
+-H 'Content-Type: application/json' \
+-d '{"operation": "AUTH", "username":"example@example.com", "userId":"exampleId", "transaction": "Transfer $100 to Mike?" }'
+```
+</CodeGroup>
+
+Once the request has been initiated, pass it to the Hanko FIDO UAF Client and send the response back to the Hanko API exactly as described in the [authentication](/hanko-authenticator/quickstart/uaf-client-authentication) guide.

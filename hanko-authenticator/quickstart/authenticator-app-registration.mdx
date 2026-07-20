@@ -1,0 +1,131 @@
+---
+sidebarTitle: Registration
+title: Register a device using the Hanko Authenticator
+description: How to register an authenticator device through the Hanko API and the Hanko Authenticator app.
+---
+
+In order to register a device through the Hanko API using the Hanko Authenticator apps, the following three steps must be performed:
+
+- [**Step 1**](#step-1-retrieve-a-registration-request): Retrieve a registration request
+- [**Step 2**](#step-2-confirm-the-registration-request): Confirm the registration request through the Hanko Authenticator via out-of-band communication
+- [**Step 3**](#step-3-verify-successful-registration): Use the Hanko API to verify successful registration
+
+<Frame caption="Sequence diagram for the registration flow with the Hanko Authenticator">
+  <img
+    src="/images/hanko-authenticator/quickstart/authenticator-app-registration-flow.svg"
+    alt="Hanko Authenticator registration flow"
+  />
+</Frame>
+
+---
+
+## Step 1: Retrieve a registration request
+
+First we need to initiate the registration of an authenticator device by issuing a `POST` request to the UAF endpoint (`{API_URL}/v1/uaf/requests`) of the Hanko API. The `POST` request body must include the appropriate `operation` type (i.e. `REG` for registration), a `userId` and a `username`.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "{API_URL}/v1/uaf/requests" \
+-H 'Authorization:secret pasteYourApiKeyHere' \
+-H 'Content-Type: application/json' \
+-d '{"operation": "REG", "username":"example@example.com", "userId":"exampleId" }'
+```
+
+```bash HTTPie
+http POST {API_URL}/v1/uaf/requests \
+ 'Authorization:secret pasteYourApiKeySecretHere' \
+ 'operation=REG' \
+ 'username=example@example.com' \
+ 'userId=exampleId'
+```
+</CodeGroup>
+
+The API will respond with a Hanko request indicating that the registration is currently `PENDING`. The `links` section of the Hanko request contains an API endpoint reference that allows us to retrieve a `qrcode`. We will use this in the next step to initiate communication through an "out-of-band" communication channel. The `status` link will allow the relying party application to test if registration via this out-of-band communication was successful or not.
+
+```json
+{
+  "id": "csBMTswnVm11PcC7OgOVm5s9a6uwoCxEyoYul1Fr3csF",
+  "operation": "REG",
+  "status": "PENDING",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  "links": [
+    {
+      "href": "{API_URL}/v1/uaf/requests/csBMTswnVm11PcC7OgOVm5s9a6uwoCxEyoYul1Fr3csF/qrcode",
+      "method": "GET",
+      "rel": "qrcode"
+    },
+    {
+      "href": "{API_URL}/v1/uaf/requests/csBMTswnVm11PcC7OgOVm5s9a6uwoCxEyoYul1Fr3csF",
+      "method": "GET",
+      "rel": "status"
+    }
+  ],
+  ...,
+}
+```
+
+---
+
+## Step 2: Confirm the registration request
+
+In order to complete the registration we use the `qrcode` link from the Hanko request returned during initialization. Using the QR code initiates out-of-band communication, which simply means that we use a communication channel different from the one used to access the relying party application. Notice that in the figure above all interactions for this step happen between the user's mobile device (running the Hanko Authenticator app) and the Hanko API only.
+
+Furthermore, note that in the idealized registration flow depicted above the relying party application frontend would normally take on the task of displaying the QR code to the user. In this guide we will get the QR code manually in order to continue the registration process:
+
+1. Open the `qrcode` link in your browser.
+2. Open the [Hanko Authenticator](/hanko-authenticator/guides/authenticator-apps) app on your mobile device
+3. Tap `Add Account` and scan the displayed QR code using your mobile device. The Hanko Authenticator will retrieve the current pending registration request from the Hanko API and provide the authenticator with the FIDO server challenge contained in the request.
+4. The Hanko Authenticator will display metadata pertaining to the registration request (e.g. date, geo-location of the request origin) and prompt you to confirm the registration request to ensure that it was indeed you who initiated the registration process.
+5. Perform an authentication gesture either by using the biometric capabilities of your mobile devices or - if your mobile device does not have any biometric capabilities - provide the mobile device PIN.
+6. The Hanko Authenticator will return the UAF authenticator response and validate and finalize the registration request.
+
+```json
+{
+      "href": "{API_URL}/v1/uaf/requests/csBMTswnVm11PcC7OgOVm5s9a6uwoCxEyoYul1Fr3csF/qrcode",
+      "method": "GET",
+      "rel": "qrcode"
+}
+```
+
+---
+
+## Step 3: Verify successful registration
+
+We can verify that the registration was successful by using the `status` link contained in the Hanko request we retrieved in [Step 1](#step-1-retrieve-a-registration-request).
+
+```json
+{
+  "href": "{API_URL}/v1/uaf/requests/csBMTswnVm11PcC7OgOVm5s9a6uwoCxEyoYul1Fr3csF",
+  "method": "GET",
+  "rel": "status"
+}
+```
+
+If successful, the `status` property of the returned Hanko request should be `OK`.
+
+```json
+{
+  "id": "csBMTswnVm11PcC7OgOVm5s9a6uwoCxEyoYul1Fr3csF",
+  "operation": "REG",
+  "status": "OK",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  ...,
+}
+```
+
+Note that the interactions in [Step 2](#step-2-confirm-the-registration-request) were based on out-of-band communication. This means that a registration flow as depicted above would usually require the relying party application to somehow become aware of the outcome of the registration process so that the original client accessing the application can be informed and updated. One way to achieve this is to continually poll the request Hanko request until a `status` change can be detected.
+
+<CodeGroup>
+```bash cURL
+curl -X GET "{API_URL}/v1/uaf/requests/{id}" \
+-H 'Authorization:secret pasteYourApiKeySecretHere' \
+-H 'Content-Type: application/json'
+```
+
+```bash HTTPie
+http GET {API_URL}/v1/uaf/requests/{id} \
+ 'Authorization:secret pasteYourApiKeySecretHere'
+```
+</CodeGroup>

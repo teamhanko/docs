@@ -1,0 +1,52 @@
+---
+sidebarTitle: Overview
+title: Getting started with Hanko Authenticator
+description: Prerequisites and setup for registering, authenticating, and de-registering devices with the Hanko Authenticator app.
+---
+
+This guide demonstrates how you can use the Hanko API and Hanko Authenticator to
+
+- [**REGISTER**](/hanko-authenticator/quickstart/authenticator-app-registration) a device
+- [**AUTHENTICATE**](/hanko-authenticator/quickstart/authenticator-app-authentication) with a device
+- [**CONFIRM TRANSACTIONS**](/hanko-authenticator/quickstart/authenticator-app-transactions) with a device
+- [**DEREGISTER**](/hanko-authenticator/quickstart/authenticator-app-de-registration) a device
+
+Note that this section is not accompanied by a sample application. We will use manual HTTP requests using an HTTP client to exemplify the required interactions with the Hanko API. For the purpose of properly contextualizing the processes, we still assume the participation of a relying party application.
+
+## Prerequisites
+
+You will need:
+
+- an HTTP client to send requests to our API (the following sections include examples using [HTTPie](https://httpie.org/) and [curl](https://curl.haxx.se/))
+- an API Key in order to make authorized calls to the Hanko API. To get an API Key:
+    1. Go to {CONSOLE_URL}
+    2. Log in or register an account
+    3. Once signed in, create an organization. If you already created an organization,
+    select the organization.
+    4. Add a new relying party with the following properties:
+      - Relying Party Name: choose any name you want
+      - APP ID: **must** be a url with an `https` scheme
+    5. Click "Add new relying party". Select the created relying party to get to the relying party dashboard.
+    6. On the relying party dashboard, select "General Settings" and then click "Add" in the "API Keys" panel.
+    This will generate an API Key and an API Key ID. You should store the API Key securely since it cannot be obtained once
+    you confirm and close the modal displayed after key generation.
+- the Hanko Authenticator app to register an account:
+
+<div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+  <a href="https://play.google.com/store/apps/details?id=io.hanko.authenticator&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
+    <img
+      src="/images/hanko-authenticator/badges/play-badge-en.png"
+      alt="Get it on Google Play"
+      style={{ height: "48px" }}
+    />
+  </a>
+  <a href="https://itunes.apple.com/us/app/hanko-authenticator/id1435048235?mt=8">
+    <img
+      src="/images/hanko-authenticator/badges/ios-badge-en.png"
+      alt="Download on the App Store"
+      style={{ height: "53px" }}
+    />
+  </a>
+</div>
+
+You can view a list of supported devices on the [Authenticator Apps page](/hanko-authenticator/guides/authenticator-apps)

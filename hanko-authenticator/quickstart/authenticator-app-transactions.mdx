@@ -1,0 +1,27 @@
+---
+sidebarTitle: Transactions
+title: Confirm transactions using Hanko Authenticator
+description: How to add a transaction detail to an authentication request so users can confirm it with the Hanko Authenticator app.
+---
+
+The process for confirming transactions with the Hanko Authenticator is essentially the same as for the regular [authentication](/hanko-authenticator/quickstart/authenticator-app-authentication) process.
+
+The main difference between the two is that when _initializing_ the request you need to supply a request body with an additional `transaction` attribute. Its value is a transaction text that is part of the request metadata displayed in the confirmation prompt during [out-of-band communication](/hanko-authenticator/quickstart/authenticator-app-authentication#step-2-confirm-the-authentication-request). It also becomes part of the challenge issued by the FIDO server and hence the signature created in the course of the authentication process.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "{API_URL}/v1/uaf/requests" \
+-H 'Authorization:secret pasteYourApiKeyHere' \
+-H 'Content-Type: application/json' \
+-d '{"operation": "AUTH", "username":"example@example.com", "userId":"exampleId", "transaction": "Transfer $100 to Mike?" }'
+```
+
+```bash HTTPie
+http POST {API_URL}/v1/uaf/requests \
+ 'Authorization:secret pasteYourApiKeySecretHere' \
+ 'operation=AUTH' \
+ 'username=example@example.com' \
+ 'userId=exampleId' \
+ 'transaction=Transfer $100 to Mike?'
+```
+</CodeGroup>

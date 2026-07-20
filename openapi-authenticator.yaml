@@ -1,0 +1,962 @@
+components:
+  schemas:
+    models.RelyingParty:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        appId:
+          type: string
+        icon:
+          type: string
+      required:
+        - id
+        - name
+        - appId
+        - icon
+    models.WebAuthnAuthValidationRequest:
+      properties:
+        webAuthnResponse:
+          $ref: '#/components/schemas/models.WebAuthnAuthResponse'
+        deviceKeyInfo:
+          $ref: '#/components/schemas/models.ClientDeviceKeyInformation'
+      required:
+        - webAuthnResponse
+    models.Link:
+      properties:
+        rel:
+          type: string
+        method:
+          type: string
+        href:
+          type: string
+      required:
+        - rel
+        - method
+        - href
+    models.ClientData:
+      properties:
+        remoteAddress:
+          type: string
+        userAgent:
+          type: string
+    UserVerification:
+      type: string
+      enum:
+        - preferred
+        - required
+        - discouraged
+    models.RenameDevice:
+      properties:
+        newName:
+          type: string
+      required:
+        - newName
+    models.WebAuthnRegResponse:
+      properties:
+        id:
+          type: string
+        rawId:
+          type: string
+        type:
+          type: string
+        response:
+          $ref: '#/components/schemas/models.RegResponse'
+      required:
+        - id
+        - rawId
+        - type
+        - response
+    WebAuthnRegResponse:
+      type: object
+      properties:
+        webAuthnResponse:
+          type: object
+          description: The authenticator response for registration
+          properties:
+            id:
+              type: string
+            rawId:
+              type: string
+            type:
+              type: string
+            response:
+              type: object
+              properties:
+                clientDataJSON:
+                  type: string
+                attestationObject:
+                  type: string
+        deviceKeyInfo:
+          type: object
+          properties:
+            keyName:
+              type: string
+      required:
+        - webAuthnResponse
+    HankoError:
+      type: object
+      description: An error object giving details about the origin of the error
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    models.Location:
+      properties:
+        country:
+          type: string
+        region:
+          type: string
+        city:
+          type: string
+      required:
+        - country
+        - region
+        - city
+    U2fAuthResponse:
+      type: object
+      properties:
+        operation:
+          type: string
+          enum:
+            - AUTH
+        u2fResponse:
+          type: object
+          properties:
+            clientData:
+              type: string
+            signatureData:
+              type: string
+            keyHandle:
+              type: string
+    models.HankoRequest:
+      properties:
+        id:
+          type: string
+        operation:
+          type: string
+          enum:
+            - AUTH
+            - DEREG
+            - REG
+        username:
+          type: string
+        userId:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - OK
+            - FAILED
+            - INVALIDATED
+        createdAt:
+          format: date-time
+          type: string
+        validUntil:
+          format: date-time
+          type: string
+        relyingParty:
+          $ref: '#/components/schemas/models.RelyingParty'
+        clientData:
+          $ref: '#/components/schemas/models.ClientData'
+        location:
+          $ref: '#/components/schemas/models.Location'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/models.Link'
+        transaction:
+          type: string
+        request:
+          type: string
+        deviceID:
+          type: string
+        device:
+          $ref: '#/components/schemas/models.RequestDevice'
+        isSecondFactorOnly:
+          type: boolean
+        error:
+          $ref: '#/components/schemas/models.RequestError'
+      required:
+        - id
+        - operation
+        - username
+        - userId
+        - status
+        - createdAt
+        - validUntil
+        - relyingParty
+        - links
+        - request
+        - deviceID
+    HankoOperation:
+      type: string
+      description: The requested authentication operation
+      enum:
+        - REG
+        - AUTH
+        - DEREG
+    models.AuthResponse:
+      properties:
+        clientDataJSON:
+          type: string
+        signature:
+          type: string
+        authenticatorData:
+          type: string
+        userHandle:
+          type: string
+      required:
+        - clientDataJSON
+        - signature
+        - authenticatorData
+        - userHandle
+    models.CreateRequest:
+      properties:
+        operation:
+          type: string
+          enum:
+            - AUTH
+            - DEREG
+            - REG
+        username:
+          type: string
+        userId:
+          type: string
+        displayName:
+          type: string
+        clientData:
+          $ref: '#/components/schemas/models.ClientData'
+        transaction:
+          type: string
+        deviceIds:
+          type: array
+          items:
+            type: string
+        authenticatorSelectionCriteria:
+          $ref: '#/components/schemas/models.AuthenticatorSelectionCriteria'
+        attestationConveyancePreference:
+          type: string
+          enum:
+            - direct
+            - indirect
+            - none
+        isSecondFactorOnly:
+          type: boolean
+      required:
+        - operation
+    models.RequestError:
+      properties:
+        code:
+          type: integer
+          format: int32
+        reason:
+          type: string
+      required:
+        - code
+    models.ClientDeviceKeyInformation:
+      properties:
+        pushToken:
+          type: string
+        secret:
+          type: string
+        keyName:
+          type: string
+        deviceOs:
+          type: string
+        osVersion:
+          type: string
+        manufacturer:
+          type: string
+        model:
+          type: string
+    models.AuthenticatorSelectionCriteria:
+      properties:
+        authenticatorAttachment:
+          type: string
+          enum:
+            - platform
+            - cross-platform
+        requireResidentKey:
+          type: boolean
+        userVerification:
+          type: string
+          enum:
+            - required
+            - preferred
+            - discouraged
+    models.RegResponse:
+      properties:
+        clientDataJSON:
+          type: string
+        attestationObject:
+          type: string
+      required:
+        - clientDataJSON
+        - attestationObject
+    WebAuthnAuthResponse:
+      type: object
+      properties:
+        webAuthnResponse:
+          type: object
+          description: The authenticator response for authentication
+          properties:
+            id:
+              type: string
+            rawId:
+              type: string
+            type:
+              type: string
+            response:
+              type: object
+              properties:
+                clientDataJSON:
+                  type: string
+                signature:
+                  type: string
+                authenticatorData:
+                  type: string
+                userHandle:
+                  type: string
+        deviceKeyInfo:
+          type: object
+          properties:
+            keyName:
+              type: string
+      required:
+        - webAuthnResponse
+    models.Device:
+      properties:
+        deviceId:
+          type: string
+        keyName:
+          type: string
+        authenticatorType:
+          type: string
+        lastUsage:
+          format: date-time
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        authenticatorAttachment:
+          type: string
+          enum:
+            - platform
+            - cross-platform
+        isSecondFactorOnly:
+          type: boolean
+        deviceOs:
+          type: string
+        osVersion:
+          type: string
+      required:
+        - deviceId
+        - keyName
+        - authenticatorType
+        - lastUsage
+        - createdAt
+    models.WebAuthnRegValidationRequest:
+      properties:
+        webAuthnResponse:
+          $ref: '#/components/schemas/models.WebAuthnRegResponse'
+        deviceKeyInfo:
+          $ref: '#/components/schemas/models.ClientDeviceKeyInformation'
+      required:
+        - webAuthnResponse
+    models.UafValidationRequest:
+      properties:
+        uafResponse:
+          type: string
+        deviceKeyInfo:
+          $ref: '#/components/schemas/models.ClientDeviceKeyInformation'
+      required:
+        - uafResponse
+    models.WebAuthnAuthResponse:
+      properties:
+        id:
+          type: string
+        rawId:
+          type: string
+        type:
+          type: string
+        response:
+          $ref: '#/components/schemas/models.AuthResponse'
+      required:
+        - id
+        - rawId
+        - type
+        - response
+    AuthenticatorAttachment:
+      type: string
+      enum:
+        - platform
+        - cross-platform
+    U2fRegResponse:
+      type: object
+      properties:
+        operation:
+          type: string
+          enum:
+            - REG
+        u2fResponse:
+          type: object
+          description: A value as returned by the U2f authenticator
+          properties:
+            clientData:
+              type: string
+            registrationData:
+              type: string
+    models.RequestDevice:
+      properties:
+        deviceId:
+          type: string
+        keyName:
+          type: string
+  requestBodies:
+    HankoCreateOperationRequest:
+      description: The description
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/models.CreateRequest'
+    UafValidateRequest:
+      description: The description
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/models.UafValidationRequest'
+    WebAuthnRegValidationRequest:
+      description: The description
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/models.WebAuthnRegValidationRequest'
+    WebAuthnAuthValidationRequest:
+      description: The authenticator response
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/models.WebAuthnAuthValidationRequest'
+    RenameDevice:
+      description: The new device name
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/models.RenameDevice'
+  responses:
+    Default201Success:
+      description: Successfully created new resource.
+    Default204Success:
+      description: Service has successfully fulfilled your request.
+    Default400Error:
+      description: 'Bad request, the service could not process your request.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HankoError'
+          example:
+            code: 400
+            message: Bad Request
+    Default401Error:
+      description: You are not authenticated. Provide your credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HankoError'
+          example:
+            code: 401
+            message: Unauthorized
+    Default403Error:
+      description: You are not authorized to access this resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HankoError'
+          example:
+            code: 403
+            message: Unauthorized
+    Default404Error:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HankoError'
+          example:
+            code: 404
+            messsage: Not Found.
+    Default409Error:
+      description: A conflict occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HankoError'
+    Default500Error:
+      description: Internal Server Error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HankoError'
+          example:
+            code: 500
+            message: Internal Server Error
+    ServiceTooManyRequests:
+      description: 'Too many requests, try again later (429)'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HankoError'
+    ServiceTimeoutError:
+      description: Operation timed out
+    ServicePayloadError:
+      description: Payload not acceptable (413)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HankoError'
+    ServiceVerbForbidden:
+      description: Method is not allowed (415)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HankoError'
+    Devices:
+      description: The registered Devices
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/models.Device'
+    SimpleHankoRequestWithoutLinks:
+      description: The full Hanko request for an initialized authentication operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/models.HankoRequest'
+    HankoUafRequestWithLinks:
+      description: >-
+        The full Hanko request for an initialized authentication operation
+        including links
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/models.HankoRequest'
+      links:
+        Validate:
+          $ref: '#/components/links/Validate'
+        Get:
+          $ref: '#/components/links/Get'
+        Cancel:
+          $ref: '#/components/links/Cancel'
+        QrCode:
+          $ref: '#/components/links/QrCode'
+    HankoUafRequestWithoutQrCode:
+      description: >-
+        The full Hanko request for an initialized authentication operation
+        including links
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/models.HankoRequest'
+      links:
+        Validate:
+          $ref: '#/components/links/Validate'
+        Get:
+          $ref: '#/components/links/Get'
+        Cancel:
+          $ref: '#/components/links/Cancel'
+  links:
+    Validate:
+      description: Validate the request in the `HankoRequest` from the previous response
+      operationId: validate
+      parameters:
+        id: '$response.body#/id'
+    Get:
+      description: Get the current status for the operation identified by the provided id
+      operationId: status
+      parameters:
+        id: '$response.body#/id'
+    Cancel:
+      description: Cancel the operation identified by the provided id
+      operationId: cancel
+      parameters:
+        id: '$response.body#/id'
+    QrCode:
+      description: Get a QR code for a request identified by the provided id
+      operationId: qrcode
+      parameters:
+        id: '$response.body#/id'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+  parameters:
+    StringIdentifier:
+      in: path
+      name: id
+      schema:
+        type: string
+      required: true
+      description: General identifier used to describe a specific resource
+security:
+  - ApiKeyAuth: []
+servers:
+  - url: 'https://api.hanko.io'
+    description: Production environment
+openapi: 3.0.0
+paths:
+  /hello:
+    get:
+      summary: Say hello to the Hanko API and test if everything is set up correctly
+      operationId: index
+      description: |
+        Say hello to the Hanko API and test if everything is set up correctly.
+        Refer to our documentation for support and tutorials.
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      tags:
+        - Hello Hanko
+  /v1/uaf/requests:
+    post:
+      summary: Create a request for the Hanko Authenticator
+      requestBody:
+        $ref: '#/components/requestBodies/HankoCreateOperationRequest'
+      operationId: createUaf
+      description: >
+        Using this endpoint you initialize a new registration, authentication,
+        or deregistration by creating a new operation. Be sure to indicate the
+        requested type by setting the operation to the correct enum value.
+        Remember the `id` to take actions regarding this operation.
+      responses:
+        '200':
+          $ref: '#/components/responses/HankoUafRequestWithLinks'
+        '400':
+          $ref: '#/components/responses/Default400Error'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      tags:
+        - Hanko Authenticator
+  '/v1/uaf/requests/{id}':
+    get:
+      summary: Get the request for the Hanko Authenticator
+      operationId: getUafRequest
+      description: >-
+        This endpoint returns a previously created operation for the Hanko
+        Authenticator
+      responses:
+        '200':
+          $ref: '#/components/responses/HankoUafRequestWithLinks'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '404':
+          $ref: '#/components/responses/Default404Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+        - $ref: '#/components/parameters/StringIdentifier'
+      tags:
+        - Hanko Authenticator
+    delete:
+      summary: Cancel the request for the Hanko Authenticator
+      operationId: cancelUafRequest
+      description: >-
+        This endpoints cancels a previously created operation for the Hanko
+        Authenticator
+      responses:
+        '200':
+          $ref: '#/components/responses/HankoUafRequestWithLinks'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '404':
+          $ref: '#/components/responses/Default404Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+        - $ref: '#/components/parameters/StringIdentifier'
+      tags:
+        - Hanko Authenticator
+    put:
+      summary: Validate the request as retrieved from the Hanko Authenticator
+      requestBody:
+        $ref: '#/components/requestBodies/UafValidateRequest'
+      operationId: validateFidoUafRequest
+      description: >
+        This endpoint validates the cryptographic response as retrieved from the
+        API after it has been processed by the Hanko Authenticator.
+      responses:
+        '200':
+          $ref: '#/components/responses/HankoUafRequestWithLinks'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '404':
+          $ref: '#/components/responses/Default404Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+        - $ref: '#/components/parameters/StringIdentifier'
+      tags:
+        - Hanko Authenticator
+  '/v1/uaf/requests/{id}/qrcode':
+    get:
+      summary: Get the QR code for a given Hanko Authenticator request
+      operationId: getQrCode
+      description: >
+        You need the QR code to establish the out-of-band communication via the
+        Hanko Authenticator. You can provide certain query parameters to adjust
+        the appearance of the generated QR code.
+      responses:
+        '200':
+          description: The QR code
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '404':
+          $ref: '#/components/responses/Default404Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+        - schema:
+            type: object
+          in: query
+          name: qrData
+          required: false
+        - $ref: '#/components/parameters/StringIdentifier'
+        - in: query
+          name: width
+          schema:
+            type: integer
+          description: The width of the QR code
+        - in: query
+          name: height
+          schema:
+            type: integer
+          description: The height of the QR code
+        - in: query
+          name: fg
+          schema:
+            type: string
+          description: 'The foreground color of the QR code (six hex chars, without \#)'
+        - in: query
+          name: bg
+          schema:
+            type: string
+          description: 'The background color of the QR code (six hex chars, without \#)'
+      tags:
+        - Hanko Authenticator
+  /v1/webauthn/requests:
+    post:
+      summary: Create a Hanko WebAuthentication request
+      requestBody:
+        $ref: '#/components/requestBodies/HankoCreateOperationRequest'
+      operationId: createWebAuthn
+      description: Description
+      responses:
+        '200':
+          $ref: '#/components/responses/HankoUafRequestWithoutQrCode'
+        '400':
+          $ref: '#/components/responses/Default400Error'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      tags:
+        - Web Authentication
+  '/v1/webauthn/requests/{id}':
+    get:
+      summary: Get the Hanko WebAuthentication request
+      operationId: getWebAuthnRequest
+      description: Description
+      responses:
+        '200':
+          $ref: '#/components/responses/HankoUafRequestWithoutQrCode'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '404':
+          $ref: '#/components/responses/Default404Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+        - $ref: '#/components/parameters/StringIdentifier'
+      tags:
+        - Web Authentication
+    delete:
+      summary: Cancel the Hanko WebAuthentication request
+      operationId: cancelWebAuthnRequest
+      description: Description
+      responses:
+        '200':
+          $ref: '#/components/responses/SimpleHankoRequestWithoutLinks'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '404':
+          $ref: '#/components/responses/Default404Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+        - $ref: '#/components/parameters/StringIdentifier'
+      tags:
+        - Web Authentication
+    put:
+      summary: Validate the Hanko WebAuthentication request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/models.WebAuthnRegValidationRequest'
+                - $ref: '#/components/schemas/models.WebAuthnAuthValidationRequest'
+      operationId: validateWebAuthnRequest
+      description: Description
+      responses:
+        '200':
+          $ref: '#/components/responses/HankoUafRequestWithoutQrCode'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '404':
+          $ref: '#/components/responses/Default404Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+        - $ref: '#/components/parameters/StringIdentifier'
+      tags:
+        - Web Authentication
+  '/mgmt/v1/registrations/{userId}':
+    get:
+      summary: Get all devices of a user
+      operationId: getUserDevices
+      description: Description
+      responses:
+        '200':
+          $ref: '#/components/responses/Devices'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '404':
+          $ref: '#/components/responses/Default404Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: userId
+          required: true
+      tags:
+        - Device Management
+  '/mgmt/v1/registrations/rename/{deviceId}':
+    post:
+      summary: Change the name of a authentication device
+      requestBody:
+        $ref: '#/components/requestBodies/RenameDevice'
+      operationId: renameDevice
+      responses:
+        '200':
+          $ref: '#/components/requestBodies/RenameDevice'
+        '401':
+          $ref: '#/components/responses/Default401Error'
+        '404':
+          $ref: '#/components/responses/Default404Error'
+        '500':
+          $ref: '#/components/responses/Default500Error'
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: deviceId
+          required: true
+        - $ref: '#/components/parameters/StringIdentifier'
+      tags:
+        - Device Management
+externalDocs:
+  description: Visit our documentation to learn more about the Hanko service and its APIs
+  url: 'https://docs.hanko.io'
+tags:
+  - name: routes
+  - name: Hello Hanko
+    description: Learn how to use this REST API
+  - name: Web Authentication
+    description: Authentication via W3C WebAuthentication
+    externalDocs:
+      url: 'https://hanko.io'
+  - name: Hanko Authenticator
+    description: >-
+      Authentication with the Hanko Authenticator and FIDO UAF (out-of-band
+      style)
+    externalDocs:
+      url: 'https://hanko.io'
+  - name: Device Management
+    description: Manage the Devices of your users
+    externalDocs:
+      url: 'https://hanko.io'
+info:
+  contact:
+    name: Support
+    url: 'https://hanko.io'
+    email: info@hanko.io
+  description: >
+    With Hanko you are able to offer your users the security and convenience of
+
+    password-less authentication. Get your website or app ready for a future
+
+    without passwords. Head over to our website at [hanko.io](https://hanko.io)
+    to
+
+    learn more about the service or read our
+    [documentation](https://docs.hanko.io).
+  title: Hanko Service API
+  version: 1.0.0
