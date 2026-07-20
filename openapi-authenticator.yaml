@@ -596,9 +596,12 @@ components:
         id: '$response.body#/id'
   securitySchemes:
     ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: Authorization
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: |
+        This API uses `Authorization: secret <api_key>`
+        rather than the standard `Bearer` scheme.
   parameters:
     StringIdentifier:
       in: path
