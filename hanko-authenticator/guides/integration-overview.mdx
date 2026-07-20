@@ -1,0 +1,26 @@
+---
+sidebarTitle: Integration overview
+title: Integration guide
+description: What to consider when integrating the Hanko Authenticator into your existing application.
+---
+
+As a relying party planning to implement the Hanko Authenticator, one of the major decisions to make is selecting the authentication methods that best fit your business' needs and requirements. This choice is often constrained by:
+
+- usability considerations
+- existing infrastructure (e.g. platform/browser/device availability)
+- cost considerations (e.g. provision of authenticator devices)
+- legal requirements or other regulations
+
+Once you have decided to use the Hanko Authenticator, there are a number of aspects to consider when integrating it into your application:
+
+<CardGroup cols={2}>
+  <Card title="Modifying your registration flow" href="/hanko-authenticator/guides/registration-screen">
+    Assuming your application already has some form of user management that allows users to register and log in to existing accounts, adding the Hanko Authenticator requires modifications to your existing registration flow, both on the client and server side.
+  </Card>
+  <Card title="Modifying your login flow" href="/hanko-authenticator/guides/login-screen">
+    In addition to modifications to your registration flow, you'll also need to adjust your existing login flow.
+  </Card>
+  <Card title="Recovery techniques" href="/hanko-authenticator/guides/recovery">
+    Using external authenticator devices like smartphones inevitably raises the question of what happens in case of device loss, which makes implementing proper account recovery techniques a primary concern.
+  </Card>
+</CardGroup>

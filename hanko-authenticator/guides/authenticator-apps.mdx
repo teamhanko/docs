@@ -1,0 +1,67 @@
+---
+sidebarTitle: Authenticator apps
+title: Hanko Authenticator apps
+description: Device compatibility for the Hanko Authenticator apps on Android and iOS.
+---
+
+To let your users use passwordless authentication, they need access to the Hanko Authenticator application, which handles the cryptographic authentication requests created by the Hanko service.
+
+The Hanko Authenticator application is composed of two essential parts:
+
+- FIDO software client
+- Hanko relying party management
+
+Whenever a user chooses passwordless authentication as a login method for your service, a (passwordless) registration request is issued. From then on, each subsequent authentication request results in a notification prompting the user to declare consent (usually by touching the fingerprint reader on their device). Afterwards, the Hanko service informs your application about the outcome of the operation, and it is up to you to decide whether the user may gain access to your application.
+
+## Hanko Authenticator for Android
+
+<Warning>
+  The unbranded/Hanko-branded Android app is currently not available on the Google Play store. Contact us for an APK download link.
+</Warning>
+
+Hanko Authenticator for Android has been tested with the following devices:
+
+| Manufacturer | Device | Android version | PIN/Gesture/Password | Fingerprint | Other biometrics |
+|---|---|:-:|:-:|:-:|:-:|
+| Google | Pixel | 9.0.0 | Yes | Yes | n/a |
+| Google | Pixel XL | 9.0.0 | Yes | Yes | n/a |
+| Google/LG | Nexus 5X | 8.1.0 | Yes | Yes | n/a |
+| Huawei | P10 | 8.0.0 | Yes | Yes | n/a |
+| OnePlus | Two | 6.0.1 | Yes | Yes | n/a |
+| Samsung | Galaxy S8 | 8.0.0 | Yes | Yes | Iris |
+| Samsung | Galaxy S7 | 8.0.0 | Yes | Yes | n/a |
+| Samsung | Galaxy J7 | 8.1.0 | Yes | n/a | n/a |
+| Samsung | Galaxy Xcover4 | 7.0.0 | Yes | n/a | n/a |
+| Samsung | Galaxy Xcover3 | 6.0.1 | Yes | n/a | n/a |
+| Sony | Xperia Z5 Compact | 8.0.0 | Yes | Yes | n/a |
+| Sony | Xperia Z3 Compact | 6.0.1 | Yes | n/a | n/a |
+
+<Note>Hanko Authenticator for Android requires Android 6.0 or newer.</Note>
+
+## Hanko Authenticator for iOS
+
+<a href="https://itunes.apple.com/us/app/hanko-authenticator/id1435048235?mt=8">
+  <img
+    src="/images/hanko-authenticator/badges/ios-badge-en.png"
+    alt="Download on the App Store"
+    style={{ height: "53px" }}
+  />
+</a>
+
+Hanko Authenticator for iOS has been tested with the following devices:
+
+| Device | iOS version | PIN | Touch ID | Face ID |
+|---|:-:|:-:|:-:|:-:|
+| iPhone XS | 13.3.1 | Yes | n/a | Yes |
+| iPhone X | 13.3.1 | Yes | n/a | Yes |
+| iPhone 8 Plus | 13.3.1 | Yes | Yes | n/a |
+| iPhone 8 | 13.3.1 | Yes | Yes | n/a |
+| iPhone 7 Plus | 13.3.1 | Yes | Yes | n/a |
+| iPhone 7 | 13.3.1 | Yes | Yes | n/a |
+| iPhone 6 | 12 | Yes | Yes | n/a |
+| iPhone 5S | 12 | Yes | Yes | n/a |
+| iPhone 5 | 10 | Yes | n/a | n/a |
+
+<Note>
+If the iOS device does not have Touch ID or Face ID capabilities, PIN authentication can be used instead. Hanko Authenticator for iOS requires iOS 10 or newer.
+</Note>

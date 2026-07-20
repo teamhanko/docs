@@ -1,0 +1,64 @@
+---
+sidebarTitle: Introduction
+title: Introduction to Hanko Authenticator
+description: Out-of-band and on-device multi-factor authentication with FIDO UAF and the Hanko Authenticator app.
+mode: wide
+---
+
+The **Hanko Authenticator** is Hanko's implementation of the [FIDO Universal Authentication Framework (FIDO UAF)](/hanko-authenticator/what-is-fido-uaf) protocol. It lets you add strong, passwordless multi-factor authentication and transaction confirmation to your application using either:
+
+- a white-label **Hanko Authenticator mobile app** that authenticates out-of-band, or
+- the **Hanko FIDO UAF Client SDK**, which embeds on-device FIDO UAF authentication directly into your own native Android or iOS app.
+
+Both approaches are built on top of Hanko's certified FIDO server and the same underlying Hanko API.
+
+## Use cases
+
+### Hanko Authenticator & FIDO UAF
+
+FIDO UAF offers a passwordless experience, much like passkeys, but embedded in an app on your user's mobile device. The Hanko Authenticator offers strong two-factor authentication with a customizable white-label design using out-of-band communication.
+
+"Out-of-band" (OOB) communication means that authentication happens over a communication channel separate from the primary one: a user initiates authentication on their desktop and uses their mobile phone to authenticate via a biometric gesture or PIN, in response to a QR code or push notification transmitted via the out-of-band channel.
+
+<Frame>
+  <img
+    src="/images/hanko-authenticator/usecases-uaf.svg"
+    alt="Hanko Authenticator out-of-band use case"
+  />
+</Frame>
+
+Using OOB communication does not require users to have a desktop device with built-in biometric capabilities or any type of hardware-based key store (e.g. a TPM chip) — it works with any desktop device that has a browser.
+
+[Get started with the Hanko Authenticator app](/hanko-authenticator/quickstart/authenticator-app)
+
+### On-device authentication with the FIDO UAF Client
+
+You can integrate FIDO-based strong multi-factor authentication directly into your existing mobile app using the Hanko FIDO UAF Client, enabling on-device authentication on Android and iOS.
+
+Unlike the Hanko Authenticator, this scenario does not involve out-of-band communication. Instead of initiating communication on a desktop through a browser and confirming it in response to a notification on a mobile device, all communication originates from the mobile device and runs through your app's backend, which passes information to the Hanko API.
+
+<Frame>
+  <img
+    src="/images/hanko-authenticator/usecases-uaf-on-device.svg"
+    alt="Hanko FIDO UAF Client on-device use case"
+  />
+</Frame>
+
+[Get started with the Hanko FIDO UAF Client for Android or iOS](/hanko-authenticator/quickstart/uaf-client)
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="What is FIDO UAF?" href="/hanko-authenticator/what-is-fido-uaf">
+    Learn the background and core concepts behind the FIDO UAF protocol.
+  </Card>
+  <Card title="Core components" href="/hanko-authenticator/core-components">
+    Understand the pieces that make up the Hanko Authenticator service.
+  </Card>
+  <Card title="Quickstart: Hanko Authenticator app" href="/hanko-authenticator/quickstart/authenticator-app">
+    Register and authenticate devices with the out-of-band mobile app.
+  </Card>
+  <Card title="Quickstart: FIDO UAF Client SDK" href="/hanko-authenticator/quickstart/uaf-client">
+    Add on-device FIDO UAF authentication to your native Android or iOS app.
+  </Card>
+</CardGroup>

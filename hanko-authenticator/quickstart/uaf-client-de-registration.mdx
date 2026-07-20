@@ -1,0 +1,187 @@
+---
+sidebarTitle: De-registration
+title: De-register a device using the Hanko FIDO UAF Client
+description: Remove one or all authenticator devices registered on-device with the Hanko FIDO UAF Client.
+---
+
+One of the main differences between de-registration and registration/authentication is that
+de-registration does _not_ require the usual sequence of initializing and finalizing/validating the
+de-registration request, i.e. you do not have to finalize the de-registration request with the Hanko API.
+Depending on whether the `userId` associated with the devices you want to
+de-register exists or not, the entire de-registration operation is either `OK` or `FAILED` and therefore completed
+after the initialization step.
+Just as with registration and authentication though, you will receive a de-registration request in the form
+of a UAF protocol message upon initialization that must be passed to the FIDO UAF Client in order to de-register
+the respective credentials on the device.
+
+- **Step 1**: Retrieve a de-registration request
+- **Step 2**: Pass the de-registration request to the Hanko FIDO UAF Client
+
+<Frame caption="Sequence diagram for the UAF de-registration flow with the Hanko FIDO UAF Client for Android">
+  <img
+    src="/images/hanko-authenticator/quickstart/uaf-client-de-registration-flow.svg"
+    alt="Hanko FIDO UAF Client de-registration flow"
+  />
+</Frame>
+
+## Step 1: Retrieve a de-registration request
+
+You can either de-register all authenticator devices for a user or you can de-register specific authenticator
+devices.
+
+### De-register all devices
+
+To de-register all authenticator devices for a user, issue a `POST` request to the UAF
+endpoint (`{API_URL}/v1/uaf/requests`) of the Hanko API. You must provide the `userId` and the `username`
+of the user the authenticator devices are associated with as well as the appropriate `operation` type (`DEREG`).
+
+<CodeGroup>
+```bash httpie
+http POST {API_URL}/v1/uaf/requests \
+ 'Authorization:secret pasteYourApiKeySecretHere' \
+ 'operation=DEREG' \
+ 'username=example@example.com' \
+ 'userId=exampleId'
+```
+
+```bash cURL
+curl -X POST "{API_URL}/v1/uaf/requests" \
+-H 'Authorization:secret pasteYourApiKeyHere' \
+-H 'Content-Type: application/json' \
+-d '{"operation": "DEREG", "username":"example@example.com", "userId":"exampleId" }'
+```
+</CodeGroup>
+
+The API should respond with a Hanko request, the `status` property indicating whether the de-registration process
+was successful (`OK`) or not (`FAILED`). It will also contain the `request` issued by the FIDO server which will be
+used in the next step.
+
+```json
+{
+  "id": "<requestId>",
+  "request": "<fido-uaf-request>",
+  "operation": "DEREG",
+  "status": "OK",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  ...
+}
+```
+
+### De-register specific devices
+
+To de-register specific authenticator devices for a user, issue a `POST` request to the UAF
+endpoint (`{API_URL}/v1/uaf/requests`) of the Hanko API. You must provide the `userId` and the `username`
+of the user the authenticator devices are associated with as well as the appropriate `operation` type (`DEREG`). To
+further specify the devices to de-register, include a comma-separated list of device ID strings under the `deviceIds`
+key in the request body.
+
+If you are unsure how to get the registered `deviceIds` of a user, you can always use the device management
+capabilities of the API to get the registered devices for a user, including the `deviceId` required for the
+de-registration process described above. When using IDs from the device list returned through this endpoint for
+de-registration, make sure you use only devices of the appropriate `authenticator_type`, i.e. `FIDO_UAF`.
+
+<CodeGroup>
+```bash cURL
+curl --location --request POST '{API_URL}/v1/uaf/requests' \
+--header 'Authorization: secret pasteYourApiKeyHere' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "operation": "DEREG",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  "deviceIds": ["exampleDevice", "anotherExampleDevice"]
+}'
+```
+</CodeGroup>
+
+The API should respond with a Hanko request. The `status` property indicates whether the de-registration process
+was successful (`OK`) or not (`FAILED`). It will also contain the `request` issued by the FIDO server which will be
+used in the next step.
+
+```json
+{
+  "id": "<requestId>",
+  "request": "<fido-uaf-request>",
+  "operation": "DEREG",
+  "status": "OK",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  ...
+}
+```
+
+## Step 2: Pass the de-registration request to the Hanko FIDO UAF Client
+
+<Tabs>
+  <Tab title="Android">
+    Extract the `request` value from the Hanko request you retrieved in the previous step.
+
+    Create a stringified representation of a JSON object with the following structure:
+
+    ```json
+    {
+        "uafProtocolMessage": "<request>"
+    }
+    ```
+
+    Use Android's Intent mechanism to pass it to the Hanko FIDO UAF Client (`<fido-uaf-request>`). This will trigger a
+    prompt for an authentication gesture. To retrieve the activity result, use the [`startActivityForResult`](https://developer.android.com/reference/android/app/Activity#startActivityForResult(android.content.Intent,%20int,%20android.os.Bundle))
+    API.
+
+    ```java
+    Intent intent = new Intent(context, io.hanko.fidouafclient.FidoUafClient.class);
+    intent.setType("application/fido.uaf_client+json");
+    intent.putExtra("UAFIntentType", "UAF_OPERATION");
+    intent.putExtra("channelBindings", "{}");
+    intent.putExtra("message", "<fido-uaf-request>");
+
+    startActivityForResult(intent, REQUEST_CODE);
+    ```
+
+    After the user accepted or denied the request by performing an authentication gesture, you can process the result
+    using the [`onActivityResult`](https://developer.android.com/reference/android/app/Activity#onActivityResult(int,%20int,%20android.content.Intent))
+    API.
+
+    ```java
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if(resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+    		short errorCode = data.getShortExtra("errorCode", (short) 0xFF);
+    		if(errorCode == 0x00) { // errorCode 0x00 means success
+    			try {
+    				JSONObject jsonObject = new JSONObject(data.getStringExtra("message")); // 1.
+                    String uafResponse = jsonObject.getString("uafProtocolMessage"); // 1.
+    				// verify uafResponse
+    			} catch(JSONException ex) {
+    				// TODO
+    			}
+    		} else {
+    			// some error occured, use errorCode for determination
+    		}
+    	}
+    }
+    ```
+
+    Extract the response (1) from the `Intent` data. The extracted value will be used in the
+    next step to verify the authenticator response.
+  </Tab>
+  <Tab title="iOS">
+    Extract the `request` value from the Hanko request you retrieved in the previous step and create a
+    `UAFMessage` (`<fido-uaf-request>` is the `request` value).
+
+    ```swift
+    let uafMessage = UAFMessage(uafProtocolMessage: "<fido-uaf-request>")
+    ```
+
+    Pass the `UAFMessage` to the client's `process` method.
+
+    ```swift
+    FidoClient.process(uafMessage: uafMessage) { resultMessage, error in
+    	// send resultMessage to Hanko API
+    }
+    ```
+
+    After the user accepted or denied the request by performing an authentication gesture, send the
+    authenticator response (`resultMessage`) to the Hanko API in the next step.
+  </Tab>
+</Tabs>

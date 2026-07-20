@@ -1,0 +1,31 @@
+---
+sidebarTitle: Recovery
+title: Recovery techniques
+description: Strategies for handling lost or unavailable Hanko Authenticator devices.
+---
+
+Just as with passwords, users may lose their authentication device. If they cannot access the device used with the Hanko Authenticator, they are unable to log in to your application. In such cases, you will probably want to offer certain recovery strategies to allow them to reset or re-register their devices. This section covers some common strategies to consider when integrating with Hanko.
+
+<Tip>
+It's advisable to require your users to register at least two authenticator devices, to mitigate device loss scenarios.
+</Tip>
+
+When prompting the user to authenticate with the Hanko Authenticator, provide a link to reset the authentication method — usually accomplished by sending the user an e-mail with instructions on how to perform account recovery. If you have a strict security policy in place, you might consider further legitimation (e.g. via phone).
+
+<Frame>
+  <img
+    src="/images/hanko-authenticator/mockups/recovery-passwordless.png"
+    alt="Recovery link"
+  />
+</Frame>
+
+Prompt the user (e.g. through a modal) to provide an e-mail address for recovery. If your login flow has the user input an e-mail before choosing an authenticator type, you can use this information to pre-fill the prompt; otherwise let the user input a custom e-mail address.
+
+<Frame>
+  <img
+    src="/images/hanko-authenticator/mockups/recovery-passwordless-email.png"
+    alt="Recovery e-mail prompt"
+  />
+</Frame>
+
+One option for offering re-registration of devices is to embed the QR code used for [registration](/hanko-authenticator/quickstart/authenticator-app-registration) in the recovery e-mail, so users can register a device directly. Another option is to simply embed a link to generate a fresh QR code. Both options require communication with the Hanko API beforehand: you'll need to initialize a registration request to obtain a Hanko request and extract the QR code link from it. Keep in mind that the validity of requests is subject to timeout constraints (default: 120 seconds), which you can configure through the Hanko Console.

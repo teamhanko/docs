@@ -1,0 +1,74 @@
+---
+sidebarTitle: De-registration
+title: De-register a device
+description: How to de-register one, several, or all Hanko Authenticator devices for a user through the Hanko API.
+---
+
+You can use the Hanko API to de-register authenticator devices registered through Hanko Authenticator. Device de-registration need not be finalized, i.e. it does _not_ require any additional out-of-band interaction apart from issuing an initial de-registration request. Depending on whether the `userId` associated with the devices you want to de-register exists or not, the entire de-registration operation is either `OK` or `FAILED` and therefore completed after the initialization step.
+
+You can either de-register all authenticator devices for a user or you can de-register specific authenticator devices.
+
+### De-Register all devices for a user
+
+To de-register all authenticator devices for a user issue a `POST` request to the UAF endpoint (`{API_URL}/v1/uaf/requests`) of the Hanko API. You must provide the `userId` and the `username` of the user the authenticator devices are associated with as well as the appropriate `operation` type (`DEREG`).
+
+<CodeGroup>
+```bash cURL
+curl -X POST "{API_URL}/v1/uaf/requests" \
+-H 'Authorization:secret pasteYourApiKeyHere' \
+-H 'Content-Type: application/json' \
+-d '{"operation": "DEREG", "username":"example@example.com", "userId":"exampleId" }'
+```
+
+```bash HTTPie
+http POST {API_URL}/v1/uaf/requests \
+ 'Authorization:secret pasteYourApiKeySecretHere' \
+ 'operation=DEREG' \
+ 'username=example@example.com' \
+ 'userId=exampleId'
+```
+</CodeGroup>
+
+The API should respond with a Hanko request, the `status` property indicating whether the de-registration process was successful (`OK`) or not (`FAILED`).
+
+```json
+{
+  "id":  "HzZqumLjNYZ29PNwEkzFQHuAF6U0kmW2oEuzchFtUJIF",
+  "operation": "DEREG",
+  "status": "OK",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  ...
+}
+```
+
+### De-Register specific devices for a user
+
+To de-register specific authenticator devices for a user, issue a `POST` request to the UAF endpoint (`{API_URL}/v1/uaf/requests`) of the Hanko API. You must provide the `userId` and the `username` of the user the authenticator devices are associated with as well as the appropriate `operation` type (`DEREG`). To further specify the devices to de-register, include a comma-separated list of device ID strings under the `deviceIds` key in the request body.
+
+If you are unsure how to get the registered `deviceIds` of a user: you can always use the device management capabilities of the API to get the registered devices for a user, including the `deviceId` required for the de-registration process described above. When using IDs from the device list returned through this endpoint for de-registration, make sure you use only devices of the appropriate `authenticator_type`, i.e. `FIDO_UAF`.
+
+```bash
+curl --location --request POST '{API_URL}/v1/uaf/requests' \
+--header 'Authorization: secret pasteYourApiKeyHere' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "operation": "DEREG",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  "deviceIds": ["exampleDevice", "anotherExampleDevice"]
+}'
+```
+
+The API should respond with a Hanko request. The `status` property indicates whether the de-registration process was successful (`OK`) or not (`FAILED`).
+
+```json
+{
+  "id":  "HzZqumLjNYZ29PNwEkzFQHuAF6U0kmW2oEuzchFtUJIF",
+  "operation": "DEREG",
+  "status": "OK",
+  "userId": "exampleId",
+  "username": "example@example.com",
+  ...
+}
+```

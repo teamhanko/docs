@@ -1,0 +1,148 @@
+---
+sidebarTitle: Overview
+title: Getting started with the Hanko FIDO UAF Client
+description: Prerequisites and setup for integrating the Hanko FIDO UAF Client into your native Android or iOS app.
+---
+
+This guide demonstrates how to use the Hanko FIDO UAF Client and the Hanko API to perform **on-device** authentication.
+Unlike using the Hanko Authenticator, this scenario does not involve out-of-band communication. Instead of initiating
+communication on a desktop through a browser and confirming authentication in response to out-of-band
+notifications on a mobile device, _all_ communication originates from the mobile device and runs through an application
+backend which passes information to the Hanko API. In this guide you will learn how to
+
+- [**REGISTER**](/hanko-authenticator/quickstart/uaf-client-registration) a device
+- [**AUTHENTICATE**](/hanko-authenticator/quickstart/uaf-client-authentication) with a registered device
+- [**CONFIRM TRANSACTIONS**](/hanko-authenticator/quickstart/uaf-client-transactions) with a device
+- [**DEREGISTER**](/hanko-authenticator/quickstart/uaf-client-de-registration) a device
+
+using the Hanko FIDO UAF Client.
+
+## Prerequisites
+
+### Add the Hanko FIDO UAF Client as a project dependency
+
+<Tabs>
+  <Tab title="Android">
+    - min. android SDK version: 23
+    - a secure keyguard (biometrics, pin, pattern, etc.)
+
+    To add the Hanko FIDO UAF Client to your Android project, add the following line to your `build.gradle`:
+
+    ```
+    implementation 'io.hanko:fidouafclient:<latest-version>'
+    ```
+
+    <Warning>
+      Replace `<latest-version>` with the latest version. The latest version can be found [here](https://github.com/teamhanko/fidouafclient/releases).
+    </Warning>
+  </Tab>
+  <Tab title="iOS">
+    **Using Carthage**:
+
+    To integrate FidoUafClientiOS into your Xcode project using Carthage, specify it in your Cartfile:
+
+    ```
+    github 'teamhanko/fidouafclientiOS' == '<latest-version>'
+    ```
+
+    **Using CocoaPods**:
+
+    To integrate FidoUafClientiOS into your project using CocoaPods, specify it in your Podfile:
+
+    ```
+    pod 'FidoUafClientiOS', <latest-version>
+    ```
+
+    <Warning>
+      Replace `<latest-version>` with the latest version. The latest version can be found [here](https://github.com/teamhanko/fidouafclientiOS/releases).
+    </Warning>
+  </Tab>
+</Tabs>
+
+### HTTP client library
+
+In order to make HTTP requests the relying party backend can proxy to the Hanko API, you need
+a suitable HTTP client library (e.g. [OkHttp](https://square.github.io/okhttp/) for Android, [Alamofire](https://github.com/Alamofire/Alamofire) for iOS).
+
+### Hanko server-side SDK
+
+To forward HTTP requests to the Hanko API you can use one of our server-side SDKs in your backend application.
+
+<Note>
+  Backend SDK examples for this step will be added once official server SDKs are available again.
+</Note>
+
+### Configuration
+
+<Tabs>
+  <Tab title="Android">
+    **Client availability across apps**
+
+    The FIDO UAF Client is only available for your app. You can make it publicly available for all apps on the device.
+    Add the following to your `AndroidManifest.xml`:
+
+    ```xml
+    <activity android:name="io.hanko.fidouafclient.FidoUafClient">
+        <intent-filter>
+            <action android:name="org.fidoalliance.intent.FIDO_OPERATION" />
+
+            <data android:mimeType="application/fido.uaf_client+json" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+    </activity>
+    ```
+  </Tab>
+  <Tab title="iOS">
+    **Face ID usage**
+
+    FidoUafClientiOS uses FaceID, so you must define `NSFaceIDUsageDescription` in your `Info.plist`.
+
+    **Operation prompts**
+
+    The FidoUafClientiOS uses default values to display `kSecUseOperationPrompt` when using the private keys.
+    The default values are localized to English and German.
+    To override the default values just add the keys `biomentryOperationPromptReg` and `biomentryOperationPromptAuth` to your project's `Localizable.strings`.
+
+    <Warning>
+      If a request contains a transaction, the `biomentryOperationPromptAuth` will be overridden with the transaction content.
+    </Warning>
+  </Tab>
+</Tabs>
+
+### Customization
+
+<Tabs>
+  <Tab title="Android">
+    **Operation prompts**
+
+    To customize the strings which are displayed during registration and authentication, define the following strings in
+    your strings `.xml` file:
+
+    ```xml
+    <resources>
+        <string name="uafclient_biometric_prompt_title_reg">Register</string>
+        <string name="uafclient_biometric_prompt_title_auth">Authenticate</string>
+        <string name="uafclient_biometric_prompt_description_reg">Authenticate to create a key</string>
+        <string name="uafclient_biometric_prompt_description_auth">Authenticate to use a key</string>
+
+        <string name="uafclient_account_chooser_title">Choose your key</string>
+    </resources>
+    ```
+  </Tab>
+  <Tab title="iOS">
+    **Operation prompts**
+
+    The FidoUafClientiOS uses default values to display kSecUseOperationPrompt when using the private keys. The default
+    values are localized to English and German. To override the default values just add the keys `biomentryOperationPromptReg`
+    and `biomentryOperationPromptAuth` to your project's `Localizable.strings`.
+
+    Note: If a request contains a transaction the `biomentryOperationPromptAuth` will be overridden with the transaction
+    content.
+  </Tab>
+</Tabs>
+
+## Obtain an API Key
+
+You need access to the Hanko Authentication API, which is currently not publicly available. To request test access,
+please contact us at info@hanko.io.
