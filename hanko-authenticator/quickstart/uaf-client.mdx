@@ -144,18 +144,5 @@ To forward HTTP requests to the Hanko API you can use one of our server-side SDK
 
 ## Obtain an API Key
 
-In order to make authorized calls to the Hanko API you need an API Key ID/API Key pair. Because your mobile app
-cannot be considered a confidential client, you need to make use of a backend application component that is able to
-keep a registered API Key safe and that is able to securely authenticate with the Hanko API. To get an API Key ID/API
-Key pair:
-
-1. Go to {CONSOLE_URL}
-2. Log in or register an account
-3. Once signed in, create an organization. If you already created an organization, select the organization.
-4. Add a new relying party with the following properties:
-   - Relying Party Name: choose any name you want
-   - APP ID: **must** be a url with an https scheme
-5. Click "Add new relying party". Select the created relying party to get to the relying party dashboard.
-6. On the relying party dashboard, select "General Settings" and then click "Add" in the "API Keys" panel.
-   This will generate an API Key and an API Key ID. You should store the API Key securely since it cannot be obtained
-   once you confirm and close the modal displayed after key generation.
+You need access to the Hanko Authentication API, which is currently not publicly available. To request test access,
+please contact us at info@hanko.io.
