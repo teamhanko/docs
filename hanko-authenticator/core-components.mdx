@@ -1,14 +1,14 @@
 ---
 sidebarTitle: Core components
 title: Core components
-description: The core components that make up the Hanko Authenticator and Hanko FIDO UAF Client.
+description: The core components that make up the Hanko Authenticator, a self-hostable MFA and push authentication solution.
 ---
 
 ## Hanko Authenticator apps
 
-To allow your users to conveniently manage their private keys, they need a device that can sign authentication requests on your request. Such a device is called an authenticator, and could be a computer, a smartphone, or a second-factor device like a USB stick.
+To confirm a sign-in or a second-factor prompt, your users need a device that can sign the request — an authenticator. Typically that's their own smartphone, but it could also be a computer or a second-factor device like a USB security key.
 
-To facilitate the usage of the Hanko service, Hanko offers production-ready authenticator apps for Android and iOS that can be used with your applications. By simply touching the device's fingerprint sensor or using facial recognition with biometric cameras, your users can securely log into your applications. Read more about the [Hanko Authenticator apps](/hanko-authenticator/guides/authenticator-apps) or start with the [getting started guide](/hanko-authenticator/quickstart/authenticator-app).
+To make this easy to roll out, Hanko offers production-ready, white-label authenticator apps for Android and iOS that plug into your application. By simply touching the device's fingerprint sensor or using facial recognition, your users get a fast, secure second factor without typing OTP codes or waiting for SMS. Read more about the [Hanko Authenticator apps](/hanko-authenticator/guides/authenticator-apps) or start with the [getting started guide](/hanko-authenticator/quickstart/authenticator-app).
 
 <Warning>
   The unbranded/Hanko-branded Android app is currently not available on the Google Play store. Contact us for an APK download link.
@@ -22,8 +22,8 @@ To facilitate the usage of the Hanko service, Hanko offers production-ready auth
   />
 </a>
 
-## Hanko FIDO UAF Client SDKs & plugins
+## On-device SDKs & plugins
 
-In order to make integration of on-device FIDO UAF authentication into your existing native app as easy as possible, Hanko offers a mobile client SDK for both Android and iOS. Read more in the [SDKs section](/hanko-authenticator/sdks/android).
+If you'd rather build MFA directly into your existing native app instead of relying on a separate authenticator app, Hanko offers a mobile client SDK for both Android and iOS. Read more in the [SDKs section](/hanko-authenticator/sdks/android).
 
-If you use Keycloak as your identity and access management solution, you can integrate the Hanko Authenticator (FIDO UAF) as a login option through the [Keycloak plugin](/hanko-authenticator/sdks/keycloak-plugin).
+If you use Keycloak as your identity and access management solution — for example after migrating off Entra ID or Okta — you can add the Hanko Authenticator as a login option through the [Keycloak plugin](/hanko-authenticator/sdks/keycloak-plugin).
