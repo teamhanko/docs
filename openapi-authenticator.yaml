@@ -613,8 +613,15 @@ components:
 security:
   - ApiKeyAuth: []
 servers:
-  - url: 'https://api.hanko.io'
-    description: Production environment
+  - url: 'https://{your_hanko_authenticator_instance}'
+    description: >-
+      The Hanko Authenticator API is currently offered as a test instance and is not
+      provisioned through the Hanko Cloud Console. Contact us at info@hanko.io for test
+      access and your instance URL. Most customers self-host this API.
+    variables:
+      your_hanko_authenticator_instance:
+        default: your-test-instance.example.com
+        description: The host of your Hanko Authenticator API test instance or self-hosted deployment.
 openapi: 3.0.0
 paths:
   /hello:

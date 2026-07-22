@@ -445,8 +445,8 @@
             "group": "Getting started",
             "pages": [
               "hanko-authenticator/introduction",
-              "hanko-authenticator/what-is-fido-uaf",
-              "hanko-authenticator/core-components"
+              "hanko-authenticator/core-components",
+              "hanko-authenticator/what-is-fido-uaf"
             ]
           },
           {

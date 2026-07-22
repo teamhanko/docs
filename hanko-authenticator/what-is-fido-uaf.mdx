@@ -1,10 +1,14 @@
 ---
 sidebarTitle: What is FIDO UAF?
 title: What is FIDO UAF?
-description: A high-level overview of the FIDO Universal Authentication Framework (UAF) protocol that powers the Hanko Authenticator.
+description: Background reading on the FIDO Universal Authentication Framework (UAF) protocol that the Hanko Authenticator is built on.
 ---
 
-This page provides a high-level overview of the history and background of the FIDO Universal Authentication Framework (UAF) protocol — what's behind the acronym, the motivation behind it, and the core concepts and terminology that underpin the Hanko Authenticator.
+<Note>
+  This page is optional background reading. If you just want to know what the Hanko Authenticator does for your app, see the [introduction](/hanko-authenticator/introduction) and [core components](/hanko-authenticator/core-components) instead.
+</Note>
+
+This page provides a high-level overview of the history and background of the FIDO Universal Authentication Framework (UAF) protocol — what's behind the acronym, the motivation behind it, and the core concepts and terminology it relies on. The Hanko Authenticator app and the Hanko FIDO UAF Client implement this protocol under the hood, but you don't need to understand it to integrate either one.
 
 ## The problem with passwords
 
@@ -37,7 +41,7 @@ By 2014 the FIDO Alliance completed and published the first version of two of it
 
 FIDO U2F, developed by Google, Yubico, and NXP, was intended to serve as a protocol that facilitates augmenting existing password-based authentication schemes by also providing proof of possession of a separate physical hardware device (a security key) in addition to the password, using public key cryptography (digital signatures). Rather than typing a code (OTP), the user inserts a security key into their computer's USB port and taps it to verify their presence and complete the authentication process.
 
-FIDO UAF aimed at providing a generic framework for **passwordless** and **multi-factor** authentication, potentially leveraging the capabilities of a wide range of existing hardware devices (built-in or **bound** platform capabilities like fingerprint sensors, cameras, microphones, embedded TPM hardware) but also leaving open the possibility of using portable (also: **roaming**) devices not bound to any one specific device. This is the protocol the **Hanko Authenticator** and the **Hanko FIDO UAF Client** are built on.
+FIDO UAF aimed at providing a generic framework for **passwordless** and **multi-factor** authentication, potentially leveraging the capabilities of a wide range of existing hardware devices (built-in or **bound** platform capabilities like fingerprint sensors, cameras, microphones, embedded TPM hardware) but also leaving open the possibility of using portable (also: **roaming**) devices not bound to any one specific device. This is the protocol underlying the **Hanko Authenticator** and the **Hanko FIDO UAF Client**.
 
 Both protocols' component architecture comprises:
 
@@ -125,7 +129,7 @@ In contrast to registration, authentication in the FIDO context describes the pr
 
 <CardGroup cols={2}>
   <Card title="Hanko Authenticator" href="/hanko-authenticator/introduction">
-    Find out how the Hanko Authentication service leverages FIDO UAF in your application.
+    Find out what the Hanko Authenticator adds to your application's MFA and login flows.
   </Card>
   <Card title="FIDO specifications" href="https://fidoalliance.org/specifications/">
     Dive deeper by studying the official FIDO specifications.
