@@ -315,25 +315,6 @@ components:
                 properties:
                   username:
                     $ref: '#/components/schemas/Username'
-    GetUserByIdResponse:
-      description: Details for a user retrieved by ID
-      content:
-        application/json:
-          schema:
-            type: object
-            allOf:
-              - $ref: '#/components/schemas/UserBase'
-              - type: object
-                properties:
-                  email:
-                    description: The email address of the user
-                    type: string
-                    format: email
-                  username:
-                    description: The username of the user
-                    type: string
-                  webauthn_credentials:
-                    $ref: '#/components/schemas/WebauthnCredentials'
     ValidateSessionResponse:
       description: Session validation response
       content:
@@ -535,39 +516,6 @@ components:
       externalDocs:
         description: RFC7517 - JSON Web Key (JWK) - Section 5
         url: https://www.rfc-editor.org/rfc/rfc7517#section-5
-    GetUserResponse:
-      type: object
-      properties:
-        id:
-          description: The ID of the user
-          allOf:
-            - $ref: '#/components/schemas/UUID4'
-        email:
-          description: The email address of the user
-          type: string
-          format: email
-        created_at:
-          description: Time of creation of the the user
-          type: string
-          format: date-time
-        updated_at:
-          description: Time of last update of the user
-          type: string
-          format: date-time
-        verified:
-          description: Indicates whether the user's email address was verified
-          type: boolean
-        webauthn_credentials:
-          description: List of registered Webauthn credentials
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                description: The ID of the Webauthn credential
-                type: string
-                format: base64url
-                example: Meprtysj5ZZrTlg0qiLbsZ168OtQMeGVAikVy2n1hvvG...
     JWTClaims:
       type: object
       description: "The claims extracted from a JWT."
