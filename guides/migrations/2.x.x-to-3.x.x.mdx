@@ -20,39 +20,39 @@ Hanko 3.0.0 removes previously deprecated API endpoints. This guide outlines the
 The following Public API endpoints have been deprecated and will be removed in version 3.0.0:
 
 **Authentication Endpoints:**
-- [`POST /passcode/login/initialize`](/api-reference/public/passcode/initialize-passcode-login)
-- [`POST /passcode/login/finalize`](/api-reference/public/passcode/finalize-passcode-login)
-- [`POST /password/login`](/api-reference/public/password/do-password-login)
-- [`PUT /password`](/api-reference/public/password/createset-a-password)
+- `POST /passcode/login/initialize`
+- `POST /passcode/login/finalize`
+- `POST /password/login`
+- `PUT /password`
 
 **WebAuthn Endpoints:**
-- [`POST /webauthn/login/initialize`](/api-reference/public/webauthn/initialize-webauthn-login)
-- [`POST /webauthn/login/finalize`](/api-reference/public/webauthn/finalize-webauthn-login)
-- [`POST /webauthn/registration/initialize`](/api-reference/public/webauthn/initialize-webauthn-registration)
-- [`POST /webauthn/registration/finalize`](/api-reference/public/webauthn/finalize-webauthn-registration)
-- [`GET /webauthn/credentials`](/api-reference/public/webauthn/get-a-list-of-webauthn-credentials)
-- [`DELETE /webauthn/credentials/{id}`](/api-reference/public/webauthn/deletes-a-webauthn-credential)
-- [`PATCH /webauthn/credentials/{id}`](/api-reference/public/webauthn/updates-a-webauthn-credential)
+- `POST /webauthn/login/initialize`
+- `POST /webauthn/login/finalize`
+- `POST /webauthn/registration/initialize`
+- `POST /webauthn/registration/finalize`
+- `GET /webauthn/credentials`
+- `DELETE /webauthn/credentials/{id}`
+- `PATCH /webauthn/credentials/{id}`
 
 **Configuration & Authentication:**
-- [`GET /.well-known/config`](/api-reference/public/well-known/get-public-hanko-configuration)
-- [`GET /thirdparty/auth`](/api-reference/public/third-party/initialize-third-party-login)
-- [`POST /token`](/api-reference/public/token/exchange-one-time-token-for-session)
+- `GET /.well-known/config`
+- `GET /thirdparty/auth`
+- `POST /token`
 
 **User Management:**
-- [`POST /user`](/api-reference/public/user-management/get-user-details-by-email)
-- [`DELETE /user`](/api-reference/public/user-management/deletes-the-current-user)
-- [`POST /users`](/api-reference/public/user-management/create-a-user)
-- [`GET /users/{id}`](/api-reference/public/user-management/get-a-user-by-id) (use [GET `/me`](https://docs.hanko.io/api-reference/public/user-management/get-the-current-user-id) instead)
+- `POST /user`
+- `DELETE /user`
+- `POST /users`
+- `GET /users/{id}` (use [GET `/me`](https://docs.hanko.io/api-reference/public/user-management/get-the-current-user-id) instead)
 
 **Email Management:**
-- [`GET /emails`](/api-reference/public/email-management/get-a-list-of-emails-of-the-current-user)
-- [`POST /emails`](/api-reference/public/email-management/add-a-new-email-address-to-the-current-user)
-- [`POST /emails/{id}/set_primary`](/api-reference/public/email-management/marks-the-email-address-as-primary-email)
-- [`DELETE /emails/{id}`](/api-reference/public/email-management/delete-an-email-address)
+- `GET /emails`
+- `POST /emails`
+- `POST /emails/{id}/set_primary`
+- `DELETE /emails/{id}`
 
 **SAML:**
-- [`GET /saml/provider`](/api-reference/public/saml/get-a-saml-provider)
+- `GET /saml/provider`
 
 ### Deprecated SDK functions
 

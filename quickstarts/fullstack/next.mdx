@@ -555,7 +555,7 @@ export default function Dashboard() {
 
 ### Server side
 
-On the server side, you can extract the `userID` from the session token, which you can use to fetch the user's data from the [Hanko Public API](/api-reference/public/user-management/get-a-user-by-id).
+On the server side, you can validate the session token and use it to fetch the user's data from the [Hanko Public API](/api-reference/public/user-management/get-the-current-user-id).
 
 This server-side function validates sessions and fetches user data using the Hanko API.
 
@@ -585,8 +585,9 @@ export async function getUserData() {
       throw new Error("validation was not succesfull");
     }
 
-    const userid = validationData.user_id; //use user id to request data
-    const userResponse = await fetch(hankoApi + '/users/' + userid, validationOptions);
+    const userResponse = await fetch(hankoApi + '/me', {
+      headers: {'Authorization': `Bearer ${token}`}
+    });
     if (!userResponse.ok) {
       throw new Error("Could not get user data");
     }
