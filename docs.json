@@ -169,75 +169,27 @@
                         ]
                       },
                       {
-                        "group": "Passcode",
-                        "pages": [
-                          "api-reference/public/passcode/initialize-passcode-login",
-                          "api-reference/public/passcode/finalize-passcode-login"
-                        ]
-                      },
-                      {
-                        "group": "Password",
-                        "pages": [
-                          "api-reference/public/password/do-password-login",
-                          "api-reference/public/password/createset-a-password"
-                        ]
-                      },
-                      {
-                        "group": "WebAuthn",
-                        "pages": [
-                          "api-reference/public/webauthn/initialize-webauthn-login",
-                          "api-reference/public/webauthn/finalize-webauthn-login",
-                          "api-reference/public/webauthn/initialize-webauthn-registration",
-                          "api-reference/public/webauthn/finalize-webauthn-registration",
-                          "api-reference/public/webauthn/get-a-list-of-webauthn-credentials",
-                          "api-reference/public/webauthn/deletes-a-webauthn-credential",
-                          "api-reference/public/webauthn/updates-a-webauthn-credential"
-                        ]
-                      },
-                      {
                         "group": ".well-known",
                         "pages": [
-                          "api-reference/public/well-known/get-json-web-key-set",
-                          "api-reference/public/well-known/get-public-hanko-configuration"
+                          "api-reference/public/well-known/get-json-web-key-set"
                         ]
                       },
                       {
                         "group": "Third Party",
                         "pages": [
-                          "api-reference/public/third-party/initialize-third-party-login",
                           "api-reference/public/third-party/third-party-provider-callback"
-                        ]
-                      },
-                      {
-                        "group": "Token",
-                        "pages": [
-                          "api-reference/public/token/exchange-one-time-token-for-session"
                         ]
                       },
                       {
                         "group": "User Management",
                         "pages": [
-                          "api-reference/public/user-management/get-user-details-by-email",
-                          "api-reference/public/user-management/deletes-the-current-user",
                           "api-reference/public/user-management/get-the-current-user-id",
-                          "api-reference/public/user-management/log-out-the-current-user",
-                          "api-reference/public/user-management/create-a-user",
-                          "api-reference/public/user-management/get-a-user-by-id"
-                        ]
-                      },
-                      {
-                        "group": "Email Management",
-                        "pages": [
-                          "api-reference/public/email-management/get-a-list-of-emails-of-the-current-user",
-                          "api-reference/public/email-management/add-a-new-email-address-to-the-current-user",
-                          "api-reference/public/email-management/marks-the-email-address-as-primary-email",
-                          "api-reference/public/email-management/delete-an-email-address"
+                          "api-reference/public/user-management/log-out-the-current-user"
                         ]
                       },
                       {
                         "group": "SAML",
                         "pages": [
-                          "api-reference/public/saml/get-a-saml-provider",
                           "api-reference/public/saml/get-saml-metadata",
                           "api-reference/public/saml/saml-identity-provider-callback"
                         ]
