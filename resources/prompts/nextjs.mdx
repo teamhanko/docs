@@ -1,6 +1,6 @@
 ---
 title: NextJS
-description: This prompt helps you (and your AI) to implementing Hanko with NextJS.
+description: This prompt helps you (and your AI) implement Hanko with NextJS.
 ---
 
 ## How to use these prompts
@@ -8,15 +8,15 @@ description: This prompt helps you (and your AI) to implementing Hanko with Next
 You can copy the prompts and paste them into your AI assistant or IDE. Some ideas on how to use them:
 
 - Add them as "project rules" in Cursor -> [Guide](https://docs.cursor.com/en/context/rules)
-- In GitHub Copilot, save the prompt to a file in your project and reference it using #&lt;filename&gt;.
-- In Claude Code, include the prompt in your CLAUDE.md file. (recommend for best results)
+- In GitHub Copilot, save the prompt to a file in your project and reference it using #&lt;filename&gt;
+- In Claude Code, include the prompt in your CLAUDE.md file (recommended for best results)
 
 ## Prompt
 
 ```markdown
-## Add Hanko to Next.js Application
+## Add Hanko to a Next.js application
 
-**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) passwordless authentication into a Next.js application.  
+**Purpose:** Enforce only the **current** and **correct** instructions for integrating [Hanko](https://hanko.io/) authentication into a Next.js application.  
 **Scope:** All AI-generated advice or code related to Hanko must follow these guardrails for both App Router and Pages Router architectures.
 
 ---
@@ -25,7 +25,7 @@ You can copy the prompts and paste them into your AI assistant or IDE. Some idea
 
 Use only the **current** approach from Hanko's documentation:
 
-- **Install** `@teamhanko/hanko-elements@latest` - this provides pre-built authentication components
+- **Install** `@teamhanko/hanko-elements@latest` - this provides pre-built authentication web components
 - **Set up** Hanko Cloud project at [cloud.hanko.io](https://cloud.hanko.io/) with correct APP URL (likely http://localhost:3000 for development)
 - **Configure** `NEXT_PUBLIC_HANKO_API_URL` environment variable in `.env.local`
 - **Add** TypeScript declarations in `custom.d.ts` for web component support
@@ -175,9 +175,6 @@ export const config = {
 ## **4. OUTDATED PATTERNS TO AVOID**
 
 ```typescript
-// ❌ DO NOT use old Hanko package names
-import { Hanko } from "@hanko/hanko-elements" // Outdated
-
 // ❌ DO NOT mix router imports
 import { useRouter } from "next/router"; // Wrong for App Router
 import { useRouter } from "next/navigation"; // Wrong for Pages Router
