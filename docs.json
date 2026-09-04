@@ -200,6 +200,12 @@
                           "api-reference/public/session-management/validate-a-session",
                           "api-reference/public/session-management/validate-a-session-1"
                         ]
+                      },
+                      {
+                        "group": "Organization Management",
+                        "pages": [
+                          "api-reference/public/organization-management/check-current-users-role"
+                        ]
                       }
                     ]
                   },
@@ -291,6 +297,32 @@
                         "group": "Metrics",
                         "pages": [
                           "api-reference/admin/metrics/get-prometheus-metrics"
+                        ]
+                      },
+                      {
+                        "group": "Organization Management",
+                        "pages": [
+                          "api-reference/admin/organization-management/get-a-list-of-organizations",
+                          "api-reference/admin/organization-management/create-a-new-organization",
+                          "api-reference/admin/organization-management/get-an-organization-by-id",
+                          "api-reference/admin/organization-management/update-an-organization-by-id",
+                          "api-reference/admin/organization-management/delete-an-organization-by-id",
+                          "api-reference/admin/organization-management/get-a-list-of-organization-members",
+                          "api-reference/admin/organization-management/add-an-organization-member",
+                          "api-reference/admin/organization-management/remove-an-organization-member"
+                        ]
+                      },
+                      {
+                        "group": "Role Management",
+                        "pages": [
+                          "api-reference/admin/role-management/get-a-list-of-roles",
+                          "api-reference/admin/role-management/create-a-new-role",
+                          "api-reference/admin/role-management/get-a-role-by-id",
+                          "api-reference/admin/role-management/update-a-role-by-id",
+                          "api-reference/admin/role-management/delete-a-role-by-id",
+                          "api-reference/admin/role-management/get-a-list-of-role-bindings",
+                          "api-reference/admin/role-management/create-a-role-binding",
+                          "api-reference/admin/role-management/remove-a-role-binding"
                         ]
                       }
                     ]
