@@ -1485,8 +1485,8 @@ paths:
     delete:
       summary: "Delete a role by ID"
       description: |
-        Fails with 409 Conflict if the role still has any role bindings - role deletion does not cascade,
-        unlike organization and user deletion.
+        Deleting a role cascades to its role bindings, in every organization the role was held in -
+        it does not need to be unassigned from every user first.
       security:
         - BearerApiKeyAuth: [ ]
       operationId: deleteRole
@@ -1504,8 +1504,6 @@ paths:
           description: "Deleted"
         "404":
           $ref: "#/components/responses/NotFound"
-        "409":
-          $ref: "#/components/responses/Conflict"
         "500":
           $ref: "#/components/responses/InternalServerError"
 components:
