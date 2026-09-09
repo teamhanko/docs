@@ -1734,6 +1734,47 @@ components:
             $ref: "#/components/schemas/Email"
         username:
           $ref: "#/components/schemas/Username"
+        organizations:
+          description: Organizations the user belongs to, and the roles held in each. Omitted if the user belongs to no organizations.
+          type: array
+          items:
+            $ref: "#/components/schemas/UserOrganization"
+    UserOrganization:
+      type: object
+      required:
+        - id
+        - name
+        - roles
+      properties:
+        id:
+          description: The ID of the organization
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+        name:
+          description: Name of the organization
+          type: string
+        roles:
+          description: Roles the user holds within this organization
+          type: array
+          items:
+            $ref: "#/components/schemas/UserOrganizationRole"
+    UserOrganizationRole:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+      properties:
+        id:
+          description: The ID of the role
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+        slug:
+          description: Machine-safe, human-readable identifier for the role
+          type: string
+        name:
+          description: Display name of the role
+          type: string
     User:
       allOf:
         - $ref: "#/components/schemas/UserBase"
