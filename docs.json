@@ -87,13 +87,15 @@
               {
                 "group": "Social SSO",
                 "pages": [
+                  "guides/social-sso/introduction",
                   "guides/social-sso/apple",
                   "guides/social-sso/discord",
                   "guides/social-sso/facebook",
                   "guides/social-sso/github",
                   "guides/social-sso/google",
                   "guides/social-sso/linkedin",
-                  "guides/social-sso/microsoft"
+                  "guides/social-sso/microsoft",
+                  "guides/social-sso/custom-providers"
                 ]
               },
               {

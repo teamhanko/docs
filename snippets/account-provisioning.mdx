@@ -1,0 +1,29 @@
+On a successful sign-in, Hanko resolves it to a Hanko account based on the email address the connection provides:
+
+- If no Hanko account with that email address exists, a new one is created and the connection is linked to it.
+
+  To prevent this automatic account creation and instead manage account creation yourself:
+  <AccordionGroup>
+      <Accordion title="Disabling self-service signup">
+          1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+          2. Navigate to `Settings > User account`.
+          3. Find the `Account self-service` section.
+          4. Use the `Allow Account creation` toggle to disable self-service account creation.
+      </Accordion>
+      <Accordion title="Creating or importing users">
+          1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+          2. Navigate to `Users`.
+          3. On the top right, click:
+             - `Create new` to manually create a user.
+             - `Import` to bulk import users. See also: [Import and export users](/guides/import-export-users)
+      </Accordion>
+  </AccordionGroup>
+- If a Hanko account with the same email address already exists, the connection is linked to it.
+
+  <Warning>
+      A connection may allow account holders to use unverified email addresses, or may not report a verification
+      status at all. Linking based on an unverified address is a security risk: it can let a bad actor hijack an
+      existing Hanko account by authenticating through a connection using an address they don't actually control but
+      that happens to match. Make sure you trust the connection, and don't skip email verification for it unless
+      you're confident it only ever reports verified addresses.
+  </Warning>

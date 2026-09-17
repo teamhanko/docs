@@ -5,6 +5,7 @@ description: Learn how SAML SSO enterprise connections work with Hanko.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import AccountProvisioning from '/snippets/account-provisioning.mdx'
 
 <div class="hidden">
 **Hanko SAML Integration Overview**:
@@ -224,37 +225,7 @@ Because of the risks of the IdP-initiated it is recommended to use an SP-initiat
 
 ## Account provisioning and linking
 
-On a successful SAML SSO Hanko attempts to link Identity Provider (IdP) accounts to existing Hanko accounts based on
-e-mail addresses:
-
-- If no Hanko account with email address exists, then a new Hanko account is created and the IdP is linked to the
-  newly created account.
-
-  If you want to prevent this type of automatic account creation for your project, you can
-  disable user self-service account creation and instead manually create or bulk import users through the console.
-  <AccordionGroup>
-      <Accordion title="Disabling self-service signup">
-          1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
-          2. Navigate to `Settings > User account`.
-          3. Find the `Account self-service` section.
-          4. Use the `Allow Account creation` toggle enable or disable self-service account creation.
-      </Accordion>
-
-      <Accordion title="Creating or importing users">
-            1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
-            2. Navigate to `Users`.
-            3. On the top right, click
-               - `Create new` to manually create a user.
-               - `Import` to bulk import users. See also: [Import and export users](/guides/import-export-users)
-      </Accordion>
-  </AccordionGroup>
-- If a Hanko account with the same email address exists, Hanko and IdP accounts are linked.
-  IdPs may allow account holders to use unverified email addresses or may not provide any information at all about the
-  verification status of email addresses. This poses a security risk and potentially allows bad actors to hijack
-  existing Hanko accounts associated with the same address. It is therefore recommended to make sure you trust the
-  provider and to not skip email verification for your provider (see:
-  [Managing enterprise connections](#managing-enterprise-connections)) to ensure that only verified third
-  party provider addresses may be used.
+<AccountProvisioning />
 
 ## SAML data of Hanko Cloud projects
 

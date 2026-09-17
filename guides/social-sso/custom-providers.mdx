@@ -1,0 +1,72 @@
+---
+title: Custom providers
+description: Connect a custom OAuth or OpenID Connect provider Hanko doesn't support out of the box.
+---
+
+import HankoAbout from '/snippets/hanko-about.mdx'
+
+<div class="hidden">
+**Hanko Custom Provider Guide**:
+
+**About Hanko**:
+<HankoAbout />
+
+**What This Guide Covers**: This guide explains how to connect a custom OAuth or OpenID Connect provider that isn't
+one of Hanko's built-in social providers.
+
+**Prerequisites**:
+- Active Hanko project
+- Client credentials (client ID and secret) from your provider
+- Your provider's endpoint URLs, or confirmation it supports OIDC discovery
+
+**Tasks You'll Complete**:
+- Register Hanko's redirect URL with your provider
+- Create a custom connection in Hanko Cloud
+- Configure discovery or manual endpoint URLs
+</div>
+
+Alongside its built-in social providers (Apple, Discord, GitHub, Google, LinkedIn, Microsoft), Hanko can connect to
+any OAuth 2.0 or OpenID Connect (OIDC) provider you configure yourself.
+
+## Adding a custom provider
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Social connections` and scroll to `Custom connections`.
+3. Note the `Redirect URL` shown at the top of the connection form, and register it as an allowed redirect/callback
+   URL with your provider - this step happens on your provider's side, not Hanko's.
+4. Click `New connection` and provide:
+   - A `Connection name`.
+   - The `Client ID` and `Client secret` obtained from your provider.
+   - `Scopes`, a comma-separated list to request from the provider (`openid` is the minimum required if the
+     provider is OIDC).
+5. Click `Save`.
+
+## Discovery vs. manual endpoints
+
+If your provider implements [OIDC discovery](https://openid.net/specs/openid-connect-discovery-1_0.html), leave
+`Use OIDC discovery` enabled and provide only the `Issuer` - the base URL identifying the service, without the
+`/.well-known/openid-configuration` path suffix - and Hanko fetches the rest of the provider's configuration from
+its discovery document. Otherwise (including for any plain OAuth 2.0 provider, which has no discovery document by
+definition), disable it and provide the `Authorization endpoint`, `Token endpoint`, and `Userinfo endpoint`
+directly.
+
+## Optional settings
+
+- `Prompt` and `ACR values` are passed through to the provider's authorization request, if it supports them
+  (`prompt` controls whether the provider forces re-authentication or consent; `acr_values` requests specific
+  authentication context).
+- `Allow linking` lets a user authenticating through this provider link to an existing Hanko account with the same
+  email address - see [Account provisioning and linking](/guides/social-sso/introduction#account-provisioning-and-linking)
+  for how this works and the security trade-off involved.
+
+## Attribute and custom claim mapping
+
+A custom provider's own claims can be mapped onto Hanko's standard profile fields (see
+[Attribute mapping](/guides/user-data/attribute-mapping)) and onto any custom claims you've declared for your
+project (see [Custom claims](/guides/user-data/custom-claims)) - both are configured directly on the same
+connection form.
+
+<Note>
+    Since a non-OIDC (plain OAuth) provider's userinfo response doesn't necessarily conform to OIDC standard claim
+    names, attribute mapping is often required, not just optional, for such providers.
+</Note>
