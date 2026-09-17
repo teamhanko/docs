@@ -79,7 +79,8 @@
                 "pages": [
                   "guides/user-data/frontend",
                   "guides/user-data/backend",
-                  "guides/user-data/user-metadata"
+                  "guides/user-data/user-metadata",
+                  "guides/user-data/custom-claims"
                 ]
               },
               {
@@ -227,6 +228,12 @@
                         "pages": [
                           "api-reference/admin/user-metadata-management/get-metadata-of-a-user",
                           "api-reference/admin/user-metadata-management/patch-metadata-of-a-user"
+                        ]
+                      },
+                      {
+                        "group": "Custom Claims Management",
+                        "pages": [
+                          "api-reference/admin/custom-claims-management/get-custom-claims-of-a-user"
                         ]
                       },
                       {

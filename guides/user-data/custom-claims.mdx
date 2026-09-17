@@ -1,0 +1,115 @@
+---
+title: Custom claims
+description: Declare project-defined claims and map them from enterprise or social connections onto session JWTs and the Admin API.
+---
+
+import HankoAbout from '/snippets/hanko-about.mdx'
+
+<div class="hidden">
+**Hanko Custom Claims Guide**:
+
+**About Hanko**:
+<HankoAbout />
+
+**What This Guide Covers**: This guide explains Hanko's custom claims: declaring a project-wide set of typed claims,
+mapping them from enterprise and social (OIDC/OAuth) connections, and where resolved values become available
+(session JWTs, the Admin API).
+
+**Prerequisites**:
+- Active Hanko project
+- At least one enterprise or custom OIDC/OAuth connection configured
+
+**Tasks You'll Complete**:
+- Declare a custom claim
+- Map a custom claim on an enterprise connection
+- Map a custom claim on a social (OIDC/OAuth) connection
+- Understand how resolved values are stored and cleared
+- Access a resolved claim from a JWT template or the Admin API
+</div>
+
+Custom claims let you declare your own project-wide set of typed claims and have enterprise or social (OIDC/OAuth)
+connections map their own attributes/claims onto them. This is distinct from the fixed-slot attribute mapping every
+connection type already has, which renames a provider attribute/claim into one of Hanko's fixed standard slots
+(name, email, ...) - custom claims are project-defined, not fixed, and none of them are added to the session JWT
+automatically (see [Accessing custom claims](/guides/session-management#accessing-custom-claims) for how to opt one
+in).
+
+## Declaring custom claims
+
+To declare a custom claim:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Custom claims`.
+3. Click `New claim`.
+4. Provide a `Name`, a `Type` (`string`, `number`, `boolean`, or `string_list`), and an optional `Description`.
+5. Click `Save`.
+
+A project may declare at most 50 custom claims. A claim name must be a valid identifier and must not be one of the
+claim keys Hanko always adds to the JWT itself (`sub`, `iat`, `exp`, `aud`, `iss`, `email`, `username`,
+`session_id`).
+
+Custom claims are deliberately scalar or list-of-scalar only (`string`, `number`, `boolean`, `string_list`) - there's
+no nested/object type. Enterprise connection attributes are structurally flat, and this keeps one claim shape across
+both connection types.
+
+## Mapping custom claims
+
+Once declared, an enterprise or social connection can map its own attributes/claims onto your custom claims. A
+mapping that references a claim name you haven't declared is rejected - this is checked both when you save the
+mapping and whenever you remove a claim definition a connection still maps.
+
+### Enterprise connections
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Enterprise connections` and open (or create) a connection.
+3. Under `Custom claims`, add a mapping from each claim name to the SAML attribute name that should populate it.
+4. Click `Save`.
+
+### Social connections
+
+Custom claim mapping is available for [custom OAuth/OIDC providers](/guides/social-sso) you've configured yourself -
+not the built-in providers (Apple, Discord, GitHub, Google, LinkedIn, Microsoft).
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Social connections` and open (or create) a custom provider.
+3. Under `Custom claim mapping`, add a mapping from each claim name to the provider claim that should populate it.
+   The provider claim may be a [gjson path](https://github.com/tidwall/gjson#path-syntax) to reach into a nested
+   claim.
+4. Click `Save`.
+
+If a provider claim is itself a nested object, there's no way to declare a custom claim that captures it as-is (see
+[Declaring custom claims](#declaring-custom-claims) above). Instead, declare one flat claim per leaf field you need,
+each with its own gjson path into that object, and recompose them into a nested shape using
+[session token customization](/guides/session-management#session-token-customization), which does support arbitrary
+nested map literals with templated leaves.
+
+<Note>
+    Each leaf field declared this way counts toward the 50-claim cap on its own. Flattening several nested objects
+    this way can approach that limit faster than declaring flat claims directly would.
+</Note>
+
+A mapped value that doesn't match its claim's declared type (e.g. a provider claim that resolves to a nested object
+for a claim declared as `string`) is silently skipped rather than blocking sign-in - see
+[Resolving custom claims](#resolving-custom-claims) for exactly what happens to that claim's stored value when this
+occurs.
+
+## Resolving custom claims
+
+Resolved custom claim values are stored per user, one per project. Whichever connection a user most recently
+authenticated with wins for any claim it maps (last-one-wins); if that connection no longer asserts a value for a
+claim it maps, the claim is cleared - but only if that same connection was the one that set it, so a connection can
+never clear a claim it doesn't own.
+
+A mapped value that fails to resolve to its claim's declared type is treated differently from a genuinely absent
+value: it's skipped without clearing whatever was previously stored, since a malformed value is evidence of a
+mapping problem, not evidence the claim no longer applies.
+
+Resolved values are visible on a user's detail page under `Custom claims`, and via the read-only
+[Get custom claims of a user](/api-reference/admin/custom-claims-management/get-custom-claims-of-a-user) Admin API
+endpoint (which claim, not which connection, set it).
+
+## Using custom claims in JWT templates
+
+None of your declared custom claims are added to the session JWT automatically. See
+[Accessing custom claims](/guides/session-management#accessing-custom-claims) for how to opt individual claims (or
+all of them) into your session token via session token customization.
