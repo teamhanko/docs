@@ -80,6 +80,7 @@
                   "guides/user-data/frontend",
                   "guides/user-data/backend",
                   "guides/user-data/user-metadata",
+                  "guides/user-data/attribute-mapping",
                   "guides/user-data/custom-claims"
                 ]
               },

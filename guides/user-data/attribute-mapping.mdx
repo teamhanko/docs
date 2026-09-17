@@ -1,0 +1,61 @@
+---
+title: Attribute mapping
+description: Map SAML attributes or OIDC/OAuth claims onto Hanko's standard user profile fields.
+---
+
+import HankoAbout from '/snippets/hanko-about.mdx'
+
+<div class="hidden">
+**Hanko Attribute Mapping Guide**:
+
+**About Hanko**:
+<HankoAbout />
+
+**What This Guide Covers**: This guide explains how to map an enterprise or social connection's own
+attributes/claims onto Hanko's fixed set of standard user profile fields.
+
+**Prerequisites**:
+- Active Hanko project
+- At least one enterprise or social connection configured
+
+**Tasks You'll Complete**:
+- Understand which standard profile fields Hanko reads from a connection
+- Map a connection's attributes/claims onto those fields
+- Understand each field's default when left unmapped
+</div>
+
+Hanko reads a fixed set of standard profile fields from every enterprise or social connection: `Name`,
+`Given name`, `Family name`, `Email`, `Email verified`, and `Picture`. By default it looks for these under standard
+attribute/claim names (a SAML URN, or a same-named claim from the provider) - if your provider sends them under
+different names, attribute mapping lets you tell Hanko where to actually find them.
+
+This is distinct from [custom claims](/guides/user-data/custom-claims), which map a connection's attributes/claims
+onto claims you declare yourself, not onto this fixed set.
+
+## Enterprise connections
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Enterprise connections` and open (or create) a connection.
+3. Under `Attribute mapping`, set each field to the SAML attribute name (or URI) your IdP actually uses.
+4. Click `Save`.
+
+Leave a field blank to use Hanko's default for it - each field's own help text in the Console shows that default.
+Most default to a standard SAML claim URI (e.g.
+`http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress` for `Email`); `Email verified` and `Picture`
+have no default at all unless the connection's name contains "auth0", in which case Hanko falls back to Auth0's own
+attribute names for them.
+
+## Social connections
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Social connections` and open (or create) a custom provider.
+3. Under `Attribute mapping`, set each field to the provider's own claim name to read it from.
+4. Click `Save`.
+
+Leave a field blank to fall through to the provider's own same-named claim (e.g. `email`), if it sends one - most
+spec-compliant OIDC providers do by default.
+
+<Note>
+    This only applies to custom OAuth/OIDC providers you've configured yourself, not the built-in providers (Apple,
+    Discord, GitHub, Google, LinkedIn, Microsoft).
+</Note>

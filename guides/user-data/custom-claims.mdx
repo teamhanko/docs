@@ -28,10 +28,10 @@ mapping them from enterprise and social (OIDC/OAuth) connections, and where reso
 </div>
 
 Custom claims let you declare your own project-wide set of typed claims and have enterprise or social (OIDC/OAuth)
-connections map their own attributes/claims onto them. This is distinct from the fixed-slot attribute mapping every
-connection type already has, which renames a provider attribute/claim into one of Hanko's fixed standard slots
-(name, email, ...) - custom claims are project-defined, not fixed, and none of them are added to the session JWT
-automatically (see [Accessing custom claims](/guides/session-management#accessing-custom-claims) for how to opt one
+connections map their own attributes/claims onto them. This is distinct from
+[attribute mapping](/guides/user-data/attribute-mapping), which renames a provider attribute/claim into one of
+Hanko's fixed standard slots (name, email, ...) - custom claims are project-defined, not fixed, and none of them
+are added to the session JWT automatically (see [Accessing custom claims](/guides/session-management#accessing-custom-claims) for how to opt one
 in).
 
 ## Declaring custom claims

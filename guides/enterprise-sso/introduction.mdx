@@ -74,13 +74,19 @@ To add an enterprise connection to your project:
        verification email to the user's email address if no information about the verification status of a user's email
        address for the provider is discernible from SAML responses.
        <Warning>
-           Hanko Cloud tenants currently do not support configuring mappings of SAML attributes from SAML responses
-           to user properties at the Hanko tenant. If your providers' SAML responses can be configured to or do already
-           include a SAML attribute with information about an verification status of an email address in a SAML
-           response's attribute statement, then the tenant will currently ignore it. It is therefore recommended to not
-           skip email verification to prevent hijacking of existing Hanko accounts by bad actors using unverified IdP
-           addresses (see also: [Account provisioning and linking](#account-provisioning-and-linking))
+           Hanko only treats a user's email as verified via this signal if you've mapped it: under `Attribute
+           mapping`, set `Email verified` to the SAML attribute your IdP sends verification status under. Left
+           unmapped, this stays unverified regardless of what your IdP actually sends - unless the connection's name
+           contains "auth0", which defaults to Auth0's own verified-email attribute. It is therefore recommended to
+           not skip email verification unless you've explicitly mapped this and trust the source, to prevent
+           hijacking of existing Hanko accounts by bad actors using unverified IdP addresses (see also:
+           [Account provisioning and linking](#account-provisioning-and-linking)).
        </Warning>
+
+### Attribute mapping
+
+By default, Hanko reads a fixed set of standard SAML attribute names to populate a user's profile. If your IdP
+sends these under different names, see [Attribute mapping](/guides/user-data/attribute-mapping) to map them.
 
 ### Configuring SAML identity providers
 
