@@ -98,7 +98,9 @@ occurs.
 Resolved custom claim values are stored per user, one per project. Whichever connection a user most recently
 authenticated with wins for any claim it maps (last-one-wins); if that connection no longer asserts a value for a
 claim it maps, the claim is cleared - but only if that same connection was the one that set it, so a connection can
-never clear a claim it doesn't own.
+never clear a claim it doesn't own. This is connection-type agnostic: if you map the same claim name on both an
+enterprise connection and a social connection, whichever one a user most recently signed in through owns it -
+there's no separate precedence between connection types.
 
 A mapped value that fails to resolve to its claim's declared type is treated differently from a genuinely absent
 value: it's skipped without clearing whatever was previously stored, since a malformed value is evidence of a
