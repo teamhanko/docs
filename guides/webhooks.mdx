@@ -41,6 +41,8 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
 import WebhookUserPayloadExample from '/snippets/webhooks/user-payload-example.mdx';
 import WebhookUserPayloadProperties from '/snippets/webhooks/user-payload-properties.mdx';
+import WebhookSessionPayloadExample from '/snippets/webhooks/session-payload-example.mdx';
+import WebhookSessionPayloadProperties from '/snippets/webhooks/session-payload-properties.mdx';
 import WebhookEmailSendExample from '/snippets/webhooks/email-send-example.mdx';
 import WebhookEmailSendProperties from '/snippets/webhooks/email-send-properties.mdx';
 import ProFeatureNote from '/snippets/pro-feature-note.mdx'
@@ -419,6 +421,163 @@ This event is triggered when a user's username is updated.
     </Accordion>
     <Accordion title={"'user.update.username.update' token payload properties"}>
         <WebhookUserPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### session
+
+Subscribing to this event implies subscription to the following events:
+[`session.create.flow`](#session-create-flow),
+[`session.create.admin`](#session-create-admin),
+[`session.delete.explicit.logout`](#session-delete-explicit-logout),
+[`session.delete.explicit.revoke`](#session-delete-explicit-revoke),
+[`session.delete.admin.revoke`](#session-delete-admin-revoke),
+[`session.delete.passive.expire`](#session-delete-passive-expire),
+[`session.delete.passive.limit`](#session-delete-passive-limit)
+
+#### session.create
+
+Subscribing to this event implies subscription to the following events:
+[`session.create.flow`](#session-create-flow),
+[`session.create.admin`](#session-create-admin)
+
+#### session.create.flow
+
+This event is triggered when a session is created through the login, registration, third-party, or token
+exchange flow, i.e. whenever a user authenticates.
+
+<AccordionGroup>
+    <Accordion title={"'session.create.flow' token payload example"}>
+        <WebhookSessionPayloadExample/>
+    </Accordion>
+    <Accordion title={"'session.create.flow' token payload properties"}>
+        <WebhookSessionPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### session.create.admin
+
+This event is triggered when a session is created through the [admin API](/api-reference/admin/session-management/create-session).
+
+<AccordionGroup>
+    <Accordion title={"'session.create.admin' token payload example"}>
+        <WebhookSessionPayloadExample/>
+    </Accordion>
+    <Accordion title={"'session.create.admin' token payload properties"}>
+        <WebhookSessionPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### session.delete
+
+Subscribing to this event implies subscription to the following events:
+[`session.delete.explicit.logout`](#session-delete-explicit-logout),
+[`session.delete.explicit.revoke`](#session-delete-explicit-revoke),
+[`session.delete.admin.revoke`](#session-delete-admin-revoke),
+[`session.delete.passive.expire`](#session-delete-passive-expire),
+[`session.delete.passive.limit`](#session-delete-passive-limit)
+
+#### session.delete.explicit
+
+Subscribing to this event implies subscription to the following events:
+[`session.delete.explicit.logout`](#session-delete-explicit-logout),
+[`session.delete.explicit.revoke`](#session-delete-explicit-revoke)
+
+This event group covers session deletions that were deliberately initiated by the session owner, as opposed to
+deletions initiated by an admin (see [`session.delete.admin`](#session-delete-admin)) or triggered automatically
+by the system (see [`session.delete.passive`](#session-delete-passive)).
+
+#### session.delete.explicit.logout
+
+This event is triggered when a user [logs out](/guides/session-management#explicit-user-logout).
+
+<AccordionGroup>
+    <Accordion title={"'session.delete.explicit.logout' token payload example"}>
+        <WebhookSessionPayloadExample/>
+    </Accordion>
+    <Accordion title={"'session.delete.explicit.logout' token payload properties"}>
+        <WebhookSessionPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### session.delete.explicit.revoke
+
+This event is triggered when a user [revokes](/guides/session-management#allowing-session-revocation) one of their
+own other active sessions, e.g. from the profile page.
+
+<AccordionGroup>
+    <Accordion title={"'session.delete.explicit.revoke' token payload example"}>
+        <WebhookSessionPayloadExample/>
+    </Accordion>
+    <Accordion title={"'session.delete.explicit.revoke' token payload properties"}>
+        <WebhookSessionPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### session.delete.admin
+
+Subscribing to this event implies subscription to the following events:
+[`session.delete.admin.revoke`](#session-delete-admin-revoke)
+
+This event group covers session deletions initiated by an admin, as opposed to deletions initiated by the
+session owner (see [`session.delete.explicit`](#session-delete-explicit)) or triggered automatically by the
+system (see [`session.delete.passive`](#session-delete-passive)).
+
+#### session.delete.admin.revoke
+
+This event is triggered when a session is revoked through the [admin API](/api-reference/admin/session-management/delete-session).
+
+<AccordionGroup>
+    <Accordion title={"'session.delete.admin.revoke' token payload example"}>
+        <WebhookSessionPayloadExample/>
+    </Accordion>
+    <Accordion title={"'session.delete.admin.revoke' token payload properties"}>
+        <WebhookSessionPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### session.delete.passive
+
+Subscribing to this event implies subscription to the following events:
+[`session.delete.passive.expire`](#session-delete-passive-expire),
+[`session.delete.passive.limit`](#session-delete-passive-limit)
+
+This event group covers session deletions that are triggered automatically by the system rather than
+deliberately by a user or admin.
+
+<Info>
+    Because these events fire as a side effect of ordinary, high-frequency traffic (session validation checks,
+    logins), they occur far more often than [`session.delete.explicit`](#session-delete-explicit) or
+    [`session.delete.admin`](#session-delete-admin) events. Subscribe to the specific leaf events below rather
+    than to `session.delete` or `session` as a whole if you only care about deliberate session terminations.
+</Info>
+
+#### session.delete.passive.expire
+
+This event is triggered when a session is automatically deleted after exceeding the configured
+[idle timeout](/guides/session-management#limiting-idle-session-timeout).
+
+<AccordionGroup>
+    <Accordion title={"'session.delete.passive.expire' token payload example"}>
+        <WebhookSessionPayloadExample/>
+    </Accordion>
+    <Accordion title={"'session.delete.passive.expire' token payload properties"}>
+        <WebhookSessionPayloadProperties/>
+    </Accordion>
+</AccordionGroup>
+
+#### session.delete.passive.limit
+
+This event is triggered when a session is automatically deleted because the user exceeded the configured
+[maximum number of concurrent sessions](/guides/session-management#limiting-concurrent-sessions), evicting their
+oldest session.
+
+<AccordionGroup>
+    <Accordion title={"'session.delete.passive.limit' token payload example"}>
+        <WebhookSessionPayloadExample/>
+    </Accordion>
+    <Accordion title={"'session.delete.passive.limit' token payload properties"}>
+        <WebhookSessionPayloadProperties/>
     </Accordion>
 </AccordionGroup>
 
