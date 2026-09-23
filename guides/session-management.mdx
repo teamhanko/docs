@@ -241,6 +241,7 @@ Each template has access to user data via the `.User` field, which includes:
 - `.User.Metadata`: The user's public and unsafe metadata (optional)
     - `.User.Metadata.Public`: The user's public metadata (object)
     - `.User.Metadata.Unsafe`: The user's unsafe metadata (object)
+- `.User.CustomClaims`: The user's resolved [custom claims](/guides/user-data/custom-claims) (optional)
 
 #### Accessing user metadata
 
@@ -283,6 +284,39 @@ favorite_genres: '{{ .User.Metadata.Public "favorite_games.#.genre" }}'
     If you use use double quotes for your entire claim template then the path argument must be escaped, i.e.:
 
     `"{{ .User.Metadata.Public \"display_name\" }}"`
+</Warning>
+
+#### Accessing custom claims
+
+`.User.CustomClaims` provides access to a user's resolved [custom claims](/guides/user-data/custom-claims) - values
+your enterprise or social connections have mapped onto claims you've declared for your project. Individual values
+can be accessed by passing the claim name as an argument, the same way as `.User.Metadata.Public`/
+`.User.Metadata.Unsafe` above.
+
+Assume a user's resolved custom claims look like this:
+
+```json
+{
+    "matriculation_number": "12345",
+    "is_staff": true,
+    "affiliation": ["student", "staff"]
+}
+```
+
+Then you could access individual values, or embed the whole object directly:
+
+```yaml
+mat_nr: '{{ .User.CustomClaims "matriculation_number" }}'
+is_staff: '{{ .User.CustomClaims "is_staff" }}'
+affiliation: '{{ .User.CustomClaims "affiliation" }}'
+university: '{{ .User.CustomClaims }}'
+```
+
+<Warning>
+    A claim's real type (number, boolean, array) is preserved only when the template value is nothing but a single,
+    bare `.User.CustomClaims` reference like the examples above. Glue it to other text (e.g.
+    `"ID: {{ .User.CustomClaims \"id\" }}"`) and normal Go template stringification applies instead, so a `number`
+    would come out as text.
 </Warning>
 
 ### Example configuration

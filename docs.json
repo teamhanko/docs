@@ -79,19 +79,23 @@
                 "pages": [
                   "guides/user-data/frontend",
                   "guides/user-data/backend",
-                  "guides/user-data/user-metadata"
+                  "guides/user-data/user-metadata",
+                  "guides/user-data/attribute-mapping",
+                  "guides/user-data/custom-claims"
                 ]
               },
               {
                 "group": "Social SSO",
                 "pages": [
+                  "guides/social-sso/introduction",
                   "guides/social-sso/apple",
                   "guides/social-sso/discord",
                   "guides/social-sso/facebook",
                   "guides/social-sso/github",
                   "guides/social-sso/google",
                   "guides/social-sso/linkedin",
-                  "guides/social-sso/microsoft"
+                  "guides/social-sso/microsoft",
+                  "guides/social-sso/custom-providers"
                 ]
               },
               {
@@ -227,6 +231,12 @@
                         "pages": [
                           "api-reference/admin/user-metadata-management/get-metadata-of-a-user",
                           "api-reference/admin/user-metadata-management/patch-metadata-of-a-user"
+                        ]
+                      },
+                      {
+                        "group": "Custom Claims Management",
+                        "pages": [
+                          "api-reference/admin/custom-claims-management/get-custom-claims-of-a-user"
                         ]
                       },
                       {
