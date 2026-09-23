@@ -412,12 +412,11 @@ dot (`.`). The JWT payload contains the claims about a user.
 
 <ResponseField name="iss" type="string">
     Identifies the entity that issued the token. When using Hanko Cloud, `iss` will be your `API URL`.
+    <Warning>
+        When using a custom domain with Hanko Cloud, the `iss` claim currently does not change and remains in the default format: `<project-id>.hanko.io`.
+        This behavior is planned to change in a future release so that the configured custom domain will be used as the `iss` value.
+    </Warning>
 </ResponseField>
-
-<Warning>
-    When using a custom domain with Hanko Cloud, the `iss` claim currently does not change and remains in the default format: `<project-id>.hanko.io`.
-    This behavior is planned to change in a future release so that the configured custom domain will be used as the `iss` value.
-</Warning>
 
 <ResponseField name="session_id" type="string">
     The ID of the session.
