@@ -152,6 +152,26 @@ paths:
                   description: Time of creation of the user
                   type: string
                   format: date-time
+                organizations:
+                  description: |
+                    Organizations to add the new user to, with optional roles to bind within each. Every
+                    organization ID and role ID/slug must already exist within the tenant, or the request
+                    fails with 400 and no user is created.
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        description: The ID of the organization
+                        allOf:
+                          - $ref: "#/components/schemas/UUID4"
+                      roles:
+                        description: IDs or slugs of roles to bind to the user within this organization
+                        type: array
+                        items:
+                          type: string
+                    required:
+                      - id
               required:
                 - emails
       responses:
@@ -925,6 +945,567 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /organizations:
+    get:
+      summary: "Get a list of organizations"
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: listOrganizations
+      tags:
+        - Organization Management
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: The page which should be returned
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 20
+          description: The number of returned items
+      responses:
+        "200":
+          description: "Details about organizations"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Organization"
+          headers:
+            X-Total-Count:
+              $ref: "#/components/headers/X-Total-Count"
+            Link:
+              $ref: "#/components/headers/Link"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a new organization
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: createOrganization
+      tags:
+        - Organization Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: The name of the new organization
+                  type: string
+              required:
+                - name
+      responses:
+        "200":
+          description: "Details of the newly created organization"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/organizations/{id}":
+    get:
+      summary: "Get an organization by ID"
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: getOrganization
+      tags:
+        - Organization Management
+      parameters:
+        - name: id
+          in: path
+          description: ID of the organization
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      responses:
+        "200":
+          description: "Details about the organization"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: "Update an organization by ID"
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: patchOrganization
+      tags:
+        - Organization Management
+      parameters:
+        - name: id
+          in: path
+          description: ID of the organization
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: |
+                Patch payload for updating an organization.
+
+                Omitted properties are not changed.
+              additionalProperties: false
+              properties:
+                name:
+                  description: The new name of the organization. Must be a non-empty string.
+                  type: string
+      responses:
+        "200":
+          description: "Details about the organization"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: "Delete an organization by ID"
+      description: |
+        Deleting an organization cascades to its organization memberships and role bindings.
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: deleteOrganization
+      tags:
+        - Organization Management
+      parameters:
+        - name: id
+          in: path
+          description: ID of the organization
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      responses:
+        "204":
+          description: "Deleted"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/organizations/{org_id}/users":
+    get:
+      summary: "Get a list of organization members"
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: listOrganizationMembers
+      tags:
+        - Organization Management
+      parameters:
+        - name: org_id
+          in: path
+          description: ID of the organization
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: The page which should be returned
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 20
+          description: The number of returned items
+      responses:
+        "200":
+          description: "Membership metadata for members of the organization"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrganizationMember"
+          headers:
+            X-Total-Count:
+              $ref: "#/components/headers/X-Total-Count"
+            Link:
+              $ref: "#/components/headers/Link"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/organizations/{org_id}/users/{user_id}":
+    post:
+      summary: "Add an organization member"
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: addOrganizationMember
+      tags:
+        - Organization Management
+      parameters:
+        - name: org_id
+          in: path
+          description: ID of the organization
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+        - name: user_id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      responses:
+        "200":
+          description: "The new organization membership"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationMember"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: "Remove an organization member"
+      description: |
+        Removing a user from an organization cascades to that user's role bindings for that organization.
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: removeOrganizationMember
+      tags:
+        - Organization Management
+      parameters:
+        - name: org_id
+          in: path
+          description: ID of the organization
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+        - name: user_id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      responses:
+        "204":
+          description: "Removed"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/organizations/{org_id}/users/{user_id}/roles":
+    get:
+      summary: "Get a list of role bindings"
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: listRoleBindings
+      tags:
+        - Role Management
+      parameters:
+        - name: org_id
+          in: path
+          description: ID of the organization
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+        - name: user_id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      responses:
+        "200":
+          description: "The roles held by the user in the organization"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoleBinding"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: "Create a role binding"
+      description: |
+        The user must already be a member of the organization, or the request fails with 400.
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: createRoleBinding
+      tags:
+        - Role Management
+      parameters:
+        - name: org_id
+          in: path
+          description: ID of the organization
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+        - name: user_id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  description: The ID or slug of the role to bind
+                  type: string
+              required:
+                - role
+      responses:
+        "200":
+          description: "The new role binding"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleBinding"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/organizations/{org_id}/users/{user_id}/roles/{role_id_or_slug}":
+    delete:
+      summary: "Remove a role binding"
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: deleteRoleBinding
+      tags:
+        - Role Management
+      parameters:
+        - name: org_id
+          in: path
+          description: ID of the organization
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+        - name: user_id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+        - name: role_id_or_slug
+          in: path
+          description: ID or slug of the role
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: "Removed"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /roles:
+    get:
+      summary: "Get a list of roles"
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: listRoles
+      tags:
+        - Role Management
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: The page which should be returned
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 20
+          description: The number of returned items
+      responses:
+        "200":
+          description: "Details about roles"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Role"
+          headers:
+            X-Total-Count:
+              $ref: "#/components/headers/X-Total-Count"
+            Link:
+              $ref: "#/components/headers/Link"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      summary: Create a new role
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: createRole
+      tags:
+        - Role Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  description: |
+                    Machine-safe, human-readable identifier for the role. Immutable after creation.
+                    Must not be a valid UUID.
+                  type: string
+                name:
+                  description: Display name of the new role
+                  type: string
+              required:
+                - slug
+                - name
+      responses:
+        "200":
+          description: "Details of the newly created role"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/roles/{id}":
+    get:
+      summary: "Get a role by ID"
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: getRole
+      tags:
+        - Role Management
+      parameters:
+        - name: id
+          in: path
+          description: ID of the role
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      responses:
+        "200":
+          description: "Details about the role"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      summary: "Update a role by ID"
+      description: |
+        Only the display name can be updated. The slug is immutable after creation.
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: patchRole
+      tags:
+        - Role Management
+      parameters:
+        - name: id
+          in: path
+          description: ID of the role
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: |
+                Patch payload for updating a role.
+
+                Omitted properties are not changed.
+              additionalProperties: false
+              properties:
+                name:
+                  description: The new display name of the role. Must be a non-empty string.
+                  type: string
+      responses:
+        "200":
+          description: "Details about the role"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: "Delete a role by ID"
+      description: |
+        Deleting a role cascades to its role bindings, in every organization the role was held in -
+        it does not need to be unassigned from every user first.
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: deleteRole
+      tags:
+        - Role Management
+      parameters:
+        - name: id
+          in: path
+          description: ID of the role
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID4"
+      responses:
+        "204":
+          description: "Deleted"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     BearerApiKeyAuth:
@@ -1153,6 +1734,47 @@ components:
             $ref: "#/components/schemas/Email"
         username:
           $ref: "#/components/schemas/Username"
+        organizations:
+          description: Organizations the user belongs to, and the roles held in each. Omitted if the user belongs to no organizations.
+          type: array
+          items:
+            $ref: "#/components/schemas/UserOrganization"
+    UserOrganization:
+      type: object
+      required:
+        - id
+        - name
+        - roles
+      properties:
+        id:
+          description: The ID of the organization
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+        name:
+          description: Name of the organization
+          type: string
+        roles:
+          description: Roles the user holds within this organization
+          type: array
+          items:
+            $ref: "#/components/schemas/UserOrganizationRole"
+    UserOrganizationRole:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+      properties:
+        id:
+          description: The ID of the role
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+        slug:
+          description: Machine-safe, human-readable identifier for the role
+          type: string
+        name:
+          description: Display name of the role
+          type: string
     User:
       allOf:
         - $ref: "#/components/schemas/UserBase"
@@ -1525,6 +2147,96 @@ components:
       properties:
         password:
           type: string
+    Organization:
+      type: object
+      required:
+        - id
+        - name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          description: The ID of the organization
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+        name:
+          description: The name of the organization
+          type: string
+        created_at:
+          description: Time of creation of the organization
+          type: string
+          format: date-time
+        updated_at:
+          description: Time of last update of the organization
+          type: string
+          format: date-time
+    OrganizationMember:
+      type: object
+      description: |
+        Membership metadata for a user belonging to an organization. For full user details, fetch the
+        user by ID separately via the Users endpoints.
+      required:
+        - user_id
+        - created_at
+      properties:
+        user_id:
+          description: The ID of the member
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+        created_at:
+          description: Time the user was added to the organization
+          type: string
+          format: date-time
+    Role:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          description: The ID of the role
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+        slug:
+          description: Machine-safe, human-readable identifier for the role. Immutable after creation.
+          type: string
+        name:
+          description: Display name of the role
+          type: string
+        created_at:
+          description: Time of creation of the role
+          type: string
+          format: date-time
+        updated_at:
+          description: Time of last update of the role
+          type: string
+          format: date-time
+    RoleBinding:
+      type: object
+      description: A role held by a user within one organization.
+      required:
+        - role_id
+        - slug
+        - name
+        - created_at
+      properties:
+        role_id:
+          description: The ID of the role
+          allOf:
+            - $ref: "#/components/schemas/UUID4"
+        slug:
+          description: The slug of the role
+          type: string
+        name:
+          description: The display name of the role
+          type: string
+        created_at:
+          description: Time the role was bound to the user
+          type: string
+          format: date-time
   headers:
     X-Total-Count:
       schema:
