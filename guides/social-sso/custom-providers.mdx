@@ -47,7 +47,7 @@ If your provider implements [OIDC discovery](https://openid.net/specs/openid-con
 `Use OIDC discovery` enabled and provide only the `Issuer` - the base URL identifying the service, without the
 `/.well-known/openid-configuration` path suffix - and Hanko fetches the rest of the provider's configuration from
 its discovery document. Otherwise (including for any plain OAuth 2.0 provider, which has no discovery document by
-definition), disable it and provide the `Authorization endpoint`, `Token endpoint`, and `Userinfo endpoint`
+definition), disable `Use OIDC discovery` and provide the `Authorization endpoint`, `Token endpoint`, and `Userinfo endpoint`
 directly.
 
 ## Optional settings
