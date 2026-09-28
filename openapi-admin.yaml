@@ -998,8 +998,11 @@ paths:
               type: object
               properties:
                 name:
-                  description: The name of the new organization
+                  description: |
+                    The name of the new organization. Must be non-empty (after trimming
+                    whitespace) and at most 255 characters.
                   type: string
+                  maxLength: 255
               required:
                 - name
       responses:
@@ -1069,8 +1072,11 @@ paths:
               additionalProperties: false
               properties:
                 name:
-                  description: The new name of the organization. Must be a non-empty string.
+                  description: |
+                    The new name of the organization. Must be non-empty (after trimming
+                    whitespace) and at most 255 characters.
                   type: string
+                  maxLength: 255
       responses:
         "200":
           description: "Details about the organization"
@@ -1217,6 +1223,8 @@ paths:
       responses:
         "204":
           description: "Removed"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "404":
           $ref: "#/components/responses/NotFound"
         "500":
@@ -1253,12 +1261,17 @@ paths:
                   $ref: "#/components/schemas/RoleBinding"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
     post:
       summary: "Create a role binding"
       description: |
-        The user must already be a member of the organization, or the request fails with 400.
+        user_id must resolve to a real user, or the request fails with 404. org_id and the
+        membership itself aren't separately verified - a missing membership, whether because
+        the organization doesn't exist or the user just isn't a member of it, resolves to 400,
+        same as an unrecognized role reference in the body.
       security:
         - BearerApiKeyAuth: [ ]
       operationId: createRoleBinding
@@ -1297,6 +1310,8 @@ paths:
                 $ref: "#/components/schemas/RoleBinding"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/Conflict"
         "500":
@@ -1331,6 +1346,8 @@ paths:
       responses:
         "204":
           description: "Removed"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "404":
           $ref: "#/components/responses/NotFound"
         "500":
@@ -1390,11 +1407,18 @@ paths:
                 slug:
                   description: |
                     Machine-safe, human-readable identifier for the role. Immutable after creation.
-                    Must not be a valid UUID.
+                    Must be non-empty (after trimming whitespace), at most 255 characters, contain
+                    only lowercase letters, numbers and hyphens (e.g. `admin`, `billing-manager`),
+                    and must not be a valid UUID.
                   type: string
+                  maxLength: 255
+                  pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
                 name:
-                  description: Display name of the new role
+                  description: |
+                    Display name of the new role. Must be non-empty (after trimming whitespace)
+                    and at most 255 characters.
                   type: string
+                  maxLength: 255
               required:
                 - slug
                 - name
@@ -1467,8 +1491,11 @@ paths:
               additionalProperties: false
               properties:
                 name:
-                  description: The new display name of the role. Must be a non-empty string.
+                  description: |
+                    The new display name of the role. Must be non-empty (after trimming
+                    whitespace) and at most 255 characters.
                   type: string
+                  maxLength: 255
       responses:
         "200":
           description: "Details about the role"
