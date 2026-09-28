@@ -661,6 +661,37 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/users/{id}/custom_claims":
+    get:
+      summary: Get custom claims of a user
+      description: |
+        Returns the user's resolved custom claims: a flat object keyed by claim name, holding
+        whichever value an enterprise or social connection has most recently mapped onto it.
+
+        Read-only - custom claims are populated only by connections mapping onto claim
+        definitions declared for the project, not by this endpoint.
+      tags:
+        - Custom Claims Management
+      security:
+        - BearerApiKeyAuth: [ ]
+      operationId: get-user-custom-claims
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomClaims"
+        "204":
+          description: No content (user has no custom claims)
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/users/{id}/sessions":
     get:
       summary: Get users active sessions
@@ -1068,6 +1099,14 @@ components:
           additionalProperties: {}
           example:
             birthday: "2025-05-12"
+    CustomClaims:
+      description: A user's resolved custom claims, keyed by claim name
+      type: object
+      additionalProperties: {}
+      example:
+        matriculation_number: "12345"
+        is_staff: true
+        affiliation: ["student", "staff"]
     Identity:
       description: A third party provider identity
       type: object
