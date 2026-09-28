@@ -52,9 +52,11 @@ directly.
 
 ## Optional settings
 
-- `Prompt` and `ACR values` are passed through to the provider's authorization request, if it supports them
-  (`prompt` controls whether the provider forces re-authentication or consent; `acr_values` requests specific
-  authentication context).
+- `Prompt` and `ACR values` are passed through to the provider's authorization request as-is - Hanko doesn't
+  validate them, so check your provider's documentation for which values it actually supports. `prompt` controls
+  whether the provider forces re-authentication or consent; the OIDC spec defines `none`, `login`, `consent`, and
+  `select_account` as common values, though support varies by provider. `acr_values` requests a specific
+  authentication context and has no standard set of values - it's entirely provider-defined.
 - `Allow linking` lets a user authenticating through this provider link to an existing Hanko account with the same
   email address - see [Account provisioning and linking](/guides/social-sso/introduction#account-provisioning-and-linking)
   for how this works and the security trade-off involved.
