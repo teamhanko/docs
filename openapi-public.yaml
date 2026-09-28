@@ -301,6 +301,59 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /organizations/roles/check:
+    post:
+      summary: "Check current user's role"
+      description: |
+        Checks whether the currently logged-in user (identified by their own session JWT, not a
+        {user_id} path param or admin credential) holds at least one of the given roles within an
+        organization. If the user is not a member of the organization, or the organization does not
+        exist, the result is simply `has_role: false`, not an error.
+      operationId: checkOrganizationRole
+      tags:
+        - Organization Management
+      security:
+        - CookieAuth: [ ]
+        - BearerTokenAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                organization_id:
+                  description: The ID of the organization to check
+                  allOf:
+                    - $ref: '#/components/schemas/UUID4'
+                roles:
+                  description: |
+                    IDs or slugs of roles to check for. The check succeeds if the user holds at least one
+                    of the listed roles (OR semantics).
+                  type: array
+                  items:
+                    type: string
+                  minItems: 1
+              required:
+                - organization_id
+                - roles
+      responses:
+        '200':
+          description: Role check result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  has_role:
+                    type: boolean
+                required:
+                  - has_role
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   responses:
     MeResponse:
@@ -342,6 +395,15 @@ components:
                   Only present when idle timeout is configured. The value is capped to the JWT expiration time.
                 type: string
                 format: date-time
+              organizations:
+                description: |
+                  The organizations the user belongs to, and the role slugs they hold within each. Computed
+                  fresh from the database on every call, not embedded in the JWT, so a role or membership
+                  change takes effect immediately on the next validation call rather than only after the
+                  session token is reissued. Omitted if the user belongs to no organizations.
+                type: array
+                items:
+                  $ref: '#/components/schemas/ValidateSessionOrganization'
             required:
               - isValid
     BadRequest:
@@ -826,6 +888,26 @@ components:
       format: JWT
       externalDocs:
         url: https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#hanko-backend-config
+    ValidateSessionOrganization:
+      type: object
+      description: An organization the user belongs to, and the role slugs they hold within it.
+      required:
+        - id
+        - name
+        - roles
+      properties:
+        id:
+          description: The ID of the organization
+          allOf:
+            - $ref: '#/components/schemas/UUID4'
+        name:
+          description: The name of the organization
+          type: string
+        roles:
+          description: The slugs of the roles the user holds within this organization
+          type: array
+          items:
+            type: string
   securitySchemes:
     CookieAuth:
       type: apiKey

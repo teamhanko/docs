@@ -53,6 +53,31 @@
                 </ResponseField>
             </Expandable>
         </ResponseField>
+        <ResponseField name="organizations" type="object[]">
+            Organizations the user belongs to, and the roles held in each. Omitted if the user belongs to no organizations.
+            <Expandable>
+                <ResponseField name="id" type="string">
+                    The ID of the organization
+                </ResponseField>
+                <ResponseField name="name" type="string">
+                    Name of the organization
+                </ResponseField>
+                <ResponseField name="roles" type="object[]">
+                    Roles the user holds within this organization
+                    <Expandable>
+                        <ResponseField name="id" type="string">
+                            The ID of the role
+                        </ResponseField>
+                        <ResponseField name="slug" type="string">
+                            Machine-safe, human-readable identifier for the role
+                        </ResponseField>
+                        <ResponseField name="name" type="string">
+                            Display name of the role
+                        </ResponseField>
+                    </Expandable>
+                </ResponseField>
+            </Expandable>
+        </ResponseField>
         <ResponseField name="otp" type="object">
             MFA OTP credential of the user
             <Expandable>
