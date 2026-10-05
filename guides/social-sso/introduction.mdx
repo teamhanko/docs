@@ -1,0 +1,56 @@
+---
+sidebarTitle: Overview
+title: Using social SSO with Hanko
+description: Learn how social SSO connections work with Hanko.
+---
+
+import HankoAbout from '/snippets/hanko-about.mdx'
+import AccountProvisioning from '/snippets/account-provisioning.mdx'
+
+<div class="hidden">
+**Hanko Social SSO Overview**:
+
+**About Hanko**:
+<HankoAbout />
+
+**What This Guide Covers**: This guide provides an overview of social SSO connections, covering both Hanko's
+built-in providers and custom OAuth/OIDC providers you configure yourself, plus how sign-ins through them are
+provisioned and linked to accounts.
+
+**Prerequisites**:
+- Active Hanko project
+
+**Tasks You'll Complete**:
+- Understand the difference between built-in and custom providers
+- Access provider-specific integration guides
+- Understand account provisioning and linking behavior
+</div>
+
+Hanko supports sign-in through OAuth 2.0 or OpenID Connect (OIDC) providers, either one of its built-in providers or
+any custom provider you configure yourself.
+
+## Built-in providers
+
+The following providers are officially tested and supported out of the box:
+
+- [Apple](/guides/social-sso/apple)
+- [Discord](/guides/social-sso/discord)
+- [Facebook](/guides/social-sso/facebook)
+- [GitHub](/guides/social-sso/github)
+- [Google](/guides/social-sso/google)
+- [LinkedIn](/guides/social-sso/linkedin)
+- [Microsoft](/guides/social-sso/microsoft)
+
+## Custom providers
+
+Any other OAuth 2.0 or OIDC provider can be connected as a [custom provider](/guides/social-sso/custom-providers).
+
+## Attribute mapping
+
+Both built-in and custom providers read a fixed set of standard profile fields from the provider - see
+[Attribute mapping](/guides/user-data/attribute-mapping) to map them if your provider sends them under different
+claim names.
+
+## Account provisioning and linking
+
+<AccountProvisioning />
