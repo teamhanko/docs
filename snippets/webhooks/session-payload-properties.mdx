@@ -1,0 +1,42 @@
+<ResponseField name="aud" type="string[]">
+    The recipients the token is intended for
+</ResponseField>
+<ResponseField name="data" type="object">
+    <Expandable>
+        <ResponseField name="id" type="string">
+            The ID of the session
+        </ResponseField>
+        <ResponseField name="user_id" type="string">
+            The ID of the user the session belongs to
+        </ResponseField>
+        <ResponseField name="user_agent" type="string">
+            The user agent that was recorded when the session was created
+        </ResponseField>
+        <ResponseField name="ip_address" type="string">
+            The IP address that was recorded when the session was created
+        </ResponseField>
+        <ResponseField name="created_at" type="string">
+            Time of creation of the session
+        </ResponseField>
+        <ResponseField name="updated_at" type="string">
+            Time of last update of the session
+        </ResponseField>
+        <ResponseField name="expires_at" type="string">
+            Time at which the session expires
+        </ResponseField>
+        <ResponseField name="last_used" type="string">
+            Time the session was last used
+        </ResponseField>
+    </Expandable>
+</ResponseField>
+<ResponseField name="evt" type="string">
+    The event that triggered the webhook containing this data
+</ResponseField>
+<ResponseField name="exp" type="number">
+    The expiration date of the token
+</ResponseField>
+<ResponseField name="iat" type="number">
+    The time at which the token was issued
+</ResponseField>
+<ResponseField name="sub" type="string" default="hanko webhooks">
+</ResponseField>
