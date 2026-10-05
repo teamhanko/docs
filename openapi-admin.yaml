@@ -2020,6 +2020,7 @@ components:
             - user.create
             - user.delete
             - user.update
+            - user.update.custom_claims
             - user.update.email
             - user.update.email.create
             - user.update.email.delete
@@ -2090,6 +2091,7 @@ components:
               - user.create
               - user.delete
               - user.update
+              - user.update.custom_claims
               - user.update.email
               - user.update.email.create
               - user.update.email.delete
