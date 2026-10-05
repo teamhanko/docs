@@ -9,6 +9,9 @@
         <ResponseField name="created_at" type="string">
             Time of creation of the user
         </ResponseField>
+        <ResponseField name="custom_claims" type="object">
+            The user's resolved [custom claims](/guides/user-data/custom-claims), keyed by claim name. Omitted if the user has no resolved custom claims.
+        </ResponseField>
         <ResponseField name="emails" type="object[]">
             <Expandable>
                 <ResponseField name="id" type="string">
