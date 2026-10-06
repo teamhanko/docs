@@ -5,6 +5,7 @@ description: Step-by-step guide to integrating Sign in with GitHub using Hanko. 
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import RedirectUrlWildcardNote from '/snippets/redirect-url-wildcard-note.mdx'
 
 <div class="hidden">
 **Hanko GitHub OAuth Integration Guide**:
@@ -107,12 +108,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
     - **Error Redirect URL**: This URL, on your frontend, is where the Hanko API redirects if an error occurs during third-party sign-in. With hanko-elements web components, it should link to the page embedding the web component to process errors correctly.
     - **Allowed Redirect URL**: A URL on your frontend that the Hanko API can redirect to after a successful third-party authentication. Using hanko-elements web components? Make it the URL of the embedding page.
 
-              <Note>
-              Supports wildcard matching through globbing:
-               - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
-               - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
-               -  Use ** to act as a super-wildcard/match-all.
-              </Note>
+              <RedirectUrlWildcardNote/>
 
 - In the 'Providers' section, select GitHub and enable its toggle switch.
 - Input the earlier noted 'Client ID' and 'Client Secret', then click 'Save'.

@@ -5,6 +5,7 @@ description: Step-by-step guide to integrating Sign in with Apple using Hanko. E
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import RedirectUrlWildcardNote from '/snippets/redirect-url-wildcard-note.mdx'
 
 <div class="hidden">
 **Hanko Apple OAuth Integration Guide**:
@@ -152,12 +153,7 @@ Secrets expire after 6 months and must be regenerated before the expiration.
     - **Error Redirect URL**: This URL, on your frontend, is where the Hanko API redirects if an error occurs during third-party sign-in. With hanko-elements web components, it should link to the page embedding the web component to process errors correctly.
     - **Allowed Redirect URL**: A URL on your frontend that the Hanko API can redirect to after a successful third-party authentication. Using hanko-elements web components? Make it the URL of the embedding page.
 
-              <Note>
-              Supports wildcard matching through globbing:
-               - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
-               - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
-               -  Use ** to act as a super-wildcard/match-all.
-              </Note>
+              <RedirectUrlWildcardNote/>
 
 2.  In the 'Providers' section, select Apple and enable its toggle switch.
 3.  Input the earlier noted 'Services ID' and 'Secret Key', then click 'Save'.
