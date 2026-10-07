@@ -46,7 +46,7 @@ Authentication operations (login, registration) return session tokens in the `X-
 
 <Note>
     When using [Hanko Elements](https://docs.hanko.io/guides/hanko-elements/introduction) or
-    the [Hanko Frontend SDK](https://docs.hanko.io/resources/sdks#sdks), the session token is read from the
+    the [Hanko Frontend SDK](/resources/sdks#by-hanko), the session token is read from the
     `X-Auth-Token` header and used to set a cookie (name: `hanko`) on the client-side. If you use neither Hanko
     Elements nor the SDK, you have to take care of storing the session token yourself.
 </Note>
@@ -67,7 +67,7 @@ Validate sessions manually using the `sessions/validate` [endpoint](/api-referen
 
 The validation response includes session validity status, token expiry information, and associated user claims.
 
-Alternatively, use the Hanko Frontend SDK for session validation. See [Using the Frontend SDK](/guides/hanko-elements/using-frontend-sdk#sessions) for implementation details.
+Alternatively, use the Hanko Frontend SDK for session validation. See [Using the Frontend SDK](/guides/hanko-elements/using-frontend-sdk#common-operations) for implementation details.
 
 ### Authentication methods used
 
@@ -175,14 +175,14 @@ To control self-service session revocation behaviour:
 
 You can control whether information about active sessions is returned in the `Profile` flow.
 If you use [Hanko Elements](/guides/hanko-elements/introduction) (+1.3) then information about active sessions is
-displayed in the [Profile component](guides/hanko-elements/profile-component).
+displayed in the [Profile component](/guides/hanko-elements/profile-component).
 
 To control whether information about active sessions is returned from the `Profile` flow (and shown in Hanko Elements):
 
 1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
 2. Navigate to `Settings > Session`.
 3. Use the `Show sessions on profile` toggle to include information about active sessions in the profil API response
-(and the [Hanko Elements profile component](guides/hanko-elements/profile-component)).
+(and the [Hanko Elements profile component](/guides/hanko-elements/profile-component)).
 
 ## Session metadata retention
 
@@ -206,7 +206,7 @@ You can hook into the session lifecycle by using the Hanko Frontend SDKs central
 
 ## Administrative session management
 
-The [Admin API](/api-reference/admin/introduction#learn-how-to-use-the-hanko-admin-api) allows administrators to
+The [Admin API](/api-reference/admin/introduction) allows administrators to
 [create sessions](/api-reference/admin/session-management/create-session),
 [list active sessions](/api-reference/admin/session-management/list-sessions) and
 [delete sessions](/api-reference/admin/session-management/delete-session) for a specific user.

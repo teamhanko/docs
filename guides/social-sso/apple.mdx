@@ -38,6 +38,9 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 <Steps>
 
 <Step title="Obtain Apple credentials">
+
+## Redirect URL
+
 1.  Let's get the redirect url first from [Hanko Console](https://cloud.hanko.io/), as you'll need it in a moment. To do so, sign in to Hanko and select your project. Navigate to 'Settings' in the left sidebar and then to 'Identity Providers'. Copy the 'Redirect URL' from here.
     <img
     src="/images/oauth-providers/hanko-callback-url.png"
@@ -62,7 +65,7 @@ sidebar, then click the add button (`+`) on the top.
 - Select the `Services ID` you created in the previous step.
 - Enable `Sign In With Apple` for the `Services ID` by clicking the checkbox next to it.
 - Click `Configure`.
-- Select your [previously registered](#register-an-app-id) `App ID` as your `Primary App ID`.
+- Select your [previously registered](#register-app-id-and-services-id) `App ID` as your `Primary App ID`.
 - In the shown modal, click the add button (`+`) next to `Website URLs`.
 - Add the _domain_ of your [redirect URL](#redirect-url) to the `Domains and Subdomains` input (do not add a scheme,
   e.g. `https://`, or path information).
@@ -75,14 +78,14 @@ sidebar, then click the add button (`+`) on the top.
 ## Create key and download key file
 
 Next, you need to create a `Key` and download a `Key` file. You need this file to
-generate your client secret in the [next step](#generate-secret).
+generate your client secret in the [next step](#generate-a-client-secret).
 
 - On [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources), click `Keys` in the sidebar,
   then click the add button (`+`) next to the `Keys` heading.
 - Enter a `Key Name`.
 - In the options table below the `Key Name` input, check `Sign in with Apple`.
 - In the same table row, click `Configure` to the right.
-- In the `Configure Key` view, select your [previously registered](#register-an-app-id) `App ID` in the`Primary App ID` dropdown.
+- In the `Configure Key` view, select your [previously registered](#register-app-id-and-services-id) `App ID` in the`Primary App ID` dropdown.
 - Click `Save` on the top right.
 - Back on the `Register a New Key` view, click `Continue`, then click `Register` on the top right.
 - On the `Download Your Key` view, click `Download` on the top right to save the key file.
@@ -107,7 +110,7 @@ The script requires the following information:
 - `team_id`: This is the Team ID your Apple Developer account is associated with.
   - See [Locate your Team ID](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/#:~:text=In%20the%20top%20navigation%20of,to%20view%20your%20Team%20ID.)
     in the official Apple documentation.
-- `services_id`: This is `Services ID` you created in the [Register a Services ID](#register-a-services-id) step. You
+- `services_id`: This is `Services ID` you created in the [Register App ID and Services ID](#register-app-id-and-services-id) step. You
   can always review this ID in the Apple Developer console:
   - On [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources), click `Identifiers` in the sidebar,
   then select `Services IDs` from the dropdown menu on the right.
@@ -259,7 +262,7 @@ address associated with her Apple account.
 - In the `Register your email sources` modal, enter your `Domains and Subdomains` and/or specific `Email Addresses`.
   - If you use Hanko Cloud and do _not_ want to use a custom SMTP server, enter `hanko.io` in
     the `Domains and Subdomains` input. You do not need to provide an SPF DNS record by yourself.
-  - If you use Hanko Cloud and _do_ want to use a [custom SMTP server](?environment=cloud#configure-smtp), enter your
+  - If you use Hanko Cloud and _do_ want to use a [custom SMTP server](#configure-smtp-with-hanko), enter your
     custom domain in the `Domains and Subdomains` input. Remember to provide an SPF DNS record for your domain in order
     to pass Apple's SPF check.
 - Click `Next`, then click `Register`.
@@ -277,5 +280,5 @@ If you use Hanko Cloud and are on a paid subscription tier you can configure you
 - In the left sidebar, click `Settings`, then select `SMTP`.
 - Enter your SMTP credentials and sender data.
   - The domain of your `Sender email address` should be registered as an email source in the Apple developer
-    console to allow communication through Apple's private relay service (see the [previous step](#register-domains)).
+    console to allow communication through Apple's private relay service (see the [previous step](#register-domains-with-apple)).
 - Click `Save`.
