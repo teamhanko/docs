@@ -525,7 +525,8 @@
     "image": "/images/background.png",
     "color": {
       "dark": "#000000"
-    }
+    },
+    "decoration": "gradient"
   },
   "navbar": {
     "links": [
@@ -562,6 +563,23 @@
   "integrations": {
     "plausible": {
       "domain": "docs.hanko.io"
+    }
+  },
+  "description": "Documentation for Hanko’s open-source authentication products. Build secure authentication with passkeys, passwords, MFA, social login, SSO, and push authentication.",
+  "icons": {
+    "library": "fontawesome"
+  },
+  "fonts": {
+    "family": "Geist"
+  },
+  "thumbnails": {
+    "fonts": {
+      "family": "Geist"
+    }
+  },
+  "errors": {
+    "404": {
+      "redirect": false
     }
   }
 }
