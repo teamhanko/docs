@@ -5,6 +5,7 @@ description: Step-by-step guide to integrating Sign in with Discord using Hanko.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import RedirectUrlWildcardNote from '/snippets/redirect-url-wildcard-note.mdx'
 
 <div class="hidden">
 **Hanko Discord OAuth Integration Guide**:
@@ -151,12 +152,7 @@ appears.
       - **Error Redirect URL**: The frontend URL where Hanko redirects users if authentication fails. For applications using `hanko-elements` web components, this should be the page containing the component to handle errors properly.
       - **Allowed Redirect URL**: The frontend URL where Hanko redirects users after successful authentication. For `hanko-elements` applications, this should be the page containing the authentication component.
 
-        <Note>
-        The allowed redirect URL supports wildcard matching through globbing:
-         - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
-         - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
-         -  Use ** to act as a super-wildcard/match-all.
-        </Note>
+        <RedirectUrlWildcardNote/>
 
 3. In the `Providers` section, select `Discord` and enable it using the toggle switch.
 4. Enter the `Client ID` and `Client Secret` you obtained from the Discord developer console.
