@@ -5,6 +5,7 @@ description: Step-by-step guide to integrating Sign in with Facebook using Hanko
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import RedirectUrlWildcardNote from '/snippets/redirect-url-wildcard-note.mdx'
 
 <div class="hidden">
 **Hanko Facebook OAuth Integration Guide**:
@@ -63,7 +64,7 @@ To find your redirect URL:
     />
 </Frame>
 
-You need the redirect URL for [creating a new Facebook application](#create-a-new-facebook-application) in the next step.
+You need the redirect URL for [creating a new Facebook application](#create-a-facebook-application) in the next step.
 
 ## Create a Facebook application
 
@@ -189,12 +190,7 @@ You need the redirect URL for [creating a new Facebook application](#create-a-ne
 2. Configure a **Default Redirect URL** - the frontend URL where Hanko redirects users if authentication fails. For applications using `hanko-elements` web components, this should be the page containing the component to handle errors properly.
 3. Configure your **Allowed Redirect URL**s - the frontend URLs where Hanko can redirect users after successful authentication. For `hanko-elements` applications, this should be the page containing the authentication component.
 
-    <Note>
-        The allowed redirect URL supports wildcard matching through globbing:
-        - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
-        - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
-        -  Use ** to act as a super-wildcard/match-all.
-    </Note>
+    <RedirectUrlWildcardNote/>
 
 <Frame>
     <img

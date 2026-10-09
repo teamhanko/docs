@@ -5,6 +5,7 @@ description: Step-by-step guide to integrating Sign in with Discord using Hanko.
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import RedirectUrlWildcardNote from '/snippets/redirect-url-wildcard-note.mdx'
 
 <div class="hidden">
 **Hanko Discord OAuth Integration Guide**:
@@ -44,7 +45,7 @@ Before starting this integration, ensure you have:
 
 ## Get your provider redirect URL
 
-You'll need to configure a redirect URL in your Discord application. This URL determines where Discord redirects users after successful authentication. The redirect URL combines your Hanko API base URL with the [`/thirdparty/callback`](http://docs.hanko.io/api/public#tag/Third-Party/operation/thirdPartyCallback) endpoint.
+You'll need to configure a redirect URL in your Discord application. This URL determines where Discord redirects users after successful authentication. The redirect URL combines your Hanko API base URL with the [`/thirdparty/callback`](/api-reference/public/third-party/third-party-provider-callback) endpoint.
 
 To find your redirect URL:
 
@@ -63,7 +64,7 @@ To find your redirect URL:
     />
 </Frame>
 
-You need the redirect URL for [creating a new Discord application](#create-a-new-discord-application) in the next step and when
+You need the redirect URL for [creating a new Discord application](#create-a-discord-application) in the next step and when
 [configuring your credentials in Hanko](#configure-discord-credentials-in-hanko) (you will also configure the remaining
 configuration options visible in the above screen in this step).
 
@@ -151,12 +152,7 @@ appears.
       - **Error Redirect URL**: The frontend URL where Hanko redirects users if authentication fails. For applications using `hanko-elements` web components, this should be the page containing the component to handle errors properly.
       - **Allowed Redirect URL**: The frontend URL where Hanko redirects users after successful authentication. For `hanko-elements` applications, this should be the page containing the authentication component.
 
-        <Note>
-        The allowed redirect URL supports wildcard matching through globbing:
-         - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
-         - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
-         -  Use ** to act as a super-wildcard/match-all.
-        </Note>
+        <RedirectUrlWildcardNote/>
 
 3. In the `Providers` section, select `Discord` and enable it using the toggle switch.
 4. Enter the `Client ID` and `Client Secret` you obtained from the Discord developer console.

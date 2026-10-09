@@ -5,6 +5,7 @@ description: Step-by-step guide to integrating Sign in with Microsoft using Hank
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import RedirectUrlWildcardNote from '/snippets/redirect-url-wildcard-note.mdx'
 
 <div class="hidden">
 **Hanko Microsoft OAuth Integration Guide**:
@@ -45,7 +46,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
 When creating an Azure Application, you need to provide a redirect URL that determines where the third party
 provider redirects after a successful login. This redirect URL consists of the base URL of the Hanko API
-and the [`/thirdparty/callback`](http://docs.hanko.io/api/public#tag/Third-Party/operation/thirdPartyCallback) endpoint. You can always view your redirect URL in the Hanko Cloud Console:
+and the [`/thirdparty/callback`](/api-reference/public/third-party/third-party-provider-callback) endpoint. You can always view your redirect URL in the Hanko Cloud Console:
 
 1. Sign in to [cloud.hanko.io](https://cloud.hanko.io).
 2. Select your `Organization`.
@@ -204,7 +205,7 @@ It is possible that users do not have a primary email address set but Hanko requ
 accounts. To ensure Hanko is provided with an email address, set the optional `upn`
 ([UserPrincipalName](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/plan-connect-userprincipalname#upn-format))
 claim. In general, the `upn` domain suffix cannot be changed to an unverified domain and hence the `upn` will be
-prioritized over a users' `email` (see the [next section](#protection-against-the-noauth-vulnerbility)). To configure
+prioritized over a users' `email` (see the [next section](#protection-against-the-noauth-vulnerability)). To configure
 the claim:
 
 1. Select your app registration and then select the `Token configuration` section.
@@ -266,8 +267,8 @@ be the default case for newly created applications, so no further steps should b
 
 <Info>
     If your application was created before the publication of the vulnerability, and the application previously used
-    unverified emails, you might need to manually alter the `authenticationBehaviours` as described
-    [here](https://learn.microsoft.com/en-us/entra/identity-platform/migrate-off-email-claim-authorization#how-do-i-protect-my-application-immediately).
+    unverified emails, review the `removeUnverifiedEmailClaim` setting and set it to `true` using
+    [Microsoft's guidance on managing application authentication behaviors](https://learn.microsoft.com/en-us/graph/applications-authenticationbehaviors#prevent-the-issuance-of-email-claims-with-unverified-domain-owners).
 </Info>
 
 2. Use the optional `xms_edov` token claim to check if an email domain owner has been verified. We recommend implementing
@@ -340,12 +341,7 @@ connecting a Microsoft account if no verified email address is provided.
     authentication was successful. If your frontend [uses the `hanko-elements` web components](#frontend-integration), this URL should be
     the URL of the page that embeds the web component.
 
-        <Note>
-        The allowed redirect URL supports wildcard matching through globbing:
-         - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
-         - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
-         -  Use ** to act as a super-wildcard/match-all.
-        </Note>
+        <RedirectUrlWildcardNote/>
 
 2. In the `Providers` section, select `Microsoft` and use the `Enable provider` toggle to enable the provider.
 3. Provide the `Client ID` and `Client Secret` you obtained in one of the [previous section](#get-your-client-id-and-secret)

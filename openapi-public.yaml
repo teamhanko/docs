@@ -5,13 +5,13 @@ info:
   description: |
     ## Introduction
 
-    This is the OpenAPI specification for the [Hanko Public API](https://github.com/teamhanko/hanko/blob/main/backend/README.md#basic-usage).
+    This is the OpenAPI specification for the [Hanko Public API](https://github.com/teamhanko/hanko/blob/main/backend/README.md#start-the-public-api).
 
     ## Authentication
 
     The API uses [JSON Web Tokens](https://www.rfc-editor.org/rfc/rfc7519.html) (JWTs) for authentication.
     JWTs are verified using [JSON Web Keys](https://www.rfc-editor.org/rfc/rfc7517) (JWK).
-    JWKs can be [configured](https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#all-available-config-options)
+    JWKs can be [configured](https://github.com/teamhanko/hanko/wiki/config)
     through the `secrets.keys` options. The API also publishes public cryptographic keys as a
     [JWK set](https://www.rfc-editor.org/rfc/rfc7517#section-2) through the `.well-known/jwks.json` endpoint
     to enable clients to verify token signatures.
@@ -37,7 +37,7 @@ info:
 
     ## Cross-Origin Resource Sharing
     Cross-Origin Resource Sharing (CORS) can be currently
-    [configured](https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#all-available-config-options)
+    [configured](https://github.com/teamhanko/hanko/wiki/config)
     for public endpoints via the `server.public.cors` options.
 
     ---
@@ -152,11 +152,11 @@ paths:
             Set-Cookie:
               schema:
                 type: string
-              description: 'Contains the JSON Web Token (JWT) that must be provided to protected endpoints.Cookie attributes (e.g. domain) can be set via [configuration](https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#hanko-backend-config) option `session.cookie`.'
+              description: 'Contains the JSON Web Token (JWT) that must be provided to protected endpoints.Cookie attributes (e.g. domain) can be set via [configuration](https://github.com/teamhanko/hanko/wiki/config) option `session.cookie`.'
             X-Auth-Token:
               schema:
                 type: string
-              description: 'Present only when enabled via [configuration](https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#hanko-backend-config) option `session.enable_auth_token_header`for purposes of cross-domain communication between client and Hanko API.'
+              description: 'Present only when enabled via [configuration](https://github.com/teamhanko/hanko/wiki/config) option `session.enable_auth_token_header`for purposes of cross-domain communication between client and Hanko API.'
         '307':
           description: Temporary Redirect
           headers:
@@ -247,22 +247,22 @@ paths:
               schema:
                 type: string
               description: |
-                Redirect to the URL requested via `redirect_to` query parameter during third party
-                provider login via [`/auth`](#tag/Third-Party/operation/thirdPartyAuth) endpoint on success. On error,
+                On success, redirect to the URL supplied as the `redirect_to` input to the `thirdparty_oauth`
+                action in the [Login flow](/api-reference/flow/login). On error,
                 redirect to the `third_party.error_redirect_url` set in the backend
-                [configuration](https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#hanko-backend-config).
+                [configuration](https://github.com/teamhanko/hanko/wiki/config).
                 Error details are provided in the location URL in the form of `error` and `error_description`
                 query params.
             X-Auth-Token:
               description: |
-                Present only on successful callback and when enabled via [configuration](https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#hanko-backend-config) option `session.enable_auth_token_header`
+                Present only on successful callback and when enabled via [configuration](https://github.com/teamhanko/hanko/wiki/config) option `session.enable_auth_token_header`
                 for purposes of cross-domain communication between client and Hanko API.
               schema:
                 $ref: '#/components/schemas/X-Auth-Token'
             Set-Cookie:
               description: |
                 Present only on successful callback. Contains the JSON Web Token (JWT) that must be provided to protected endpoints.
-                Cookie attributes (e.g. domain) can be set via [configuration](https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#hanko-backend-config) option `session.cookie`.
+                Cookie attributes (e.g. domain) can be set via [configuration](https://github.com/teamhanko/hanko/wiki/config) option `session.cookie`.
               schema:
                 $ref: '#/components/schemas/CookieSession'
   /me:
@@ -882,12 +882,12 @@ components:
           type: string
     X-Auth-Token:
       description: |
-        Enable via [configuration](https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#hanko-backend-config) option `session.enable_auth_token_header`
+        Enable via [configuration](https://github.com/teamhanko/hanko/wiki/config) option `session.enable_auth_token_header`
         for purposes of cross-domain communication between client and Hanko API.
       type: string
       format: JWT
       externalDocs:
-        url: https://github.com/teamhanko/hanko/blob/main/backend/docs/Config.md#hanko-backend-config
+        url: https://github.com/teamhanko/hanko/wiki/config
     ValidateSessionOrganization:
       type: object
       description: An organization the user belongs to, and the role slugs they hold within it.

@@ -5,6 +5,7 @@ description: Step-by-step guide to integrating Sign in with LinkedIn using Hanko
 ---
 
 import HankoAbout from '/snippets/hanko-about.mdx'
+import RedirectUrlWildcardNote from '/snippets/redirect-url-wildcard-note.mdx'
 
 <div class="hidden">
 **Hanko LinkedIn OAuth Integration Guide**:
@@ -44,7 +45,7 @@ import HankoAbout from '/snippets/hanko-about.mdx'
 
 When creating an LinkedIn application, you need to provide a redirect URL that determines where the third party
 provider redirects after a successful login. This redirect URL consists of the base URL of the Hanko API
-and the [`/thirdparty/callback`](http://docs.hanko.io/api/public#tag/Third-Party/operation/thirdPartyCallback) endpoint. You can always view your redirect URL in the Hanko Cloud Console:
+and the [`/thirdparty/callback`](/api-reference/public/third-party/third-party-provider-callback) endpoint. You can always view your redirect URL in the Hanko Cloud Console:
 
 1. Sign in to [cloud.hanko.io](https://cloud.hanko.io).
 2. Select your `Organization`.
@@ -159,12 +160,7 @@ You will need this when [configuring your credentials with Hanko](#configure-cre
     authentication was successful. If your frontend [uses the `hanko-elements` web components](#frontend-integration), this URL should be
     the URL of the page that embeds the web component.
 
-        <Note>
-        The allowed redirect URL supports wildcard matching through globbing:
-         - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
-         - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
-         -  Use ** to act as a super-wildcard/match-all.
-        </Note>
+        <RedirectUrlWildcardNote/>
 
 2. In the `Providers` section, select `LinkedIn` and use the `Enable provider` toggle to enable the provider.
 3. Provide the `Client ID` and `Client Secret` you obtained in one of the [previous section](#get-your-client-id-and-secret)

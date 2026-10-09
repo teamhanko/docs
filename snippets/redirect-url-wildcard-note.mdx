@@ -1,0 +1,6 @@
+<Note>
+The allowed redirect URL supports wildcard matching through globbing:
+ - `https://*.example.com` matches `https://foo.example.com` and `https://bar.example.com`.
+ - `https://foo.example.com/*` matches URLs like `https://foo.example.com/page1` and `https://foo.example.com/page2`.
+ - Use `**` to act as a super-wildcard/match-all, e.g. `https://example.com/**` matches `https://example.com/foo` and `https://example.com/foo/bar`. For security reasons, an entry whose host is nothing but asterisks - bare (`*`, `**`, ...) or following `http(s)://` (`http://*`, `https://**`, ...) - is rejected.
+</Note>
