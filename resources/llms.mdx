@@ -148,110 +148,41 @@ The Hanko Admin API provides server-side user management, audit logs, and metric
   - Returns HTTP 200 for healthy, HTTP 500 for issues
 
 ### Public API
-**Reference**: https://docs.hanko.io/api-reference/public/introduction  
-**Base URL**: `https://[project-id].hanko.io` (Hanko Cloud) or `http://localhost:8000` (self-hosted)
+**Reference**: https://docs.hanko.io/api-reference/public/introduction
+**Base URL**: `https://[project-id].hanko.io` (Hanko Cloud) or your self-hosted Hanko API URL.
 
-Client-facing APIs for authentication flows. No API key required - uses session cookies or JWT tokens for authentication.
+The Public API provides session validation, current-user access, logout, provider callbacks, and public keys. Authentication and profile changes use the Flow API below.
 
-**User Management**
-**Reference**: https://docs.hanko.io/api-reference/public/user-management/
-- **Create User**: `POST /users` - User registration endpoint (can be disabled)
-- **Get User**: `GET /users/{user_id}` - Retrieve user details  
-- **Get Current User**: `GET /me` - Get authenticated user's information
-- **Delete User**: `DELETE /me` - Self-service account deletion (configurable)
-- **Get User by Email**: `POST /user` - Find user account by email address
-- **Logout**: `DELETE /logout` - Terminate current session
+**Current User and Logout**
+- [Get the current user](https://docs.hanko.io/api-reference/public/user-management/get-the-current-user-id): `GET /me` retrieves the authenticated user.
+- [Log out](https://docs.hanko.io/api-reference/public/user-management/log-out-the-current-user): `POST /logout` terminates the current session.
 
-**Authentication Flows**
-- **Password Authentication**: https://docs.hanko.io/api-reference/public/password/
-  - `POST /password` - Create or update user password
-  - `POST /password/login` - Authenticate with email and password
-  - Only available when `passwords.enabled = true` in configuration
+**Session Validation**
+- [Validate using a cookie or bearer token](https://docs.hanko.io/api-reference/public/session-management/validate-a-session): `GET /sessions/validate` performs a passive validation check.
+- [Validate using a token in the request body](https://docs.hanko.io/api-reference/public/session-management/validate-a-session-1): `POST /sessions/validate` validates the session and renews its idle timeout when configured.
 
-- **Passcode Authentication**: https://docs.hanko.io/api-reference/public/passcode/
-  - `POST /passcode/login/initialize` - Request email with one-time code
-  - `POST /passcode/login/finalize` - Verify passcode and create session
-  - Email-based passwordless authentication for any device
-
-- **WebAuthn/Passkey Authentication**: https://docs.hanko.io/api-reference/public/webauthn/
-  - `POST /webauthn/registration/initialize` - Start passkey registration
-  - `POST /webauthn/registration/finalize` - Complete passkey registration
-  - `POST /webauthn/login/initialize` - Start passkey login
-  - `POST /webauthn/login/finalize` - Complete passkey login
-  - `GET /webauthn/credentials` - List user's registered passkeys
-  - `PATCH /webauthn/credentials/{id}` - Update passkey nickname
-  - `DELETE /webauthn/credentials/{id}` - Remove passkey
-
-- **OAuth Third-Party Authentication**: https://docs.hanko.io/api-reference/public/third-party/
-  - `GET /thirdparty/{provider}` - Initiate OAuth flow (Google, GitHub, Apple, etc.)
-  - `GET /thirdparty/callback` - Handle OAuth provider callback
-  - Supports major social login providers
-
-- **SAML SSO Authentication**: https://docs.hanko.io/api-reference/public/saml/
-  - `GET /saml/sso` - Initiate SAML authentication
-  - `POST /saml/acs` - SAML Assertion Consumer Service callback
-  - `GET /saml/metadata` - SAML service provider metadata
-  - Enterprise single sign-on integration
-
-**Session Management**
-**Reference**: https://docs.hanko.io/api-reference/public/session-management/
-- **Session Validation**: 
-  - `GET /me` - Validate session via Authorization header
-  - `POST /session` - Validate session via request body
-- **Token Exchange**: https://docs.hanko.io/api-reference/public/token/
-  - `POST /token` - Exchange one-time token for session JWT
-  - Used after third-party OAuth or SAML authentication
-
-**Email Management**  
-**Reference**: https://docs.hanko.io/api-reference/public/email-management/
-- `POST /emails` - Add new email to current user
-- `GET /emails` - List user's email addresses  
-- `PUT /emails/{id}/set_primary` - Set email as primary
-- `DELETE /emails/{id}` - Remove email from account
-
-**Configuration**
-**Reference**: https://docs.hanko.io/api-reference/public/well-known/
-- `GET /.well-known/config` - Public configuration (enabled auth methods, UI settings)
-- `GET /.well-known/jwks` - JSON Web Key Set for JWT signature verification
+**Provider Callbacks and Public Keys**
+- [OAuth callback](https://docs.hanko.io/api-reference/public/third-party/third-party-provider-callback): `GET /thirdparty/callback` handles the provider response.
+- [SAML callback](https://docs.hanko.io/api-reference/public/saml/saml-identity-provider-callback): `POST /saml/callback` handles the identity-provider response.
+- [SAML metadata](https://docs.hanko.io/api-reference/public/saml/get-saml-metadata): `GET /saml/metadata` returns service-provider metadata.
+- [JSON Web Key Set](https://docs.hanko.io/api-reference/public/well-known/get-json-web-key-set): `GET /.well-known/jwks.json` returns public keys for verifying Hanko JWTs.
 
 ### Flow API
-**Reference**: https://docs.hanko.io/api-reference/flow/  
-**Base URL**: `https://[project-id].hanko.io/flow` (Hanko Cloud)
+**Guide**: https://docs.hanko.io/using-the-api/understanding-the-flow-api
+**Base URL**: `https://[project-id].hanko.io` (Hanko Cloud) or your self-hosted Hanko API URL.
 
-Low-level state machine API for building completely custom authentication experiences:
-
-**Concept**: Instead of fixed authentication endpoints, the Flow API uses a state machine approach where:
-1. Initialize a flow (login, registration, profile update)
-2. Receive current state and available actions
-3. Submit action to advance to next state
-4. Repeat until flow completion
+The Flow API implements authentication and profile management as state machines. Initialize a flow with an empty POST request, render the returned state and available actions, then submit input to the selected action's execution URL until the flow completes.
 
 **Flow Types**:
-- **Login Flow**: https://docs.hanko.io/api-reference/flow/login
-  - `POST /login/initialize` - Start login flow
-  - `POST /login/finalize` - Advance login flow state
-  - Handles method selection, credential submission, multi-step authentication
-
-- **Registration Flow**: https://docs.hanko.io/api-reference/flow/registration
-  - `POST /registration/initialize` - Start registration flow
-  - `POST /registration/finalize` - Advance registration flow state
-  - Supports conditional registration steps based on configuration
-
-- **Profile Flow**: https://docs.hanko.io/api-reference/flow/profile
-  - `POST /profile/initialize` - Start profile management flow
-  - `POST /profile/finalize` - Advance profile flow state
-  - Email management, passkey registration, password updates
-
-- **Token Exchange Flow**: https://docs.hanko.io/api-reference/flow/token-exchange
-  - `POST /token_exchange/initialize` - Start token exchange (SAML only)
-  - `POST /token_exchange/finalize` - Complete token exchange
-  - Convert SAML assertions to Hanko sessions
+- [Login](https://docs.hanko.io/api-reference/flow/login): `POST /login` initializes or advances login, including password, passcode, passkey, and third-party authentication.
+- [Registration](https://docs.hanko.io/api-reference/flow/registration): `POST /registration` initializes or advances account registration.
+- [Profile](https://docs.hanko.io/api-reference/flow/profile): `POST /profile` initializes or advances authenticated profile management, including emails, passwords, passkeys, and sessions.
+- [Token exchange](https://docs.hanko.io/api-reference/flow/token-exchange): `POST /token_exchange` initializes or advances the exchange of a one-time token for a Hanko session. This flow requires SAML to be enabled.
 
 **Use Cases**:
-- Building custom authentication UIs with full control over user experience
-- Complex multi-step authentication workflows
-- Mobile applications requiring native UI integration
-- Progressive enhancement based on user capabilities
+- Custom authentication UIs with control over the user experience
+- Multi-step authentication workflows
+- Native UI integrations
 
 ### Passkey API  
 **Reference**: https://docs.hanko.io/passkey-api/introduction  
@@ -285,7 +216,7 @@ Specialized API for adding passkey authentication to existing systems without re
 ## Authentication Methods
 
 ### Passwordless Authentication
-**Reference**: https://docs.hanko.io/guides/authentication-methods/
+**Reference**: https://docs.hanko.io/guides/authentication-methods/passkeys
 
 **Passkeys** https://docs.hanko.io/guides/authentication-methods/passkeys
 - **Technology**: Based on WebAuthn (Web Authentication) API and FIDO2 standards
@@ -302,7 +233,7 @@ Specialized API for adding passkey authentication to existing systems without re
 - **Security**: Time-limited, single-use, delivered through separate channel
 - **Implementation**: No app installation required, works on any device with email
 
-**Mobile App Biometrics** https://docs.hanko.io/guides/authentication-methods/mobile-app
+**Mobile App Biometrics**
 - **Touch ID**: Capacitive fingerprint sensor authentication (Apple devices)
 - **Face ID**: 3D facial recognition using TrueDepth camera (Apple devices)  
 - **Fingerprint**: Android fingerprint authentication via BiometricPrompt API
@@ -338,13 +269,13 @@ Specialized API for adding passkey authentication to existing systems without re
 
 **OAuth 2.0 Providers**
 Supported social login providers with setup guides:
-- **Google**: https://docs.hanko.io/guides/authentication-methods/oauth/google
-- **GitHub**: https://docs.hanko.io/guides/authentication-methods/oauth/github  
-- **Apple**: https://docs.hanko.io/guides/authentication-methods/oauth/apple
-- **Microsoft**: https://docs.hanko.io/guides/authentication-methods/oauth/microsoft
-- **Discord**: https://docs.hanko.io/guides/authentication-methods/oauth/discord
-- **Facebook**: https://docs.hanko.io/guides/authentication-methods/oauth/facebook
-- **LinkedIn**: https://docs.hanko.io/guides/authentication-methods/oauth/linkedin
+- **Google**: https://docs.hanko.io/guides/social-sso/google
+- **GitHub**: https://docs.hanko.io/guides/social-sso/github
+- **Apple**: https://docs.hanko.io/guides/social-sso/apple
+- **Microsoft**: https://docs.hanko.io/guides/social-sso/microsoft
+- **Discord**: https://docs.hanko.io/guides/social-sso/discord
+- **Facebook**: https://docs.hanko.io/guides/social-sso/facebook
+- **LinkedIn**: https://docs.hanko.io/guides/social-sso/linkedin
 
 **OAuth Flow Process**:
 1. User clicks social login button
@@ -410,16 +341,6 @@ Enterprise identity provider integrations:
 - **Resources**: Async data loading for user information
 
 ### Backend SDKs
-
-**Go SDK** https://docs.hanko.io/quickstarts/backend/go
-- **Repository**: https://github.com/teamhanko/hanko/tree/main/backend/sdk/golang
-- **Installation**: `go get github.com/teamhanko/hanko-sdk-golang`
-- **Features**: JWT validation, user management, session verification
-- **Usage**: 
-```go
-import "github.com/teamhanko/hanko-sdk-golang/hanko"
-client := hanko.NewClient("your-api-url")
-```
 
 **Python SDK** https://docs.hanko.io/quickstarts/backend/python  
 - **Installation**: `pip install hanko-sdk`
@@ -594,7 +515,7 @@ services:
 - **Environment Variables**: Override any configuration via env vars
 - **Runtime Configuration**: Some settings configurable via Admin API
 
-**SMTP Configuration** https://docs.hanko.io/guides/cloud-console/custom-smtp-server
+**SMTP Configuration** https://docs.hanko.io/guides/email-delivery/custom-smtp-server
 - **Email Providers**: Support for SendGrid, Mailgun, AWS SES, etc.
 - **Custom SMTP**: Configure any SMTP server
 - **Email Templates**: Customizable HTML/text email templates
@@ -658,7 +579,7 @@ jwt:
 - **Multi-language**: Different templates for different languages
 - **Email Types**: Registration, login codes, password reset, account notifications
 
-**SMTP Server Configuration** https://docs.hanko.io/guides/cloud-console/custom-smtp-server
+**SMTP Server Configuration** https://docs.hanko.io/guides/email-delivery/custom-smtp-server
 - **Providers**: SendGrid, Mailgun, Amazon SES, Postmark, etc.
 - **Authentication**: Username/password, API key, OAuth2
 - **Security**: TLS/SSL encryption, SPF/DKIM/DMARC configuration
@@ -670,7 +591,7 @@ jwt:
 - **Responsive Design**: Mobile-first approach with custom breakpoints
 - **Dark Mode**: System preference detection and manual toggle
 
-**Custom Login Pages** https://docs.hanko.io/guides/flow-api/build-a-custom-login-page
+**Custom Login Pages** https://docs.hanko.io/using-the-api/build-a-custom-login-page
 - **Flow API Integration**: Build completely custom UIs
 - **State Management**: Handle complex multi-step authentication flows
 - **Progressive Enhancement**: Graceful degradation for older browsers
@@ -734,7 +655,7 @@ jwt:
 - **Business Metrics**: Registration rates, user growth, feature adoption
 - **Custom Metrics**: Define application-specific metrics via webhooks
 
-**Webhooks** https://docs.hanko.io/guides/webhooks/introduction
+**Webhooks** https://docs.hanko.io/guides/webhooks
 - **Event Types**: `user.created`, `user.login`, `user.logout`, etc.
 - **Payload**: Rich event data including user information and context
 - **Retry Logic**: Exponential backoff on webhook delivery failures  
@@ -757,7 +678,7 @@ jwt:
 ## Migration and Data Management
 
 ### User Migration
-**Reference**: https://docs.hanko.io/guides/import-export-users
+**Reference**: https://docs.hanko.io/guides/import_export/import-export-users
 
 **Import from Other Providers**:
 - **Supported Sources**: Auth0, Firebase, Cognito, custom systems
@@ -782,7 +703,7 @@ jwt:
 ### Database Integration
 
 **Direct Database Integration**
-**Supabase Integration** https://docs.hanko.io/guides/databases/supabase
+**Supabase Integration** https://docs.hanko.io/integrations/supabase
 - **Row Level Security**: Hanko user ID integration with RLS policies
 - **Real-time Sync**: User creation triggers automatic database records
 - **Profile Enrichment**: Sync user metadata to custom profile tables
@@ -795,7 +716,7 @@ jwt:
 - **Retry Logic**: Guaranteed delivery with exponential backoff
 - **Idempotency**: Handle duplicate webhook deliveries gracefully
 
-**User Metadata Management** https://docs.hanko.io/guides/access-user-data/user-metadata
+**User Metadata Management** https://docs.hanko.io/guides/user-data/user-metadata
 - **Public Metadata**: User-visible profile information
   - Display name, avatar URL, preferences
   - Accessible via Public API and JWT tokens

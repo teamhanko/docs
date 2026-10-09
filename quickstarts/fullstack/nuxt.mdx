@@ -176,7 +176,7 @@ function afterLogin() {
 ```
 
 ## Define event callbacks 
-Hanko emits various [authentication events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#events) that you can listen to for custom application logic. These events include session creation, updates, and destruction.
+Hanko emits various [authentication events](https://github.com/teamhanko/hanko/blob/main/frontend/elements/README.md#hanko-events) that you can listen to for custom application logic. These events include session creation, updates, and destruction.
 
 Add the `<hanko-events>` component to subscribe to authentication events:
 
@@ -249,7 +249,7 @@ const hanko = useHanko()
 <Info>
 **useHanko() composable**
 
-The `useHanko` composable provides access to the [Hanko SDK](https://docs.hanko.io/jsdoc/hanko-frontend-sdk/index.html) which in turn allows access to the Hanko API, e.g. for accessing the [current user info](https://docs.hanko.io/jsdoc/hanko-frontend-sdk/UserClient.html#getCurrent).
+The `useHanko` composable provides access to the [Hanko SDK](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/) which in turn allows access to the Hanko API, e.g. for accessing the [current user info](https://teamhanko.github.io/hanko/jsdoc/hanko-frontend-sdk/UserClient.html#getCurrentUser).
 The composable is auto-imported across the app and can simply be used with `useHanko()` anywhere in your code.
 
 </Info>
