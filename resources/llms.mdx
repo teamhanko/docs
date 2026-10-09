@@ -1082,18 +1082,6 @@ def validate_session_token(token: str) -> Tuple[bool, Optional[str]]:
    - Offer incentives for passwordless upgrade
    - Gradually deprecate password-based authentication
 
-**NextAuth.js Integration Example**: https://docs.hanko.io/passkey-api/next-auth
-```javascript
-// Add passkey provider to NextAuth configuration
-providers: [
-  // existing providers
-  PasskeyProvider({
-    apiUrl: 'https://passkeys.hanko.io',
-    tenantId: 'your-tenant-id'
-  })
-]
-```
-
 ### Enterprise SSO Implementation
 **Enterprise-Grade Authentication**: SAML and OAuth provider integration
 
