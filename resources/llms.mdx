@@ -68,7 +68,7 @@ Specialized API for adding passkey authentication to existing systems:
 - **Transaction Signing**: Secure high-value transactions with cryptographic proof
 
 **Use Cases**:
-- Adding passwordless login to apps already using Auth.js/NextAuth
+- Adding passwordless login to existing apps
 - Implementing step-up authentication for sensitive operations
 - Providing enterprise-grade security without full system replacement
 
@@ -1081,18 +1081,6 @@ def validate_session_token(token: str) -> Tuple[bool, Optional[str]]:
    - Encourage passkey adoption through UI prompts
    - Offer incentives for passwordless upgrade
    - Gradually deprecate password-based authentication
-
-**NextAuth.js Integration Example**: https://docs.hanko.io/passkey-api/next-auth
-```javascript
-// Add passkey provider to NextAuth configuration
-providers: [
-  // existing providers
-  PasskeyProvider({
-    apiUrl: 'https://passkeys.hanko.io',
-    tenantId: 'your-tenant-id'
-  })
-]
-```
 
 ### Enterprise SSO Implementation
 **Enterprise-Grade Authentication**: SAML and OAuth provider integration
