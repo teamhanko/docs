@@ -231,12 +231,12 @@ Because of the risks of the IdP-initiated it is recommended to use an SP-initiat
 
 Below you will find configuration data of your project that may be required for integrating with an Identity Provider.
 
-| Property                               | Value                                                            |
-|----------------------------------------|------------------------------------------------------------------|
-| `Assertion Consumer Service (ACS) URL` | `<project_api_url>/saml/callback`                                |
-| `Entity ID/Audience URI`               | `<project_api_url>`                                              |
-| `Metadata URL (download)`              | `<project_api_url>/saml/metadata?domain=<domain>`                |
-| `Metadata URL (certificate)`           | `<project_api_url>/saml/metadata?domain=<domain>&cert_only=true` |
+| Property                               | Value                                            |
+|----------------------------------------|--------------------------------------------------|
+| `Assertion Consumer Service (ACS) URL` | `<project_api_url>/saml/callback`                |
+| `Entity ID/Audience URI`               | `<project_api_url>`                              |
+| `Metadata URL (download)`              | `<project_api_url>/saml/metadata`                |
+| `Metadata URL (certificate)`           | `<project_api_url>/saml/metadata?cert_only=true` |
 
 Replace the `<project_api_url>` with your project's API URL. You can find the API URL
 on your project's dashboard in the [Hanko Cloud Console](https://cloud.hanko.io).

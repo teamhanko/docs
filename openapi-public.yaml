@@ -99,17 +99,11 @@ paths:
   /saml/metadata:
     get:
       summary: Get SAML Metadata
-      description: Download SAML service provider metadata or public certificate.
+      description: Download SAML service provider metadata or public certificate. Responds with 403 if SAML is not enabled for the project.
       operationId: get-saml-metadata
       tags:
         - SAML
       parameters:
-        - name: domain
-          in: query
-          description: Fully qualified domain name to which a SAML service provider is registered
-          required: true
-          schema:
-            type: string
         - name: cert_only
           in: query
           description: Toggle to download the SAML service provider public certificate
@@ -125,8 +119,10 @@ paths:
                 format: binary
         '400':
           $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Not found
+          description: No SAML certificate exists for the project
   /saml/callback:
     post:
       summary: SAML identity provider callback
