@@ -101,3 +101,7 @@ After setting up the custom domain, you'll need to update your application's con
     - If you're using 3rd-party connections (e.g., Google, SAML), ensure that all redirect URL configurations are updated.
     - Retrieve the new redirect URL from the **Project Settings > Social connections** and **Project settings > Enterprise connections**
     - Update these URLs in your 3rd-party provider configurations (e.g., Google, Azure AD).
+    - For SAML enterprise connections, also update the `Entity ID/Audience URI` and, if your identity provider uses it,
+      the metadata URL of your project. Both are derived from the API URL, see
+      [SAML data of Hanko Cloud projects](/guides/enterprise-sso/introduction#saml-data-of-hanko-cloud-projects). The
+      SAML certificate is not changed, see [Custom domains](/guides/enterprise-sso/introduction#custom-domains).
