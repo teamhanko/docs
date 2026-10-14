@@ -105,6 +105,7 @@ In the [Hanko Cloud Console](https://cloud.hanko.io), navigate to `Settings > En
 - The status of the certificate: `Valid`, `Expires soon` (it expires within 60 days) or `Expired`.
 - The date the certificate expires on.
 - The metadata URL of your project and a link to download the certificate (PEM).
+- A hint if the name of the certificate no longer matches your API domain.
 
 <Info>
     Older certificates can have a shorter validity than newer ones. Check the expiry date shown for your project.
@@ -146,15 +147,18 @@ certificate before it expires.
 
 #### Custom domains
 
-When you set up a [custom domain](/guides/custom-domain/custom-domain) for your project, the API URL of your project
-changes, and with it the `Entity ID/Audience URI`, the `Assertion Consumer Service (ACS) URL` and the metadata URL (see
-[SAML data of Hanko Cloud projects](#saml-data-of-hanko-cloud-projects)). Update them at your identity providers.
+When you set up or remove a [custom domain](/guides/custom-domain/custom-domain) for your project, the API URL of your
+project changes, and with it the `Entity ID/Audience URI`, the `Assertion Consumer Service (ACS) URL` and the metadata
+URL (see [SAML data of Hanko Cloud projects](#saml-data-of-hanko-cloud-projects)). Update them at your identity
+providers. If sign-ins still fail after a change, you may also have to update the certificate or re-import the
+metadata at the identity provider manually.
 
 The certificate itself is not changed: it stays valid and keeps its key. Its common name and subject alternative name
 are the host name of the API URL at the time the certificate was issued or renewed, so they still show the previous
-host name. Hanko does not check this name. If you want the name to match your custom domain, you can
-[renew the certificate](#renewing-the-certificate), but identity providers that stored the previous certificate then
-need the new one.
+host name, and the console shows a hint about it. Hanko does not check this name, but an identity provider may. If you
+want the name to match your domain, or your identity provider requires it, you can
+[renew the certificate](#renewing-the-certificate); identity providers that stored the previous certificate then need
+the new one.
 
 ### Configuring SAML identity providers
 
@@ -308,8 +312,9 @@ Below you will find configuration data of your project that may be required for 
 Replace the `<project_api_url>` with your project's API URL. You can find the API URL
 on your project's dashboard in the [Hanko Cloud Console](https://cloud.hanko.io).
 
-The metadata URL and a link to the certificate are also shown in the console under `Settings > Enterprise connections`,
-together with the status of the certificate (see [SAML certificate](#saml-certificate)).
+The ACS URL (shown as `Redirect URL`), the Entity ID/Audience URI, the metadata URL and a link to the certificate are
+also shown in the console under `Settings > Enterprise connections`, together with the status of the certificate (see
+[SAML certificate](#saml-certificate)).
 
 ## Limitations
 

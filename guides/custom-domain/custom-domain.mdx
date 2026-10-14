@@ -85,8 +85,6 @@ To set up your custom domain for authentication, follow these steps:
 
 <Note>
 After setting up the custom domain, please allow a few minutes for the changes to propagate through the DNS system before they take effect.
-
-When the custom domain is set up, your project will no longer be reachable through the previous API URL.
 </Note>
 
 #### Updating Your application for the custom domain
@@ -101,7 +99,13 @@ After setting up the custom domain, you'll need to update your application's con
     - If you're using 3rd-party connections (e.g., Google, SAML), ensure that all redirect URL configurations are updated.
     - Retrieve the new redirect URL from the **Project Settings > Social connections** and **Project settings > Enterprise connections**
     - Update these URLs in your 3rd-party provider configurations (e.g., Google, Azure AD).
-    - For SAML enterprise connections, also update the `Entity ID/Audience URI` and, if your identity provider uses it,
-      the metadata URL of your project. Both are derived from the API URL, see
-      [SAML data of Hanko Cloud projects](/guides/enterprise-sso/introduction#saml-data-of-hanko-cloud-projects). The
-      SAML certificate is not changed, see [Custom domains](/guides/enterprise-sso/introduction#custom-domains).
+    - For SAML enterprise connections, update the `ACS URL` and the `Entity ID/Audience URI` at the identity provider,
+      and the metadata URL if it fetches it. You find the current values under **Project settings > Enterprise
+      connections**, see also
+      [SAML data of Hanko Cloud projects](/guides/enterprise-sso/introduction#saml-data-of-hanko-cloud-projects).
+    - If sign-ins through an enterprise connection still fail after a change, you may also have to update the
+      certificate or re-import the metadata at the identity provider manually. The SAML certificate itself is not
+      changed, see [Custom domains](/guides/enterprise-sso/introduction#custom-domains).
+
+The same applies when you remove a custom domain: the API URL of your project, and with it these URLs, change back to
+the default ones.
