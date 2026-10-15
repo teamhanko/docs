@@ -111,6 +111,48 @@ In the [Hanko Cloud Console](https://cloud.hanko.io), navigate to `Settings > En
     Older certificates can have a shorter validity than newer ones. Check the expiry date shown for your project.
 </Info>
 
+#### Creating a Java keystore
+
+Some identity providers, for example Keycloak, do not accept a PEM file when you import the certificate of a client and
+require a Java keystore (JKS or PKCS12) instead. To create one from the downloaded certificate, you can use `keytool`,
+which is part of the Java Development Kit:
+
+<Tabs>
+<Tab title="JKS">
+```bash
+keytool -importcert -noprompt \
+  -alias hanko-sp \
+  -file <service-name>-service-provider.pem \
+  -keystore hanko-sp.jks \
+  -storetype JKS \
+  -storepass changeit
+```
+</Tab>
+<Tab title="PKCS12">
+```bash
+keytool -importcert -noprompt \
+  -alias hanko-sp \
+  -file <service-name>-service-provider.pem \
+  -keystore hanko-sp.p12 \
+  -storetype PKCS12 \
+  -storepass changeit
+```
+</Tab>
+</Tabs>
+
+Replace `<service-name>-service-provider.pem` with the name of the downloaded file. If your identity provider asks
+for the alias or the store password when you import the keystore, provide the ones from the command (`hanko-sp` and
+`changeit`).
+
+If the keystore file already exists in the folder you run the command in, for example after a renewal, delete it
+first, or use a different alias. `keytool` does not overwrite an existing alias.
+
+`keytool` requires a store password of at least six characters. The keystore only contains the public certificate
+and no private key, so there is no key password and the store password does not protect a secret.
+
+After you [renew the certificate](#renewing-the-certificate), delete the old keystore file, create the keystore again
+from the new certificate and import it at your identity provider.
+
 #### Renewing the certificate
 
 To renew the certificate of your project:
