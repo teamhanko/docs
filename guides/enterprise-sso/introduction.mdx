@@ -171,7 +171,8 @@ The Entity ID, the ACS URL and the metadata URL of your project do not change wh
 By default, the key pair stays the same and only a new certificate is issued. Identity providers that stored the
 previous certificate need the new one: some keep working because they only check the public key, others reject
 sign-ins until they are updated. Give your identity providers the new certificate using the metadata URL or the link
-to the certificate.
+to the certificate. If an identity provider requires a keystore file, delete the old one and
+[create the keystore](#creating-a-java-keystore) again from the new certificate.
 
 <Warning>
     Choosing another key size always generates a new key pair. With a new key pair, your identity providers no longer
