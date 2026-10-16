@@ -33,6 +33,7 @@ import AccountProvisioning from '/snippets/account-provisioning.mdx'
 - Learn enterprise connection configuration
 - Explore SP-initiated vs IdP-initiated SSO flows
 - Configure account provisioning and linking
+- View and renew the SAML certificate of your project
 - Review security considerations and limitations
 - Access provider-specific integration guides
 </div>
@@ -88,6 +89,119 @@ To add an enterprise connection to your project:
 
 By default, Hanko reads a fixed set of standard SAML attribute names to populate a user's profile. If your IdP
 sends these under different names, see [Attribute mapping](/guides/user-data/attribute-mapping) to map them.
+
+### SAML certificate
+
+Hanko signs the sign-in requests it sends to your identity providers with the SAML certificate of your project and, if
+an identity provider encrypts its responses, uses it to decrypt them. Identity providers use the certificate to verify
+those requests and may use it to encrypt their responses. Give the metadata URL or the certificate to the
+administrators of your identity providers (see [SAML data of Hanko Cloud projects](#saml-data-of-hanko-cloud-projects)).
+
+#### Viewing the certificate
+
+In the [Hanko Cloud Console](https://cloud.hanko.io), navigate to `Settings > Enterprise connections`. The
+`Service provider certificate` section shows:
+
+- The status of the certificate: `Valid`, `Expires soon` (it expires within 60 days) or `Expired`.
+- The date the certificate expires on.
+- The metadata URL of your project and a link to download the certificate (PEM).
+- A hint if the name of the certificate no longer matches your API domain.
+
+<Info>
+    Older certificates can have a shorter validity than newer ones. Check the expiry date shown for your project.
+</Info>
+
+#### Creating a Java keystore
+
+Some identity providers, for example Keycloak, do not accept a PEM file when you import the certificate of a client and
+require a Java keystore (JKS or PKCS12) instead. To create one from the downloaded certificate, you can use `keytool`,
+which is part of the Java Development Kit:
+
+<Tabs>
+<Tab title="JKS">
+```bash
+keytool -importcert -noprompt \
+  -alias hanko-sp \
+  -file <service-name>-service-provider.pem \
+  -keystore hanko-sp.jks \
+  -storetype JKS \
+  -storepass changeit
+```
+</Tab>
+<Tab title="PKCS12">
+```bash
+keytool -importcert -noprompt \
+  -alias hanko-sp \
+  -file <service-name>-service-provider.pem \
+  -keystore hanko-sp.p12 \
+  -storetype PKCS12 \
+  -storepass changeit
+```
+</Tab>
+</Tabs>
+
+Replace `<service-name>-service-provider.pem` with the name of the downloaded file. If your identity provider asks
+for the alias or the store password when you import the keystore, provide the ones from the command (`hanko-sp` and
+`changeit`).
+
+If the keystore file already exists in the folder you run the command in, for example after a renewal, delete it
+first, or use a different alias. `keytool` does not overwrite an existing alias.
+
+`keytool` requires a store password of at least six characters. The keystore only contains the public certificate
+and no private key, so there is no key password and the store password does not protect a secret.
+
+After you [renew the certificate](#renewing-the-certificate), delete the old keystore file, create the keystore again
+from the new certificate and import it at your identity provider.
+
+#### Renewing the certificate
+
+To renew the certificate of your project:
+
+1. Log in to [Hanko Cloud](https://cloud.hanko.io) and select your project.
+2. Navigate to `Settings > Enterprise connections`.
+3. In the `Service provider certificate` section, click `Renew certificate`.
+4. _Optional_: Expand `Advanced options` to change how the certificate is renewed:
+    -  `Key size`: Keep the current key, or choose a key size of 2048, 3072 or 4096 bit.
+    -  `Validity`: How long the renewed certificate is valid for, from 1 to 10 years. The default is 10 years.
+    -  `Generate a new key pair`: Generate a new key pair even if the key size stays the same.
+5. Confirm and click `Renew certificate`.
+
+The Entity ID, the ACS URL and the metadata URL of your project do not change when you renew the certificate.
+
+By default, the key pair stays the same and only a new certificate is issued. Identity providers that stored the
+previous certificate need the new one: some keep working because they only check the public key, others reject
+sign-ins until they are updated. Give your identity providers the new certificate using the metadata URL or the link
+to the certificate. If an identity provider requires a keystore file, delete the old one and
+[create the keystore](#creating-a-java-keystore) again from the new certificate.
+
+<Warning>
+    Choosing another key size always generates a new key pair. With a new key pair, your identity providers no longer
+    have the matching public key: until they have the new certificate, sign-ins through identity providers that
+    encrypt their responses fail and signatures of sign-in requests may be rejected. Plan the renewal together with
+    the administrators of your identity providers.
+</Warning>
+
+#### Certificate expiry
+
+Hanko checks the validity of the certificate when it decrypts a response, so once the certificate has expired,
+sign-ins through identity providers that encrypt their responses fail. Signing sign-in requests keeps working, but
+whether an identity provider accepts requests signed with an expired certificate depends on the provider. Renew the
+certificate before it expires.
+
+#### Custom domains
+
+When you set up or remove a [custom domain](/guides/custom-domain/custom-domain) for your project, the API URL of your
+project changes, and with it the `Entity ID/Audience URI`, the `Assertion Consumer Service (ACS) URL` and the metadata
+URL (see [SAML data of Hanko Cloud projects](#saml-data-of-hanko-cloud-projects)). Update them at your identity
+providers. If sign-ins still fail after a change, you may also have to update the certificate or re-import the
+metadata at the identity provider manually.
+
+The certificate itself is not changed: it stays valid and keeps its key. Its common name and subject alternative name
+are the host name of the API URL at the time the certificate was issued or renewed, so they still show the previous
+host name, and the console shows a hint about it. Hanko does not check this name, but an identity provider may. If you
+want the name to match your domain, or your identity provider requires it, you can
+[renew the certificate](#renewing-the-certificate); identity providers that stored the previous certificate then need
+the new one.
 
 ### Configuring SAML identity providers
 
@@ -231,15 +345,19 @@ Because of the risks of the IdP-initiated it is recommended to use an SP-initiat
 
 Below you will find configuration data of your project that may be required for integrating with an Identity Provider.
 
-| Property                               | Value                                                            |
-|----------------------------------------|------------------------------------------------------------------|
-| `Assertion Consumer Service (ACS) URL` | `<project_api_url>/saml/callback`                                |
-| `Entity ID/Audience URI`               | `<project_api_url>`                                              |
-| `Metadata URL (download)`              | `<project_api_url>/saml/metadata?domain=<domain>`                |
-| `Metadata URL (certificate)`           | `<project_api_url>/saml/metadata?domain=<domain>&cert_only=true` |
+| Property                               | Value                                            |
+|----------------------------------------|--------------------------------------------------|
+| `Assertion Consumer Service (ACS) URL` | `<project_api_url>/saml/callback`                |
+| `Entity ID/Audience URI`               | `<project_api_url>`                              |
+| `Metadata URL (download)`              | `<project_api_url>/saml/metadata`                |
+| `Metadata URL (certificate)`           | `<project_api_url>/saml/metadata?cert_only=true` |
 
 Replace the `<project_api_url>` with your project's API URL. You can find the API URL
 on your project's dashboard in the [Hanko Cloud Console](https://cloud.hanko.io).
+
+The ACS URL (shown as `Redirect URL`), the Entity ID/Audience URI, the metadata URL and a link to the certificate are
+also shown in the console under `Settings > Enterprise connections`, together with the status of the certificate (see
+[SAML certificate](#saml-certificate)).
 
 ## Limitations
 
