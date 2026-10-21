@@ -181,7 +181,8 @@
                       {
                         "group": "Third Party",
                         "pages": [
-                          "api-reference/public/third-party/third-party-provider-callback"
+                          "api-reference/public/third-party/third-party-provider-callback",
+                          "api-reference/public/third-party/third-party-provider-form-callback"
                         ]
                       },
                       {
@@ -195,6 +196,7 @@
                         "group": "SAML",
                         "pages": [
                           "api-reference/public/saml/get-saml-metadata",
+                          "api-reference/public/saml/start-saml-authentication",
                           "api-reference/public/saml/saml-identity-provider-callback"
                         ]
                       },
