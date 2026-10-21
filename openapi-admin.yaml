@@ -1602,7 +1602,7 @@ components:
                 example: "john_doe_123"
               name:
                 description: |
-                  Set a new username for the user.
+                  Set a new full name for the user.
 
                   Send `null` to remove the name.
                 type: string
@@ -1800,6 +1800,23 @@ components:
             $ref: "#/components/schemas/Email"
         username:
           $ref: "#/components/schemas/Username"
+        name:
+          description: The user's full name. Omitted if not set.
+          type: string
+          example: "John Doe"
+        given_name:
+          description: The user's given name (first name). Omitted if not set.
+          type: string
+          example: "John"
+        family_name:
+          description: The user's family name (surname). Omitted if not set.
+          type: string
+          example: "Doe"
+        picture:
+          description: URL of the user's profile picture. Omitted if not set.
+          type: string
+          format: uri
+          example: "https://example.com/avatar.jpg"
         organizations:
           description: Organizations the user belongs to, and the roles held in each. Omitted if the user belongs to no organizations.
           type: array
