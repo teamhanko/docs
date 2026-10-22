@@ -691,7 +691,7 @@ components:
           properties:
             action:
               enum:
-                - "webauthn_verify_assertion_response"
+                - "webauthn_verify_attestation_response"
             inputs:
               $ref: "#/components/schemas/InputsWebauthnVerifyAttestationResponse"
     Actions:
