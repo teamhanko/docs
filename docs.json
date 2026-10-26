@@ -363,7 +363,8 @@
               "passkey-api/example-implementation",
               "passkey-api/mfa",
               "passkey-api/example-transaction",
-              "passkey-api/client-first-login-flow"
+              "passkey-api/client-first-login-flow",
+              "passkey-api/login-session-binding"
             ]
           },
           {
