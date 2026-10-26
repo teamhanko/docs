@@ -196,7 +196,6 @@
                         "group": "SAML",
                         "pages": [
                           "api-reference/public/saml/get-saml-metadata",
-                          "api-reference/public/saml/start-saml-authentication",
                           "api-reference/public/saml/saml-identity-provider-callback"
                         ]
                       },
