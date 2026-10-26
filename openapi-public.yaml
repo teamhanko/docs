@@ -704,7 +704,6 @@ components:
               - `pwd` => password
               - `passkey` => passkey
               - `otp` => email passcode
-              - `ext` => thirdparty provider without a provider ID
               - `ext:<provider>` => thirdparty provider, where <provider> is the internal provider ID, e.g. `ext:microsoft`
               - `totp` => 2FA authenticator app
               - `security_key` => 2FA security key
