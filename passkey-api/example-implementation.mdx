@@ -1,11 +1,11 @@
 ---
-title: Example implementation
-description: Learn how to utilize the Passkey API using raw HTTP requests without any SDK.
+title: Register and sign in with passkeys
+description: Integrate passkey registration and login across your browser, backend, and the Passkey API.
 ---
 
-This is an example implementation showing how to use the Passkey API with Node.js and Flask. (We'll be adding more languages and frameworks soon.) 
+This guide explains registration and standalone login using HTTP calls from Node.js or Flask and WebAuthn in the browser. Your application owns user accounts and sessions; the Passkey API verifies the WebAuthn ceremonies.
 
-However, if you're already using JavaScript/TypeScript for your backend, you can use [@teamhanko/passkeys-sdk](https://www.npmjs.com/package/@teamhanko/passkeys-sdk), which handles the API calls. Your application still manages sessions, JWT verification, and login-result binding.
+For a JavaScript/TypeScript backend, the [Backend SDK](/passkey-api/js-sdk) can replace these HTTP calls. The browser and session responsibilities remain the same. To add WebAuthn after an existing first factor, follow [Passkeys and MFA](/passkey-api/mfa).
 
 Otherwise, please make sure to always send JSON with `Content-Type: application/json`.
 
@@ -304,7 +304,7 @@ async function loginWithPasskey() {
 ```
 
     <Note>
-    The browser may send the assertion directly to the Passkey API. Your backend must still initialize and bind the login before accepting the returned token. See [Client-First Login Flow](/passkey-api/client-first-login-flow).
+    The browser may send the assertion directly to the Passkey API. Your backend must still initialize and bind the login before accepting the returned token. See [Finalize login from the browser](/passkey-api/client-first-login-flow).
     </Note>
 
   </Step>

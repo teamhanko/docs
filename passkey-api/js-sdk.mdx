@@ -1,343 +1,175 @@
 ---
-title: JavaScript/TypeScript SDK
-description: A lean, type-safe, `fetch`-based API client for the Hanko Passkey API
+title: JavaScript/TypeScript Backend SDK
+sidebarTitle: JavaScript/TypeScript
+description: Call the Passkey API from your backend using the JavaScript/TypeScript SDK.
 ---
 
-The `@teamhanko/passkeys-sdk` package lets you call the Hanko Passkey API from JavaScript/TypeScript that supports `fetch`.
+`@teamhanko/passkeys-sdk` is a typed API client for JavaScript runtimes with `fetch`, including Node.js, Bun, and Deno. This guide focuses on backend usage: keep the secret API key out of browser bundles.
 
-This includes Node.js, Browsers, Deno, Bun, and frameworks like Next.js, Astro, and SvelteKit.
+For the complete browser/backend flow, start with [Register and sign in with passkeys](/passkey-api/example-implementation). The SDK replaces HTTP calls to the Passkey API; your application still owns authentication policy, session handling, CSRF protection, and result verification.
+
+## Install and configure
 
 <CodeGroup>
-
 ```bash npm
-npm i @teamhanko/passkeys-sdk
+npm install @teamhanko/passkeys-sdk
 ```
-
 ```bash yarn
 yarn add @teamhanko/passkeys-sdk
 ```
-
-```bash bun
-bun add @teamhanko/passkeys-sdk
-```
-
 ```bash pnpm
 pnpm add @teamhanko/passkeys-sdk
 ```
-
-</CodeGroup>
-
-## Usage
-
-A `tenant` is an API client instance for one tenant of the Hanko Passkey API.
-
-<Accordion title="See multitenancy">
-
-If the app you’re building supports organizations, teams, or anything similar, you will likely have heard of multitenancy.
-
-The Passkey API supports multitenancy as well — you can create tenants (a.k.a. organizations, teams, …) and add the passkeys of users exclusively to those tenants. Then your users will only be able to log in with passkeys specifically for that tenant.
-
-For example: In your app, a user is part of two teams: the “ACME Corp.” and the “A-Team.”
-
-They create a passkey to log into “ACME Corp.”
-
-That passkey will only work for the “ACME Corp.”, not the “A-Team”.
-
-</Accordion>
-
-If you use Hanko Cloud, get your tenant ID and API key from the [dashboard](https://cloud.hanko.io/organizations).
-
-Create a new tenant instance:
-
-```ts
-const passkeyApi = tenant({
-  tenantId: "<your tenant id>",
-  apiKey: "<your secret api key>",
-});
-```
-
-- If you only use public API methods, like `/login/initialize`, you can omit the `apiKey`.
-- If you're self-hosting the Passkey API, make sure to pass the `baseUrl` as well.
-
-Now you're ready to call the API. For example, to start the process of registering a new passkey:
-
-```ts
-const creationOptions = await tenant.registration.initialize({
-  userId: "<id of the user in your database>",
-  username: "<username of the user>",
-});
-```
-
-{/* TODO complete node.js tutorial just like "/passkey-api/example-implementation"? */}
-
-## Example Implementation
-
-<Steps>
-<Step title="Install the SDK">
-
-<CodeGroup>
-
-```bash npm
-npm i @teamhanko/passkeys-sdk
-```
-
-```bash yarn
-yarn add @teamhanko/passkeys-sdk
-```
-
 ```bash bun
 bun add @teamhanko/passkeys-sdk
 ```
-
-```bash pnpm
-pnpm add @teamhanko/passkeys-sdk
-```
-
 </CodeGroup>
-</Step>
-<Step title="Get your tenant ID and API key">
 
-Get your tenant ID and API key from [Hanko Cloud](https://cloud.hanko.io/) and add them to your `.env` file.
+Get your tenant ID and secret API key from [your Passkey API project](/passkey-api/setup-passkey-project). Store both in your backend environment:
 
 ```bash .env
-PASSKEYS_API_KEY=your-api-key
 PASSKEYS_TENANT_ID=your-tenant-id
+PASSKEYS_API_KEY=your-secret-api-key
 ```
 
-</Step>
-<Step title="Allow users to register passkeys as a login method">
-On your backend, you’ll have to call `tenant({ ... }).registration.initialize()` and `registration.finalize()` to create and store a passkey.
-```js services.js
+```ts
 import { tenant } from "@teamhanko/passkeys-sdk";
-import dotenv from "dotenv";
-import db from "../db.js";
 
-dotenv.config();
+const tenantId = process.env.PASSKEYS_TENANT_ID;
+const apiKey = process.env.PASSKEYS_API_KEY;
+if (!tenantId || !apiKey) {
+  throw new Error("Missing Passkey API configuration");
+}
 
-const passkeyApi = tenant({
-  apiKey: process.env.PASSKEYS_API_KEY,
-  tenantId: process.env.PASSKEYS_TENANT_ID,
+const passkeyApi = tenant({ tenantId, apiKey });
+```
+
+Load these environment variables using your deployment platform or environment loader. For self-hosting, supply `baseUrl`, for example `tenant({ tenantId, apiKey, baseUrl: "https://passkeys.example.com" })`. The client appends the tenant path; do not include the tenant ID in `baseUrl`.
+
+Create or select the client from trusted application configuration. The tenant identifies your Passkey API project; the user ID identifies an existing user in your application. For operations on a signed-in user, derive that ID from server-side authentication state.
+
+## SDK calls and API routes
+
+| SDK call | API route | Result |
+| --- | --- | --- |
+| `registration.initialize({ userId, username })` | `/registration/initialize` | WebAuthn creation options |
+| `registration.finalize(credential)` | `/registration/finalize` | `{ token }` |
+| `login.initialize()` | `/login/initialize` | WebAuthn request options |
+| `login.finalize(assertion)` | `/login/finalize` | `{ token }` |
+| `user(userId).credentials()` | `GET /credentials?user_id=...` | Credential list |
+| `credential(credentialId).remove()` | `DELETE /credentials/{credential_id}` | No response body |
+| `jwks()` | `GET /.well-known/jwks.json` | Public signing keys |
+
+The SDK unwraps successful API responses and throws on API errors. Creation and request options include `publicKey`; finalization returns an object containing the token, not a decoded user or an application session.
+
+## Register a passkey
+
+After authorizing enrollment for the authenticated user, initialize registration:
+
+```ts
+const creationOptions = await passkeyApi.registration.initialize({
+  userId: authenticatedUser.id,
+  username: authenticatedUser.email,
+  displayName: authenticatedUser.displayName,
 });
-
-async function startServerPasskeyRegistration(userID) {
-  const user = db.users.find((user) => user.id === userID);
-
-  const createOptions = await passkeyApi.registration.initialize({
-    userId: user.id,
-    username: user.email || "",
-  });
-
-  return createOptions;
-}
-
-async function finishServerPasskeyRegistration(credential) {
-  await passkeyApi.registration.finalize(credential);
-}
 ```
 
-```js controllers.js
-async function handlePasskeyRegister(req, res) {
-  const { user } = req;
-  const userID = user.id;
+Store the challenge and expected user against the enrollment session before returning `creationOptions` to the browser. The browser performs WebAuthn `create()` and returns the serialized credential response to your backend. Match it to the pending enrollment, then submit that same response:
 
-  if (!userID) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  console.log("userId", userID);
-
-  const { start, finish, credential } = req.body;
-
-  try {
-    if (start) {
-      const createOptions = await startServerPasskeyRegistration(userID);
-      console.log("registration start");
-      return res.json({ createOptions });
-    }
-    if (finish) {
-      await finishServerPasskeyRegistration(credential);
-      return res.json({ message: "Registered Passkey" });
-    }
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-}
+```ts
+const result = await passkeyApi.registration.finalize(credential);
 ```
 
-**Frontend**
+Complete the pending enrollment only after API verification succeeds. The browser ceremony and HTTP forwarding are demonstrated in the [integration guide](/passkey-api/example-implementation). The SDK does not itself bind enrollment to your application's current session.
 
-On your frontend, the `registerPasskey()` function handles the passkey registration process. It first sends a request to the server to initiate the registration process and receives the response for creating a new passkey. 
+## Sign in with a passkey
 
-It then uses the `@github/webauthn-json` library to create a new passkey credential based on the received options from the response. Finally, it sends another request to the server with the newly created credential to complete the registration process.
+The following snippets use the [application-defined session helpers](/passkey-api/login-session-binding#backend-integration-helpers). Implement them in your backend; they are not exported by the SDK.
 
-```tsx
-  async function registerPasskey() {
-        const createOptionsResponse = await fetch("http://localhost:5001/api/passkeys/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: 'include',
-            body: JSON.stringify({ start: true, finish: false, credential: null }),
-        });
+At the start of login:
 
-        const { createOptions } = await createOptionsResponse.json();
-        console.log("createOptions", createOptions)
-
-        const credential = await create(
-            createOptions as CredentialCreationOptionsJSON,
-        );
-        console.log(credential)
-
-        const response = await fetch("http://localhost:5001/api/passkeys/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ start: false, finish: true, credential }),
-        });
-        console.log(response)
-
-        if (response.ok) {
-            toast.success("Registered passkey successfully!");
-            return;
-        }
-    }
-```
-</Step>
-<Step title="Allow users to log in with passkeys">
-
-```js services.js
-async function startServerPasskeyLogin() {
-  const options = await passkeyApi.login.initialize();
-  return options;
-}
-
-async function finishServerPasskeyLogin(options) {
-  const response = await passkeyApi.login.finalize(options);
-  return response;
-}
+```ts
+const loginOptions = await passkeyApi.login.initialize();
+await rememberLogin(req, loginOptions.publicKey.challenge, "login");
+// Return loginOptions to the browser after the pending attempt is stored.
 ```
 
-The following controller uses the [application-defined session helpers](/passkey-api/login-session-binding#backend-integration-helpers). Implement these helpers and CSRF protection before using this example. The SDK performs API calls; it does not manage your sessions or verify and bind result tokens.
+The browser performs WebAuthn `get()` and returns the assertion. Complete login on your backend:
 
-```js controllers.js
-async function handlePasskeyLogin(req, res) {
-  const { start, finish, options } = req.body;
+```ts
+const result = await passkeyApi.login.finalize(assertion);
+const userId = await acceptLogin(req, result.token, "login");
+await establishSession(req, res, userId);
+```
 
-  try {
-    if (start) {
-      const loginOptions = await startServerPasskeyLogin();
-      await rememberLogin(req, loginOptions.publicKey.challenge, "login");
-      return res.json({ loginOptions });
-    }
-    if (finish) {
-      const jwtToken = await finishServerPasskeyLogin(options);
-      const userID = await acceptLogin(req, jwtToken?.token ?? "", "login");
-      console.log("userID from hanko", userID);
-      const user = db.users.find((user) => user.id === userID);
-      if (!user) {
-        return res.status(401).json({ message: "Invalid user" });
-      }
-      console.log("user", user);
-      await establishSession(req, res, user.id);
-      return res.json({ message: " Passkey Login successful" });
-    }
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred during the passke login process." });
-  }
+`acceptLogin` must verify the result token and atomically consume a matching pending attempt before a full application session is created. Follow [Login session binding](/passkey-api/login-session-binding) for the required checks and deployment compatibility. Calling `finalize()` alone does not perform these application checks.
+
+The current SDK's `login.initialize()` has no user-ID argument and starts discoverable login. The API also supports login with `user_id`, which requires a secret API key; use a backend HTTP call for that variant. See [Start Login](/passkey-api/reference/start-login).
+
+## MFA
+
+Use the user's MFA methods after your existing first-factor check succeeds. [Passkeys and MFA](/passkey-api/mfa) explains how the routes differ, authenticator defaults, and the complete second-factor flow.
+
+For MFA credential enrollment, from an authenticated enrollment session:
+
+```ts
+const options = await passkeyApi.user(authenticatedUser.id)
+  .mfa.registration.initialize({ username: authenticatedUser.email });
+// Bind options.publicKey.challenge to enrollment; send options to the browser.
+// After matching the browser response to that pending enrollment:
+const result = await passkeyApi.user(authenticatedUser.id)
+  .mfa.registration.finalize(credential);
+```
+
+For login, derive `expectedUserId` from trusted first-factor session state. At initialization:
+
+```ts
+const loginOptions = await passkeyApi.user(expectedUserId).mfa.login.initialize();
+await rememberLogin(req, loginOptions.publicKey.challenge, "mfa", expectedUserId);
+// Return loginOptions to the browser.
+```
+
+After the browser returns its assertion:
+
+```ts
+const result = await passkeyApi.user(expectedUserId).mfa.login.finalize(assertion);
+const userId = await acceptLogin(req, result.token, "mfa");
+await establishSession(req, res, userId);
+```
+
+The SDK's `.user(userId)` supplies the user ID during initialization. Finalization sends the credential response; it does not add a separate expected-user check. Your session helper must reject a result for any other user and consume the pending attempt before granting full access.
+
+## Manage credentials
+
+```ts
+const credentials = await passkeyApi.user(authenticatedUser.id).credentials();
+
+// After your backend authorizes deletion of this credential for the user:
+await passkeyApi.credential(credentialId).remove();
+```
+
+The tenant API key authorizes access at tenant scope. Verify ownership in your backend before accepting an end-user request to remove or change a credential.
+
+The current SDK has no credential-update method. To rename a credential or change `is_mfa`, call [Update Credential](/passkey-api/reference/credentials/update-credential) over HTTP from your backend. The flag update requires the updated API release; changing TypeScript schema types alone does not add an SDK method. See [permitted credential usage](/passkey-api/mfa#change-a-credentials-permitted-usage) for the security implications.
+
+## Handle errors
+
+Wrap SDK calls in your application's error handling. Do not establish a session, mark MFA enrollment complete, or report success after an API failure.
+
+```ts
+try {
+  const result = await passkeyApi.login.finalize(assertion);
+  const userId = await acceptLogin(req, result.token, "login");
+  await establishSession(req, res, userId);
+} catch (error) {
+  // Record appropriate diagnostic information on the backend.
+  // Return a generic failure and require a new attempt where appropriate.
+  res.status(401).json({ message: "Unable to complete sign-in" });
 }
 ```
 
-**Frontend**
-```tsx 
-    async function signInWithPasskey() {
-        const createOptionsResponse = await fetch("http://localhost:5001/api/passkeys/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: 'include',
-            body: JSON.stringify({ start: true, finish: false, credential: null }),
-        });
+This is an integration sketch: `req`, `res`, assertions, authenticated-user state, and session helpers are supplied by your application. Configure CSRF protection and secure session storage before exposing the handlers.
 
-        const { loginOptions } = await createOptionsResponse.json();
+## Example applications
 
-        // Open "register passkey" dialog
-        const options = await get(
-            loginOptions as any,
-        );
-
-        const response = await fetch("http://localhost:5001/api/passkeys/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: 'include',
-            body: JSON.stringify({ start: false, finish: true, options }),
-        });
-
-        if (response.ok) {
-            console.log("user logged in with passkey")
-            navigate("/dashboard")
-            return;
-        }
-    }
-```
-</Step>
-</Steps>
-
-## Try it yourself 
-
-Check out sample apps made using the SDK:
-
-<CardGroup cols={2}>
-  <Card
-    title="React-Express Example"
-    href="https://github.com/teamhanko/passkeys-react-express"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-brand-react"
-        width="30"
-        height="30"
-        viewBox="0 0 30 30"
-        strokeWidth="2"
-        stroke="#5465FF"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M6.306 8.711c-2.602 .723 -4.306 1.926 -4.306 3.289c0 2.21 4.477 4 10 4c.773 0 1.526 -.035 2.248 -.102"></path>
-        <path d="M17.692 15.289c2.603 -.722 4.308 -1.926 4.308 -3.289c0 -2.21 -4.477 -4 -10 -4c-.773 0 -1.526 .035 -2.25 .102"></path>
-        <path d="M6.305 15.287c-.676 2.615 -.485 4.693 .695 5.373c1.913 1.105 5.703 -1.877 8.464 -6.66c.387 -.67 .733 -1.339 1.036 -2"></path>
-        <path d="M17.694 8.716c.677 -2.616 .487 -4.696 -.694 -5.376c-1.913 -1.105 -5.703 1.877 -8.464 6.66c-.387 .67 -.733 1.34 -1.037 2"></path>
-        <path d="M12 5.424c-1.925 -1.892 -3.82 -2.766 -5 -2.084c-1.913 1.104 -1.226 5.877 1.536 10.66c.386 .67 .793 1.304 1.212 1.896"></path>
-        <path d="M12 18.574c1.926 1.893 3.821 2.768 5 2.086c1.913 -1.104 1.226 -5.877 -1.536 -10.66c-.375 -.65 -.78 -1.283 -1.212 -1.897"></path>
-        <path d="M11.5 12.866a1 1 0 1 0 1 -1.732a1 1 0 0 0 -1 1.732z"></path>
-      </svg>
-    }
-  >
-    Full source code available on our GitHub.
-  </Card>
-  <Card
-    title="Remix example"
-    href="https://github.com/teamhanko/passkeys-remix"
-    icon={
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="icon icon-tabler icon-tabler-brand-github"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        strokeWidth="2"
-        stroke="#5465FF"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-        <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"></path>
-      </svg>
-    }
-  >
-    Full source code available on our GitHub.
-  </Card>
-</CardGroup>
-
+For full applications and framework-specific code, see [Example apps](/passkey-api/resources/examples) and [Tutorials](/passkey-api/resources/tutorials).

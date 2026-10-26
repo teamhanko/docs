@@ -1,3 +1,6 @@
 ---
 openapi: openapi-passkeys post /{tenant_id}/login/initialize
 ---
+See [Passkeys and MFA](/passkey-api/mfa) for route differences, authenticator settings, and backend responsibilities.
+
+Omit `user_id` for discoverable login. If you provide `user_id`, call this endpoint from your backend with the tenant's secret `apiKey` header; this also supports non-discoverable credentials permitted for normal login.

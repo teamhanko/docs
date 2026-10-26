@@ -1,273 +1,149 @@
 ---
-title: Passkey MFA
-description: Learn how to implement multi-factor authentication (MFA) with Passkey using Passkey SDK.
+title: Passkeys and MFA
+description: Choose between standalone WebAuthn login and a second factor, understand authenticator settings, and change credential usage.
 ---
 
+The Passkey API supports standalone passwordless login and WebAuthn as an additional factor. The `/mfa` routes are intended for applications that already authenticate the user with a first factor, such as a password, and then ask for a security key.
+
+## Choose the routes
+
+All paths below are relative to `/{tenant_id}`.
+
+| Behavior | Normal routes | MFA routes |
+| --- | --- | --- |
+| Registration | `/registration/initialize` and `/registration/finalize` | `/mfa/registration/initialize` and `/mfa/registration/finalize` |
+| Login | `/login/initialize` and `/login/finalize` | `/mfa/login/initialize` and `/mfa/login/finalize` |
+| New credential's `is_mfa` | `false` | `true` |
+| Credentials accepted for login | Only `is_mfa: false` | Both values of `is_mfa` |
+| User identification at login initialization | Optional `user_id`; omitting it requires a discoverable credential | Required `user_id` |
+| Secret API key | Required to initialize registration and to initialize login with `user_id`; other normal login calls and registration finalization are public | Required for all four endpoints |
+| Authenticator settings | Tenant WebAuthn configuration | Separate tenant MFA configuration |
+
+Both flows use the same tenant RP ID, allowed origins, and user accounts. MFA does not create a separate credential namespace. Normal transaction authentication also excludes credentials with `is_mfa: true`.
+
+The API verifies the WebAuthn ceremony; it does **not** verify that a first factor has succeeded. Your backend must obtain the MFA user ID from trusted first-factor session state, bind the challenge and result to that user and pending login, and create a full application session only after both steps succeed. Follow [Login session binding](/passkey-api/login-session-binding).
+
+For standalone login, verify and bind the WebAuthn result before creating the application session. Do not treat an MFA result as proof that the application completed both factors.
+
+## Register a second-factor credential
+
+Authorize enrollment from an authenticated application session. Obtain the user ID from that session, not from a browser-supplied user ID. All calls to the MFA endpoints below run on your backend with the secret API key.
+
+1. Initialize registration for the authenticated user:
+
+```http
+POST /{tenant_id}/mfa/registration/initialize
+apiKey: <secret API key>
+Content-Type: application/json
+
+{"user_id":"user-123","username":"alice@example.com"}
+```
+
+2. Store the returned `publicKey.challenge` against the enrollment session and expected user. Send the creation options to the browser.
+3. The browser calls WebAuthn `create()` and returns the credential response to your backend. Match its challenge to the pending enrollment, then forward that same response unchanged to:
+
+```http
+POST /{tenant_id}/mfa/registration/finalize
+apiKey: <secret API key>
+Content-Type: application/json
+```
+
+The request body is the serialized credential response, including `id`, `rawId`, `type`, and `response`; it is not another user ID. Only mark enrollment successful after API verification and completing the matching pending operation. The API stores the credential with `is_mfa: true`. Do not expect a login `challenge` claim in the registration token.
+
+## Complete a login with MFA
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant Backend as Your backend
+    participant API as Passkey API
+    Browser->>Backend: Complete first factor
+    Backend->>Backend: Create pending MFA session for user
+    Backend->>API: /mfa/login/initialize + user_id + API key
+    API-->>Backend: WebAuthn request options
+    Backend->>Backend: Store challenge and expected user
+    Backend-->>Browser: Request options
+    Browser->>Browser: Authenticate with security key
+    Browser->>Backend: Credential response
+    Backend->>API: /mfa/login/finalize + response + API key
+    API-->>Backend: Result token
+    Backend->>Backend: Verify result, bind to attempt, consume attempt
+    Backend-->>Browser: Full application session
+```
+
+After your first-factor check succeeds, initialize MFA for the user in that pending session:
+
+```http
+POST /{tenant_id}/mfa/login/initialize
+apiKey: <secret API key>
+Content-Type: application/json
+
+{"user_id":"user-123"}
+```
+
+Persist the returned challenge, intended operation, expected user, and expiration before sending the request options to the browser. The browser performs WebAuthn authentication and returns the assertion to your backend. Forward it unchanged as the JSON body of:
+
+```http
+POST /{tenant_id}/mfa/login/finalize
+apiKey: <secret API key>
+Content-Type: application/json
+```
+
+A successful response has the form `{ "token": "<signed JWT>" }`. Before granting full access, verify the result and bind it to the pending session and expected user using [Login session binding](/passkey-api/login-session-binding). Atomically consume the attempt and rotate the application session. The linked guide explains deployment requirements for the signed challenge claim and an alternative for older servers.
+
+The browser ceremony is the same WebAuthn `create()`/`get()` interaction shown in [Register and sign in with passkeys](/passkey-api/example-implementation). The MFA endpoints, required user ID, API-key protection, and first-factor session are the important differences. For the equivalent SDK methods, see [JavaScript/TypeScript Backend SDK](/passkey-api/js-sdk#mfa).
+
+## Authenticator settings
+
+The following are the **current server application's creation defaults** when optional configuration fields are omitted. Existing tenant settings and explicit provisioning values take precedence; these are not a guarantee of the configuration of a hosted project.
+
+| Setting | Normal registration/login | MFA registration/login |
+| --- | --- | --- |
+| `user_verification` | `required` | `preferred` |
+| `resident_key_requirement` | `required` | `discouraged` |
+| `attachment` | Unspecified: platform and cross-platform authenticators allowed | `cross-platform` |
+| `attestation_preference` | `direct` | `direct` |
+
+User verification applies to registration and authentication. Resident key, attachment, and attestation settings apply to registration; attachment is not a login-time hardware restriction. MFA initially inherits the configured WebAuthn timeout when its configuration is created automatically, and can have its own configured timeout. Both flows enforce their configured timeouts.
+
 <Note>
-Bind MFA results to the first-factor session and expected user. The login example uses the [application-defined session helpers](/passkey-api/login-session-binding#backend-integration-helpers): `rememberLogin` stores the challenge, purpose, and expected user; `acceptLogin` verifies the token and atomically consumes a matching pending MFA attempt, including the user check. Obtain the expected user from trusted first-factor session state, never a client-supplied user ID. Implement these helpers and CSRF protection before using the example.
+There is a historical default discrepancy: the MFA database migration and test fixtures specify `user_verification: discouraged`, while the current configuration creation code and missing-configuration fallback use `preferred`. The normal WebAuthn database migration likewise specifies `preferred`, while current configuration creation uses `required`. Check the stored tenant configuration and generated WebAuthn options rather than inferring effective settings from database defaults.
 </Note>
 
+### User verification and security keys
 
-Passkey MFA is a multi-factor authentication (MFA) method that enhances account security by adding passkeys as a second factor to traditional password-based logins. 
+User presence, such as touching a security key, is different from user verification using the authenticator's PIN or biometrics. `preferred` permits authentication without UV but may prompt for it. `discouraged` asks to avoid UV, without guaranteeing that the authenticator will omit it. `required` rejects authentication without UV.
 
-It ensures that only users with access to both the password and the registered device can successfully authenticate, providing an extra layer of protection against unauthorized access.
+For a security key used after a password, explicitly configuring MFA UV as `discouraged` can avoid an additional PIN prompt. This is a reasonable second-factor policy, but it is not the current application default. See [Yubico's guidance on user presence and verification](https://developers.yubico.com/WebAuthn/WebAuthn_Developer_Guide/User_Presence_vs_User_Verification.html).
 
-This example demonstrates how to implement MFA in Node.js using the [@teamhanko/passkeys-sdk](https://www.npmjs.com/package/@teamhanko/passkeys-sdk). If you're not using a JS/TS backend, you can achieve the same result by utilizing the [Passkey API](/passkey-api/reference/credentials/start-mfa-login) directly.
+### Discoverability and U2F compatibility
 
-<Note>
-  This guide showcases how to add passkeys as second factor for password-based logins. If your goal is to set up a passkey-based passwordless login system instead, please refer to [this guide](/passkey-api/example-implementation) and the [Passkey API documentation](/passkey-api/reference/credentials/start-passkey-registration) for more suitable instructions.
-</Note>
+MFA already knows the user and supplies credential IDs through `allowCredentials`, so it does not need discoverability. `residentKey: discouraged` prefers non-discoverable credentials but still permits discoverable ones. It can also avoid consuming limited resident-credential slots on hardware keys.
 
-## Install Passkey SDK
+This configuration supports compatibility with U2F/CTAP1 keys, which cannot provide discoverable credentials or UV: neither capability may be required. Actual support still depends on the browser, platform, and key. `preferred` UV also permits keys without UV; `discouraged` additionally requests avoiding the extra verification step on capable keys.
 
-Install the Passkey SDK:
+Supporting U2F hardware through WebAuthn is different from migrating credentials previously registered through the legacy U2F API. Do not assume those existing credentials can be reused: that requires a separate migration design, including AppID handling. See the [WebAuthn specification](https://www.w3.org/TR/webauthn-3/#enumdef-residentkeyrequirement) and [Yubico's U2F migration checklist](https://developers.yubico.com/WebAuthn/WebAuthn_Developer_Guide/WebAuthn_Readiness_Checklist.html).
 
-<CodeGroup> 
+## Change a credential's permitted usage
 
-```bash npm
-npm i @teamhanko/passkeys-sdk
+`is_mfa` is a server-side usage restriction, independent of UV support, discoverability, and synchronization. A credential registered through MFA may be non-discoverable and is not necessarily a passkey in the discoverable-credential sense.
+
+Use [Update Credential](/passkey-api/reference/credentials/update-credential) from your backend to permit standalone login:
+
+```http
+PATCH /{tenant_id}/credentials/{credential_id}
+apiKey: <secret API key>
+Content-Type: application/json
+
+{"is_mfa": false}
 ```
 
-```bash yarn
-yarn add @teamhanko/passkeys-sdk
-```
+This administrative operation does not run a WebAuthn ceremony or prove possession or UV capability. Authorize an end-user request using a fresh, complete authentication. For secure standalone login, require UV in the normal login policy and keep that requirement in place. A key that cannot provide UV will not work under that policy.
 
-```bash bun
-bun add @teamhanko/passkeys-sdk
-```
+Changing the flag does not make a credential discoverable. A non-discoverable credential still needs normal login initialized with `user_id` and a secret API key on your backend. Register a new credential if you need capabilities the existing credential cannot provide.
 
-```bash pnpm
-pnpm add @teamhanko/passkeys-sdk
-```
+Set `is_mfa` to `true` to restrict the credential to MFA again. Ensure the user retains another standalone login or recovery method. Existing application sessions are not revoked.
 
-</CodeGroup>
+The PATCH accepts `name`, `is_mfa`, or both. Omitted fields remain unchanged. Empty updates, empty names, and non-boolean flag values are rejected. Repeating the same flag value is supported.
 
-## Get your tenant ID and API key
-
-Get your tenant ID and API key from Hanko Cloud and add them to your `.env` file.
-
-```bash .env
-PASSKEYS_API_KEY=your-api-key
-PASSKEYS_TENANT_ID=your-tenant-id
-```
-
-## Allow users to register passkeys for MFA
-
-On your backend, you’ll have to call `tenant({ ... }).user(userId).mfa.registration.initialize()` and `mfa.registration.finalize()` to create and store a passkey for your user which will be used as an MFA.
-
-```js services.js
-import { tenant } from "@teamhanko/passkeys-sdk";
-import dotenv from "dotenv";
-import db from "../db.js";
-
-dotenv.config();
-
-const passkeyApi = tenant({
-  apiKey: process.env.PASSKEYS_API_KEY,
-  tenantId: process.env.PASSKEYS_TENANT_ID,
-});
-
-async function startMfaRegistration(userID) {
-  const user = db.users.find((user) => user.id === userID);
-
-  const createOptions = await passkeyApi
-    .user(user.id)
-    .mfa.registration.initialize({
-      username: user.email || "",
-    });
-
-  return createOptions;
-}
-
-async function finishMfaRegistration(userID, credential) {
-  const user = db.users.find((user) => user.id === userID);
-  await passkeyApi.user(user.id).mfa.registration.finalize(credential);
-}
-```
-
-```js controllers.js
-async function handleMfaRegister(req, res) {
-  const { user } = req;
-  const userID = user.id;
-
-  if (!userID) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  const { start, finish, credential } = req.body;
-
-  try {
-    if (start) {
-      const createOptions = await startMfaRegistration(userID);
-      return res.json({ createOptions });
-    }
-    if (finish) {
-      await finishMfaRegistration(userID, credential);
-      const user = db.users.find((user) => user.id === userID);
-      user.mfaEnabled = true;
-      return res.json({ message: "Registered MFA" });
-    }
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-}
-```
-
-### Frontend
-
-On your frontend, the `registerMfaPasskey()` function handles the passkey registration process. It first sends a request to the server to initiate the registration process and receives the response for creating a new passkey. 
-
-It then uses the `@github/webauthn-json` library to create a new passkey credential based on the received options from the response. Finally, it sends another request to the server with the newly created credential to complete the registration process.
-
-```tsx
-async function registerMfaPasskey() {
-  const createOptionsResponse = await fetch(
-    "http://localhost:5001/api/passkeys/mfa/register",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ start: true, finish: false, credential: null }),
-    }
-  );
-
-  const { createOptions } = await createOptionsResponse.json();
-  console.log("createOptions", createOptions);
-
-  const credential = await create(
-    createOptions as CredentialCreationOptionsJSON
-  );
-  console.log(credential);
-
-  const response = await fetch(
-    "http://localhost:5001/api/passkeys/mfa/register",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ start: false, finish: true, credential }),
-    }
-  );
-  console.log(response);
-
-  if (response.ok) {
-    toast.success("Registered MFA passkey successfully!");
-    return;
-  }
-}
-```
-
-## Authenticate users with MFA
-
-```js services.js
-async function startMfaLogin(userID) {
-  const user = db.users.find((user) => user.id === userID);
-  const options = await passkeyApi.user(user.id).mfa.login.initialize();
-  return options;
-}
-
-async function finishMfaLogin(userID, options) {
-  const user = db.users.find((user) => user.id === userID);
-  const response = await passkeyApi.user(user.id).mfa.login.finalize(options);
-  return response;
-}
-```
-
-```js controllers.js
-async function handleMfaLogin(req, res) {
-  const { user } = req;
-  const userID = user.id;
-
-  if (!userID) {
-    return res.status(401).json({ message: "MFA Login not allowed" });
-  }
-  const { start, finish, options } = req.body;
-
-  try {
-    if (start) {
-      const loginOptions = await startMfaLogin(userID);
-      await rememberLogin(req, loginOptions.publicKey.challenge, "mfa", userID);
-      return res.json({ loginOptions });
-    }
-    if (finish) {
-      const jwtToken = await finishMfaLogin(userID, options);
-      const newUserID = await acceptLogin(req, jwtToken?.token ?? "", "mfa");
-      const user = db.users.find((user) => user.id === newUserID);
-      if (!user) {
-        return res.status(401).json({ message: "Invalid user" });
-      }
-      await establishSession(req, res, user.id);
-      return res.json({ message: " MFA Passkey Login successful" });
-    }
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred during the passkey login process." });
-  }
-}
-```
-
-### Frontend
-
-Feel free to customize the MFA flow based on your app's requirements. In our [example implementation](https://github.com/teamhanko/passkeys-react-express), if `mfaRequired=true` is received from the login API, the user is redirected to an MFA page where passkey-based multi-factor authentication is performed.
-
-```tsx
-async function mfaLogin() {
-  const createOptionsResponse = await fetch(
-    "http://localhost:5001/api/passkeys/mfa/login",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ start: true, finish: false, credential: null }),
-    }
-  );
-
-  const { loginOptions } = await createOptionsResponse.json();
-
-  // Open "register passkey" dialog
-  const options = await get(loginOptions as any);
-
-  const response = await fetch("http://localhost:5001/api/passkeys/mfa/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ start: false, finish: true, options }),
-  });
-
-  if (response.ok) {
-    console.log("user logged in with mfa passkey");
-    navigate("/dashboard");
-    return;
-  }
-}
-```
-
-## Try it yourself
-
-<Card
-  title="React-Express Example"
-  href="https://github.com/teamhanko/passkeys-react-express"
-  icon={
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="icon icon-tabler icon-tabler-external-link"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      stroke="currentColor"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-      <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"></path>
-      <path d="M11 13l9 -9"></path>
-      <path d="M15 4h5v5"></path>
-    </svg>
-  }
->
-  Full source code available on our GitHub
-</Card>
+When audit logging is enabled, `webauthn_credential_updated` includes `credential_id` and, when the flag was submitted, `old_is_mfa` and `new_is_mfa`. Equal values mean an idempotent request; name-only updates omit both flag fields. See [Audit logs](/passkey-api/reference/list-audit-logs). These PATCH and audit fields require the updated API release. Self-hosted deployments must apply migration `20261026120000_add_credential_audit_details` before running the updated server.

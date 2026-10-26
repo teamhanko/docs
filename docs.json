@@ -360,15 +360,20 @@
             "pages": [
               "passkey-api/introduction",
               "passkey-api/setup-passkey-project",
-              "passkey-api/example-implementation",
-              "passkey-api/mfa",
-              "passkey-api/example-transaction",
-              "passkey-api/client-first-login-flow",
-              "passkey-api/login-session-binding"
+              "passkey-api/example-implementation"
             ]
           },
           {
-            "group": "Integrations",
+            "group": "Guides",
+            "pages": [
+              "passkey-api/mfa",
+              "passkey-api/login-session-binding",
+              "passkey-api/client-first-login-flow",
+              "passkey-api/example-transaction"
+            ]
+          },
+          {
+            "group": "SDKs",
             "pages": [
               "passkey-api/js-sdk"
             ]
@@ -384,7 +389,7 @@
             "group": "API Reference",
             "pages": [
               {
-                "group": "Signup",
+                "group": "Credential registration",
                 "pages": [
                   "passkey-api/reference/credentials/start-passkey-registration",
                   "passkey-api/reference/credentials/finish-passkey-registration"

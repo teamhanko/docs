@@ -1,3 +1,16 @@
 ---
 openapi: openapi-passkeys get /{tenant_id}/audit_logs
 ---
+
+When audit storage is enabled, credential updates produce `webauthn_credential_updated`. The updated server includes `credential_id` and, if `is_mfa` was submitted, `old_is_mfa` and `new_is_mfa`:
+
+```json
+{
+  "type": "webauthn_credential_updated",
+  "credential_id": "<credential ID>",
+  "old_is_mfa": true,
+  "new_is_mfa": false
+}
+```
+
+This is an excerpt of an audit entry. Name-only updates omit both flag fields. Equal old and new values indicate an idempotent request. Older entries do not contain these additional fields. Credential changes and stored audit entries commit in the same transaction; a failed audit write rolls back the credential change.
