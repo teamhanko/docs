@@ -633,6 +633,13 @@ components:
         minLength: 32
   requestBodies:
     patch-credential:
+      description: |
+        Update name, is_mfa, or both. Omitted fields remain unchanged.
+        Setting is_mfa to false permits standalone login under the tenant's
+        normal WebAuthn policy. Setting it to true restricts the credential to
+        MFA use. This operation does not verify possession or UV capability,
+        make a credential discoverable, or revoke existing application sessions.
+        Authorize changes in the backend and require UV for secure standalone login.
       content:
         application/json:
           schema:
@@ -640,8 +647,13 @@ components:
             properties:
               name:
                 type: string
-            required:
-              - name
+                minLength: 1
+              is_mfa:
+                type: boolean
+                description: Whether the credential is restricted to MFA use.
+            anyOf:
+              - required: [name]
+              - required: [is_mfa]
     post-registration-initialize:
       description: ""
       content:
@@ -1151,6 +1163,15 @@ components:
           type: string
         actor_user_id:
           type: string
+        credential_id:
+          type: string
+          description: Credential affected by an update; absent on older entries.
+        old_is_mfa:
+          type: boolean
+          description: Previous value when is_mfa was submitted.
+        new_is_mfa:
+          type: boolean
+          description: Value after the update; may equal old_is_mfa for an idempotent request.
         created_at:
           type: string
           format: date-time
