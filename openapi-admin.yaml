@@ -2024,6 +2024,7 @@ components:
           description: Time of last update of the audit log
           type: string
           format: date-time
+          example: "2022-09-14T12:15:09.788784Z"
         details:
           description: Additional event-specific audit information.
           type: object
