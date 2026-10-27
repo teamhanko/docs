@@ -88,6 +88,11 @@ paths:
             example: example@example.com
           description: Only users with the specified email are included
         - in: query
+          name: username
+          schema:
+            type: string
+          description: Filter users by a username substring. The query is lowercased; if email is also supplied, users matching either filter are returned.
+        - in: query
           name: sort_direction
           schema:
             type: string
@@ -131,7 +136,7 @@ paths:
                   allOf:
                     - $ref: "#/components/schemas/UUID4"
                 emails:
-                  description: The email addresses of the new user
+                  description: The email addresses of the new user. Provide at least one email or a non-empty username.
                   type: array
                   items:
                     type: object
@@ -172,8 +177,15 @@ paths:
                           type: string
                     required:
                       - id
-              required:
-                - emails
+              anyOf:
+                - required: [emails]
+                  properties:
+                    emails:
+                      minItems: 1
+                - required: [username]
+                  properties:
+                    username:
+                      minLength: 1
       responses:
         "200":
           description: "Details of the newly created user"
@@ -1725,8 +1737,9 @@ components:
           description: The ID of the identity
           example: 77f8d594-9765-4891-ab2b-f31a797b531d
         email_id:
-          allOf:
-            - $ref: "#/components/schemas/UUID4"
+          type: string
+          format: uuid4
+          nullable: true
           description: The ID of the email this identity is coupled with
           example: d4095586-8318-4a40-a840-b4260496f85a
         provider_id:
@@ -1871,6 +1884,8 @@ components:
               $ref: "#/components/schemas/Identities"
             metadata:
               $ref: "#/components/schemas/UserMetadata"
+            custom_claims:
+              $ref: "#/components/schemas/CustomClaims"
     Username:
       description: The username of the user
       type: object
@@ -2022,6 +2037,16 @@ components:
           type: string
           format: date-time
           example: "2022-09-14T12:15:09.788784Z"
+        updated_at:
+          description: Time of last update of the audit log
+          type: string
+          format: date-time
+          example: "2022-09-14T12:15:09.788784Z"
+        details:
+          description: Additional event-specific audit information.
+          type: object
+          nullable: true
+          additionalProperties: true
     DatabaseWebhookEvent:
       type: object
       title: DatabaseWebhookEvent

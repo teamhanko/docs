@@ -127,6 +127,41 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           description: Not found
+  /saml/auth:
+    get:
+      summary: Start SAML authentication
+      deprecated: true
+      description: Redirect to the identity provider registered for the supplied domain.
+      operationId: get-saml-auth
+      security: []
+      tags:
+        - SAML
+      parameters:
+        - name: domain
+          in: query
+          required: true
+          description: Fully qualified domain name of the SAML provider.
+          schema:
+            type: string
+        - name: redirect_to
+          in: query
+          required: true
+          description: URL to redirect to after authentication.
+          schema:
+            type: string
+            format: uri
+      responses:
+        '307':
+          description: Redirect to the identity provider, or on error to the Referer header URL or configured SAML default redirect URL with error and error_description query parameters.
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /saml/callback:
     post:
       summary: SAML identity provider callback
@@ -265,6 +300,44 @@ paths:
                 Cookie attributes (e.g. domain) can be set via [configuration](https://github.com/teamhanko/hanko/wiki/config) option `session.cookie`.
               schema:
                 $ref: '#/components/schemas/CookieSession'
+    post:
+      summary: Third party provider form callback
+      description: Forward provider form parameters to the GET callback as query parameters.
+      operationId: thirdPartyCallbackPost
+      security: []
+      tags:
+        - Third Party
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: Authorization code returned by the provider.
+                state:
+                  type: string
+                  description: State returned by the provider.
+                error:
+                  type: string
+                error_description:
+                  type: string
+              additionalProperties:
+                type: string
+      responses:
+        '303':
+          description: Redirect to /thirdparty/callback with the form parameters encoded in the query string.
+          headers:
+            Location:
+              schema:
+                type: string
+        '307':
+          description: Redirect to the configured third-party error URL if form parsing fails.
+          headers:
+            Location:
+              schema:
+                type: string
   /me:
     get:
       summary: 'Get the current user'
@@ -405,7 +478,7 @@ components:
                 items:
                   $ref: '#/components/schemas/ValidateSessionOrganization'
             required:
-              - isValid
+              - is_valid
     BadRequest:
       description: Bad Request
       content:
@@ -616,6 +689,9 @@ components:
             is_verified:
               description: "Indicates whether the email address is verified."
               type: boolean
+        username:
+          description: The username associated with the token's subject, if available.
+          type: string
         session_id:
           description: "The unique identifier for the session associated with this token."
           allOf:
@@ -625,13 +701,6 @@ components:
           type: array
           items:
             type: string
-            enum:
-              - pwd
-              - passkey
-              - otp
-              - ext:<provider>
-              - totp
-              - security_key
             description: |
               - `pwd` => password
               - `passkey` => passkey
@@ -657,6 +726,8 @@ components:
             - $ref: '#/components/schemas/UUID4'
         emails:
           $ref: '#/components/schemas/Emails'
+        identities:
+          $ref: '#/components/schemas/Identities'
         created_at:
           description: Time of creation of the the user
           type: string
@@ -677,9 +748,7 @@ components:
               aaguid: "01020304-0506-0708-0102-030405060708"
               last_used_at: "2026-02-24T21:40:36.26936Z"
               created_at: "2026-02-24T21:40:36.26936Z"
-              transports: [
-                "internal"
-              ]
+              transports: ["internal"]
               backup_eligible: true
               backup_state: true
               mfa_only: false
@@ -695,9 +764,7 @@ components:
               aaguid: "90636e1f-ef82-43bf-bdcf-5255f139d12f"
               last_used_at: "2026-02-24T21:40:36.26936Z"
               created_at: "2026-02-24T21:40:36.26936Z"
-              transports: [
-                "usb"
-              ]
+              transports: ["usb"]
               backup_eligible: true
               backup_state: false
               mfa_only: true
@@ -719,7 +786,7 @@ components:
               type: boolean
             totp_enabled:
               type: boolean
-            security_key_enabled:
+            security_keys_enabled:
               type: boolean
     UserMetadata:
       description: The public and unsafe metadata of a user
@@ -813,8 +880,8 @@ components:
           type: string
           format: date-time
         id:
+          description: Base64url-encoded WebAuthn credential ID.
           type: string
-          format: uuid
         last_used_at:
           type: string
           format: date-time
@@ -822,7 +889,7 @@ components:
           type: boolean
         name:
           type: string
-        public-key:
+        public_key:
           type: string
         transports:
           type: array
@@ -846,9 +913,7 @@ components:
           aaguid: "01020304-0506-0708-0102-030405060708"
           last_used_at: "2026-02-24T21:40:36.26936Z"
           created_at: "2026-02-24T21:40:36.26936Z"
-          transports: [
-            "internal"
-          ]
+          transports: ["internal"]
           backup_eligible: true
           backup_state: true
           mfa_only: false
@@ -859,9 +924,7 @@ components:
           aaguid: "90636e1f-ef82-43bf-bdcf-5255f139d12f"
           last_used_at: "2026-02-24T21:40:36.26936Z"
           created_at: "2026-02-24T21:40:36.26936Z"
-          transports: [
-            "usb"
-          ]
+          transports: ["usb"]
           backup_eligible: true
           backup_state: false
           mfa_only: true
