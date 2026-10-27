@@ -1,0 +1,85 @@
+---
+title: Bind login results to your session
+description: Associate a verified passkey authentication with the application session that initiated it.
+---
+
+Hanko Passkey API verifies WebAuthn responses. Your backend manages application sessions and must associate each authentication result with the session that started the login before signing in a user or completing MFA.
+
+The recommended flow uses the signed `challenge` claim in login tokens. JWT signature validation alone does not establish this association.
+
+<Note>
+This flow requires a Passkey API deployment that includes `challenge` in login tokens. Confirm support before enabling the check. Older deployments can use the equivalent backend verification described below. Do not silently accept a missing claim once claim validation is enabled.
+</Note>
+
+## Start the login on your backend
+
+1. Create or reuse an anonymous application session. For MFA, use the server-side session representing the completed first factor.
+2. Call `/login/initialize` (or `/mfa/login/initialize` for MFA) from your backend.
+3. Store `publicKey.challenge` exactly as returned, as a base64url string, in a pending record associated with that session. Include an expiration, the intended operation, and the expected user ID when applicable.
+4. Persist the record before returning the options to the browser.
+
+Do not let the browser supply or replace the expected challenge. Protect both your start and completion endpoints against CSRF. Use secure session cookies (`Secure`, `HttpOnly`, and an appropriate `SameSite` policy).
+
+## Verify and consume the result
+
+The browser authenticates using the options. It can submit the assertion to the Passkey API directly or through your backend. Before creating or upgrading an application session:
+
+1. Verify the result token against your configured tenant's JWKS. Allow only `RS256`, require and validate `exp`, and validate `aud` against your configured RP ID. Select the tenant and JWKS from trusted application configuration, not unverified token data.
+2. Require non-empty string claims `sub` and `challenge`.
+3. Match the signed `challenge` to an unexpired pending record belonging to the current session and intended operation. For MFA or reauthentication, also require `sub` to equal the expected user ID stored in that record.
+4. Atomically consume the matching record so that concurrent or repeated requests cannot both succeed.
+5. Create or upgrade the application session for `sub`, rotating its identifier when signing in. If session creation fails after consumption, restart authentication.
+
+Reject missing, expired, consumed, and mismatched records. Never fall back to signature-only acceptance. The API's consumption of a WebAuthn challenge does not prevent repeated submission of an already-issued JWT to your application; your pending record must also be consumed.
+
+For username-less login, the pending record need not identify a user in advance: `sub` identifies the authenticated user. For MFA and reauthentication, a valid result for another user must not upgrade the existing session.
+
+## Backend integration helpers
+
+The guides use the following **application-defined helpers**, not SDK methods. Implement them using your session framework and shared database or cache:
+
+| Helper | Required behavior |
+| --- | --- |
+| `rememberLogin(req, challenge, purpose, expectedUserId?)` | Store the API-generated challenge against a server-managed session, with a short expiry, purpose, and optional expected user. Persist before returning. |
+| `acceptLogin(req, token, purpose)` | Verify the JWT and atomically match and consume the record as described above; return its verified `sub` or reject. |
+| `establishSession(req, res, userId)` | Check that the local account can sign in, rotate the session identifier, and persist the authenticated session. |
+
+The Python examples use the equivalent names `remember_login`, `accept_login`, and `establish_session`. Configure CSRF protection before these handlers. Do not use an unverified session ID from a request body. These examples assume one pending attempt per session and purpose; starting a new one invalidates the previous attempt. Supporting concurrent tabs requires storing multiple pending challenges and consuming only the matching one.
+
+Keep pending records in a shared server-side store. Flask's default signed-cookie session alone cannot enforce atomic one-time consumption: an old cookie can be submitted again. Use the session to identify the browser, and keep the challenge's pending/consumed state on your backend.
+
+For example, the JWT-verification portion of `acceptLogin` can use `jose`:
+
+```js
+import { createRemoteJWKSet, jwtVerify } from "jose";
+
+// Both values come from trusted server configuration.
+const jwks = createRemoteJWKSet(new URL(`${baseUrl}/.well-known/jwks.json`));
+
+async function verifyLoginToken(token) {
+  const { payload } = await jwtVerify(token, jwks, {
+    algorithms: ["RS256"],
+    audience: expectedRpId,
+    requiredClaims: ["sub", "exp", "iat", "challenge"],
+  });
+  if (
+    typeof payload.sub !== "string" || !payload.sub ||
+    typeof payload.challenge !== "string" || !payload.challenge
+  ) {
+    throw new Error("Invalid authentication result");
+  }
+  return payload;
+}
+```
+
+`verifyLoginToken` alone does **not** implement `acceptLogin`. Use its verified claims for the session/purpose/user comparison and atomic consumption. A separate read followed by an unconditional delete is insufficient under concurrent requests. Use a database transaction with locking or a conditional atomic operation in your shared store. Do not rely on an in-process map in a multi-instance deployment.
+
+## Equivalent backend verification
+
+You may omit the signed-claim comparison when your backend already enforces an equivalent binding: store the challenge at initialization, compare the assertion's `clientDataJSON.challenge` with the value for the current session, and submit that **same assertion** to the Passkey API for verification. Only proceed after successful API verification; parsing client data does not authenticate it. Enforce expiration, expected user, operation, and one-time completion in your backend as well.
+
+## Migrating existing integrations
+
+The additional claim does not change request bodies or the `{ token }` response envelope. Existing clients continue to work, but do not automatically gain session binding. Deploy API support first, then update your backend to store and require the matching challenge. Users with pending logins may need to restart authentication.
+
+The `challenge` claim is supported by login and MFA login tokens. Do not assume registration or transaction tokens contain it. The challenge is not a secret; the protection comes from comparing a signed value with the value previously stored for this session.

@@ -215,6 +215,8 @@ async function finishServerPasskeyLogin(options) {
 }
 ```
 
+The following controller uses the [application-defined session helpers](/passkey-api/login-session-binding#backend-integration-helpers). Implement these helpers and CSRF protection before using this example. The SDK performs API calls; it does not manage your sessions or verify and bind result tokens.
+
 ```js controllers.js
 async function handlePasskeyLogin(req, res) {
   const { start, finish, options } = req.body;
@@ -222,20 +224,19 @@ async function handlePasskeyLogin(req, res) {
   try {
     if (start) {
       const loginOptions = await startServerPasskeyLogin();
+      await rememberLogin(req, loginOptions.publicKey.challenge, "login");
       return res.json({ loginOptions });
     }
     if (finish) {
       const jwtToken = await finishServerPasskeyLogin(options);
-      const userID = await getUserID(jwtToken?.token ?? "");
+      const userID = await acceptLogin(req, jwtToken?.token ?? "", "login");
       console.log("userID from hanko", userID);
       const user = db.users.find((user) => user.id === userID);
       if (!user) {
         return res.status(401).json({ message: "Invalid user" });
       }
       console.log("user", user);
-      const sessionId = uuidv4();
-      setUser(sessionId, user);
-      res.cookie("sessionId", sessionId);
+      await establishSession(req, res, user.id);
       return res.json({ message: " Passkey Login successful" });
     }
   } catch (error) {

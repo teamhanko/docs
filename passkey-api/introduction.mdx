@@ -93,3 +93,7 @@ The Passkey API is designed to be used both from your backend and frontend:
     easily integrate the Passkey API.
   </Card>
 </CardGroup>
+
+## Application session binding
+
+Before creating or upgrading an application session, associate the verified authentication result with the session that started the login. Use the [recommended challenge-binding flow](/passkey-api/login-session-binding), or enforce an equivalent binding on your backend. The API verifies WebAuthn; your application manages sessions and decides which user and operation may be authorized.

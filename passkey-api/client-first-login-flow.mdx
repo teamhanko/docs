@@ -1,27 +1,24 @@
 ---
 title: Client-first login flow
-description: Learn how to start the login flow from your frontend.
+description: Finalize passkey authentication from the browser while binding the result to your application session.
 ---
 
-While you can't skip hitting your backend completely, you can change up the flow a little.
+The browser can call `/login/finalize` directly without a secret API key. Your backend must still associate the authentication result with the application session that initiated it.
 
-When logging in, instead of going frontend → backend → Passkey API, you can let the frontend talk to the Passkey API directly.
+## Recommended flow
 
-The `/login/initialize` and `/login/finalize` endpoints **do not require you to send the secret API key.**
+1. The browser calls your backend to start login.
+2. Your backend calls `/login/initialize`, stores `publicKey.challenge` in an expiring pending login for the current session, and returns the options.
+3. The browser authenticates with a passkey and submits the assertion directly to `/login/finalize`.
+4. The browser sends the returned `token` to your backend.
+5. Your backend verifies the JWT, compares its signed `challenge` with the pending login for this session, and atomically consumes that record before creating a session for `sub`.
 
-When using the Passkey API, after calling the `/login/finalize` endpoint as shown above, you will receive a JSON Web Token (JWT) in the response. This JWT contains the `user_id` and `username` that your backend sent back when the passkey was registered.
+Follow [Bind login results to your session](/passkey-api/login-session-binding) for JWT validation, CSRF protection, expected-user checks, one-time completion, and deployment requirements.
 
-To verify that the JWT was issued by the Passkey API, you can use the JWKS\* located at `/{tenant_id}/.well-known/jwks.json`. The JWKS contains the public keys used for signing the JWTs.
+The token identifies the user through `sub`; it does not contain a username. Use the configured tenant's `/{tenant_id}/.well-known/jwks.json` to verify its signature, and validate the audience and expiration. Signature validation alone does not bind the result to the current session.
 
-<Tip>
-**\*** JWKS are a set of keys (random strings) that are intended to let you verify where a JWT comes from.
+## Existing browser-only initialization
 
-For example, with the JWKS at `/AcmeCorp/.well-known/jwks.json`, you can check whether a JWT was issued by AcmeCorp or not.
+The public initialization endpoint remains available. However, the challenge-claim flow requires your backend to store the expected challenge before authentication. An integration that first contacts its backend with a completed JWT cannot establish this binding merely by checking the token signature or storing a challenge supplied alongside that token.
 
-(There are libraries in most languages that help you do this!)
-
-</Tip>
-
-Once you have verified the JWT on your backend, you can exchange it for a session.
-
-This way, your backend doesn't come into play until the user has successfully authenticated with a passkey.
+Move initialization through your backend to adopt this flow. Finalization can remain a direct browser-to-API request. Never expose a secret API key in frontend code.
