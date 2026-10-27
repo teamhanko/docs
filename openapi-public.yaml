@@ -130,6 +130,7 @@ paths:
   /saml/auth:
     get:
       summary: Start SAML authentication
+      deprecated: true
       description: Redirect to the identity provider registered for the supplied domain.
       operationId: get-saml-auth
       security: []
