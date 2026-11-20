@@ -97,6 +97,8 @@ After setting up the custom domain, you'll need to update your application's con
 
     After setting up the custom domain, update the API URL in your Hanko Elements configuration or frontend-sdk initialization, and in your backend code.
 
+    The `iss` claim in session JWTs also changes to reflect your custom domain. If your backend validates the issuer, update the expected issuer accordingly. See [Session Management](/guides/session-management) for details on JWT claims.
+
 2. **Update redirect URLs:**
     - If you're using 3rd-party connections (e.g., Google, SAML), ensure that all redirect URL configurations are updated.
     - Retrieve the new redirect URL from the **Project Settings > Social connections** and **Project settings > Enterprise connections**
