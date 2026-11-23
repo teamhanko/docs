@@ -996,6 +996,9 @@ components:
         issued_at:
           type: string
           format: date-time
+        expiration:
+          type: string
+          format: date-time
         audience:
           type: array
           items:
@@ -1011,6 +1014,14 @@ components:
               type: boolean
             is_primary:
               type: boolean
+        username:
+          type: string
+        session_id:
+          type: string
+      required:
+        - subject
+        - expiration
+        - session_id
       additionalProperties:
         description: "Any additional claims defined through templates for customizing the session JWT"
     CSRFToken:
