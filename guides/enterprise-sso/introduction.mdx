@@ -184,10 +184,10 @@ identity provider requires a keystore file, delete the old one and
 
 #### Certificate expiry
 
-Hanko checks the validity of the certificate when it decrypts a response, so once the certificate has expired,
-sign-ins through identity providers that encrypt their responses fail. Signing sign-in requests keeps working, but
-whether an identity provider accepts requests signed with an expired certificate depends on the provider. Renew the
-certificate before it expires.
+If an identity provider encrypts its responses, Hanko checks the validity of the certificate when it decrypts them, so
+once the certificate has expired, sign-ins through that identity provider fail. Signing sign-in requests keeps
+working, but whether an identity provider accepts requests signed with an expired certificate depends on the
+provider. Renew the certificate before it expires.
 
 #### Custom domains
 
