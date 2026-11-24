@@ -181,7 +181,8 @@
                       {
                         "group": "Third Party",
                         "pages": [
-                          "api-reference/public/third-party/third-party-provider-callback"
+                          "api-reference/public/third-party/third-party-provider-callback",
+                          "api-reference/public/third-party/third-party-provider-form-callback"
                         ]
                       },
                       {
