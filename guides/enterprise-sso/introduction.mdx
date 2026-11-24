@@ -92,10 +92,12 @@ sends these under different names, see [Attribute mapping](/guides/user-data/att
 
 ### SAML certificate
 
-Hanko signs the sign-in requests it sends to your identity providers with the SAML certificate of your project and, if
-an identity provider encrypts its responses, uses it to decrypt them. Identity providers use the certificate to verify
-those requests and may use it to encrypt their responses. Give the metadata URL or the certificate to the
-administrators of your identity providers (see [SAML data of Hanko Cloud projects](#saml-data-of-hanko-cloud-projects)).
+By default, Hanko signs the sign-in requests it sends to your identity providers with the SAML certificate of your
+project (you can turn this off with `Sign authentication requests` in the `Options` section of
+`Settings > Enterprise connections`) and, if an identity provider encrypts its responses, uses the certificate to
+decrypt them. Identity providers use the certificate to verify the requests and may use it to encrypt their responses.
+Give the metadata URL or the certificate to the administrators of your identity providers (see
+[SAML data of Hanko Cloud projects](#saml-data-of-hanko-cloud-projects)).
 
 #### Viewing the certificate
 
@@ -169,9 +171,8 @@ To renew the certificate of your project:
 The Entity ID, the ACS URL and the metadata URL of your project do not change when you renew the certificate.
 
 By default, the key pair stays the same and only a new certificate is issued. Identity providers that stored the
-previous certificate need the new one: some keep working because they only check the public key, others reject
-sign-ins until they are updated. Give your identity providers the new certificate using the metadata URL or the link
-to the certificate. If an identity provider requires a keystore file, delete the old one and
+previous certificate should be given the new one, using the metadata URL or the link to the certificate. If an
+identity provider requires a keystore file, delete the old one and
 [create the keystore](#creating-a-java-keystore) again from the new certificate.
 
 <Warning>
