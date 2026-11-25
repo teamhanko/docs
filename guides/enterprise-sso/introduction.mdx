@@ -33,7 +33,7 @@ import AccountProvisioning from '/snippets/account-provisioning.mdx'
 - Learn enterprise connection configuration
 - Explore SP-initiated vs IdP-initiated SSO flows
 - Configure account provisioning and linking
-- View and renew the SAML certificate of your project
+- View and renew the SAML service provider (SP) certificate of your project
 - Review security considerations and limitations
 - Access provider-specific integration guides
 </div>
@@ -90,13 +90,14 @@ To add an enterprise connection to your project:
 By default, Hanko reads a fixed set of standard SAML attribute names to populate a user's profile. If your IdP
 sends these under different names, see [Attribute mapping](/guides/user-data/attribute-mapping) to map them.
 
-### SAML certificate
+### SP certificate
 
-By default, Hanko signs the sign-in requests it sends to your identity providers with the SAML certificate of your
-project (you can turn this off with `Sign authentication requests` in the `Options` section of
-`Settings > Enterprise connections`) and, if an identity provider encrypts its responses, uses the certificate to
-decrypt them. Identity providers use the certificate to verify the requests and may use it to encrypt their responses.
-Give the metadata URL or the certificate to the administrators of your identity providers (see
+The SP certificate is the certificate of your project in its role as the service provider in SAML. It is not the
+certificate of one of your identity providers. By default, Hanko signs the sign-in requests it sends to your identity
+providers with the SP certificate (you can turn this off with `Sign authentication requests` in the `Options` section
+of `Settings > Enterprise connections`) and, if an identity provider encrypts its responses, uses it to decrypt them.
+Identity providers use the SP certificate to verify the requests and may use it to encrypt their responses. Give the
+metadata URL or the SP certificate to the administrators of your identity providers (see
 [SAML data of Hanko Cloud projects](#saml-data-of-hanko-cloud-projects)).
 
 #### Viewing the certificate
@@ -194,15 +195,15 @@ provider. Renew the certificate before it expires.
 When you set up or remove a [custom domain](/guides/custom-domain/custom-domain) for your project, the API URL of your
 project changes, and with it the `Entity ID/Audience URI`, the `Assertion Consumer Service (ACS) URL` and the metadata
 URL (see [SAML data of Hanko Cloud projects](#saml-data-of-hanko-cloud-projects)). Update them at your identity
-providers. If sign-ins still fail after a change, you may also have to update the certificate or re-import the
-metadata at the identity provider manually.
+providers. If you set up an identity provider by importing the metadata of your project, import it again: the
+metadata contains the Entity ID and the ACS URL, which change with the domain.
 
-The certificate itself is not changed: it stays valid and keeps its key. Its common name and subject alternative name
-are the host name of the API URL at the time the certificate was issued or renewed, so they still show the previous
-host name, and the console shows a hint about it. Hanko does not check this name, but an identity provider may. If you
-want the name to match your domain, or your identity provider requires it, you can
-[renew the certificate](#renewing-the-certificate); identity providers that stored the previous certificate then need
-the new one.
+The SP certificate itself is not changed: it stays valid and keeps its key. Its common name and subject alternative
+name are the host name of the API URL at the time the certificate was issued or renewed, so they still show the
+previous host name, and the console shows a hint about it. Hanko does not check this name, but an identity provider
+may. If you want the name to match your domain, or your identity provider requires it, you can
+[renew the SP certificate](#renewing-the-certificate); identity providers that stored the previous certificate should
+then be given the new one.
 
 ### Configuring SAML identity providers
 
@@ -356,9 +357,9 @@ Below you will find configuration data of your project that may be required for 
 Replace the `<project_api_url>` with your project's API URL. You can find the API URL
 on your project's dashboard in the [Hanko Cloud Console](https://cloud.hanko.io).
 
-The ACS URL (shown as `Redirect URL`), the Entity ID/Audience URI, the metadata URL and a link to the certificate are
-also shown in the console under `Settings > Enterprise connections`, together with the status of the certificate (see
-[SAML certificate](#saml-certificate)).
+The ACS URL (shown as `Redirect URL`), the Entity ID/Audience URI, the metadata URL and a link to the SP certificate
+are also shown in the console under `Settings > Enterprise connections`, together with the status of the SP
+certificate (see [SP certificate](#sp-certificate)).
 
 ## Limitations
 

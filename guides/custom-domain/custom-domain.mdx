@@ -105,9 +105,11 @@ After setting up the custom domain, you'll need to update your application's con
       and the metadata URL if it fetches it. You find the current values under **Project settings > Enterprise
       connections**, see also
       [SAML data of Hanko Cloud projects](/guides/enterprise-sso/introduction#saml-data-of-hanko-cloud-projects).
-    - If sign-ins through an enterprise connection still fail after a change, you may also have to update the
-      certificate or re-import the metadata at the identity provider manually. The SAML certificate itself is not
-      changed, see [Custom domains](/guides/enterprise-sso/introduction#custom-domains).
+    - If you set up an identity provider by importing the metadata of your project, import it again: the metadata
+      contains the Entity ID and the ACS URL, which change with the domain.
+    - The SAML service provider (SP) certificate does not change with the domain. Its name still shows the previous
+      host name, which only matters if your identity provider requires the name to match your domain. In that case,
+      [renew the SP certificate](/guides/enterprise-sso/introduction#renewing-the-certificate).
 
 The same applies when you remove a custom domain: the API URL of your project, and with it these URLs, change back to
 the default ones.
