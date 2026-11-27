@@ -3,6 +3,11 @@ title: Passkey MFA
 description: Learn how to implement multi-factor authentication (MFA) with Passkey using Passkey SDK.
 ---
 
+<Note>
+Bind MFA results to the first-factor session and expected user. The login example uses the [application-defined session helpers](/passkey-api/login-session-binding#backend-integration-helpers): `rememberLogin` stores the challenge, purpose, and expected user; `acceptLogin` verifies the token and atomically consumes a matching pending MFA attempt, including the user check. Obtain the expected user from trusted first-factor session state, never a client-supplied user ID. Implement these helpers and CSRF protection before using the example.
+</Note>
+
+
 Passkey MFA is a multi-factor authentication (MFA) method that enhances account security by adding passkeys as a second factor to traditional password-based logins. 
 
 It ensures that only users with access to both the password and the registered device can successfully authenticate, providing an extra layer of protection against unauthorized access.
@@ -181,17 +186,17 @@ async function handleMfaLogin(req, res) {
   try {
     if (start) {
       const loginOptions = await startMfaLogin(userID);
+      await rememberLogin(req, loginOptions.publicKey.challenge, "mfa", userID);
       return res.json({ loginOptions });
     }
     if (finish) {
       const jwtToken = await finishMfaLogin(userID, options);
-      const newUserID = await getUserID(jwtToken?.token ?? "");
+      const newUserID = await acceptLogin(req, jwtToken?.token ?? "", "mfa");
       const user = db.users.find((user) => user.id === newUserID);
       if (!user) {
         return res.status(401).json({ message: "Invalid user" });
       }
-      const sessionId = uuidv4();
-      setUser(sessionId, user);
+      await establishSession(req, res, user.id);
       return res.json({ message: " MFA Passkey Login successful" });
     }
   } catch (error) {

@@ -1,3 +1,4 @@
 ---
 openapi: openapi-passkeys post /{tenant_id}/login/finalize
 ---
+The signed login token contains `sub` (user ID), `cred` (credential ID), `aud` (RP ID), `iat` (issue time), `exp` (expiry), and `challenge` (the exact base64url challenge verified during this login). Before creating or upgrading a session, follow [Bind login results to your session](/passkey-api/login-session-binding), including the deployment compatibility guidance.

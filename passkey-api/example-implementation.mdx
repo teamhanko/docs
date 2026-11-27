@@ -5,7 +5,7 @@ description: Learn how to utilize the Passkey API using raw HTTP requests withou
 
 This is an example implementation showing how to use the Passkey API with Node.js and Flask. (We'll be adding more languages and frameworks soon.) 
 
-However, if you're already using JavaScript/TypeScript for your backend, you can use [@teamhanko/passkeys-sdk](https://www.npmjs.com/package/@teamhanko/passkeys-sdk), which handles all of the below for you.
+However, if you're already using JavaScript/TypeScript for your backend, you can use [@teamhanko/passkeys-sdk](https://www.npmjs.com/package/@teamhanko/passkeys-sdk), which handles the API calls. Your application still manages sessions, JWT verification, and login-result binding.
 
 Otherwise, please make sure to always send JSON with `Content-Type: application/json`.
 
@@ -104,7 +104,7 @@ app.post("/passkey/finalize-registration", async (req, res) => {
   // What you do with this JWT is up to you.
   //
   //
-  // The JWT contains 4 claims:
+  // Registration JWT claims include:
   // "sub": the user_id we used for "/registration/initialize".
   //        you can use this to issue a session for the user, for example
   //
@@ -114,7 +114,8 @@ app.post("/passkey/finalize-registration", async (req, res) => {
   //        the string is the ID of the relying party (your app).
   //        e.g. ["example.com"]
   //
-  // "iat": the expiration date (very short)
+  // "iat": the issue time
+  // "exp": the expiration time
   //
   //
   // Here, we don't need to do anything with it, since the user already
@@ -217,6 +218,9 @@ Similar to how registering a passkey is a two-step process, so is logging in.
 
 **Backend:**
 
+These handlers use the [application-defined session helpers](/passkey-api/login-session-binding#backend-integration-helpers). Implement them before using the examples: they verify JWTs, match and atomically consume pending challenges, and rotate application sessions. Configure CSRF protection and an anonymous session before login. The signed-claim flow requires API support for the login `challenge` claim.
+
+
 <Tabs>
 <Tab title="Node.js (Express)">
 ```jsx
@@ -225,6 +229,8 @@ app.post("/passkey/start-login", async (req, res) => {
     method: "POST",
     headers,
   }).then((res) => res.json());
+
+  await rememberLogin(req, loginOptions.publicKey.challenge, "login");
 
   // loginOptions is an object that can directly be passed to get()
   // (the function that opens the "select passkey" dialog)
@@ -239,8 +245,8 @@ app.post("/passkey/finalize-login", async (req, res) => {
     body: JSON.stringify(req.body), // Credential the user selected
   }).then((res) => res.json());
 
-  // Like when registering, data.token is a JWT that contains claims
-  // about the user (see above)
+  const userId = await acceptLogin(req, data.token, "login");
+  await establishSession(req, res, userId);
 
   res.redirect("/success");
 });
@@ -251,7 +257,9 @@ app.post("/passkey/finalize-login", async (req, res) => {
 @app.route("/passkey/start-login", methods=["POST"])
 def start_login():
     response = requests.post(f"{baseUrl}/login/initialize", headers=headers)
+    response.raise_for_status()
     login_options = response.json()
+    remember_login(session, login_options["publicKey"]["challenge"], "login")
 
     return jsonify(login_options)
 
@@ -260,21 +268,14 @@ def finalize_login():
     client_data = request.json
 
     response = requests.post(f"{baseUrl}/login/finalize", headers=headers, json=client_data)
+    response.raise_for_status()
     data = response.json()
 
-   # Now you can use the data from the JWT to create a session for the user
-    token = data.get('token')
-    decoded_payload = jwt.decode(token, options={"verify_signature": False})
-    
-    user_id = decoded_payload.get('sub') 
-    user = next((user for user in users if user['id'] == user_id), None)
-    if user:
-        session["user_id"] = user["id"]
-        session["email"] = user["email"]
-        user_info = {"id": user["id"], "email": user["email"]}
-        return jsonify({"message": "Login successful", "user": user_info}), 200
-    else:
-        return jsonify({"message": "Invalid credentials"}), 401
+    # Verifies the JWT and atomically consumes the matching pending login.
+    # The helper rejects invalid tokens or missing/mismatched/expired attempts.
+    user_id = accept_login(session, data.get("token"), "login")
+    establish_session(session, user_id)
+    return jsonify({"message": "Login successful"}), 200
 ```
 </Tab>
 </Tabs>
@@ -303,7 +304,7 @@ async function loginWithPasskey() {
 ```
 
     <Note>
-    For logging in, the server can also talk to the Passkey API directly, instead of going through your backend first. Whether you go with the server-first or client-first approach is up to preference. See [Client-First Login Flow](/passkey-api/client-first-login-flow).
+    The browser may send the assertion directly to the Passkey API. Your backend must still initialize and bind the login before accepting the returned token. See [Client-First Login Flow](/passkey-api/client-first-login-flow).
     </Note>
 
   </Step>
